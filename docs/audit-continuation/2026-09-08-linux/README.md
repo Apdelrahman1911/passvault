@@ -1,3 +1,18 @@
+## Current C20 resume — 2026-09-13
+
+**INCOMPLETE / NOT READY.** The following earlier checkpoint paragraphs are
+historical wherever superseded. Current: [consolidated report](C20_CONSOLIDATED_REPORT.md),
+[exact state/evidence](C20_CURRENT_STATE.json), current issue/verification/coverage
+ledgers. Root's sole live W scheduler is `reviews/team20/resume_disk/root/EXECUTION_SLOT.json`.
+
+Latest transport b271e67adb637986d2049919227619255a75fa7c; seven-path DB1/Room/archive
+batch now independently integrated in W, still awaiting publication and focused
+runtime evidence. Graph02 SDK-path failure/cleanup accepted, not a graph pass.
+Android passive ingress metadata accepted, not a build/test. Counts26/39(66.7%),
+original19/25(76%),suspicions2/12(16.7%),8PVDseparate;221mixedXML,notpasses.
+Normal12GiBdiskfloorcurrentlymet;max6concurrentagentsincludingroot,oneheavyjob.
+Use one new complete capture and smallest pending cohorts;all oldfences survive.
+
 ## Current C20 continuation — 2026-09-12
 
 **INCOMPLETE / NOT READY.** Read the consolidated completed/remaining-work report,

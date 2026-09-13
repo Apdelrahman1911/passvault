@@ -1,0 +1,156 @@
+{
+  "schema": 1,
+  "reviewer": "/root/windows_review",
+  "author": "/root/windows_author",
+  "date_utc": "2026-09-13",
+  "disposition": "ACCEPT_FRESH_GRAPH03_REALJNA01_UNBOUND_SOURCE_COMPOSITION_ONLY",
+  "scope": "Independent exact accepted-SDK/cap plus fresh identities/markers/reviewer/shared-product-placeholder composition. No material source blocker. Root prospectively assigned reviewer for both future lanes; this is not any GRAPH03/REAL-JNA instance, actual graph pass, source capture, publication, activation, execution or cleanup acceptance.",
+  "composition": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed09/graph03_pair01/COMPOSITION.json",
+    "bytes": 25051,
+    "sha256": "34efc5c78ca80be52a72adef3f80575baec0cc372f11d4b133d099af220eb275"
+  },
+  "reused_reviews": {
+    "SDK_review": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_review/resumed07/sdk_data01/SOURCE-REVIEW.json",
+      "bytes": 9567,
+      "sha256": "6a7191000f267c1010ede2a5dfa83e57ca9bb4c6cdd467bdf687b8aa80032286"
+    },
+    "CAP160_review": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_review/resumed08/source_cap160_01/SOURCE-REVIEW.json",
+      "bytes": 11193,
+      "sha256": "d8d4e1b65ede7205ce36b3e187c420a555fa798c272d4f5a225814f3e6e3165f"
+    },
+    "runtime_graph02_review": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_review/resumed03/runtime_graph02_01/SOURCE-REVIEW.json",
+      "bytes": 8657,
+      "sha256": "0de54d6199e1825b9612e3577dee370cd8c787761c9a6cbf2a5d9ce37399dc30"
+    },
+    "graph02_review": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_review/resumed02/graph_path02/SOURCE-REVIEW.json",
+      "bytes": 10072,
+      "sha256": "b0a2a8d36f3c7ef4dd9d70a1fc9b3902d0670a31974b36ae5b14b8fe0931f175"
+    },
+    "receiver_review": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_review/resumed01/SFIX-WINDOWS-GRAPH-REALJNA-RECEIVER-REVIEW.json",
+      "bytes": 9588,
+      "sha256": "515c2cab4eb1cef41b7736928ab35c1479e9af67efdd2a544d1a43c4119154d2"
+    }
+  },
+  "reviewed_afterimages": {
+    "graph_helper": {
+      "path": "scripts/audit/windows_jna_graph_03.py",
+      "bytes": 90696,
+      "sha256": "7c616bd99ce8f93d9088e3281ff71f643d23a6f0afb917692c425e2ccc5fb994",
+      "written_full_source": false,
+      "text_diff": {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed09/graph03_pair01/GRAPH03-HELPER.patch",
+        "bytes": 8370,
+        "sha256": "63814b440a31ddf9e6ed2517ba59a3194cc128c86cbc894f48060f4dedc61ad5"
+      }
+    },
+    "runtime_helper": {
+      "path": "scripts/audit/windows_real_jna_01.py",
+      "bytes": 121337,
+      "sha256": "29103614659854f407e2b260f592404ca2ca4681bd4f1551d5befc602a0c7e2d",
+      "written_full_source": false,
+      "text_diff": {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed09/graph03_pair01/REAL-JNA-GRAPH03.patch",
+        "bytes": 8650,
+        "sha256": "85844cbdc868fea0b4d53df4832a303b82771a183945f5dd64ef8c34f1fe26eb"
+      }
+    },
+    "graph_init": {
+      "path": "scripts/audit/windows_jna_graph_03.init.gradle",
+      "bytes": 5979,
+      "sha256": "505a0cffdc8f7043d40bd3d1a655f3cd06228b75a9eeda0cd02d77406c4126ef",
+      "written_full_source": false,
+      "text_diff": {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed09/graph03_pair01/GRAPH03-INIT.patch",
+        "bytes": 4508,
+        "sha256": "9c2f49e6e631aa47b686de904ea932f59cf40d317f9015c61a73e584226dac5a"
+      }
+    },
+    "graph_receiver": {
+      "path": ".github/workflows/audit-windows-jna-graph-03-validation.yml",
+      "bytes": 2183,
+      "sha256": "6cfe9fc2dd85c1badbaafc03feac0e27ad305bf32218ceb3dcc67c5754d1a0e2",
+      "written_full_source": false,
+      "text_diff": {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed09/graph03_pair01/GRAPH03-RECEIVER.patch",
+        "bytes": 2382,
+        "sha256": "d3653de20c38ea7a4fbd9f07821faf88cbdb913fbacdd3787d3f8f4460e78931"
+      }
+    }
+  },
+  "unchanged_controls": {
+    "runtime_init": {
+      "canonical_path": "scripts/audit/windows_real_jna_01.init.gradle",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_author/resumed01/runtime_adapter01/v2/windows_real_jna_01.init.gradle.txt",
+      "bytes": 8448,
+      "sha256": "47dc1f6c2839429bee44c21b70bf64c9cf547f70b05420f4deb3a150c692b755"
+    },
+    "runtime_receiver": {
+      "canonical_path": ".github/workflows/audit-windows-real-jna-validation.yml",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed01/sfix_windows_graph01/audit-windows-real-jna-validation.yml.txt",
+      "bytes": 2327,
+      "sha256": "bdc67cd9a1790e520d57ae4c0006dbb249d809ef1226c6b25da54bb3057e2d16"
+    }
+  },
+  "scope_file": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed09/graph03_pair01/SOURCE-SCOPE.txt",
+    "bytes": 3402,
+    "sha256": "ff68e65c45b64a0084f7f8848ede44284a5a4256c637097e64f5f049742835f5"
+  },
+  "request_templates": {
+    "graph": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed09/graph03_pair01/GRAPH03-REQUEST.template.json",
+      "bytes": 1791,
+      "sha256": "aa2276888dcbbe6e9d5c6cc83781faffe4a8a994aa4b21e41d829e24cd6ada4b"
+    },
+    "runtime": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed09/graph03_pair01/REAL-JNA-REQUEST.template.json",
+      "bytes": 2412,
+      "sha256": "5323cf955bb80be11fa6a5b039cd9a5468732380876832b4bd1d5ece555f1a6c"
+    }
+  },
+  "independent_byte_proof": [
+    "All named donor/proposal/reused-review fullpins match. Reconstructed accepted SDK literal changes and548B fragment plus cap160 in memory; graph ec0d4938 and runtime5d6b5d34 accepted-precomposition hashes/sizes match. No repeated SDK/JDK/Job/native-lifetime mechanism review.",
+    "Applied each listed literal only after independently checking exact occurrence count; reversed full ordered changes to recover accepted precompositions. Independently regenerated each full diff from original baseline and matched all four patch bytes/hashes. No full afterimage persisted or helper imported/evaluated/AST-parsed/compiled/executed.",
+    "Graph16 records ->90696B/7c616bd9/1488LF; runtime16 ->121337B/29103614/1906LF; init2 ->5979B/505a0cff/98LF; receiver3 ->2183B/6cfe9fc2/54LF. All afterimage hashes and lengths equal packet. Old Sfix commit/tree/source SHA/125708841/SOURCE_MEMBERS=4113 no longer occur in either composed helper.",
+    "Recursive request JSON key sets unchanged; exact changed-field maps equal declared14 graph and11 runtime fields. Both share exactly six same fresh product placeholders, including null member/raw values; all six admission flags remain literal false. Helper/init/receiver/scope prototype hashes equal exact reviewed afterimages or unchanged donors; no final genuine nonce/hash/control-source identity is inferred."
+  ],
+  "source_and_placeholder_guards": [
+    "Both validated_inputs retain full source SHA64/type(SOURCE_MEMBERS)is int/0<N<=10000/type(SOURCE_BYTES)is int/raw<=160MiB gate. UNBOUND SHA fails first conjunction and None values fail exact type guard; no permissive fallback. Graph call1298 precedes evidence allocation1304; runtime call1711 and actual-graph validation precede evidence allocation1717 and producer/native/Gradle work. This is source reachability reasoning, not a runtime check.",
+    "Both helpers retain same complete manifest/request/product/path/mode/size/SHA1/SHA256 checks. Future exact SOURCE path/SHA/N/raw/commit/tree must be bound identically in both helpers and actual requests; no old-graph/new-source affinity exception. Requests currently reject; prototypes are not authorized executable inputs.",
+    "Graph fresh request/helper/init/workflow names03, generated pv-jg3 root, passvault-windows-jna-graph-03 evidence and GRAPH03 JSON/native-route-clear markers match helper/init/receiver. Old02 donors/requests/evidence are not renamed, deleted, mutated or retried by these byte-derivation patches.",
+    "Runtime01suite/selector/case/output/private-root markers remain unchanged because original recipe is unentered. Its scope/content review now points to root-assigned fresh windows_review paths; runtime content predicate requires /root/windows_review with existing ACCEPT_WINDOWS_REAL_JNA_01_INSTANCE and genuine exact nonce/fixed/candidate hashes. Graph content requires distinct ACCEPT_WINDOWS_JNA_GRAPH_03_INSTANCE. This source review satisfies neither contract."
+  ],
+  "actual_graph_followon_contract": [
+    "Runtime incoming suite becomes windows-jna-graph-03 and genuine actual disposition becomes ACCEPT_WINDOWS_JNA_GRAPH_03_ACTUAL. Changed only these exact contract identities; retained graph target/order/zero-case evidence, source copy COMPLETE/exact SHA/N/raw/commit/tree, seven0 parents/last07-gradle-stop.log, attempted+fulfilled original stop, Jobzero/errors-empty/handles-empty/full-root-cleanup/failures-empty predicates.",
+    "Four actualGraph03 path/SHA pairs remain UNBOUND and hash64 validated before retained DATA reads. Evidence paths must stay B/reviews; actual review binds source plus three producer hashes, graph request/control commits and PVA010_REAL_FFI_MANAGED_PRE_ENTRY_ONLY. Failed Graph02 reviewa5232370 or this composition/content review cannot satisfy it.",
+    "Unchanged8448B runtime init47dc1f6c still has one UNBOUND actualGraphSha256 and a64hex/content-hash refusal. Future same hash must bind init, helper GRAPH_SHA256 and accepted graph. Its final hash must then be recomputed, not reused as if prototype were product-bound.",
+    "Same image/Python/JDK/five-tool byte hashes/SDK path and normalized private environment guard remain unchanged. SDK grammar acceptance is not a proven cause of the historical unseen path offender; drift or later failure remains refusal, not authority to relax source/provenance or retry."
+  ],
+  "workflow_challenge": [
+    "Receiver delta is solely03 names. Inspected complete composed receiver: one push/exact dedicated continuation branch/exact new request path; repository/ref/event/not-deleted/attempt1 guards; Windows2022 one10min job; contents:read; pinned checkout3d3c42e5 and upload043fb46d; exact github.sha/depth2/no credentials/submodules/LFS. No signing/Store secrets or publishing command.",
+    "Only admitted owned evidence JSON/JSONL/logs upload,3days; no binary archive. Runtime receiver2327B/bdc67cd9 reused unchanged with its30min runtime bound. Concurrency group is not global or local exclusivity; root still owns one job and fresh all-base PR/all-repository queue/trigger checks. No speculative matrix or automatic chaining is introduced."
+  ],
+  "remaining_bindings": [
+    "Finish independent actual product/report publication first; current publisher cannot carry these controls. Then one complete shared post-batch capture/INDEX with actual N/raw/member/manifest/EOL/framed/allocated-resource/time/20000-cleanup-entry sizing. Full source cannot be omitted/deduplicated or old4113 relabeled. CAP160 acceptance is not actual fit.",
+    "Root must establish new canonical control/request/reviewer destinations do not overwrite any captured product member. Author named vacancy observation is not live U/full-product proof. Keep captured proposal/template bytes immutable; later bound controls belong to fresh separately admitted locations/control batch.",
+    "Materialize exact later product-bound Graph03 controls, recompute helper/source/scope/request hashes, issue fresh genuine nonce/content review, actual control source commit/tree, original cleanup and six true admission facts; separately admit sole request child. No activation is authorized by this review.",
+    "Independently obtain and reconcile actual Graph03 original graph/toolchain/result/stop/Job/handles/whole cleanup plus genuine successful actual review. Bind matching same-product runtime actual data/init/content nonce/control publication and separate sole runtime request only afterward. No Graph02 observer or consumed helper replay.",
+    "Preserve strict12/8GiB25/20percent RAM, one-worker17JDK wrapper/non-daemon/verification/native refusal and original graph/runtime deadlines/Job/resource/log/journal/XML/cleanup guards. Graph0 cases; planned runtime1existing managed-pre-entry case; no physical Hello/provider/native-active/PVA037/hardware/full-family closure claim."
+  ],
+  "accounting": {
+    "product_fixes": 0,
+    "executed_cases": 0,
+    "helper_executions": 0,
+    "graph_passes": 0,
+    "closures": 0,
+    "cleanup_success_claims": 0
+  },
+  "activity": "Named inert W data/source reads and ordinary JSON/string/hash/diff comparisons; this exclusive reviewer-leaf write/readback only. No Git/network/U/T/SDK/tool/process/runtime probes, excluded native-refusal workflow read, code import/eval/AST/compile/execution, canonical edits, builds/tests/CI/capture/stop/cleanup, background workers or disposable build outputs.",
+  "preserved": "PVU007STOP;PVU011NO-RETRY/no inquiry;PVA02949/44/5FAIL/no automatic retry;G7/G8CLOSED;native refusal;Windows4/all older HOLDs;Graph01/02 failures;8PVD separate;protected branches/tags/build1017001/dependencies/versions/identities/signing/Store unchanged."
+}

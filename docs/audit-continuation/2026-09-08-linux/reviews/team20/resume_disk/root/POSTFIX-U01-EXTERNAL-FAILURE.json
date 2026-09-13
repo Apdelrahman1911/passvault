@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-13T04:48:39.042805+00:00",
+  "status": "EXTERNAL_EXIT1_PUBLICATION_REFUSAL_BEFORE_GIT_OR_U_ACCESS",
+  "tool_chunk": "cf3449",
+  "exit_code": 1,
+  "session_id": null,
+  "source_sha256": "894e112c68d2020c144e66623ed8474cf7a767b16e240f938fad78810c66436d",
+  "result": {
+    "path": "reviews/team20/resume_disk/postfix_transport/new02/publication01/POSTFIX-PUBLISH-U01-ACTUAL.json",
+    "bytes": 1121,
+    "sha256": "81b75903ed52e3fd4dd07d1efa0486518037efb2aeefb0cbd460fef302d08151"
+  },
+  "observed": {
+    "status": "FAIL_HOLD_NO_AUTOMATIC_RETRY",
+    "error": "RuntimeError: no new control/source afterimage among reports",
+    "commands": 0,
+    "commit": null,
+    "tree": null,
+    "elapsed_seconds": 0.008943519002059475
+  },
+  "finite_inert_regex_evaluation": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed06/graph_observer02/actual/intake/evidence/source-copy.json",
+      "name": "source-copy.json",
+      "matched_substring": "opy.",
+      "span": [
+        8,
+        12
+      ],
+      "correct_extension_guard_matches": false
+    }
+  ],
+  "interpretation": "Original52report selection has one false positive: unescaped wildcard before py matches source-copy.json as opy. The report is nonexecuting retained source-copy metadata, not Python control. No fresh publisher retry is authorized by this diagnostic; original invocation/receipt/config consumed.",
+  "cleanup": "No Git child, U descriptor/lock/temp allocation or Gradle/build was reached. Original result descriptor closed in finally; source/config/manifest/receipt retained. No old HOLD cleanup or retry."
+}

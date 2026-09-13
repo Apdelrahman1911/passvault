@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "recorded_utc": "2026-09-13",
+  "run_id": "android-property-javap01",
+  "tool_result": {
+    "chunk_id": "2c80f6",
+    "exit_code": 2,
+    "session_id": null,
+    "stdout": "Admitted one static seven-class javap; no Gradle or project tests.\n",
+    "provenance": "Original invocation terminal retained in the immediately preceding continuation handoff; no replay."
+  },
+  "original_result_path": "reviews/team20/resume_disk/root/android-property-javap01/RESULT.json",
+  "original_result_bytes": 2083,
+  "original_result_sha256": "491c97bbab0258a8fe008d0c0de609a265eeb7c79e796d36667e80cb6b6c169d",
+  "observed_original_result": {
+    "status": "INCOMPLETE_NO_RETRY",
+    "errors": ["MANIFEST_CLASS_PATH_FORBIDDEN"],
+    "child_started": false,
+    "child_pid": null,
+    "child_reaped": null,
+    "exit_code": null,
+    "cleanup": [],
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "tests": 0,
+    "builds": 0,
+    "gradle_stop": "NOT_APPLICABLE_NO_GRADLE_EXECUTION"
+  },
+  "interpretation": "Collector refused the observed manifest Class-Path before original child or temporary HOME/TMP creation. No Java/Gradle/test execution or graph-property provenance credit. Null child status and empty cleanup are not successful worker cleanup claims. Original compact output remains evidence.",
+  "retry_authorized": false,
+  "scheduling_release": "Pending independent actual-result disposition; this receipt does not release the slot."
+}

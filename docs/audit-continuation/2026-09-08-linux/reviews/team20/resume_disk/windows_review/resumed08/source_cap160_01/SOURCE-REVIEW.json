@@ -1,0 +1,169 @@
+{
+  "schema": 1,
+  "reviewer": "/root/windows_review",
+  "author": "/root/windows_author",
+  "date_utc": "2026-09-13",
+  "disposition": "ACCEPT_WINDOWS_CAP160_TWO_CONSTANT_SOURCE_DELTA_AND_CONDITIONAL_SIZING_ONLY_NOT_ADMISSION",
+  "scope": "Independent bounded inert source/hash/literal-diff/resource-arithmetic challenge. No material blocker within these two constant changes. Acceptance is not source integration, capture, actual N, custody release, instance, execution, retry, graph pass or readiness.",
+  "subjects": {
+    "proposal": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed08/source_cap160_01/CAP-DELTA.json",
+      "bytes": 6536,
+      "sha256": "bd8ecdd1941a514fd5fdb4bc0bf72db662ed73f28bbc75c5e5fd88cc9ef79ed7"
+    },
+    "capacity_note": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed08/source_cap160_01/CAPACITY-NOTE.md",
+      "bytes": 4999,
+      "sha256": "5bbae990fc00b0754777b08f3f6766a4e472967babf6192c7dbb9bb0c67550a5"
+    },
+    "graph_patch": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed08/source_cap160_01/GRAPH-CAP160.patch",
+      "bytes": 401,
+      "sha256": "7c54d986e3fa8e7a3de444df47242f93e146428efdec6d2542b23ce11c308a11"
+    },
+    "runtime_patch": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed08/source_cap160_01/REAL-JNA-CAP160.patch",
+      "bytes": 658,
+      "sha256": "3f964c67ea1c488fc08265712a35ff8ad84a38f58e442569b27710daa34118cc"
+    }
+  },
+  "reused_fullpins": {
+    "retained_capacity_packet": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new01/capacity02/CAP-PACKET.json",
+      "bytes": 31757,
+      "sha256": "74a414c10f4eabbe53df5b28fb4782b0ffaca1c9262a4e27b971d0d87fd2dfdb"
+    },
+    "independent_linux_cap_review": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/capacity_review/new01/REVIEW.md",
+      "bytes": 7521,
+      "sha256": "34369e62815c6c36ebd9d3ddcf791ce33b3a0716ac39c97c326d285b0e0fe212"
+    },
+    "accepted_sdk_delta": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed07/sdk_data01/DELTA.json",
+      "bytes": 7485,
+      "sha256": "a10b50008261d08995063b98087e60ad5f03618c2298e32b58666511d1cf3ef3"
+    },
+    "accepted_sdk_review": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_review/resumed07/sdk_data01/SOURCE-REVIEW.json",
+      "bytes": 9567,
+      "sha256": "6a7191000f267c1010ede2a5dfa83e57ca9bb4c6cdd467bdf687b8aa80032286"
+    },
+    "accepted_runtime_readiness_review": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_review/resumed03/runtime_graph02_01/SOURCE-REVIEW.json",
+      "bytes": 8657,
+      "sha256": "0de54d6199e1825b9612e3577dee370cd8c787761c9a6cbf2a5d9ce37399dc30"
+    },
+    "graph02_actual_failure_cleanup_prospective_custody_review": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_review/resumed06/graph_observer02/ACTUAL-FAILURE-AND-CUSTODY-REVIEW.json",
+      "bytes": 10924,
+      "sha256": "a52323705727854cd75c74f1aeb548ee0fe34f77afc3433c1f810342f75e0a82"
+    }
+  },
+  "independent_reconstruction": [
+    {
+      "lane": "graph",
+      "donor_path": "scripts/audit/windows_jna_graph_02.py",
+      "donor_bytes": 90205,
+      "donor_sha256": "21af2ad63602255672c0099000a1c577d77b2dd63282c258ec81c292d9775ede",
+      "exact_changed_line": 73,
+      "cap_reference_lines": [
+        73,
+        456,
+        1222
+      ],
+      "cap_only_bytes": 90205,
+      "cap_only_sha256": "b90bf57de4e2c9892db95ac5daa8570f46645c274822e4a99cdab369e67e4501",
+      "physical_LF": 1477,
+      "regenerated_full_patch_bytes": 401,
+      "optional_sdk_plus_cap_bytes": 90756,
+      "optional_sdk_plus_cap_sha256": "ec0d49382f437ee9eb21f57f5e5e3027cdeb384691dbeb7eead5995e96faae3c"
+    },
+    {
+      "lane": "real_jna",
+      "donor_path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_author/resumed03/runtime_graph02_01/windows_real_jna_01.py.txt",
+      "donor_bytes": 120857,
+      "donor_sha256": "a4835d0dec32e31bfe6184ead46546931c1b3a6af8e1ab1b5c98af160f7e3706",
+      "exact_changed_line": 83,
+      "cap_reference_lines": [
+        83,
+        467,
+        1627
+      ],
+      "cap_only_bytes": 120857,
+      "cap_only_sha256": "ae9d5493ec88836283916e546569bc7d864ef78e318df7cf82d4a39ec21bd626",
+      "physical_LF": 1895,
+      "regenerated_full_patch_bytes": 658,
+      "optional_sdk_plus_cap_bytes": 121409,
+      "optional_sdk_plus_cap_sha256": "5d6b5d345e5fb07e9ed4ba01e7a076cb20eab2bbf19b030e9c9df20c0f779caf"
+    }
+  ],
+  "exact_delta_proof": [
+    "Stable hash/size reads matched both donors and all named proposal/reuse subjects. Each donor contains exactly one old128MiB literal. Independently replaced MAX_SOURCE_BYTES = 128 * 1024 ** 2 with160 once, checked inverse recovery, complete unified diff bytes, full afterimage hashes/sizes and LF counts. No helper import/AST/compile/execution or persisted full afterimage.",
+    "Reconstructed already accepted SDK-only deltas by their explicit call substitutions and unique insertion anchor; SDK-only hashes match6a719100 evidence. The SDK/cap edit orders commute as exact complete text and combined hashes match proposal. This is composition checking, not repeated SDK/native-boundary review.",
+    "Both copy_project and validated_inputs retain the same constant and exact SOURCE_BYTES/member-count equality, member raw/git size, modes/path/case/SHA1/SHA256/full-manifest/request bindings. 0<SOURCE_MEMBERS<=10000 remains. Only the raw aggregate ceiling changes; no omitted-source subset or old-graph/new-source affinity is admitted."
+  ],
+  "arithmetic": {
+    "retained_base_formula": "125708841+11132432+1882+2188521=139031676",
+    "old_ceiling_bytes": 134217728,
+    "base_excess_old_bytes": 4813948,
+    "new_ceiling_bytes": 167772160,
+    "raw_ceiling_increase_bytes": 33554432,
+    "conditional_raw_formula": "139031676+9084+16777216=155817976",
+    "conditional_raw_headroom_bytes": 11954184,
+    "conditional_N_ceiling": 4741,
+    "envelope_qualification": "16MiB/256-path allowance is cumulative across ALL intervening publications and selected companions, not reset per publication. These are accepted retained arithmetic, not current U observations or actual future N.",
+    "separate_linux_framing_formula": "4741*56=265496;155817976+265496=156083472;167772160-156083472=11688688",
+    "windows_source_payload": "Let R be exact raw sum and Q corresponding qualified source-listed checkout bytes. Raw-equal copying gives Q=R; only accepted .bat/.cmd/.ps1 CRLF-to-LF normalization to exact raw hash can differ, deleting at most one byte per surviving LF, hence Q<=2R. Materialized source is exactly R.",
+    "windows_Q_plus_R_new_bytes": 503316480,
+    "windows_Q_plus_R_old_bytes": 402653184,
+    "windows_Q_plus_R_increase_bytes": 100663296,
+    "resource_qualification": "480MiB versus384MiB, +96MiB, bounds logical source-listed payload only. It is not allocated disk, total checkout/generated tree or peak RAM. Account separately .git, controls, manifests, rounding/directories, Gradle/native output and retained evidence. One bounded member at a time is unchanged; no160MiB aggregate buffer follows from this constant. Helper Python memory is not proved covered by child Job limit."
+  },
+  "unchanged_limits": {
+    "raw_member_bytes": 33554432,
+    "observed_checkout_member_bytes": 67108864,
+    "manifest_input_bytes": 8388608,
+    "source_members": 10000,
+    "cleanup_entries": 20000,
+    "json_output_bytes_each": 1048576,
+    "log_bytes_each": 2097152,
+    "logs_bytes_total": 8388608,
+    "journal_bytes": 8388608,
+    "child_job_processes": 16,
+    "child_job_commit_bytes": 3221225472,
+    "host_ram_fraction_launch": 0.25,
+    "host_ram_fraction_sampled": 0.2,
+    "host_disk_launch_bytes": 12884901888,
+    "host_disk_sampled_bytes": 8589934592,
+    "graph_parent_commands": 7,
+    "runtime_parent_commands": 10,
+    "graph_work_stop_cleanup_seconds": [
+      300,
+      360,
+      420
+    ],
+    "runtime_work_stop_cleanup_seconds": [
+      1500,
+      1560,
+      1620
+    ]
+  },
+  "mandatory_future_gates": [
+    "Bind actual fresh complete shared SOURCE/INDEX: new commit/tree, manifest byte count/hash, N, raw sum, max raw member and checkout-EOL sizing. All exact underlying source/tool/control/request/nonce bindings remain. No cap-only integration or source capture is admitted by this review.",
+    "Linux shared-capture consumers separately require actual raw, observed checkout and exact framed totals to fit their160MiB limits. Windows does not consume that framed stream. Raw-at-cap alone cannot establish Linux framed fit.",
+    "Before Windows entry, count actual source files PLUS distinct parent directories, private roots and expected generated entries against unchanged20000-entry cleanup limit; N alone is insufficient. Reconcile manifest/journal/evidence/per-member caps, actual allocated and peak disk/RAM, and source-copy/stop/cleanup time. Finite arithmetic is not measured capacity or a cleanup guarantee.",
+    "Future Windows graph and real-JNA must share one fresh complete post-batch source and new instances. Runtime still requires an independently accepted successful matching graph, not Graph02 failure-reviewa5232370. No old-graph/new-source affinity exception, consumed helper replay, automatic cap enlargement or retry.",
+    "Root must explicitly adopt custody/consumer disposition separately. Accepted prospective release is not proof of current adoption; this cap review does not read or assert later scheduler state. Keep originalT/all old HOLDs and retained controls/evidence intact."
+  ],
+  "preserved_actual": "Graph02 run34734989950 failed pre-Java/Gradle at SDK command-path syntax; offending raw value/character UNKNOWN. Stop NOT_ARMED means no stop duty arose, not completed wrapper stop. Original failure/cleanup and prospective scheduling acceptancea5232370 remain, never a graph pass. SDK6a719100 and runtime0de54d61 qualifications unchanged.",
+  "boundaries": "Only named W inert reads, JSON/hash/string/diff/integer comparisons and this exclusive new own review write/readback. No Git/network/U/T/process/SDK/tool probe; no controls import/AST/compile/run; no product or canonical edits; no build/test/capture/CI/runtime/stop/cleanup. No background worker or disposable build output created.",
+  "accounting": {
+    "new_product_findings": 0,
+    "product_fixes": 0,
+    "tests_or_cases": 0,
+    "executions": 0,
+    "closures": 0,
+    "cleanup_successes_claimed": 0
+  },
+  "fences": "PVU007 STOP; PVU011 NO-RETRY/no inquiry; PVA02949/44/5FAIL/no automatic retry; G7/G8 CLOSED; native refusal; Windows4 filesystem HOLD; all older HOLDs and failures; eight separate PVD decisions; protected refs/tags/build1017001/dependencies/versions/identities/signing/Store unchanged."
+}

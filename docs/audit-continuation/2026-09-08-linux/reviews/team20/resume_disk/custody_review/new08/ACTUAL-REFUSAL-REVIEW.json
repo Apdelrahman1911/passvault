@@ -1,0 +1,114 @@
+{
+  "schema": 1,
+  "reviewer": "/root/custody_review",
+  "author_reviewed": "/root actual observation and finite regex diagnosis; /root/postfix_transport publisher",
+  "utc": "2026-09-13T04:51:34.028024+00:00",
+  "disposition": "ACCEPT_ACTUAL_U01_MANIFEST_GUARD_REFUSAL_AND_NO_CHILD_CLEANUP_DUTY_SCHEDULING_ONLY",
+  "subjects": {
+    "original_result": {
+      "path": "reviews/team20/resume_disk/postfix_transport/new02/publication01/POSTFIX-PUBLISH-U01-ACTUAL.json",
+      "bytes": 1121,
+      "sha256": "81b75903ed52e3fd4dd07d1efa0486518037efb2aeefb0cbd460fef302d08151"
+    },
+    "external_terminal": {
+      "path": "reviews/team20/resume_disk/root/POSTFIX-U01-EXTERNAL-FAILURE.json",
+      "bytes": 1697,
+      "sha256": "7c88c74fa8f034bc96388dcd86c06be7972127f0493e1b6f41ec27f9a7cd5409"
+    },
+    "original_admission": {
+      "path": "reviews/team20/resume_disk/root/POSTFIX-U01-EXECUTION-ADMISSION.json",
+      "bytes": 1998,
+      "sha256": "ea6ac7036ce050268690748ccf258e43bd4a02a024a8d0b98956806430ca85ea"
+    },
+    "source": {
+      "path": "reviews/team20/resume_disk/postfix_transport/new02/publication01/review_delta01/POSTFIX-PUBLISH-U01-v2.py.txt",
+      "bytes": 45332,
+      "sha256": "894e112c68d2020c144e66623ed8474cf7a767b16e240f938fad78810c66436d"
+    },
+    "manifest": {
+      "path": "reviews/team20/resume_disk/postfix_transport/new02/publication01/POSTFIX-PUBLISH-U01-MANIFEST.json",
+      "bytes": 35273,
+      "sha256": "c4a546ebaec470d7040c60919bc5ade2c472defd2efb20cb3ef176699c13b6f5"
+    },
+    "consumed_config": {
+      "path": "reviews/team20/resume_disk/postfix_transport/new02/publication01/POSTFIX-PUBLISH-U01-CONFIG.json",
+      "bytes": 4454,
+      "sha256": "6fd0e8b18725be3bde5b5a284bca8a9ab758e384f3648f962353d24973751bf9"
+    },
+    "still_reserved_slot": {
+      "path": "reviews/team20/resume_disk/root/EXECUTION_SLOT.json",
+      "bytes": 25964,
+      "sha256": "075be165a3e4d6a24e215aa318eeedb4e1a851efdd52b9a145bef143d585a56d"
+    }
+  },
+  "actual": {
+    "external_exit": 1,
+    "external_chunk": "cf3449",
+    "external_session": null,
+    "status": "FAIL_HOLD_NO_AUTOMATIC_RETRY",
+    "error": "RuntimeError: no new control/source afterimage among reports",
+    "elapsed_seconds": 0.008943519002059475,
+    "Git_commands": 0,
+    "helper_resource_samples": 0,
+    "published_commit": null,
+    "published_tree": null,
+    "product_test_cases": 0
+  },
+  "reachability_and_cleanup": [
+    "Original admissionea6ac703 cites genuine new07 and precedes receipt UTC; retained source/config/manifest hashes match admitted subjects. Root reports direct original external exit1/no session; receipt agrees. No runtime success is inferred from static checks.",
+    "Unique error text occurs only in validate_manifest line254. Actual line305 calls that validation before source_row copies, accepted base receipt intake, slot/coordination lock open/flock, resource sampling, U descriptor/inventory/config/tree/index or any Git invocation. Receipt commands/resource_samples are both empty and has no namespace/commit/tree. This exact refused path never reached U or transport mutation; this is source-plus-original-terminal inference, not a new U probe.",
+    "Initial bookkeeping allocates only original W receipt; named source/evidence reads close their descriptors in read_file finally. Finalizer has no rootfd/lockfd/parentfd/tempfd or child to settle on this path, durably retains receipt and closes recfd; external process ended. No Git/Gradle/build worker/service/cache/emulator/temp sibling was started. No --stop, child signal, temp removal or held-root cleanup duty is created.",
+    "Generic receipt cleanup prose saying foreground children reaped is vacuous here, not a live U/config/whole-host settlement finding. Current slot hash remains075be165 pending root disposition. Original receipt/config/source/admission/evidence must be retained; no rollback/reset/restore or consumed-helper replay."
+  ],
+  "independently_challenged_diagnosis": {
+    "old_predicate": ".(py|kt|kts|ps1|sh|gradle|toml)(.|$)",
+    "finite_report_count": 52,
+    "rejections": [
+      {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed06/graph_observer02/actual/intake/evidence/source-copy.json",
+        "name": "source-copy.json",
+        "matched_substring": "opy.",
+        "span": [
+          8,
+          12
+        ],
+        "correct_extension_guard_matches": false
+      }
+    ],
+    "explanation": "Both unescaped dots are wildcard atoms: on source-copy.json the first consumes o, py consumes py, final wildcard consumes the filename dot. This is not a .py extension. All51 other original names pass. Exact selected source-copy.json is retained nonexecuting provenance metadata already accepted in new06, not concealed source control.",
+    "proposed_extension_predicate": "\\.(py|kt|kts|ps1|sh|gradle|toml)(\\.|$)",
+    "bounded_counterexamples": [
+      {
+        "name": "source-copy.json",
+        "extension_guard_blocks": false
+      },
+      {
+        "name": "worker.py.txt",
+        "extension_guard_blocks": true
+      },
+      {
+        "name": "worker.SH.log",
+        "extension_guard_blocks": true
+      },
+      {
+        "name": "worker.kts.json",
+        "extension_guard_blocks": true
+      },
+      {
+        "name": "worker.toml.md",
+        "extension_guard_blocks": true
+      },
+      {
+        "name": "capture.jsonl",
+        "extension_guard_blocks": false
+      }
+    ],
+    "qualification": "Finite regular-expression/string-data reproduction, not publisher execution or product test cases. Corrected boundary keeps disguised .py/.sh/.kts/.toml suffixes blocked and permits .json/.jsonl metadata; existing B-prefix/mode/protected-path/private-residue/exact-manifest controls remain necessary. No unseen successor accepted here."
+  },
+  "scheduling_disposition": "Root may adopt this original refusal/no-child-duty review and mark only consumed postfix-u01 publication scheduling inactive. It performed no U mutation and has no surviving owned original process or Gradle duty. This does not release any historical runtime/T/capture HOLD, withdraw remaining publication/verification obligations, authorize javap/build/CI, or authorize an automatic retry.",
+  "next_minimum": "One corrected explicitly fresh publisher namespace/source/output/config/admission, exact finite escaped-dot delta and separately reviewed updated report descriptors; retain original failure instead of renaming/omitting source-copy metadata. Reuse accepted unchanged finite content/parent/trigger/tool facts and reviewed preflight point with root maintained custody unless affected facts actually change. Fresh namespace is not itself permission to bypass consumed U01/no-retry; root must explicitly admit independently reviewed successor.",
+  "review_limitation_preserved": "Prior new06/new07 accepted finite identities/content/trigger and proposed instance but did not catch this report-name predicate false positive. They remain historical acceptances, not proof that original helper would execute successfully. Original failure is retained and must be propagated into reports; no prior review is silently rewritten.",
+  "accounting": "0newapplicationcases/closures; original19/25=76%,all26/39=66.7%,suspicions2/12=16.7%,8PVDseparate;221 mixed retained XML elements not221passes;NOT READY.",
+  "activity": "Named W text/JSON/hash and finite regex data comparisons plus exclusive own new08 write/readback only. No Git/network/U/T/runtime/process/tool/JAR probes, subject import/AST/eval/compile/execution, build/test/stop/cleanup/background worker. No disposable build artifacts created.",
+  "preserved": "PVU007STOP;PVU011NO-RETRY/no inquiry;PVA02949/44PASS/5FAIL/no automatic retry;G7G8CLOSED;native refusal/all historical HOLDs;protectedbranches/tags/build1017001/dependencies/versions/identities/signing/Store unchanged."
+}

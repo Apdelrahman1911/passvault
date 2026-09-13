@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "utc": "2026-09-13T03:40:35.769807+00:00",
+  "reviewer": "/root/windows_review",
+  "author_reviewed": "/root/windows_author",
+  "disposition": "ACCEPT_MINIMAL_SDK_ENVIRONMENT_DATA_PATH_DELTA_SOURCE_ONLY_NOT_EXECUTION_OR_ACTUAL_OFFENDER_FIX",
+  "subjects": {
+    "SDK-DATA-PATH.py.txt": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed07/sdk_data01/SDK-DATA-PATH.py.txt",
+      "bytes": 548,
+      "sha256": "e8414545c661079fb381e67c686bef040239839cae201e5f8acee0c78e41abc7"
+    },
+    "GRAPH02-SDK-DATA.patch": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed07/sdk_data01/GRAPH02-SDK-DATA.patch",
+      "bytes": 1666,
+      "sha256": "caae4cc0de68047daaf385be31cb1e4c6fa855cbd6a393bcfbb2a0dd7daea285"
+    },
+    "REAL-JNA-SDK-DATA.patch": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed07/sdk_data01/REAL-JNA-SDK-DATA.patch",
+      "bytes": 2573,
+      "sha256": "34637cdd36d6ccb9d6f586ce3678e6d4cebaab3fd511e82e6f5ab20dee426e16"
+    },
+    "DELTA.json": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed07/sdk_data01/DELTA.json",
+      "bytes": 7485,
+      "sha256": "a10b50008261d08995063b98087e60ad5f03618c2298e32b58666511d1cf3ef3"
+    },
+    "ANALYSIS.md": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed07/sdk_data01/ANALYSIS.md",
+      "bytes": 7861,
+      "sha256": "ebf5b5a98a96348fe1f72359a9a65dbec739766107f8de0eb1b7124f1a45dcfa"
+    }
+  },
+  "carriers": [
+    {
+      "lane": "graph",
+      "before": {
+        "path": "scripts/audit/windows_jna_graph_02.py",
+        "bytes": 90205,
+        "sha256": "21af2ad63602255672c0099000a1c577d77b2dd63282c258ec81c292d9775ede"
+      },
+      "in_memory_after": {
+        "bytes": 90756,
+        "sha256": "5c5c0762994d5c4e5b80f9703a89bd5a98a3feb5c43254ae27ee7a53213b7794"
+      },
+      "patch": {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed07/sdk_data01/GRAPH02-SDK-DATA.patch",
+        "bytes": 1666,
+        "sha256": "caae4cc0de68047daaf385be31cb1e4c6fa855cbd6a393bcfbb2a0dd7daea285"
+      }
+    },
+    {
+      "lane": "real_jna",
+      "before": {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_author/resumed03/runtime_graph02_01/windows_real_jna_01.py.txt",
+        "bytes": 120857,
+        "sha256": "a4835d0dec32e31bfe6184ead46546931c1b3a6af8e1ab1b5c98af160f7e3706"
+      },
+      "in_memory_after": {
+        "bytes": 121409,
+        "sha256": "47be754df4e83b39cb303ba0bd54cdee0fe79fb7380f7282f9bf63aca24d2d76"
+      },
+      "patch": {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed07/sdk_data01/REAL-JNA-SDK-DATA.patch",
+        "bytes": 2573,
+        "sha256": "34637cdd36d6ccb9d6f586ce3678e6d4cebaab3fd511e82e6f5ab20dee426e16"
+      }
+    }
+  ],
+  "reused_reviews": {
+    "reused_graph_review": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_review/resumed02/graph_path02/SOURCE-REVIEW.json",
+      "bytes": 10072,
+      "sha256": "b0a2a8d36f3c7ef4dd9d70a1fc9b3902d0670a31974b36ae5b14b8fe0931f175"
+    },
+    "reused_runtime_review": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_review/resumed03/runtime_graph02_01/SOURCE-REVIEW.json",
+      "bytes": 8657,
+      "sha256": "0de54d6199e1825b9612e3577dee370cd8c787761c9a6cbf2a5d9ce37399dc30"
+    }
+  },
+  "wrapper_boundary": {
+    "path": "gradlew.bat",
+    "bytes": 2848,
+    "sha256": "d539676c48b596afda64c963ec8f7ee56c7b3fe7e3b81d1dbe2d1a1e3dd9e9f8"
+  },
+  "complete_delta_reconciliation": "Both full in-memory afterimages independently reconstructed from exact accepted90205B/21af2ad6 graph and120857B/a4835d0d runtime using ONLY one548B/e8414545 predicate insertion and respectively1/2literal SDKcall replacements. Entire1666B/caae4cc0 and2573B/34637cdd unifieddiffs independently reproduced byte-for-byte; after90756B/5c5c0762 and121409B/47be754d match. No retained full-afterimage copies or target import/AST/compile/execution. safe_command_path794B/a85c34ba and fixed_cmd857B/96681083 literal-identical in both, all2graph/3runtime JDKoptins unchanged. Existing runtimeGraph02/JDK/reviewer-source acceptance0de54d61 reused, not repeated.",
+  "independent_boundary_challenge": [
+    "All AndroidSDK local variable and environment/provenance consumers in both carrier texts checked, including runtimepreproducer and independent WindowsCMake sdkversion variable. Selected AndroidSDK value enters only ANDROID_HOME/ANDROID_SDK_ROOT Unicodeenvironment entries and sdk_path JSONprovenance/equality. Constructed GradlePATH uses JDK/bin, Gitparent, System32/SystemRoot; no selectedSDK insertion. Fixed wrapperargv/JVMoptions/privatepaths likewise contain no selectedSDK value.",
+    "Command launch constructs double-NUL Unicode environment independently of explicit CreateProcessW application and separately frozen commandline. Checked-in2848B/d539676c wrapper fully read: no ANDROID_HOME/ANDROID_SDK_ROOT reference or expansion. Thus permitting SDKinternalspaces/parentheses does not itself introduce those characters into this adapters CMD operands, unlike broadening the command/JDK grammar. No claim is made about arbitrary downstream AGP/tool behavior; future actual matching graph/runtime must qualify it.",
+    "Runtime initial/native-producer environment excludes both AndroidSDK variables. Its Windows SDK10.0.26100.0 CMake value is separate and unchanged. Initial inherited nativePATH is unchanged and not independently sanitized by this delta; no globalenvironment or DLLsecurity proof inferred.",
+    "New predicate is a restricted resolved ASCIIlocaldrive data grammar, not general Windowscanonicalization or CMDescaping. Interior U+0020/parentheses are allowed; character allowlist excludes quotes/%/!/ampersand/caret/pipe/anglebrackets/semicolon/equals/colon-afterdrive/control/nonASCII. Absolute-drive gate excludes UNC/device/drive-relative representations supplied directly to predicate; extra component guard refuses edgeASCIIspaces/finaldots and dot-components. Parenthetical path remains rejected by unchanged JDK/command/private guards. These are static source/counterexample proofs, not executed cases.",
+    "Important counterexample qualification preserved: callers resolve(strict=True) BEFORE predicate, so raw relative/alias/dot spellings may normalize to an accepted absolute resolvedpath. This delta does not promise raw-spelling rejection. SDK existence/no-reparse/ordinary-directory checks remain in prepare; SDK-rootagreement, preproducer exact sdk_path comparison and later normalized privateenvironment/five-tool/JDK/wrapper/fullSOURCE equality unchanged. SDKprovenance is path/configuration, not a hash or lock on the whole SDK installation.",
+    "Hypothetical resolved C:\\Program Files (x86)\\Android\\android-sdk is a meaningful admitted data-path compatibility case rejected by oldregex, subject to unchanged filesystem/package gates. Recorded Graph02 identifies only ANDROID_HOME grammar role; its actual SDKvalue/character and Graph01 offender remainUNKNOWN. This proposal does not establish that it reproduces or repairs the actual unseen offender."
+  ],
+  "actual_failure_reference": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_review/resumed06/graph_observer02/ACTUAL-FAILURE-AND-CUSTODY-REVIEW.json",
+    "bytes": 10924,
+    "sha256": "a52323705727854cd75c74f1aeb548ee0fe34f77afc3433c1f810342f75e0a82"
+  },
+  "followthrough": "Source-only acceptance for minimal SDKdata separation. Root may integrate into genuinely fresh graph/runtime control instances after its explicit scheduling/custody disposition and independent post-batch source integration. Carriers retain historical source/control values and are NOT runnable new instances. Preserve consumedGraph02 evidence/source identity; no consumedhelper replay or unchangedCIretry. Future newgraph and realJNA must bind same newlycaptured complete post-batch SOURCE/INDEX/product tuple, fresh control/scope/nonce/receiver/request and independentactual successfulgraph/toolchain/stop/Job/handles/fullrootcleanup. No failedoldgraph/newsource or relevant-input-affinity exception. Sourcepredicate proof is sufficient for this bounded source review; actual Windows confidence belongs in that one necessary matched validationpair, not a duplicate standalone build.",
+  "source_findings": [],
+  "execution_admission": false,
+  "actual_graph_or_native_acceptance": false,
+  "accounting": {
+    "helper_executions": 0,
+    "builds": 0,
+    "test_cases": 0,
+    "new_product_findings": 0,
+    "product_fixes": 0,
+    "closures": 0,
+    "new_cleanup_successes": 0
+  },
+  "preserved": "PVU007STOP;PVU011NO-RETRY/no inquiry;PVA02949/44/5FAIL/noautomaticretry;G7G8CLOSED;native refusal;Windows4HOLD/allpriorHOLDs;Graph01Graph02failures;PVD8separate;protectedrefs/tags/build1017001/dependencies/versions/identities/signing/Store unchanged.",
+  "activity": "Named inert W source/evidence/hash/literal full-diff and boundary review; one exclusive ownleaf review. No target/predicate execution, imports, AST, compilation, Git/network/U/T/runtime/process/SDK/toolprobe/buildtest/cleanup. No worker/disposableoutputs created."
+}

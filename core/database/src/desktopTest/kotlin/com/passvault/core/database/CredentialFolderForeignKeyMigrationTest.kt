@@ -415,7 +415,7 @@ class CredentialFolderForeignKeyMigrationTest {
         check(directory.fileName.toString().startsWith("passvault-room-chain-validation-"))
         check(!Files.isSymbolicLink(directory))
         check(directory.parent.toRealPath() == Path.of(System.getProperty("java.io.tmpdir")).toRealPath())
-        listOf("vault.db", "vault.db-wal", "vault.db-shm", "vault.db-journal").forEach { name ->
+        listOf("vault.db", "vault.db-wal", "vault.db-shm", "vault.db-journal", "vault.db.lck").forEach { name ->
             val file = directory.resolve(name)
             if (Files.exists(file, LinkOption.NOFOLLOW_LINKS)) {
                 check(Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS))

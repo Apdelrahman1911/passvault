@@ -27,6 +27,9 @@ import com.passvault.core.database.createDatabaseBootstrap
 import com.passvault.core.database.repository.CredentialRepositoryImpl
 import com.passvault.core.database.repository.FolderRepositoryImpl
 import com.passvault.core.database.repository.VaultRepositoryImpl
+import com.passvault.core.designsystem.generated.resources.Res
+import com.passvault.core.designsystem.generated.resources.validation_credential_custom_field_name
+import com.passvault.core.designsystem.text.UiText
 import com.passvault.core.designsystem.theme.PassVaultTheme
 import com.passvault.core.domain.model.CredentialId
 import com.passvault.core.domain.model.CredentialType
@@ -68,6 +71,7 @@ import org.junit.Assume.assumeTrue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
@@ -75,6 +79,7 @@ import kotlin.test.fail
 /**
  * One PVA-007/031 integration complement to GUI02, not a rerun of its fake-persistence cases.
  * Real native input -> production form/VM -> encrypted repository/Room -> close/reopen -> fresh VM.
+ * Password-field native Enter also challenges blank-draft rejection before corrected page Save.
  * No Koin, clipboard, navigation host, recovery operation, fake crypto/database or screenshots.
  *
  * An absent display opt-in skips without opening application/native storage. Once opted in, the
@@ -126,7 +131,8 @@ class CredentialEditorRoomIntegrationTest {
             }
             // Actual toolbar/dialog wiring, not an OS/central Back or no-navigation assertion.
             editor.keepEditingAfterToolbarBack(added.last().id)
-            // Deliberately do not save the row: the real page Save must consume its visible draft.
+            editor.rejectBlankDraftViaPasswordEnter(added.last().id)
+            // Deliberately do not save the row: native password Enter must invoke the real page Save.
             editor.saveCloseAndReopen()
             val expected = seedValues() + FieldValue(added.last().id, "roomdraft", "roomdraftvalue", true)
             assertEquals(expected, editor.fields(), "ROOM_EDITOR_DISK_REOPEN_TUPLES")
@@ -394,8 +400,92 @@ class CredentialEditorRoomIntegrationTest {
             assertEquals(pending.secret, find(checkBox()).checked, "ROOM_EDITOR_KEPT_DRAFT_SECRET_STATE")
         }
 
+        fun rejectBlankDraftViaPasswordEnter(fieldId: String) {
+            val id = CustomFieldId(fieldId)
+            val accepted = fields()
+            val original = onEdt {
+                val state = model.state.value
+                assertTrue(state.canSave && state.hasUnsavedChanges, "ROOM_EDITOR_IME_INITIAL_ADMISSION")
+                assertEquals(null, state.errorMessage, "ROOM_EDITOR_IME_PRIOR_ERROR")
+                assertEquals(setOf(id), state.customFieldDrafts.keys, "ROOM_EDITOR_IME_DRAFT_OWNER")
+                val draft = assertNotNull(state.customFieldDrafts[id])
+                FieldValue(fieldId, draft.name, draft.value, draft.isSecret)
+            }
+            replaceText("Field Name", "")
+            val rejected = original.copy(name = "")
+            onEdt {
+                val state = model.state.value
+                val draft = assertNotNull(state.customFieldDrafts[id])
+                assertEquals(rejected, FieldValue(fieldId, draft.name, draft.value, draft.isSecret))
+                assertTrue(state.canSave, "ROOM_EDITOR_IME_SAVE_WAS_ALREADY_BLOCKED")
+                assertEquals(null, state.errorMessage, "ROOM_EDITOR_IME_ERROR_BEFORE_SAVE")
+            }
+            saveWithPasswordEnter()
+            onEdt {
+                val state = model.state.value
+                assertFalse(state.isSaving, "ROOM_EDITOR_IME_BLANK_STARTED_SAVE")
+                assertTrue(state.canSave && state.hasUnsavedChanges, "ROOM_EDITOR_IME_REJECTION_LOST_DIRTY_STATE")
+                assertEquals(setOf(id), state.customFieldDrafts.keys, "ROOM_EDITOR_IME_REJECTION_LOST_DRAFT")
+                val draft = assertNotNull(state.customFieldDrafts[id])
+                assertEquals(rejected, FieldValue(fieldId, draft.name, draft.value, draft.isSecret))
+                assertEquals(
+                    Res.string.validation_credential_custom_field_name,
+                    assertIs<UiText.Resource>(state.errorMessage).resource,
+                    "ROOM_EDITOR_IME_WRONG_REJECTION",
+                )
+            }
+            assertEquals(accepted, fields(), "ROOM_EDITOR_IME_REJECTION_ADOPTED_FIELDS")
+            assertEquals(seedValues(), persistedFields(), "ROOM_EDITOR_IME_REJECTION_CHANGED_ROOM")
+            assertEquals("", scrollTo(textField("Field Name")).text, "ROOM_EDITOR_IME_REJECTION_LOST_VISIBLE_NAME")
+            assertEquals(rejected.secret, find(checkBox()).checked, "ROOM_EDITOR_IME_REJECTION_LOST_SECRET_STATE")
+            replaceText("Field Name", original.name)
+            onEdt {
+                val state = model.state.value
+                val draft = assertNotNull(state.customFieldDrafts[id])
+                assertEquals(original, FieldValue(fieldId, draft.name, draft.value, draft.isSecret))
+                assertEquals(null, state.errorMessage, "ROOM_EDITOR_IME_REPAIR_KEPT_ERROR")
+            }
+            assertEquals(accepted, fields(), "ROOM_EDITOR_IME_REPAIR_ADOPTED_FIELDS_EARLY")
+            println("PASSVAULT_EDITOR_ROOM_IME_REJECTION\taccepted=50\tpersisted=49\tdraft=retained")
+        }
+
+        // Native focus + one owned Enter only. Missing/double delivery fails; never click Save as fallback.
+        private fun saveWithPasswordEnter() {
+            val before = onEdt { events["OnSaveClick"] ?: 0 }
+            val selector = textField("Password (optional)")
+            click(selector)
+            await("ROOM_EDITOR_PASSWORD_ENTER_FOCUS") { find(selector).focused }
+            val target = find(selector)
+            assertTrue(target.focused && target.enabled, "ROOM_EDITOR_PASSWORD_ENTER_NOT_FOCUSED")
+            assertNativeWindow(target.window)
+            assertEquals(before, onEdt { events["OnSaveClick"] ?: 0 }, "ROOM_EDITOR_FOCUS_DISPATCHED_SAVE")
+            withKey(KeyEvent.VK_ENTER) { }
+            await("ROOM_EDITOR_PASSWORD_ENTER_SAVE_CALLBACK") { onEdt { (events["OnSaveClick"] ?: 0) == before + 1 } }
+            settle()
+            assertEquals(before + 1, onEdt { events["OnSaveClick"] ?: 0 }, "ROOM_EDITOR_PASSWORD_ENTER_SAVE_COUNT")
+        }
+
+        // Observe the real repository BEFORE repair/accepted Save can hide an erroneous intermediate write.
+        private fun persistedFields(): List<FieldValue> {
+            home.checkBound()
+            val result = runBlocking {
+                withTimeout(5_000) {
+                    val credential = assertNotNull(
+                        requireNotNull(rooms.single().credentials).getById(CredentialId("rendered-room")).getOrThrow(),
+                    )
+                    try {
+                        credential.customFields.map {
+                            FieldValue(it.id.value, it.name, it.value.toStringUnsafe(), it.isSecret)
+                        }
+                    } finally { credential.clearSensitiveValues() }
+                }
+            }
+            home.checkBound()
+            return result
+        }
+
         fun saveCloseAndReopen() {
-            clickEvent(button("Save", first = true), "OnSaveClick")
+            saveWithPasswordEnter()
             await("ROOM_EDITOR_REAL_SAVE_COMPLETION") {
                 onEdt { model.state.value.let { !it.isSaving && !it.hasUnsavedChanges && it.errorMessage == null } }
             }
@@ -475,6 +565,7 @@ class CredentialEditorRoomIntegrationTest {
             val owner = find(selector).window
             assertNativeWindow(owner)
             withKey(KeyEvent.VK_CONTROL) { withKey(KeyEvent.VK_A) { } }
+            if (value.isEmpty()) withKey(KeyEvent.VK_BACK_SPACE) { }
             value.forEach {
                 assertNativeWindow(owner)
                 withKey(KeyEvent.getExtendedKeyCodeForChar(it.code)) { }

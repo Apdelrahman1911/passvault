@@ -1,0 +1,168 @@
+{
+  "schema": 1,
+  "reviewer": "/root/postfix_transport",
+  "author": "/root/windows_author",
+  "date_utc": "2026-09-13",
+  "disposition": "ACCEPT_V2_BOUNDED_STATIC_JAVAP_SOURCE_ONLY_REQUIRES_ROOT_EXACT_ADMISSION",
+  "material_source_blockers": [],
+  "accepted_source": {
+    "path": "windows_author/resumed12/android_javap02/COLLECT.py.txt",
+    "bytes": 15769,
+    "sha256": "24c5b9bbae89665f38b82119dad58dd4646c9ba10c112f2f3a04715958d52a62"
+  },
+  "inputs": [
+    {
+      "path": "windows_author/resumed12/android_javap02/DELTA.json",
+      "bytes": 4155,
+      "sha256": "a6fada3bd6c1efefd27bd4adde53eb35a639eac6bb325d952959d76f2d9d47c6"
+    },
+    {
+      "path": "windows_author/resumed12/android_javap02/COLLECT.py.txt",
+      "bytes": 15769,
+      "sha256": "24c5b9bbae89665f38b82119dad58dd4646c9ba10c112f2f3a04715958d52a62"
+    },
+    {
+      "path": "windows_author/resumed12/android_javap02/LIFECYCLE.patch",
+      "bytes": 5741,
+      "sha256": "fb3f92455f1f0d7b2ec746d0d4d4ec4febabbc678d7dfda90e0d37050494eab5"
+    },
+    {
+      "path": "windows_author/resumed10/android_javap01/COLLECT.py.txt",
+      "bytes": 14963,
+      "sha256": "393ebd34c972a844d94e1c19efa0283623189584bc4d2d7083de6195ddd8c9e8"
+    },
+    {
+      "path": "windows_author/resumed10/android_javap01/PACKET.json",
+      "bytes": 2759,
+      "sha256": "dfc43c18ed86d248d39010748a124e9864f77c90ff3de1b9a4d036922d784423"
+    },
+    {
+      "path": "windows_author/resumed10/android_javap01/SCOPE.md",
+      "bytes": 7052,
+      "sha256": "b07c3571820649d7c3b2dd8a9c2d1e937fa196cbad5ada5a19daa5932227a60b"
+    },
+    {
+      "path": "postfix_transport/new04/android_javap_review01/INITIAL-SOURCE-REVIEW.md",
+      "bytes": 6112,
+      "sha256": "5a32c0af4e8b873bc96e3f2e623e936eafcffc3b57262062f8f0a689fae1a59d"
+    },
+    {
+      "path": "postfix_transport/new04/android_javap_review01/INITIAL-COMPARISONS.json",
+      "bytes": 2904,
+      "sha256": "0ebe27466cf154b4cd909c97f5809cf2d8f19c2e319712b5871898dbc8b7c60a"
+    },
+    {
+      "path": "custody_review/new04/LOOKUP-V2-ACTUAL-REVIEW.md",
+      "bytes": 4754,
+      "sha256": "7980a3a50db48c2c2805bcee158e624fdb1cd948019fa51ddcc39da204aad5b3"
+    }
+  ],
+  "source_ancestry": "V1 entire source/scope and named accepted passive-first lookup scope/result/actual review plus prior static INTENT/RESULT read; no missing collector donor source invented. Initial input/owner proof remains INITIAL-COMPARISONS. V1 is preserved HOLD, not retrospectively accepted. V2 supersedes only its two reviewed lifecycle defects.",
+  "exact_delta_proof": {
+    "old_physical_LF": 312,
+    "new_physical_LF": 334,
+    "unified_diff_regenerated_byte_identically": true,
+    "patch_bytes": 5741,
+    "unchanged_top_level_functions": [
+      "require",
+      "identity",
+      "directory_identity",
+      "read_input",
+      "read_manifest",
+      "reject_class_path"
+    ],
+    "changed_existing_top_level_functions": [
+      "interrupted",
+      "main"
+    ],
+    "new_top_level_functions": [
+      "check_cancel"
+    ],
+    "unchanged_named_sections": [
+      "all fixed paths/hash/size/class/output-cap constants except addition of cancellation scalar",
+      "complete argv and replacement environment",
+      "original two-directory creation/FD identity bookkeeping",
+      "complete original child reap/pipes/selector/directories/post-input block"
+    ],
+    "method": "Inert byte/hash/diff and lexical function/section comparison, not subject import, AST, syntax compilation or execution."
+  },
+  "resolved_source_challenges": [
+    {
+      "id": "S01",
+      "before": "Raising SIGINT/TERM handler could escape finally during its sequential SIG_IGN transition, skipping original child reap/directory cleanup.",
+      "after": "Handler records cancellation in one bounded scalar without raising; no SIG_IGN transition remains. Five check_cancel calls cover post-install, pre-spawn, pipe loop, pre-wait and post-wait. Non-raising handlers remain through reap/cleanup/evidence emission; scalar participates in error/status and final return.",
+      "challenge": "Ordinary repeated SIGINT/TERM no longer throws from this handler during original cleanup. Cancellation during the child wait can remain pending until the original20s deadline; late cancellation after RESULT serialization is still external nonzero rather than immutable-receipt rewriting. No executed signal test or first-signal temporal ordering guarantee."
+    },
+    {
+      "id": "S02",
+      "before": "Final output/RESULT write errors bypassed original outfd close and handler restoration.",
+      "after": "Emission try/finally closes original outfd; nested finally attempts handler restoration even if close raises. Earlier original child/empty-dir cleanup remains identical.",
+      "challenge": "A write error still yields partial evidence/nonzero terminal, not success or retry. Late restored-handler interruption occurs after the owned resource finalization; external terminal is authoritative. No fsync/durability or hostile-host guarantee added."
+    }
+  ],
+  "fixed_selection": {
+    "classes": [
+      "org.gradle.launcher.cli.converter.StartParameterConverter",
+      "org.gradle.launcher.daemon.toolchain.ToolchainBuildOptions",
+      "org.gradle.launcher.daemon.toolchain.ToolchainBuildOptions$AutoDetectionOption",
+      "org.gradle.launcher.daemon.toolchain.ToolchainBuildOptions$AutoDownloadOption",
+      "org.gradle.launcher.daemon.toolchain.ToolchainBuildOptions$IntellijJdkBuildOption",
+      "org.gradle.launcher.daemon.toolchain.ToolchainBuildOptions$JavaInstallationEnvironmentPathsOption",
+      "org.gradle.launcher.daemon.toolchain.ToolchainBuildOptions$JavaInstallationPathsOption"
+    ],
+    "observed_rows": "All7 exact class->entry spellings occur once in accepted lookup RESULT, all in sole launcher JAR; verified against retained JSON only. Required converter plus one parent/five named options; no anonymous/alternate family/second JAR.",
+    "jar": {
+      "path": "/opt/gradle/gradle-9.7.1/lib/gradle-launcher-9.7.1.jar",
+      "bytes": 316467,
+      "sha256": "2d4a201fa324ad3d4f034f84e2f88e26f7cedf73edb738a95dde4417e534f7bb"
+    },
+    "tool": {
+      "path": "/usr/lib/jvm/java-17-openjdk-amd64/bin/javap",
+      "bytes": 14480,
+      "sha256": "c7c05c7a852f7e5236f6c89966f9bb2edd49c74b25bc4008abe18a25c5c93f3a"
+    },
+    "qualification": "JAR hash/size from independently accepted lookup; tool hash/size from retained static INTENT. Not rehashed installed bytes in this review; actual helper must meet its pre/post guards."
+  },
+  "classpath_and_manifest": [
+    "Fixed absolute javap with -p/-c/-constants and seven literal argv arguments; no shell/wildcards or target initialization operation in collector.",
+    "Explicit sole-JAR -classpath, empty fresh cwd HOME, fixed user.home/java.io.tmpdir, complete HOME/TMPDIR/TMP/TEMP/LANG/LC_ALL-only environment. No ambient PATH/CLASSPATH/Java options/agents/LD options. Installed JDK modules/libraries remain a separately trusted toolchain, not an expanded Gradle search.",
+    "Whole selected JAR/tool guarded for exact size/hash plus regular single-link owner/non-group-other-writable stable full identity; named<=16KiB JDK release checks one JAVA_VERSION17 line and full before/after image. Root installed-JDK trust is not a hash census.",
+    "One exact META-INF/MANIFEST.MF member read into<=16KiB; declared compressed bytes also<=16KiB. Duplicate/case-alias/nonexact/orig-name mismatch, encryption/unsupported compression/size/malformed attributes refuse. Strict case-insensitive Class-Path rejection precedes spawn; continued values cannot bypass initial attribute rejection, and orphan continuations/duplicate attributes reject.",
+    "Only fixed316467B JAR central metadata parsed; <=10000 entries checked. Selected member normal CRC is not an all-member CRC/content sweep; no file extraction or source download."
+  ],
+  "bounds_and_cleanup": {
+    "child_count": 1,
+    "child_seconds": 20,
+    "original_reap_wait_seconds": 3,
+    "max_heap_bytes": 134217728,
+    "stdout_cap_bytes": 524288,
+    "stderr_cap_bytes": 16384,
+    "manifest_cap_bytes": 16384,
+    "main_payload_cap_bytes": 557056,
+    "output_mechanism": "Nonblocking selector reads<=min(65536,room+1); retains onlyroom and refuses overrun. Wait for bothEOFs and remaining deadline, zeroexit, empty stderr. Truncation/timeout/error/cancellation cannot be complete. Finalization does not drain failed pipes or start another child.",
+    "cleanup_mechanism": "Try/finally and recording handlers installed before sole Popen. Only original child.kill/wait; original stdout/stderr/selector closure; anchored original outfd plus retained original HOME/TMP FDs and dev/ino/uid/mode equality before rmdir. Unreaped child, replaced/unbound/nonempty dir remains HELD; no recursive cleanup, process-name/group kill or OUT removal.",
+    "qualification": "128MiB is heap, not RSS;20s is child cooperative budget, not complete-helper hard wall time;3s is reap wait. Initial input/manifest/evidence I/O and OS/scheduling/hard interruption are not a new hard deadline. Compact receipts and actual file readback remain root-owned.",
+    "gradle_stop": "NOT_APPLICABLE_NO_NEW_GRADLE_EXECUTION; earlier obligations and held namespaces unchanged."
+  },
+  "root_admission_required": [
+    "Adopt accepted actual lookup and this exact v2 source/hash, not v1 or packet alone; one fresh root execution only, no replay/census/fallback disassembly.",
+    "Bind original isolated trusted Python invocation/source, suitable signal entry state including reliable SIGCHLD wait semantics, sole coordination/CI slot, current12/8GiB and25/20%RAM resources, trusted installed JDK/toolchain and frozen inputs/ancestors. Collector source does not independently enforce all these root admission facts.",
+    "Prove current exact parent ownership/symlink safety and vacancy of proposed root/android-property-javap01; author/reviewer have not inspected runtime/output eligibility. Never reuse a consumed namespace.",
+    "Retain original external terminal and all exact produced INTENT/RESULT/stdout/stderr/manifest bytes/hash/readback and original cleanup observations. Independently reconcile errors/cancellation, exit, deadline/outputs, input after-images and both temporary dirs; receipt alone is not exit/settlement proof.",
+    "A post-serialization cancellation may leave a previously success-labelled immutable RESULT and a nonzero external exit. Treat as incomplete, not as success based on RESULT, overwrite, retry, or a new namespace.",
+    "Keep SIGKILL/uninterruptible-I/O, child-before-handle, unexpected descendants, mkdir-to-FD bookkeeping and hostile same-UID custody limits explicit. No global process-idle or hard-crash recovery proof."
+  ],
+  "evidentiary_limits": "Independent future analysis still needs actual source-map/operand -> projectProperties mutation/merge -> literal keys/value transformations/precedence -> before-init activation. Names/constants/counts alone are insufficient. An unselected callee is an exact missing edge, not permission for another collection. Even a complete inspected implementation chain cannot identify consumed AndroidGraph03 extras/origins absent archive-to-inspected-JAR binary affinity and actual ordering. Graph03 remains consumed ARG13 refusal with its3 extras UNKNOWN.",
+  "actual_observation": null,
+  "activity": "Named W retained text/JSON/hash/lexical comparison only; own fresh review artifacts. No subject import/eval/AST/compile/rehearsal/execution, installed JAR/tool/JDK/runtime/cache/SDK/U/T/Git/network/process access, canonical edit, Gradle/build/test, stop or cleanup.",
+  "counts": {
+    "reviewer_subject_executions": 0,
+    "signal_tests": 0,
+    "application_tests": 0,
+    "builds": 0,
+    "new_product_findings": 0,
+    "new_product_fixes": 0,
+    "closures": 0
+  },
+  "preserved": "V1 source/HOLD and all prior immutable evidence;PVU007STOP;PVU011NO-RETRY/no inquiry;PVA02949/44PASS/5FAIL/no automatic retry;G7/G8CLOSED;native refusal;all HOLD/FAIL/UNKNOWNs;8PVDs;protected refs/tags/build1017001/versions/dependencies/identities/signing/Store. No graph/platform/Android32/native/runtime/readiness or closure credit."
+}
