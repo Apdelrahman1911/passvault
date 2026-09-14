@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "suite": "windows-after-flush-02",
+  "nonce": "478d5027212d755ebb61061539985c7c",
+  "case_names": [
+    "passvault_biometric_windows_after_flush_continue",
+    "passvault_biometric_windows_after_flush_process_death"
+  ],
+  "case_argv": {
+    "passvault_biometric_windows_after_flush_continue": [
+      "--after-flush-case",
+      "continue"
+    ],
+    "passvault_biometric_windows_after_flush_process_death": [
+      "--after-flush-case",
+      "process_death"
+    ]
+  },
+  "target": "passvault_biometric_windows_after_flush_test",
+  "audit_controls": false,
+  "after_flush_controls": true,
+  "sdk": "10.0.26100.0",
+  "max_seconds": 480,
+  "helper_sha256": "7df0742924d8ac4de5863c9bacb2782319228645b8c938f0fe15a1a97b78f4a5",
+  "workflow_sha256": "f48b07bf428c92b819d68097881740820a33616abe5571cc552c1278fbd53ae4",
+  "scope_sha256": "2301a203739a0abd143aa060453fdb9ef5886e4b22c965986719e27b8f6f781b",
+  "input_sha256": {
+    ".gitattributes": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5",
+    "app-desktop/native/biometric-bridge/CMakeLists.txt": "5bd3de7d16958c466ad740b2c14800f2f8b81e115323ad486ecf5a08f02a036e",
+    "app-desktop/native/biometric-bridge/include/passvault_biometric.h": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+    "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp": "93746b0cdb399aa17dd8c3c915e907244d4e86e5b566c51714ccc7f80310bd5d",
+    "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.rc": "13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c",
+    "app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+    "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp": "3357b87a1896f007c7bbfdf6086b42a7c4c01eaa632f0f5943bef287ab4b1fc0",
+    "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/platform_review/new80/PVA036-AFTER-FLUSH-SOURCE-REVIEW.json": "742c0c820bdbfe1c31d3dc96ed1a04cfd8a5449285651ea05bb773456c59c9d2"
+  },
+  "status": "SOURCE_INSTANCE_PROPOSAL_NOT_EXECUTION_ADMISSION",
+  "remaining": "After controls actual and independent instance acceptance, include acceptance in source-only publication. Exact source commit/tree and review hash added to final activation request after sourcepush. Root both-push trigger/quiet/admission facts must be fresh, not claimed here."
+}

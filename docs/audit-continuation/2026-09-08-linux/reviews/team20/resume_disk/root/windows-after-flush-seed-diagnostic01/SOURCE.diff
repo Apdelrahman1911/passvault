@@ -1,0 +1,93 @@
+--- executed-afterflush01-source
++++ proposed-seed-diagnostic
+@@ -986,6 +986,79 @@
+   return 0;
+ }
+ 
++// Bounded seed-stage diagnostics only: forward the same real operations and
++// preserve their results. No injected fault, retry, provider or production change.
++struct AfterFlushSeedTrace {
++  unsigned suffix_chars = 0;
++  unsigned reached = 0;
++  unsigned succeeded = 0;
++  std::array<DWORD, 5> errors{};
++};
++
++struct AfterFlushSeedIo {
++  AfterFlushSeedTrace &trace;
++  bool write(HANDLE file, const uint8_t *bytes, DWORD requested, DWORD *written) const {
++    trace.reached |= 4;
++    const bool ok = FileWriterWin32Io{}.write(file, bytes, requested, written);
++    trace.errors[2] = ok ? ERROR_SUCCESS : GetLastError();
++    if (ok) trace.succeeded |= 4;
++    return ok;
++  }
++  bool flush(HANDLE file) const {
++    trace.reached |= 8;
++    const bool ok = FileWriterWin32Io{}.flush(file);
++    trace.errors[3] = ok ? ERROR_SUCCESS : GetLastError();
++    if (ok) trace.succeeded |= 8;
++    return ok;
++  }
++  bool close(WindowsHandle &file) const {
++    trace.reached |= 16;
++    const bool ok = FileWriterWin32Io{}.close(file);
++    trace.errors[4] = ok ? ERROR_SUCCESS : GetLastError();
++    if (ok) trace.succeeded |= 16;
++    return ok;
++  }
++};
++
++bool after_flush_seed(const std::filesystem::path &root,
++                      const std::filesystem::path &destination,
++                      const std::vector<uint8_t> &bytes, const char *label) {
++  AfterFlushSeedTrace trace;
++  const bool result = write_secure_file_atomic_impl(root, destination, bytes,
++      [&] {
++        auto suffix = random_suffix();
++        trace.suffix_chars = static_cast<unsigned>(suffix.size());
++        return suffix;
++      },
++      [&](HANDLE handle) {
++        trace.reached |= 1;
++        const bool ok = safe_handle(handle);
++        trace.errors[0] = ok ? ERROR_SUCCESS : GetLastError();
++        if (ok) trace.succeeded |= 1;
++        return ok;
++      },
++      [&](HANDLE handle, DWORD inheritance) {
++        trace.reached |= 2;
++        const bool ok = apply_current_user_only_dacl(handle, inheritance);
++        trace.errors[1] = ok ? ERROR_SUCCESS : GetLastError();
++        if (ok) trace.succeeded |= 2;
++        return ok;
++      }, AfterFlushSeedIo{trace});
++  const DWORD observed_last_error = GetLastError();
++  if (!result) {
++    // These errors are observations, not authoritative sub-API cause claims:
++    // safe_handle/protect and final rename cleanup can overwrite last-error.
++    std::printf("PVA036_SEED label=%s suffix_chars=%u reached=%u succeeded=%u "
++        "observed_errors=%lu,%lu,%lu,%lu,%lu final_observed_error=%lu\n",
++        label, trace.suffix_chars, trace.reached, trace.succeeded,
++        static_cast<unsigned long>(trace.errors[0]), static_cast<unsigned long>(trace.errors[1]),
++        static_cast<unsigned long>(trace.errors[2]), static_cast<unsigned long>(trace.errors[3]),
++        static_cast<unsigned long>(trace.errors[4]), static_cast<unsigned long>(observed_last_error));
++    std::fflush(stdout);
++  }
++  return result;
++}
++
+ int test_after_flush_process(bool kill_child) {
+   std::filesystem::path parent;
+   PV_TEST_CHECK(after_flush_private_parent(&parent)); // No system-TEMP fallback.
+@@ -1016,8 +1089,8 @@
+   const std::vector<uint8_t> original{0x01, 0x00, 0x7f, 0xff};
+   const std::vector<uint8_t> replacement{0x02, 0xff, 0x00, 0x80, 0x03};
+   const std::vector<uint8_t> sentinel_bytes{0x53, 0x00, 0x45, 0xff};
+-  PV_TEST_CHECK(write_secure_file_atomic(root, destination, original));
+-  PV_TEST_CHECK(write_secure_file_atomic(root, sentinel, sentinel_bytes));
++  PV_TEST_CHECK(after_flush_seed(root, destination, original, "destination"));
++  PV_TEST_CHECK(after_flush_seed(root, sentinel, sentinel_bytes, "sentinel"));
+   BY_HANDLE_FILE_INFORMATION original_identity{}, sentinel_identity{};
+   PV_TEST_CHECK(snapshot_writer_file(destination, original, &original_identity) &&
+                 snapshot_writer_file(sentinel, sentinel_bytes, &sentinel_identity) &&

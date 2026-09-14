@@ -1,0 +1,42 @@
+--- executed01-preserved
++++ prospective02-unadmitted
+@@ -1,4 +1,4 @@
+-name: Audit Windows after-flush 01 (non-publishing)
++name: Audit Windows after-flush 02 (non-publishing)
+ 
+ # INERT NEW AFTER-FLUSH SOURCE PROPOSAL. No request, instance admission or run exists here.
+ # Root alone may publish source first, then add an independently admitted request.
+@@ -6,7 +6,7 @@
+   push:
+     branches: [codex/audit-continuation-linux-20260908]
+     paths:
+-      - docs/audit-continuation/2026-09-08-linux/requests/windows-after-flush-01.json
++      - docs/audit-continuation/2026-09-08-linux/requests/windows-after-flush-02.json
+ 
+ permissions:
+   contents: read
+@@ -40,18 +40,18 @@
+       - name: Run only the two admitted after-flush selectors
+         id: validate
+         shell: pwsh
+-        run: python -I -B scripts/audit/windows_after_flush_01.py
++        run: python -I -B scripts/audit/windows_after_flush_02.py
+ 
+       - name: Preserve compact evidence, never application binaries
+         if: always() && steps.validate.outputs.evidence_owned == 'true'
+         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+         with:
+-          name: audit-windows-after-flush-01-${{ github.run_id }}-${{ github.run_attempt }}
++          name: audit-windows-after-flush-02-${{ github.run_id }}-${{ github.run_attempt }}
+           path: |
+-            ${{ runner.temp }}/passvault-windows-after-flush-01-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.json
+-            ${{ runner.temp }}/passvault-windows-after-flush-01-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.jsonl
+-            ${{ runner.temp }}/passvault-windows-after-flush-01-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.log
+-            ${{ runner.temp }}/passvault-windows-after-flush-01-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.xml
++            ${{ runner.temp }}/passvault-windows-after-flush-02-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.json
++            ${{ runner.temp }}/passvault-windows-after-flush-02-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.jsonl
++            ${{ runner.temp }}/passvault-windows-after-flush-02-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.log
++            ${{ runner.temp }}/passvault-windows-after-flush-02-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.xml
+           retention-days: 3
+           compression-level: 9
+           if-no-files-found: error

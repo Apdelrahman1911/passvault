@@ -1,0 +1,494 @@
+{
+  "case_scoring": "NOT_PERFORMED; raw XML requires independent actual-case review",
+  "cases": {
+    "passvault_biometric_windows_after_flush_continue": {
+      "ctest_exit_code": 8,
+      "raw_xml": "passvault_biometric_windows_after_flush_continue.xml",
+      "state": "CTEST_EXIT_OBSERVED; XML_PENDING",
+      "xml_bytes": 673,
+      "xml_scoring": "NOT_PERFORMED; independent actual-case review required",
+      "xml_sha256": "ada1329738317ebb5a2aa02b47d405875747633767115b9e82e3cdf91a05c6c2"
+    },
+    "passvault_biometric_windows_after_flush_process_death": {
+      "state": "UNSTARTED"
+    }
+  },
+  "cleanup": "HOLD_UNSETTLED_OR_EVIDENCE_OR_NATIVE_CASE_OR_HANDLE_FAILURE; no generated-root deletion",
+  "commands": [
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}",
+        "HEAD^",
+        "HEAD^^{tree}"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 1,
+      "log": "01-git-identity.log",
+      "parent_output_snapshot_sha256": "9d70e363703435352f67d4eb19ff502e4b65ef40c1689883f18f2f3f144b7b2b",
+      "pid": 3616,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 2732
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "rev-list",
+        "--parents",
+        "-n",
+        "1",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 0,
+      "log": "02-one-parent.log",
+      "parent_output_snapshot_sha256": "d8cc7b742adcbb2cc1d207c3b76908a97a8654f5e6819d9bc8ae1477ec6aa2ad",
+      "pid": 8164,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 4972
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "diff",
+        "--name-status",
+        "HEAD^",
+        "HEAD",
+        "--"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 1,
+      "log": "03-request-only-diff.log",
+      "parent_output_snapshot_sha256": "1f4e0b5fdb59566a1bd4ca391df5ff42caba5cc2081d11cfe61824c1d8f61c83",
+      "pid": 3196,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 6232
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 0,
+      "log": "04-clean-source.log",
+      "parent_output_snapshot_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pid": 3328,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 4876
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\CMake\\bin\\cmake.exe",
+        "--version"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 0,
+      "log": "05-cmake-version.log",
+      "parent_output_snapshot_sha256": "f6e81c2559f3ce00c5fdad01d7b226c301f5d6b07ee04f65db6dbfdc1cc5970b",
+      "pid": 6164,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 7624
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\CMake\\bin\\cmake.exe",
+        "-S",
+        "D:\\a\\passvault\\passvault\\app-desktop\\native\\biometric-bridge",
+        "-B",
+        "D:\\a\\_temp\\passvault-windows-after-flush-01-34901080019-1-387fd36902d1a78c09f284d8d257897b\\build",
+        "-G",
+        "Visual Studio 17 2022",
+        "-A",
+        "x64",
+        "-DCMAKE_SYSTEM_VERSION=10.0.26100.0",
+        "-DBUILD_TESTING=ON",
+        "-DPASSVAULT_AUDIT_PVA036_037_CONTROLS=OFF",
+        "-DPASSVAULT_AUDIT_PVA036_AFTER_FLUSH=ON"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 1,
+      "log": "06-configure.log",
+      "parent_output_snapshot_sha256": "896a92ec51c3b2aea8ead052c4ac09f9a11788ee37d345c095d9c0cce1fa8874",
+      "pid": 664,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 5064
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\CMake\\bin\\cmake.exe",
+        "--build",
+        "D:\\a\\_temp\\passvault-windows-after-flush-01-34901080019-1-387fd36902d1a78c09f284d8d257897b\\build",
+        "--config",
+        "Release",
+        "--target",
+        "passvault_biometric_windows_after_flush_test",
+        "--parallel",
+        "1",
+        "--verbose",
+        "--",
+        "/nodeReuse:false"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 1,
+      "log": "07-build.log",
+      "parent_output_snapshot_sha256": "10d5a2720da6a7eb5ba3b1e1b0c185dbbda2189a56575774454bd980f10faadb",
+      "pid": 3788,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 3328
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\CMake\\bin\\ctest.exe",
+        "--test-dir",
+        "D:\\a\\_temp\\passvault-windows-after-flush-01-34901080019-1-387fd36902d1a78c09f284d8d257897b\\build",
+        "-C",
+        "Release",
+        "--show-only=json-v1",
+        "-R",
+        "^(passvault_biometric_windows_after_flush_continue|passvault_biometric_windows_after_flush_process_death)$"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 1,
+      "log": "08-ctest-inventory.log",
+      "parent_output_snapshot_sha256": "1e859cfd8232c96ad83a11322f828555b7c604327dda4a60dab3b29ac026b442",
+      "pid": 6416,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 880
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\CMake\\bin\\ctest.exe",
+        "--test-dir",
+        "D:\\a\\_temp\\passvault-windows-after-flush-01-34901080019-1-387fd36902d1a78c09f284d8d257897b\\build",
+        "-C",
+        "Release",
+        "--parallel",
+        "1",
+        "--timeout",
+        "30",
+        "--no-tests=error",
+        "--verbose",
+        "--output-on-failure",
+        "--output-junit",
+        "D:\\a\\_temp\\passvault-windows-after-flush-01-34901080019-1-387fd36902d1a78c09f284d8d257897b\\logs\\passvault_biometric_windows_after_flush_continue.xml",
+        "-R",
+        "^passvault_biometric_windows_after_flush_continue$"
+      ],
+      "exit_code": 8,
+      "failure": "RuntimeError: Command failed (8); no automatic retry: case-1",
+      "job_active_after_parent": 1,
+      "log": "09-case-1.log",
+      "parent_output_snapshot_sha256": "b899d0cb2787778296abbe82e16946c9c09304874cf9efaada7bbfeb748dd063",
+      "pid": 6648,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 7848
+    }
+  ],
+  "entry_refusals": [],
+  "failures": [
+    "RuntimeError: Command failed (8); no automatic retry: case-1"
+  ],
+  "generated_file_observations": [
+    {
+      "after": {
+        "created": [
+          31278227,
+          1254656803
+        ],
+        "identity": [
+          3470111086,
+          196608,
+          8874,
+          32
+        ],
+        "links": 1,
+        "size": 16978,
+        "written": [
+          31278227,
+          1254656803
+        ]
+      },
+      "before": {
+        "created": [
+          31278227,
+          1254656803
+        ],
+        "identity": [
+          3470111086,
+          196608,
+          8874,
+          32
+        ],
+        "links": 1,
+        "size": 16978,
+        "written": [
+          31278227,
+          1254656803
+        ]
+      },
+      "original_handle_close": "SUCCEEDED",
+      "path": "D:\\a\\_temp\\passvault-windows-after-flush-01-34901080019-1-387fd36902d1a78c09f284d8d257897b\\build\\CMakeCache.txt",
+      "read_bytes": 16978,
+      "read_bytes_sha256": "f9d70f75ef510bff13827ba88bb41b5b097973edee3bc702a4e4daf55a6311bb",
+      "read_error": null,
+      "read_returned": true,
+      "read_validated": true,
+      "settled": false,
+      "sharing": "READ only; deny WRITE/DELETE",
+      "stage": "read_validated"
+    },
+    {
+      "after": {
+        "created": [
+          31278227,
+          1255057478
+        ],
+        "identity": [
+          3470111086,
+          262144,
+          8899,
+          32
+        ],
+        "links": 1,
+        "size": 66089,
+        "written": [
+          31278227,
+          1255057478
+        ]
+      },
+      "before": {
+        "created": [
+          31278227,
+          1255057478
+        ],
+        "identity": [
+          3470111086,
+          262144,
+          8899,
+          32
+        ],
+        "links": 1,
+        "size": 66089,
+        "written": [
+          31278227,
+          1255057478
+        ]
+      },
+      "original_handle_close": "SUCCEEDED",
+      "path": "D:\\a\\_temp\\passvault-windows-after-flush-01-34901080019-1-387fd36902d1a78c09f284d8d257897b\\build\\passvault_biometric_windows_after_flush_test.vcxproj",
+      "read_bytes": 66089,
+      "read_bytes_sha256": "a4b9bcd33b1872d37dd2ff95b5376346e58b9fdd30d0834a36cf1df2e5ee7a38",
+      "read_error": null,
+      "read_returned": true,
+      "read_validated": true,
+      "settled": false,
+      "sharing": "READ only; deny WRITE/DELETE",
+      "stage": "read_validated"
+    },
+    {
+      "after": {
+        "created": [
+          31278227,
+          1254656803
+        ],
+        "identity": [
+          3470111086,
+          196608,
+          8874,
+          32
+        ],
+        "links": 1,
+        "size": 16978,
+        "written": [
+          31278227,
+          1254656803
+        ]
+      },
+      "before": {
+        "created": [
+          31278227,
+          1254656803
+        ],
+        "identity": [
+          3470111086,
+          196608,
+          8874,
+          32
+        ],
+        "links": 1,
+        "size": 16978,
+        "written": [
+          31278227,
+          1254656803
+        ]
+      },
+      "original_handle_close": "SUCCEEDED",
+      "path": "D:\\a\\_temp\\passvault-windows-after-flush-01-34901080019-1-387fd36902d1a78c09f284d8d257897b\\build\\CMakeCache.txt",
+      "read_bytes": 16978,
+      "read_bytes_sha256": "f9d70f75ef510bff13827ba88bb41b5b097973edee3bc702a4e4daf55a6311bb",
+      "read_error": null,
+      "read_returned": true,
+      "read_validated": true,
+      "settled": true,
+      "sharing": "READ only; deny WRITE/DELETE",
+      "stage": "read_validated"
+    },
+    {
+      "after": {
+        "created": [
+          31278227,
+          1255057478
+        ],
+        "identity": [
+          3470111086,
+          262144,
+          8899,
+          32
+        ],
+        "links": 1,
+        "size": 66089,
+        "written": [
+          31278227,
+          1255057478
+        ]
+      },
+      "before": {
+        "created": [
+          31278227,
+          1255057478
+        ],
+        "identity": [
+          3470111086,
+          262144,
+          8899,
+          32
+        ],
+        "links": 1,
+        "size": 66089,
+        "written": [
+          31278227,
+          1255057478
+        ]
+      },
+      "original_handle_close": "SUCCEEDED",
+      "path": "D:\\a\\_temp\\passvault-windows-after-flush-01-34901080019-1-387fd36902d1a78c09f284d8d257897b\\build\\passvault_biometric_windows_after_flush_test.vcxproj",
+      "read_bytes": 66089,
+      "read_bytes_sha256": "a4b9bcd33b1872d37dd2ff95b5376346e58b9fdd30d0834a36cf1df2e5ee7a38",
+      "read_error": null,
+      "read_returned": true,
+      "read_validated": true,
+      "settled": true,
+      "sharing": "READ only; deny WRITE/DELETE",
+      "stage": "read_validated"
+    }
+  ],
+  "gradle_stop": "NOT_APPLICABLE: no Gradle invocation",
+  "hello_hardware": "BLOCKED: not exercised",
+  "job_settlement": {
+    "errors": [],
+    "observed_zero": true,
+    "termination_attempted": true
+  },
+  "native_case_disposal_admission": {
+    "allowed": false,
+    "scope": "AFTER_FLUSH_CASE_INCOMPLETE_OR_FAILED_HOLD"
+  },
+  "operational_status": "FAILED_OR_INCOMPLETE",
+  "original_handle_close_failures": [],
+  "request_commit": "63ed4dfd927db512e163680ce98d1de4c8d35ba5",
+  "request_tree": "162894912f5374b28760890a5527ce6d8b04b655",
+  "sdk_header_observation": {
+    "after": {
+      "created": [
+        31231828,
+        3245702912
+      ],
+      "identity": [
+        16655526,
+        65536,
+        490593,
+        32
+      ],
+      "links": 1,
+      "size": 76998,
+      "written": [
+        31231828,
+        3245702912
+      ]
+    },
+    "before": {
+      "created": [
+        31231828,
+        3245702912
+      ],
+      "identity": [
+        16655526,
+        65536,
+        490593,
+        32
+      ],
+      "links": 1,
+      "size": 76998,
+      "written": [
+        31231828,
+        3245702912
+      ]
+    },
+    "original_handle_close": "SUCCEEDED",
+    "path": "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um\\webauthn.h",
+    "read_bytes": 76998,
+    "read_bytes_sha256": "fb575592ce15d8f672386aab5e6b3d3aac101f4ec11a8c52c8085cd6d59a9665",
+    "read_error": null,
+    "read_returned": true,
+    "read_validated": true,
+    "sharing": "READ only; deny WRITE/DELETE",
+    "stage": "read_validated"
+  },
+  "source_commit": "b88856529bb276fab7db988410658c32185b8de8",
+  "source_qualification": "Two dedicated current-writer after-real-FlushFileBuffers selectors: normal release and controlled original-child death with synthetic file identities/content/cleanup witnesses. Raw XML and original native log claims need independent actual review. No universal power-loss durability, application cancellation, whole-root recovery, Graph03 replay, provider/Hello/hardware, caller-secret cut or security-family closure is proved.",
+  "source_tree": "597ace3ecb5c2fc744b3d62d13703cc24c14beaa",
+  "suite": "windows-after-flush-01"
+}

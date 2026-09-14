@@ -1,0 +1,50 @@
+--- executed01-preserved
++++ prospective02-unadmitted
+@@ -28,12 +28,12 @@
+ 
+ BRANCH = "refs/heads/codex/audit-continuation-linux-20260908"
+ BASE = "docs/audit-continuation/2026-09-08-linux"
+-REQUEST = f"{BASE}/requests/windows-after-flush-01.json"
+-HELPER = "scripts/audit/windows_after_flush_01.py"
+-WORKFLOW = ".github/workflows/audit-windows-after-flush01.yml"
+-SCOPE = f"{BASE}/reviews/team20/resume_disk/root/windows-after-flush01-proposal/SOURCE-SCOPE.md"
+-REVIEW = f"{BASE}/reviews/team20/resume_disk/current_ledger/windows_after_flush01_instance/INSTANCE-ACCEPT.json"
+-SUITE = "windows-after-flush-01"
++REQUEST = f"{BASE}/requests/windows-after-flush-02.json"
++HELPER = "scripts/audit/windows_after_flush_02.py"
++WORKFLOW = ".github/workflows/audit-windows-after-flush02.yml"
++SCOPE = f"{BASE}/reviews/team20/resume_disk/root/windows-after-flush02-proposal/SOURCE-SCOPE.md"
++REVIEW = f"{BASE}/reviews/team20/resume_disk/current_ledger/windows_after_flush02_instance/INSTANCE-ACCEPT.json"
++SUITE = "windows-after-flush-02"
+ SDK = "10.0.26100.0"
+ TARGET = "passvault_biometric_windows_after_flush_test"
+ CASE_ARGV = {
+@@ -60,7 +60,7 @@
+     "generated_cleanup_admitted",
+ )
+ NATIVE = "app-desktop/native/biometric-bridge/"
+-INPUTS = {'.gitattributes': '8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5', 'app-desktop/native/biometric-bridge/CMakeLists.txt': '5bd3de7d16958c466ad740b2c14800f2f8b81e115323ad486ecf5a08f02a036e', 'app-desktop/native/biometric-bridge/include/passvault_biometric.h': 'dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85', 'app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp': '93746b0cdb399aa17dd8c3c915e907244d4e86e5b566c51714ccc7f80310bd5d', 'app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.rc': '13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c', 'app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp': '354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785', 'app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp': '27be38ad9ed1292b085e706f8fc4b829eb1c98dcf59e4ceb9c53957ed26c7f0c', 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/platform_review/new80/PVA036-AFTER-FLUSH-SOURCE-REVIEW.json': '742c0c820bdbfe1c31d3dc96ed1a04cfd8a5449285651ea05bb773456c59c9d2'}
++INPUTS = {'.gitattributes': '8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5', 'app-desktop/native/biometric-bridge/CMakeLists.txt': '5bd3de7d16958c466ad740b2c14800f2f8b81e115323ad486ecf5a08f02a036e', 'app-desktop/native/biometric-bridge/include/passvault_biometric.h': 'dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85', 'app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp': '93746b0cdb399aa17dd8c3c915e907244d4e86e5b566c51714ccc7f80310bd5d', 'app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.rc': '13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c', 'app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp': '354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785', 'app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp': '3357b87a1896f007c7bbfdf6086b42a7c4c01eaa632f0f5943bef287ab4b1fc0', 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/platform_review/new80/PVA036-AFTER-FLUSH-SOURCE-REVIEW.json': '742c0c820bdbfe1c31d3dc96ed1a04cfd8a5449285651ea05bb773456c59c9d2'}
+ 
+ GiB = 1024 ** 3
+ LOG_LIMIT = 2 * 1024 ** 2
+@@ -975,7 +975,7 @@
+     require(request.get("independent_review_sha256") == hashlib.sha256(review_data).hexdigest(), "Review hash mismatch")
+     review = json.loads(review_data, object_pairs_hook=no_duplicate_keys)
+     require(review.get("schema") == 1 and review.get("reviewer") == "/root/current_ledger" and
+-            review.get("disposition") == "ACCEPT_WINDOWS_AFTER_FLUSH_01_INSTANCE",
++            review.get("disposition") == "ACCEPT_WINDOWS_AFTER_FLUSH_02_INSTANCE",
+             "Missing genuine independent after-flush instance acceptance")
+     require(review.get("suite") == SUITE and review.get("nonce") == request["nonce"] and
+             review.get("case_names") == CASES and review.get("target") == TARGET and
+@@ -1063,8 +1063,8 @@
+         signal.signal(number, cancel)
+     request, binding, captures = validated_inputs(workspace)
+     require(not CANCELLED, "Cancellation before allocation")
+-    temp = runner_temp / f"passvault-windows-after-flush-01-{run_id}-1-{request['nonce']}"
+-    evidence = runner_temp / f"passvault-windows-after-flush-01-{run_id}-1-evidence"
++    temp = runner_temp / f"passvault-windows-after-flush-02-{run_id}-1-{request['nonce']}"
++    evidence = runner_temp / f"passvault-windows-after-flush-02-{run_id}-1-evidence"
+     require_absent(temp)
+     require_absent(evidence)
+     evidence.mkdir()
