@@ -1142,6 +1142,7 @@ kotlin {
         val desktopTest = getByName("desktopTest") {
             dependencies {
                 implementation(kotlin("test"))
+                implementation(libs.lifecycle.viewmodel)
                 implementation(libs.kotlinx.coroutines.test)
             }
         }
