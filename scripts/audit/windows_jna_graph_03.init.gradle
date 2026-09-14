@@ -1,0 +1,272 @@
+import groovy.json.JsonOutput
+import org.gradle.api.GradleException
+import org.gradle.api.artifacts.DependencyResolutionListener
+import org.gradle.api.artifacts.ResolvableDependencies
+import org.gradle.api.artifacts.verification.DependencyVerificationMode
+import org.gradle.api.tasks.testing.Test
+import java.util.concurrent.atomic.AtomicBoolean
+
+// Fixed Windows --dry-run with fixture selection; no task-action/test execution.
+// Native guard reuses independently reviewed dependency/konan01 lines41-77.
+def start = gradle.startParameter
+def selector = ':app-desktop:auditJnaLifetimeTest'
+def expectedRoot = new File(start.projectProperties['passvault.audit.jnaGraph.root'] ?: '')
+if (gradle.gradleVersion != '9.7.1' || System.getProperty('java.specification.version') != '17' ||
+        !System.getProperty('os.name').startsWith('Windows') || !(System.getProperty('os.arch') in ['amd64', 'x86_64']) ||
+        start.taskNames != [selector] || !start.dryRun || start.continueOnFailure || !start.excludedTaskNames.empty ||
+        start.parallelProjectExecutionEnabled || start.configureOnDemand || start.maxWorkerCount != 1 ||
+        start.buildCacheEnabled || start.offline || start.refreshDependencies || start.initScripts.size() != 1 ||
+        start.dependencyVerificationMode != DependencyVerificationMode.STRICT ||
+        start.projectProperties.keySet().any { it.startsWith('passvault.audit.jnaLifetime.') } ||
+        !expectedRoot.isAbsolute() || expectedRoot.absoluteFile != expectedRoot || expectedRoot.canonicalFile != expectedRoot ||
+        expectedRoot.name != 'project' || System.getenv('PASSVAULT_AUDIT_JNA_GRAPH_ROOT') != expectedRoot.path) {
+    throw new GradleException('WindowsGraph03 requires exactly one native-Windows JDK17 dry-run in its original private source')
+}
+
+
+// INERT SOURCE PROPOSAL for BOTH Graph03/real-JNA02 inits.
+// Existing outer source/control/instance/actual-graph admission remains mandatory.
+// expectedRoot is the original independently bound private project directory.
+def jnaCompilePath = ':app-desktop:compileTestKotlinDesktop'
+def jnaFixtureRelative = 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/biometric/JnaDesktopBiometricNativeLifetimeIntegrationTest.kt'
+def jnaFixtureInclude = 'com/passvault/desktop/security/biometric/JnaDesktopBiometricNativeLifetimeIntegrationTest.kt'
+def jnaFixture = new File(expectedRoot, jnaFixtureRelative)
+def jnaFixturePolicy = [schema: 1, compileTask: jnaCompilePath, sourceSet: 'desktopTest',
+    fixture: jnaFixtureRelative, bytes: 18846,
+    sha256: 'ef20ae3ab97b3d4603d77ad11d9f16ef4a03c735a1c6f071fccfd72070beba9f',
+    includes: [jnaFixtureInclude], excludes: [], preserveSourceRoots: true,
+    actionGuard: 'before-captured-sole-existing-action-v1']
+def jnaSelectedSources = null
+def jnaInputWitnessCount = 0
+
+def jnaRefuse = { String reason ->
+    throw new org.gradle.api.GradleException('Windows JNA fixture compilation: ' + reason)
+}
+def jnaCheckFixture = {
+    if (jnaFixture.absoluteFile != jnaFixture || jnaFixture.canonicalFile != jnaFixture ||
+            !java.nio.file.Files.isRegularFile(jnaFixture.toPath(), java.nio.file.LinkOption.NOFOLLOW_LINKS) ||
+            jnaFixture.length() != jnaFixturePolicy.bytes) {
+        jnaRefuse('permanent fixture identity changed')
+    }
+    byte[] data = java.nio.file.Files.newInputStream(jnaFixture.toPath()).withCloseable {
+        it.readNBytes(jnaFixturePolicy.bytes + 1)
+    }
+    if (data.length != jnaFixturePolicy.bytes ||
+            java.security.MessageDigest.getInstance('SHA-256').digest(data).encodeHex().toString() !=
+                jnaFixturePolicy.sha256) {
+        jnaRefuse('permanent fixture bytes changed')
+    }
+}
+def jnaCheckEmpty = { files, String role ->
+    if (!(files instanceof Set) || !files.empty) jnaRefuse('unexpected ' + role + ' input')
+}
+def jnaCheckSubset = { files, String role ->
+    if (!(files instanceof Set) || files.size() > 1 || files.any {
+            !(it instanceof File) || it.absoluteFile != jnaFixture || it.canonicalFile != jnaFixture
+        }) {
+        jnaRefuse('unexpected ' + role + ' input')
+    }
+    files.empty ? [] : [jnaFixtureRelative]
+}
+
+
+// Do not wrap/rewrite the existing action: Gradle's InputChanges injection must
+// remain intact. Extra legitimate actions refuse; never strip them to pass.
+def jnaPrependGuard = { task, Closure checkInputs ->
+    def originalActions = new ArrayList(task.actions)
+    if (originalActions.size() != 1) jnaRefuse('compiler does not have one existing action: ' + task.path)
+    def capturedActions = null
+    task.doFirst {
+        def currentActions = task.actions
+        if (capturedActions == null || currentActions.size() != 2 ||
+                !currentActions[0].is(capturedActions[0]) || !currentActions[1].is(capturedActions[1])) {
+            jnaRefuse('compiler action identity/order changed: ' + task.path)
+        }
+        checkInputs.call()
+    }
+    capturedActions = new ArrayList(task.actions)
+    if (capturedActions.size() != 2 || !capturedActions[1].is(originalActions[0])) {
+        jnaRefuse('guard did not preserve the captured sole existing action: ' + task.path)
+    }
+}
+
+gradle.afterProject { project, evaluationState ->
+    if (project.path != ':app-desktop') return
+    if (evaluationState.failure != null || jnaSelectedSources != null) {
+        jnaRefuse('module evaluation/source-set selection is not unique and successful')
+    }
+    jnaSelectedSources = project.extensions.getByName('kotlin').sourceSets.getByName('desktopTest').kotlin
+    // Narrow the existing SourceDirectorySet; preserve its roots/build dependencies,
+    // normal compilation/main association, classpaths, compiler flags and fixture.
+    // Do not call KotlinCompile.setSource: its override resets Java/script/base sets.
+    jnaSelectedSources.setIncludes([jnaFixtureInclude] as Set)
+    jnaSelectedSources.setExcludes([] as Set)
+}
+
+// Call once from existing taskGraph.whenReady BEFORE graph rows are emitted or
+// compared. This only identifies task/getter/policy structure at graph time.
+// Effective FileCollection visitation happens in doFirst, after producer tasks;
+// graph-only must not claim that those source inputs were already verified.
+def jnaInstallInputGuard = { graph ->
+    jnaCheckFixture()
+    def matches = graph.allTasks.findAll { it.path == jnaCompilePath }
+    if (matches.size() != 1 || jnaSelectedSources == null ||
+            jnaSelectedSources.includes != ([jnaFixtureInclude] as Set) || !jnaSelectedSources.excludes.empty) {
+        jnaRefuse('missing exact selected compilation/source set')
+    }
+    def compileTask = matches[0]
+    if (!compileTask.enabled || compileTask.class.superclass.name != 'org.jetbrains.kotlin.gradle.tasks.KotlinCompile') {
+        jnaRefuse('unexpected concrete JVM compiler task')
+    }
+    def javaName = compileTask.'getAssociatedJavaCompileTaskName$kotlin_gradle_plugin_common'().getOrNull()
+    def javaTask = javaName == null ? null : compileTask.project.tasks.findByName(javaName)
+    if (javaName != null && (!(javaName instanceof String) || javaName.empty ||
+            !(javaTask instanceof org.gradle.api.tasks.compile.JavaCompile) || !graph.hasTask(javaTask))) {
+        jnaRefuse('associated Java task is not the selected graph task')
+    }
+    def policy = jnaFixturePolicy + [associatedJavaTask: javaTask == null ? null : javaTask.path]
+
+    if (javaTask != null) {
+        jnaPrependGuard(javaTask) {
+            jnaCheckEmpty(javaTask.source.files, 'associated Java compiler')
+        }
+    }
+    jnaPrependGuard(compileTask) {
+        if (++jnaInputWitnessCount != 1) jnaRefuse('duplicate compilation-input witness')
+        jnaCheckFixture()
+        if (jnaSelectedSources.includes != ([jnaFixtureInclude] as Set) || !jnaSelectedSources.excludes.empty) {
+            jnaRefuse('late declared source selection change')
+        }
+        // KGP2.4.10 code02 sources contributor reads exactly these views. Do NOT
+        // substitute generic Task.inputs/classpaths or getIncrementalProps.
+        def kotlinFiles = compileTask.getSources().asFileTree.files
+        def kotlinWitness = jnaCheckSubset(kotlinFiles, 'Kotlin compiler')
+        if (kotlinWitness != [jnaFixtureRelative]) jnaRefuse('permanent fixture not compiled')
+        jnaCheckEmpty(compileTask.getJavaSources().files, 'Kotlin Java-source')
+        jnaCheckEmpty(compileTask.'getCommonSourceSet$kotlin_gradle_plugin_common'().asFileTree.files, 'common')
+
+        // The script extension provider reads definition-file contents. Refuse any
+        // such input BEFORE realizing its filter, rather than reading unknown files.
+        jnaCheckEmpty(compileTask.'getScriptDefinitions$kotlin_gradle_plugin_common'().files, 'script-definition')
+        def scriptExtensions = compileTask.'getScriptExtensions$kotlin_gradle_plugin_common'().get()
+        if (!(scriptExtensions instanceof Set) || !scriptExtensions.empty) jnaRefuse('script extensions present')
+        jnaCheckEmpty(compileTask.'getScriptSources$kotlin_gradle_plugin_common'().asFileTree.files, 'script')
+
+        def fragments = compileTask.getMultiplatformStructure().getFragments().get()
+        if (!(fragments instanceof List) || fragments.size() > 16) jnaRefuse('K2 fragment bound/type')
+        def fragmentWitness = fragments.collect { fragment ->
+            if (fragment.class.name != 'org.jetbrains.kotlin.gradle.tasks.K2MultiplatformStructure$Fragment') {
+                jnaRefuse('unexpected K2 fragment type')
+            }
+            def name = fragment.getFragmentName()
+            if (!(name instanceof String) || !(name ==~ /[A-Za-z0-9_.-]{1,80}/)) jnaRefuse('K2 fragment name')
+            // Deliberately stricter than KGP's additional Kotlin-file filter: no
+            // other raw fragment source is admitted. Friends/dependencies untouched.
+            [name: name, sources: jnaCheckSubset(fragment.getSources().asFileTree.files, 'K2 fragment')]
+        }.sort { it.name }
+        if (fragmentWitness.collect { it.name }.toSet().size() != fragmentWitness.size()) {
+            jnaRefuse('duplicate K2 fragment name')
+        }
+
+        // No option allowlist or guessed source-flag parser. Focused project source
+        // has no freeCompilerArgs declaration. The exact inherited getter's retained
+        // vendor evidence remains a separate pending source-review prerequisite.
+        def freeArgs = compileTask.getCompilerOptions().getFreeCompilerArgs().get()
+        def executionArgs = compileTask.'getExecutionTimeFreeCompilerArgs$kotlin_gradle_plugin_common'()
+        if (!(freeArgs instanceof List) || !freeArgs.empty ||
+                (executionArgs != null && (!(executionArgs instanceof List) || !executionArgs.empty))) {
+            jnaRefuse('additional free/positional/response compiler arguments')
+        }
+        // Java NO-SOURCE can skip its doFirst: do not infer that action executed.
+        if (javaTask != null) jnaCheckEmpty(javaTask.source.files, 'associated Java compiler')
+        // Recheck the one read source's identity after the bounded source views.
+        jnaCheckFixture()
+        def witness = [policy: policy, kotlin: kotlinWitness, java: [], common: [], script: [],
+            scriptDefinitions: [], scriptExtensions: [], k2Fragments: fragmentWitness,
+            freeCompilerArgs: [], executionTimeFreeCompilerArgs: [], associatedJavaSources: []]
+        def encoded = groovy.json.JsonOutput.toJson(witness)
+        if (encoded.getBytes('UTF-8').length > 16384) jnaRefuse('input witness bound')
+        println('PVA010_WINDOWS_JNA_TEST_INPUTS01=' + encoded)
+    }
+    policy
+}
+
+// Scope: trusted pinned project/plugin only. This does not prove arbitrary
+// stateful-provider/hostile-code stability within the captured original action.
+// Graph-only never runs these input guards and is not effective-source evidence.
+
+// KGP2.4.10 source-proven native route guard; not a general download ban.
+// Fresh outer-owned storage is required: an installed provisioned.ok marker
+// or a custom native home would bypass bundle resolution and permit auxiliaries.
+def nativeData = new File(expectedRoot.parentFile, 'konan')
+def nativeProperties = [
+    'kotlin.native.toolchain.enabled': 'true',
+    'kotlin.native.distribution.downloadFromMaven': 'true',
+    'konan.data.dir': nativeData.path,
+]
+def forbiddenNativeOverrides = ['kotlin.native.home', 'org.jetbrains.kotlin.native.home',
+    'kotlin.native.version', 'org.jetbrains.kotlin.native.version', 'kotlin.native.reinstall']
+if (nativeProperties.any { key, value -> start.projectProperties[key] != value } ||
+        forbiddenNativeOverrides.any { start.projectProperties.containsKey(it) } ||
+        System.getenv('KONAN_DATA_DIR') != nativeData.path || nativeData.canonicalFile != nativeData ||
+        !nativeData.isDirectory() || nativeData.list()?.length != 0) {
+    throw new GradleException('WindowsGraph03 requires the pinned native route and fresh empty native data directory')
+}
+// Reject project-property shadowing before plugin application; do not query KGP providers.
+gradle.beforeProject { project ->
+    if (nativeProperties.any { key, value -> project.findProperty(key) != value } ||
+            forbiddenNativeOverrides.any { project.findProperty(it) != null }) {
+        throw new GradleException('WindowsGraph03 refuses native route/home/version/reinstall overrides')
+    }
+}
+def nativeDenied = new AtomicBoolean()
+// Registered in init, before settings/projects: configuration, provider realization
+// and cached-archive resolution must all encounter this BEFORE obtaining the bundle.
+gradle.addListener([
+    beforeResolve: { ResolvableDependencies incoming ->
+        if (incoming.name == 'kotlinNativeBundleConfiguration') {
+            nativeDenied.set(true)
+            throw new GradleException('WindowsGraph03 forbids Kotlin/Native compiler provisioning')
+        }
+    },
+    afterResolve: { ResolvableDependencies ignored -> },
+] as DependencyResolutionListener)
+
+// Observe this graph without running Test or compiler input guards, visiting source
+// FileCollections, replacing dependencies, or selecting a broad suite. Acceptance is
+// still a separate independent evidence gate before a fresh runtime instance.
+def graphReported = false
+gradle.taskGraph.whenReady { graph ->
+    def root = gradle.rootProject
+    if (nativeDenied.get() || root.projectDir.absoluteFile != expectedRoot || root.projectDir.canonicalFile != expectedRoot ||
+            graph.allTasks.empty || graph.allTasks.size() > 1000 ||
+            graph.allTasks.count { it.path == selector && it instanceof Test } != 1) {
+        throw new GradleException('WindowsGraph03 cannot observe a changed root, native denial or missing exact Test selector')
+    }
+    def testCompilation = jnaInstallInputGuard(graph)
+    def rows = graph.allTasks.collect { task ->
+        [path: task.path, type: task.class.name, isTest: task instanceof Test, enabled: task.enabled,
+         dependencies: task.taskDependencies.getDependencies(task).collect { it.path }.sort(),
+         finalizers: task.finalizedBy.getDependencies(task).collect { it.path }.sort(),
+         mustRunAfter: task.mustRunAfter.getDependencies(task).collect { it.path }.sort(),
+         shouldRunAfter: task.shouldRunAfter.getDependencies(task).collect { it.path }.sort()]
+    }
+    if (nativeDenied.get()) {
+        throw new GradleException('WindowsGraph03 refuses swallowed native denial during graph observation')
+    }
+    def encoded = JsonOutput.toJson([selector: selector, root: expectedRoot.path, dryRun: true,
+        tasks: rows, testCompilation: testCompilation])
+    if (encoded.getBytes('UTF-8').length > 1024 * 1024) {
+        throw new GradleException('WindowsGraph03 compact graph bound exceeded')
+    }
+    println('PVA010_WINDOWS_JNA_GRAPH03=' + encoded)
+    graphReported = true
+}
+gradle.buildFinished { outcome ->
+    if (nativeDenied.get()) {
+        throw new GradleException('WindowsGraph03 native compiler provisioning was refused; no graph PASS')
+    }
+    if (outcome.failure == null && graphReported) {
+        println('PVA010_WINDOWS_JNA_GRAPH03_NATIVE_ROUTE_CLEAR')
+    }
+}
