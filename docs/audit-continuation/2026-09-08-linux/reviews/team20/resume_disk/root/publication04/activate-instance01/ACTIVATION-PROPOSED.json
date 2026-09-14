@@ -1,0 +1,36 @@
+{
+  "scope": "MACOS_JNA_LIFETIME01",
+  "non_publishing": true,
+  "review_status": "INDEPENDENTLY_ACCEPTED",
+  "source_commit": "38b222a5219da83da7ef4c00ee9cb2ba408e717b",
+  "controls": {
+    "scripts/audit/macos_jna_lifetime_validation01.py": {
+      "bytes": 22289,
+      "sha256": "5293c94f914188e8045e2d46ce1af583038910a50d28a4f5c6356edeeda50e65"
+    },
+    ".github/workflows/audit-macos-jna-lifetime01.yml": {
+      "bytes": 2334,
+      "sha256": "2361c1a76511b033e352b77ddf1a3a38c9070237c06a9c16a4d603e6d8f18bce"
+    }
+  },
+  "findings": [
+    "PVA-010"
+  ],
+  "reason": "Real JNA to affected macOS ordinary native dylib cannot execute on Linux; no provider/Keychain/prompt/hardware claims. Existing successful CTests not repeated.",
+  "target": {
+    "runner": "macos-15-intel",
+    "architecture": "x86_64",
+    "jdk": "17",
+    "native": "Existing CMake and Xcode toolchain; BUILD_TESTING=OFF; passvault_biometric target only"
+  },
+  "commands": [
+    "cmake -S <privateCheckout>/app-desktop/native/biometric-bridge -B <privateRuntime>/native-build -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=x86_64",
+    "cmake --build <privateRuntime>/native-build --target passvault_biometric --parallel 1",
+    "<privateCheckout>/gradlew --init-script <privateRuntime>/scope.gradle :app-desktop:auditJnaLifetimeTest <exact controller self.flags> <nine identity-bound passvault.audit.jnaLifetime properties>"
+  ],
+  "expected_evidence": "Exactly one matching JUnit case; no skip/failure/error; original Gradle stop; fixture CLEANUP_SETTLED marker; source/native hashes and compact logs. No application binary artifact.",
+  "bounds": "50minute job;2700second controller work budget; oneheavyjob localorCI; 7day compactartifactretention.",
+  "cleanup": "Reviewed controller installs signal/deadline handling beforebuild, preserves XML, original wrapperstop independent of XML retention, verifies owned groups and native marker, descriptor-safe allowlisted private runtime deletion only. HOLD overrides deletion; interruption limitations retained.",
+  "remaining_admission": "Encodedproposedreviewstatus becomesauthoritative onlyafter independentexactapprovalplus rootquietslotadmission; this localpreparedblobisnot yetpushed/activated.",
+  "command_binding": "Exact argv expansion is in pinned controller run()/self.flags/values, retained in actual command logs; task already selects exactly one named method, no --tests addition."
+}

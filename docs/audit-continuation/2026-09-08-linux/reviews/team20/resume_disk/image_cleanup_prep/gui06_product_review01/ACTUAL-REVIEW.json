@@ -1,0 +1,103 @@
+{
+  "schema": "passvault-gui06-independent-product-actual-review-v1",
+  "reviewer": "/root/image_cleanup_prep",
+  "status": "ACCEPT_OBSERVED_COMPILATION_SUCCESS_AND_FOUR_UNSTARTED_CASES_ONLY_KEEP_RUN_HOLD",
+  "scope": "Original GUI06 product semantics and safe retained evidence only. Lifecycle/source-after/worker/stop/cleanup/scheduling disposition belongs to image_diag_review and root; not adopted by this report.",
+  "separate_lifecycle_review_reported_by_reviewer": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/image_diag_review/gui06_resource_v5/ACTUAL-REVIEW.json",
+    "bytes": 6667,
+    "sha256": "0f58b32d666eb0d2fa90f573617ad1467e082a8525718f61349a9cf7ba93d924",
+    "qualification": "Independent reviewer supplied this descriptor; product reviewer did not duplicate its lifecycle analysis or perform root adoption."
+  },
+  "E": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration06",
+  "original_terminal": {
+    "session": 4949,
+    "chunk": "8c5721",
+    "exit": 70,
+    "stdout": "",
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui06-resource-v5/ORIGINAL-TERMINAL.json",
+    "bytes": 478,
+    "sha256": "2f6e035b8985fe85dc2e374030ac9b4c31d220776cfa8c03587f61861e0cb7a2"
+  },
+  "scoring_preparation": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/image_cleanup_prep/gui06_product_review01/REVIEW-PREP.json",
+    "bytes": 15866,
+    "sha256": "7d995210a4737217e5b1e69a262ccbb7a2321762551bc63044f444f7be7f0702"
+  },
+  "retained_images_rehashed": [
+    {"path":"E/PHASE-prepare.json","bytes":2218,"sha256":"0a70a17fa3d76463027359073fa0a83ed59ac268dc7b8edead6a87d6376f795c"},
+    {"path":"E/INNER-RESULT.json","bytes":11381,"sha256":"9762fbd73864743765eee835dd0d95b9ec36490c5f671e80d87739fd854f7e5b"},
+    {"path":"E/MAINNAV-RESULT.json","bytes":908,"sha256":"ae0021fd91773a53bd27898878f3b3aa8ce5ae5894be27e0aba273a97df108de"},
+    {"path":"E/PVU003-RESULT.json","bytes":883,"sha256":"b0d2d2757b84847d0bc946e8f4eb304cd9992644467c7e5400b1887d8add31e0"},
+    {"path":"E/PVA027-RESULT.json","bytes":2194,"sha256":"f40b9a44e1ada15acb23c6c006f49276b5dc05d80166f0bfca94c0aaadca3ee2"},
+    {"path":"E/CANCEL","bytes":126,"sha256":"b541dc98ffd6d12a3c09831322e5894f4993e4fcf07131450efcb4dda414da6e"},
+    {"path":"E/logs/prepare.log","bytes":52519,"sha256":"43c674747ad1f6b04156c00fb9bb6c2cdd6fbd877cb7c0504a23589108f493de"}
+  ],
+  "source_join": {
+    "commit": "59bee33096f538b9444f00236448d7fc0ea740b2",
+    "tree": "76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6",
+    "representation": "P23_RAW_GIT_BLOBS_PLUS_ONE_APPROVED_DESKTOPTEST_OVERLAY",
+    "qualification": "INNER references match the prepared exact2fixture/2production/init/manifest and sole57-byte desktopTest overlay contracts. source_before=true but source_after=false; do not promote observed compile output into a fully closed source-integrity or execution pass."
+  },
+  "compilation_observation": {
+    "prepare_child_exit": 0,
+    "prepare_child_complete": true,
+    "harness_prepare_build_ok": false,
+    "harness_prepare_errors": ["command timeout/cancel/resource/output failure"],
+    "log_lines": {
+      "343": "> Task :app-desktop:compileTestKotlinDesktop",
+      "369": "> Task :shared:compileTestKotlinDesktop",
+      "376": "> Task :auditDesktopIntegration06Prepare",
+      "382": "BUILD SUCCESSFUL in 6m 58s",
+      "383": "130 actionable tasks: 130 executed"
+    },
+    "runtime_summaries": [
+      {"selectedTask":":shared:desktopTest","entries":114,"selected_classes":1},
+      {"selectedTask":":app-desktop:desktopTest","entries":107,"selected_classes":3}
+    ],
+    "meaningful_application_or_compiler_error_found": false,
+    "warnings": "Nonfatal unnecessary-safe-call warnings in existing DesktopCurtainRenderingTest.kt lines319/330; not a selected-case execution or a compiler failure. No warning cleanup/new build is justified by this result.",
+    "qualification": "Observed preparation/classpath compilation only.130 task executions are NOT test cases; classpath entries/native library presence are NOT loader or hardware proof. The previously accepted GUI05 compilation evidence remains; unchanged repeated compilation adds no family closure or runtime coverage."
+  },
+  "failure_causal_evidence": {
+    "CANCEL_reason": "RuntimeError:host-screen candidate uncertainty: 13733:proof-namespace:mnt",
+    "inner_errors": [
+      "RuntimeError: preparation failed; GUI/Test unstarted, no retry",
+      "final source/GUI/evidence uncertainty: cancelled before final evidence acceptance"
+    ],
+    "interpretation": "The prepare JVM's successful exit/log coexist with a cancelled harness phase. Sticky cancellation prevented GUI/render and final evidence acceptance. Do not label outer70 as a Gradle/compiler/application test failure. Lifecycle reviewer independently investigates the recorded host-screen proof failure; this product review does not classify the historical PID, prove its ownership, or authorize any process probe/retry."
+  },
+  "actual_product_results": {
+    "gui_attempted": false,
+    "render_attempted": false,
+    "selected_Test_tasks_executed": 0,
+    "selected_cases_executed": 0,
+    "passed_cases": 0,
+    "failed_cases": 0,
+    "unstarted_cases": 4,
+    "preserved_XML_suites": 0,
+    "Main_child_roles_executed": 0,
+    "Main_role_evidence_files": 0,
+    "PVA027_crops": 0,
+    "cases": [
+      {"id":"editor_room","status":"UNSTARTED_BEFORE_GUI_RENDER","remaining":"Native capacity/draft/Enter rejection and real Room reopen assertions."},
+      {"id":"mainnav","status":"UNSTARTED_BEFORE_GUI_RENDER","remaining":"Actual Main dirty Back/Escape/tab/Add and post-exit durable Room tuples."},
+      {"id":"pvu003","status":"UNSTARTED_BEFORE_GUI_RENDER","remaining":"No modal-Home/cancel observation receipt exists; neither confirmation nor rejection of suspicion."},
+      {"id":"pva027","status":"UNSTARTED_BEFORE_GUI_RENDER","remaining":"Actual Settings EN/AR/EN, native Lock/Exit, role assertions and5decoded visual crops."}
+    ],
+    "absence_join": "Bounded no-follow listing of safe E and its immediate named children found xml/mainnav-evidence/pvu003-evidence/pva027-evidence empty. INNER says GUI/renderfalse and0preservedXML. All3case summaries have required_present=false,required_images={},required_bytes=0,mapping_ok=false; PVA027 has5crop.present=false. These corroborate unstarted cases, not merely missing expected files.",
+    "empty_evidence_guard": "preserved=true means the absence/result summary was retained. Empty crash diagnostics or vacuous non-PVA crop_mapping=true do not establish execution or PASS.",
+    "visual_review": "NOT_POSSIBLE_NO_CROPS_PRODUCED. No image was opened, decoded or visually accepted; no borrowed GUI05/other-run images."
+  },
+  "limits_and_next": [
+    "Keep original GUI06 failure/consumed instance and runtime HOLD. No automatic retry, another stop, raw runtime/private diagnostic access, recovered artifact reuse or cleanup authority follows.",
+    "INNER cleanup_safe=false/source_after=false remain. Original required-stop/namespace observations are left to the independent lifecycle lane; this report cannot retire its execution/cleanup duties.",
+    "All4 product cases remain unverified. PVA007/PVA031/PVA027 integration gaps and PVU003 suspicion do not close; all hardware/platform/PVD/external decisions remain separate.",
+    "Any next authorized work needs the root's independent host-proof/fresh-admission decision. Preserve successful compilation evidence without manufacturing test or readiness progress."
+  ],
+  "activity": "Read/rehashed named retained safe E records, bounded E-only directory metadata and prepare-log text; read original retained terminal. Did not follow the log's private-runtime problems-report link. No runtime/HOLD/V/U/Git, process/tool/cache/network probes, subject execution/import/AST/compile, builds/tests, source changes, image access or cleanup. Only this own review written.",
+  "owned_sessions_workers_or_cleanup_duties": [],
+  "new_fixes": 0,
+  "new_product_test_passes": 0,
+  "new_closures": 0
+}

@@ -1,0 +1,1081 @@
+import groovy.json.JsonOutput
+import org.gradle.api.GradleException
+import org.gradle.api.JavaVersion
+import org.gradle.api.artifacts.verification.DependencyVerificationMode
+import org.gradle.api.artifacts.DependencyResolutionListener
+import org.gradle.api.artifacts.ResolvableDependencies
+import java.util.concurrent.atomic.AtomicBoolean
+import org.gradle.api.tasks.Exec
+import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
+import org.gradle.api.tasks.testing.Test
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.Directory
+import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
+import java.nio.file.Files
+import java.nio.file.LinkOption
+import java.nio.file.Path
+import java.nio.file.attribute.BasicFileAttributes
+import java.security.MessageDigest
+import java.util.zip.ZipFile
+import java.security.KeyStore
+import groovy.json.JsonSlurper
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.Task
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import org.gradle.api.provider.SetProperty
+import java.lang.reflect.Modifier
+
+
+abstract class PassVaultFrameworkClassCarrier extends DefaultTask {
+    @InputFiles
+    @PathSensitive(PathSensitivity.RELATIVE)
+    abstract ListProperty<RegularFile> getClassJars()
+
+    @InputFiles
+    @PathSensitive(PathSensitivity.RELATIVE)
+    abstract ListProperty<Directory> getClassDirectories()
+    // No TaskAction: this carrier is NOT a compilation success oracle.
+    // AGP's artifact providers supply dependencies through the annotated inputs.
+}
+
+// INERT NEW SOURCE PROPOSAL. No task action, runnable helper, allocation or admission.
+// A bound copy needs independent root review; never rename/replay Compile03.
+final Map ADMITTED = [
+    runtimeRoot: '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action07',
+    evidenceRoot: '/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-framework-package-action07',
+    readRoots: [
+        '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action07/checkout',
+        '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action07/gradle-home',
+        '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action07/tmp',
+        '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action07/konan',
+        '/usr/lib/jvm/java-17-openjdk-amd64',
+        '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action07/sdk-readonly',
+    ],
+    offline: false, sourceManifestSha256: '5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6',
+    subjectSha256: '21ae72a59dae1ba8dea978f56c0bf862c73b3bb91b76980f92713c57633b61fb',
+] // Accepted checkpoint22 SOURCE literals; fresh root facts/review/instance remain UNBOUND.
+// Required exact keys: runtimeRoot, evidenceRoot, readRoots, offline,
+// sourceManifestSha256, subjectSha256. Current instance/SDK/tool pins remain UNBOUND.
+final String RUN_ID = 'linux-android-framework-package-action07'
+final String TARGET = ':app-android:auditCompileDebugFrameworkInstrumentation'
+final String PACKAGE_TARGET = ':app-android:verifyDebugComposeResources'
+final List TARGETS = [TARGET, PACKAGE_TARGET]
+final String FILTER = null // Compilation/package only; no runtime test execution.
+final String SUBJECT_SHA = '21ae72a59dae1ba8dea978f56c0bf862c73b3bb91b76980f92713c57633b61fb'
+final String JDK = '/usr/lib/jvm/java-17-openjdk-amd64'
+// Actual selected framework producer graph paths/types/edges only. No guessed compiler task,
+// output/signing query, getter invocation or provider realization is part of this cut.
+// SOURCE COMPONENT ONLY; requires reviewed finite graph, original source/path custody and cleanup.
+// No TaskAction carrier credit. Capture real compiler input, its fresh outcome and emitted PROJECT/CLASSES.
+
+class PassVaultFrameworkCompileGate {
+    private final Object compiler
+    private final Object carrier
+    private final Path fixture
+    private final String expectedFixtureSha
+    private final Closure checked
+    private final Closure emit
+    private final String classEntry = 'com/passvault/android/audit/AndroidClipboardLocaleInstrumentationTest.class'
+    private boolean entered = false
+    private boolean compiled = false
+    private boolean observed = false
+    private List<Path> compilerRoots
+    private Map emittedClass
+
+    PassVaultFrameworkCompileGate(Object compiler, Object carrier, Path fixture,
+            String expectedFixtureSha, Closure checked, Closure emit) {
+        this.compiler = compiler
+        this.carrier = carrier
+        this.fixture = fixture
+        this.expectedFixtureSha = expectedFixtureSha
+        this.checked = checked
+        this.emit = emit
+    }
+
+    private static void require(boolean ok, String why) {
+        if (!ok) throw new org.gradle.api.GradleException('FrameworkCompileGate: ' + why)
+    }
+
+    private Map image(Path path) {
+        checked.call(path.toFile(), true)
+        require(Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS), 'required regular file missing')
+        def before = Files.readAttributes(path, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+        long size = before.size()
+        require(size > 0 && size <= 2 * 1024 * 1024, 'source/class size bound')
+        byte[] bytes = Files.readAllBytes(path)
+        def after = Files.readAttributes(path, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+        require(bytes.length == size && after.size() == size && after.fileKey() == before.fileKey() &&
+            after.lastModifiedTime() == before.lastModifiedTime(), 'source/class identity drift')
+        [bytes: bytes.length, sha256: MessageDigest.getInstance('SHA-256').digest(bytes).encodeHex().toString(),
+         header: java.util.Arrays.copyOf(bytes, Math.min(8, bytes.length)).encodeHex().toString()]
+    }
+
+    private List<Path> classRoots() {
+        def jars = carrier.getClassJars().get()
+        def dirs = carrier.getClassDirectories().get()
+        require(jars.size() + dirs.size() <= 32, 'PROJECT/CLASSES root bound')
+        def all = (jars + dirs).collect { checked.call(it.asFile, true) }
+        require(!all.empty && all.toSet().size() == all.size(), 'missing/duplicate class roots')
+        all.sort { it.toString() }
+    }
+
+    void bindGraph(List<Path> declaredCompilerRoots) {
+        require(compilerRoots == null && !entered, 'duplicate binding')
+        require(compiler.path == ':app-android:compileDebugAndroidTestKotlin' &&
+            compiler.class.name == 'org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated', 'compiler identity')
+        require(carrier.path == ':app-android:auditCompileDebugFrameworkInstrumentation' &&
+            carrier.class.name == 'PassVaultFrameworkClassCarrier_Decorated', 'carrier identity')
+        // Carrier PROJECT/CLASSES providers are produced by resource/Kotlin/Java tasks.
+        // Reading them at graph-ready (or before this compiler) violates Gradle's provider lifecycle.
+        require(!declaredCompilerRoots.empty && declaredCompilerRoots.every { it instanceof Path } &&
+            declaredCompilerRoots.size() <= 32 &&
+            declaredCompilerRoots.toSet().size() == declaredCompilerRoots.size(), 'compiler output root bound')
+        compilerRoots = new ArrayList<Path>(declaredCompilerRoots)
+        compilerRoots.each { p ->
+            checked.call(p.toFile(), true)
+            require(Files.notExists(p.resolve(classEntry), LinkOption.NOFOLLOW_LINKS), 'fixture class already exists')
+        }
+    }
+
+    void beforeCompiler() {
+        require(compilerRoots != null && !entered && !compiled, 'compiler entry/binding order')
+        // beforeAction independently verifies unchanged declared output paths on this exact task.
+        compilerRoots.each { p ->
+            checked.call(p.toFile(), true)
+            require(Files.notExists(p.resolve(classEntry), LinkOption.NOFOLLOW_LINKS), 'stale fixture class before compiler')
+        }
+        // Public pinned KGP2.4.10 API. AbstractKotlinCompile.executeImpl obtains this exact file tree.
+        def sources = compiler.getSources().getAsFileTree().getFiles()
+        require(sources.size() > 0 && sources.size() <= 4096, 'compiler source bound')
+        def names = sources.collect { checked.call(it, false) }
+        require(names.count { it == fixture } == 1, 'fixture missing from actual compiler source tree')
+        Map source = image(fixture)
+        require(source.sha256 == expectedFixtureSha, 'fixture input changed')
+        entered = true
+        emit.call([kind: 'framework-compiler-input', task: compiler.path,
+            fixture: fixture.toString(), image: source, sourceCount: names.size(),
+            qualification: 'Actual public compiler source-file input; not runtime execution.'])
+    }
+
+    void afterCompiler(Object state) {
+        require(entered && !compiled, 'compiler completion order')
+        require(state.failure == null && state.executed && !state.skipped && !state.upToDate &&
+            !state.noSource && state.skipMessage == null && state.didWork, 'fresh compiler success required')
+        require(image(fixture).sha256 == expectedFixtureSha, 'fixture changed during compilation')
+        def emitted = compilerRoots.collect { it.resolve(classEntry) }.findAll {
+            Files.isRegularFile(it, LinkOption.NOFOLLOW_LINKS)
+        }
+        require(emitted.size() == 1, 'one fixture class in actual compiler outputs required')
+        emittedClass = image(emitted[0])
+        require(emittedClass.header.startsWith('cafebabe'), 'compiler output is not JVM class data')
+        compiled = true
+    }
+
+    void beforeCarrier() {
+        require(compiled && emittedClass != null && !observed, 'carrier before compiler or duplicate observation')
+        // All carrier producers have completed before its beforeTask callback; now provider reads are lawful.
+        def roots = classRoots()
+        def found = []
+        roots.each { p ->
+            checked.call(p.toFile(), true)
+            if (Files.isDirectory(p, LinkOption.NOFOLLOW_LINKS)) {
+                Path candidate = p.resolve(classEntry)
+                if (Files.exists(candidate, LinkOption.NOFOLLOW_LINKS)) {
+                    found.add([container: p.toString(), entry: classEntry, image: image(candidate)])
+                }
+            } else if (Files.isRegularFile(p, LinkOption.NOFOLLOW_LINKS)) {
+                require(Files.size(p) <= 32 * 1024 * 1024, 'class jar bound')
+                new ZipFile(p.toFile()).withCloseable { zip ->
+                    require(zip.size() <= 8192, 'class jar entry count bound')
+                    def entries = zip.entries().toList().findAll { it.name == classEntry }
+                    require(entries.size() <= 1, 'duplicate expected class entry')
+                    if (!entries.empty) {
+                        def entry = entries[0]
+                        require(!entry.directory && entry.size > 0 && entry.size <= 2 * 1024 * 1024,
+                            'expected class entry size/type')
+                        byte[] bytes
+                        zip.getInputStream(entry).withCloseable { input -> bytes = input.readNBytes(2 * 1024 * 1024 + 1) }
+                        require(bytes.length == entry.size, 'class decompression bound/size mismatch')
+                        found.add([container: p.toString(), entry: classEntry,
+                            image: [bytes: bytes.length,
+                                sha256: MessageDigest.getInstance('SHA-256').digest(bytes).encodeHex().toString(),
+                                header: java.util.Arrays.copyOf(bytes, Math.min(8, bytes.length)).encodeHex().toString()]])
+                    }
+                }
+            } else require(Files.notExists(p, LinkOption.NOFOLLOW_LINKS), 'unknown PROJECT/CLASSES root')
+        }
+        require(found.size() == 1 && found[0].image == emittedClass,
+            'PROJECT/CLASSES must contain the exact freshly emitted compiler fixture class')
+        observed = true
+        emit.call([kind: 'framework-compiled-class', task: compiler.path, artifact: 'PROJECT/CLASSES',
+            files: found, observedTestCases: 0,
+            qualification: 'Fresh successful compiler and emitted instrumentation class, NOT Android runtime or ordinary APK class inclusion.'])
+    }
+
+    boolean complete() { compiled && observed }
+}
+// SOURCE COMPONENT ONLY. Integrate/review in a new admitted action controller; never apply standalone.
+// Exact AGP9.4.0 consumer APIs proven by pinned classfile data, not inferred from DSL defaults.
+// Caller binds the two exact observed task objects/types and fresh original private runtime custody.
+// bindGraph MUST run in taskGraph.whenReady before ANY task input fingerprinting/actions.
+
+class PassVaultPrivateDebugSigningGate {
+    private final Path home
+    private final Path key
+    private final Object validation
+    private final Object packaging
+    private Object validationProvider
+    private Object packageProvider
+    private boolean bound = false
+    private boolean validationEntered = false
+    private boolean validationCompleted = false
+    private Object createdKeyIdentity
+
+    PassVaultPrivateDebugSigningGate(Path runtime, Object validation, Object packaging) {
+        this.home = runtime.resolve('home')
+        this.key = home.resolve('.android/debug.keystore')
+        this.validation = validation
+        this.packaging = packaging
+    }
+
+    private static void require(boolean ok, String why) {
+        if (!ok) throw new org.gradle.api.GradleException('PrivateDebugSigning: ' + why)
+    }
+
+    private void exactKey(Object value) {
+        require(value instanceof File, 'missing file value')
+        Path path = ((File) value).toPath()
+        // Never canonicalize or follow a foreign path before rejecting it.
+        require(path.isAbsolute() && path == path.normalize() && path == key, 'unexpected key path')
+    }
+
+    private void parents() {
+        // Original outer custody already binds runtime/home ancestors; this rejects later link substitutions.
+        [home, home.resolve('.android')].each { Path path ->
+            if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
+                def attrs = Files.readAttributes(path, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+                require(attrs.isDirectory() && !attrs.isSymbolicLink(), 'unexpected key parent')
+            } else {
+                require(path != home && Files.notExists(path, LinkOption.NOFOLLOW_LINKS), 'unknown key parent')
+            }
+        }
+    }
+
+    private void absentKey() {
+        parents()
+        require(Files.notExists(key, LinkOption.NOFOLLOW_LINKS), 'key not proven absent')
+    }
+
+    private void provider(Object value) {
+        require(value != null, 'missing signing provider')
+        // resolve() prioritizes an alternate serialized config over storeFile. Do not invoke it here.
+        require(value.getSigningConfigFileCollection().isEmpty(), 'alternate signing config forbidden')
+        exactKey(value.getStoreFile().getOrNull())
+        // Fixed public defaults for a NEW disposable key only; never print actual values.
+        require(value.getName().getOrNull() == 'debug', 'not ordinary Debug')
+        require(value.getKeyAlias().getOrNull() == 'AndroidDebugKey', 'nondefault alias')
+        require(value.getStorePassword().getOrNull() == 'android', 'nondefault store password')
+        require(value.getKeyPassword().getOrNull() == 'android', 'nondefault key password')
+        require(value.getStoreType().getOrNull() == KeyStore.getDefaultType(), 'nondefault store type')
+    }
+
+    private void consumers() {
+        Object currentValidation = validation.getSigningConfig().getOrNull()
+        Object currentPackage = packaging.'getSigningConfigData$gradle_core'()
+        require(currentValidation != null && currentPackage != null, 'missing actual consumer')
+        if (bound) {
+            require(currentValidation.is(validationProvider) && currentPackage.is(packageProvider),
+                'signing consumer replaced')
+        }
+        provider(currentValidation)
+        provider(currentPackage)
+        exactKey(validation.getDefaultDebugKeystoreLocation().getOrNull())
+        // Paths only. Caller must invoke this before Gradle can fingerprint these file inputs.
+        def inputs = packaging.getSigningKeystoreFile().getFiles()
+        require(inputs.size() == 1, 'unexpected package key inputs')
+        exactKey(inputs.iterator().next())
+        validationProvider = currentValidation
+        packageProvider = currentPackage
+    }
+
+    void bindGraph() {
+        require(!bound && !validationEntered, 'duplicate graph binding')
+        require(System.getenv('HOME') == home.toString() && System.getProperty('user.home') == home.toString(),
+            'private home mismatch')
+        absentKey()
+        consumers()
+        bound = true
+    }
+
+    void beforeValidation() {
+        require(bound && !validationEntered && !validationCompleted, 'validation order')
+        consumers()
+        absentKey()
+        validationEntered = true
+    }
+
+    void afterValidation(Object taskState) {
+        require(bound && validationEntered && !validationCompleted, 'validation completion order')
+        require(taskState.failure == null && !taskState.skipped && !taskState.upToDate && !taskState.noSource,
+            'fresh validation action not established')
+        consumers()
+        parents()
+        def attrs = Files.readAttributes(key, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+        require(attrs.isRegularFile() && !attrs.isSymbolicLink() && attrs.size() > 0 && attrs.size() <= 65536,
+            'invalid newly created key file')
+        createdKeyIdentity = [attrs.fileKey(), attrs.size(), attrs.lastModifiedTime()]
+        require(createdKeyIdentity[0] != null, 'key identity unavailable')
+        validationCompleted = true
+    }
+
+    void beforePackage() {
+        require(bound && validationCompleted, 'package before validated key')
+        consumers()
+        parents()
+        def attrs = Files.readAttributes(key, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+        require(attrs.isRegularFile() && !attrs.isSymbolicLink() &&
+            [attrs.fileKey(), attrs.size(), attrs.lastModifiedTime()] == createdKeyIdentity,
+            'generated key changed')
+    }
+}
+final AtomicBoolean nativeDenied = new AtomicBoolean()
+def control = [gate: false, failed: false, actionsAdmitted: false]
+int readyCount = 0, beforeCount = 0, afterCount = 0, finishCount = 0
+boolean bindingOk = false
+long emittedBytes = 0
+String phase = 'init'
+def beforeAction = null, afterAction = null
+final String ROOM = ':core:database:copyRoomSchemas'
+final String LEGAL = ':app-android:prepareAndroidLegalAssets'
+final String COMPILER = ':app-android:compileDebugAndroidTestKotlin'
+final String SIGNING = ':app-android:validateSigningDebug'
+final String PACKAGE = ':app-android:packageDebug'
+def signingGate = null, compileGate = null
+boolean schemaCompleted = false, packageVerified = false
+Set expectedPaths = [] as Set
+def reject = { String why ->
+    control.gate = false; control.failed = true
+    throw new GradleException('AndroidFrameworkPackageAction07: ' + why)
+}
+def common = {
+    [format: 'passvault-android-framework-package-action07-v1', runId: RUN_ID,
+     sourceManifestSha256: ADMITTED.sourceManifestSha256, subjectSha256: SUBJECT_SHA,
+     selector: TARGETS, graphOnly: false, observedTestCases: 0]
+}
+def emit = { Map row ->
+    String text = JsonOutput.toJson(common() + row)
+    int size = text.getBytes('UTF-8').length
+    if (size > 2 * 1024 * 1024 || (emittedBytes += size) > 8 * 1024 * 1024) reject('receipt size bound')
+    println('PASSVAULT_ANDROID_FRAMEWORK_PACKAGE_ACTION06=' + text)
+}
+gradle.taskGraph.beforeTask { task ->
+    beforeCount++
+    if (!control.gate || control.failed || beforeAction == null) reject('action gate closed')
+    try { beforeAction.call(task) } catch (Throwable failure) {
+        control.gate = false; control.failed = true; throw failure
+    }
+}
+gradle.taskGraph.afterTask { task, state ->
+    afterCount++
+    if (afterAction == null) reject('outcome gate unbound')
+    try {
+        afterAction.call(task, state)
+        if (state.failure != null) { control.gate = false; control.failed = true }
+    } catch (Throwable failure) { control.gate = false; control.failed = true; throw failure }
+}
+gradle.buildFinished { result ->
+    finishCount++
+    boolean accepted = bindingOk && readyCount == 1 && finishCount == 1 && control.actionsAdmitted &&
+        !control.failed && !nativeDenied.get() && result.failure == null &&
+        beforeCount == expectedPaths.size() && afterCount == expectedPaths.size() &&
+        schemaCompleted && packageVerified && compileGate != null && compileGate.complete()
+    emit([kind: 'finished', accepted: accepted, beforeCount: beforeCount, afterCount: afterCount,
+        taskCount: expectedPaths.size(), schemaCompleted: schemaCompleted, packageVerified: packageVerified,
+        failureType: result.failure?.class?.name, qualification: 'Compile/package only; original exit/cleanup/review required.'])
+}
+def textBound = { Object value, int cap ->
+    if (!(value instanceof String) || value.empty || value.length() > cap || !(value ==~ /[ -~]+/)) {
+        reject('bounded printable text required')
+    }
+    value
+}
+def taskPath = { Object value ->
+    String s = textBound(value, 512)
+    if (!(s ==~ /:(?:[A-Za-z0-9_-]+:)*[A-Za-z0-9_-]+/)) reject('bounded task path required')
+    s
+}
+def typeName = { Object value ->
+    String s = textBound(value, 512)
+    if (!(s ==~ /[A-Za-z_$][A-Za-z0-9_$]*(?:\.[A-Za-z_$][A-Za-z0-9_$]*)*/)) reject('bounded type required')
+    s
+}
+def absolutePath = { Object value ->
+    String s = textBound(value, 1024)
+    def p = new File(s).toPath()
+    if (!p.isAbsolute() || p.normalize().toString() != s) reject('absolute normalized path required')
+    p
+}
+def start = gradle.startParameter
+def sys = start.systemPropertiesArgs
+def props = start.projectProperties
+if (ADMITTED == null || ADMITTED.keySet() != ['runtimeRoot', 'evidenceRoot', 'readRoots', 'offline',
+        'sourceManifestSha256', 'subjectSha256'].toSet() || !(ADMITTED.offline instanceof Boolean) ||
+        !(ADMITTED.sourceManifestSha256 instanceof String) || !(ADMITTED.sourceManifestSha256 ==~ /[0-9a-f]{64}/) ||
+        ADMITTED.subjectSha256 != SUBJECT_SHA) reject('UNBOUND source/instance/read-root policy')
+def runtime = absolutePath(ADMITTED.runtimeRoot)
+def evidence = absolutePath(ADMITTED.evidenceRoot)
+def checkout = runtime.resolve('checkout')
+def readRoots = [checkout, runtime.resolve('gradle-home'), runtime.resolve('tmp'), runtime.resolve('konan'),
+                 absolutePath(JDK), runtime.resolve('sdk-readonly')].collect { it.toString() }
+if (runtime.parent.toString() != '/root/projects/PassVault' || runtime.fileName.toString() != 'audit-runtime-' + RUN_ID ||
+        evidence.toString() != '/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/' + RUN_ID ||
+        ADMITTED.readRoots != readRoots || start.offline != ADMITTED.offline ||
+        start.currentDir.toPath().toAbsolutePath().normalize() != checkout ||
+        start.gradleUserHomeDir.toPath().toAbsolutePath().normalize() != runtime.resolve('gradle-home') ||
+        System.getenv('ANDROID_HOME') != runtime.resolve('sdk-readonly').toString() ||
+        System.getenv('ANDROID_SDK_ROOT') != runtime.resolve('sdk-readonly').toString() ||
+        ['PASSVAULT_PVA038_MODE', 'PASSVAULT_PVA038_RUN_ROOT', 'PASSVAULT_PVA038_FIXTURE'].any { System.getenv(it) != null }) {
+    reject('fresh fixed instance/SDK view/environment mismatch')
+}
+// FrameworkPackageGraph01 keeps ARG01-12 and ARG14-20; ARG13 explicitly includes the native route.
+// One bounded typed vector precedes ARG13; no historical-cause or task authority.
+if (gradle.gradleVersion != '9.7.1') {
+    reject('argument predicate rejected: ARG01_GRADLE_VERSION')
+}
+if (JavaVersion.current() != JavaVersion.VERSION_17) {
+    reject('argument predicate rejected: ARG02_JAVA_VERSION')
+}
+if (start.taskNames != TARGETS) {
+    reject('argument predicate rejected: ARG03_TASK_SELECTION')
+}
+if (start.dryRun) {
+    reject('argument predicate rejected: ARG04_DRY_RUN_FORBIDDEN')
+}
+if (start.continueOnFailure) {
+    reject('argument predicate rejected: ARG05_CONTINUE_ON_FAILURE_FORBIDDEN')
+}
+if (!start.excludedTaskNames.empty) {
+    reject('argument predicate rejected: ARG06_EXCLUDED_TASKS_FORBIDDEN')
+}
+if (start.parallelProjectExecutionEnabled) {
+    reject('argument predicate rejected: ARG07_PARALLEL_FORBIDDEN')
+}
+if (start.configureOnDemand) {
+    reject('argument predicate rejected: ARG08_CONFIGURE_ON_DEMAND_FORBIDDEN')
+}
+if (start.maxWorkerCount != 1) {
+    reject('argument predicate rejected: ARG09_WORKER_COUNT')
+}
+if (start.buildCacheEnabled) {
+    reject('argument predicate rejected: ARG10_BUILD_CACHE_FORBIDDEN')
+}
+if (start.rerunTasks) {
+    reject('argument predicate rejected: ARG11_RERUN_TASKS_FORBIDDEN')
+}
+if (start.dependencyVerificationMode != DependencyVerificationMode.STRICT) {
+    reject('argument predicate rejected: ARG12_DEPENDENCY_VERIFICATION_STRICT')
+}
+// New explicit graph-only compatibility contract, NOT a diagnosis of historical Graph02/03.
+// Inner verifies complete checked-in gradle.properties SHA256/raw Git blob before Gradle.
+final String PROPERTY_SOURCE_SHA = '323971ec6c0f02ff28c724b4c4f3120b5b8843faf3d77608485c1e15fb633235'
+final String PROPERTY_CONTRACT = 'EXACT_CLI_NATIVE_PLUS_FIXED_TOOLCHAIN_9_V1'
+final Map CLI_PROPERTIES = [
+    'passvault.audit.mode': 'android-framework-package-actions',
+    'kotlin.compiler.execution.strategy': 'in-process',
+    'android.builder.sdkDownload': 'false',
+    'kotlin.native.toolchain.enabled': 'true',
+    'kotlin.native.distribution.downloadFromMaven': 'true',
+    'konan.data.dir': runtime.resolve('konan').toString(),
+]
+// Prospective explicit policy mirrors, not identification of historical extras.
+// These three values already occur in the fixed command's -D options.
+final Map FIXED_TOOLCHAIN_PROPERTIES = [
+    'org.gradle.java.installations.auto-download': 'false',
+    'org.gradle.java.installations.auto-detect': 'false',
+    'org.gradle.java.installations.paths': JDK,
+]
+final Map CHECKED_PROPERTIES = [
+    'kotlin.code.style': 'official',
+    'kotlin.daemon.jvmargs': '-Xmx2048M',
+    'kotlin.compiler.execution.strategy': 'in-process',
+    'kotlin.incremental': 'true',
+    'kotlin.experimental.tryNext': 'false',
+    'org.gradle.jvmargs': '-Xmx4096m -Dfile.encoding=UTF-8',
+    'org.gradle.daemon': 'false',
+    'org.gradle.parallel': 'true',
+    'org.gradle.caching': 'true',
+    'org.gradle.configuration-cache': 'true',
+    'org.gradle.configureondemand': 'false',
+    'android.useAndroidX': 'true',
+    'org.jetbrains.compose.experimental.jscanvas.enabled': 'false',
+    'kotlin.mpp.enableCInteropCommonization': 'true',
+    'kotlin.test.default.jvm.target': '17',
+    'systemProp.org.gradle.dependency.verification.console': 'verbose',
+    'org.gradle.tooling.parallel': 'true',
+]
+def fixedProperties = new LinkedHashMap(CLI_PROPERTIES)
+fixedProperties.putAll(FIXED_TOOLCHAIN_PROPERTIES) // Only the new expected map is modified.
+def sourceOnlyKeys = CHECKED_PROPERTIES.keySet().findAll { !CLI_PROPERTIES.containsKey(it) }
+// Exact size + every literal key + exact String value. No subset/normalization,
+// unknown-key iteration, actual-map mutation, inferred origin or wrapper equals.
+def exactPropertyMap = { Map expected ->
+    if (!(props instanceof Map) || props.size() != expected.size()) return false
+    expected.every { String key, String expectedValue ->
+        if (!props.containsKey(key)) return false
+        def observed = props[key]
+        observed instanceof String && expectedValue.equals(observed)
+    }
+}
+def argumentVector = [
+    format: 'passvault-android-argument-vector-v3', runId: RUN_ID,
+    phase: 'AFTER_ARG12_BEFORE_ARG13', sourceManifestSha256: 'UNBOUND',
+    propertySourceSha256: PROPERTY_SOURCE_SHA, propertyContract: PROPERTY_CONTRACT,
+    compatibilityShape: 'REJECT',
+    qualification: 'NEW_EXACT_CONTRACT_NOT_REPRODUCED_CAUSE_OR_TASK_AUTHORITY',
+    projectMapKind: props instanceof Map ? 'MAP' : 'OTHER',
+    systemMapKind: sys instanceof Map ? 'MAP' : 'OTHER',
+    keys: [state: 'UNOBSERVED', count: null, expectedMask: null, sourceOnlyMask: null,
+           sourceStringMask: null, sourceValueMatchMask: null, toolchainOnlyMask: null,
+           toolchainStringMask: null, toolchainValueMatchMask: null, sizeAndExpectedMembershipAgree: null],
+    types: [ARG14: 'UNOBSERVED', ARG15: 'UNOBSERVED', ARG16: 'UNOBSERVED',
+            ARG17: 'UNOBSERVED', ARG18: 'UNOBSERVED', ARG19: 'UNOBSERVED', JAVA_HOME: 'UNOBSERVED'],
+    outcomes: [LEGACY_ARG13: 'UNOBSERVED', ARG14: 'UNOBSERVED', ARG15: 'UNOBSERVED',
+               ARG16: 'UNOBSERVED', ARG17: 'UNOBSERVED', ARG18: 'UNOBSERVED',
+               ARG19: 'UNOBSERVED', ARG20: 'UNOBSERVED'],
+    diagnosticError: false,
+]
+def argumentValues = [:] // Only literal-key values, never serialized/printed.
+def valueKind = { Object value -> value == null ? 'NULL' : value instanceof String ? 'STRING' : 'OTHER' }
+def observeArgument = { String id, Closure predicate ->
+    try {
+        def rejected = predicate.call()
+        if (!(rejected instanceof Boolean)) throw new GradleException('nonboolean diagnostic predicate')
+        argumentVector.outcomes[id] = rejected ? 'REJECT' : 'ACCEPT'
+    } catch (Throwable ignored) {
+        argumentVector.outcomes[id] = 'ERROR'
+        argumentVector.diagnosticError = true
+    }
+}
+def readArgument = { String id, Object map, String key ->
+    try {
+        def value = map[key]
+        argumentValues[id] = value
+        argumentVector.types[id] = valueKind(value)
+        true
+    } catch (Throwable ignored) {
+        argumentVector.types[id] = 'ERROR'
+        argumentVector.outcomes[id] = 'ERROR'
+        argumentVector.diagnosticError = true
+        false
+    }
+}
+observeArgument('LEGACY_ARG13') {
+    props.keySet() != ['passvault.audit.mode', 'kotlin.compiler.execution.strategy', 'android.builder.sdkDownload'].toSet()
+}
+try {
+    if (exactPropertyMap(fixedProperties)) argumentVector.compatibilityShape = 'EXACT_CLI_NATIVE_PLUS_FIXED_TOOLCHAIN_9'
+    def keys = props.keySet()
+    if (!(keys instanceof Set)) {
+        argumentVector.keys.state = 'NOT_SET'
+    } else {
+        int count = keys.size()
+        if (count < 0 || count > 64) {
+            argumentVector.keys.state = 'COUNT_OUT_OF_BOUND'
+        } else {
+            String expectedMask = CLI_PROPERTIES.keySet().collect { keys.contains(it) ? '1' : '0' }.join('')
+            String sourceMask = sourceOnlyKeys.collect { keys.contains(it) ? '1' : '0' }.join('')
+            String sourceStringMask = sourceOnlyKeys.collect { props[it] instanceof String ? '1' : '0' }.join('')
+            String sourceValueMask = sourceOnlyKeys.collect {
+                def observed = props[it]
+                observed instanceof String && CHECKED_PROPERTIES[it].equals(observed) ? '1' : '0'
+            }.join('')
+            String toolchainMask = FIXED_TOOLCHAIN_PROPERTIES.keySet().collect { keys.contains(it) ? '1' : '0' }.join('')
+            String toolchainStringMask = FIXED_TOOLCHAIN_PROPERTIES.keySet().collect {
+                props[it] instanceof String ? '1' : '0'
+            }.join('')
+            String toolchainValueMask = FIXED_TOOLCHAIN_PROPERTIES.keySet().collect {
+                def observed = props[it]
+                observed instanceof String && FIXED_TOOLCHAIN_PROPERTIES[it].equals(observed) ? '1' : '0'
+            }.join('')
+            argumentVector.keys = [state: 'COUNT_AND_FIXED_KEYS_VALUES_ONLY', count: count,
+                expectedMask: expectedMask, sourceOnlyMask: sourceMask,
+                sourceStringMask: sourceStringMask, sourceValueMatchMask: sourceValueMask,
+                toolchainOnlyMask: toolchainMask, toolchainStringMask: toolchainStringMask,
+                toolchainValueMatchMask: toolchainValueMask,
+                sizeAndExpectedMembershipAgree: count == 9 && expectedMask == '111111' && toolchainMask == '111']
+        }
+    }
+} catch (Throwable ignored) {
+    argumentVector.keys.state = 'ERROR'
+    argumentVector.compatibilityShape = 'ERROR'
+    argumentVector.diagnosticError = true
+}
+[
+    ['ARG14', props, 'passvault.audit.mode', 'android-framework-package-actions'],
+    ['ARG15', props, 'kotlin.compiler.execution.strategy', 'in-process'],
+    ['ARG16', props, 'android.builder.sdkDownload', 'false'],
+    ['ARG17', sys, 'org.gradle.java.installations.auto-download', 'false'],
+    ['ARG18', sys, 'org.gradle.java.installations.auto-detect', 'false'],
+].each { selection ->
+    String id = selection[0]
+    if (readArgument(id, selection[1], selection[2])) {
+        if (argumentVector.types[id] in ['NULL', 'STRING']) {
+            observeArgument(id) { argumentValues[id] != selection[3] }
+        } else argumentVector.outcomes[id] = 'UNOBSERVED_TYPE'
+    }
+}
+boolean pathRead = readArgument('ARG19', sys, 'org.gradle.java.installations.paths')
+if (pathRead) {
+    if (argumentVector.types.ARG19 in ['NULL', 'STRING']) {
+        observeArgument('ARG19') { !argumentValues.ARG19 }
+    } else argumentVector.outcomes.ARG19 = 'UNOBSERVED_TYPE'
+}
+def javaHome = null
+try {
+    javaHome = System.getProperty('java.home')
+    argumentVector.types.JAVA_HOME = valueKind(javaHome)
+} catch (Throwable ignored) {
+    argumentVector.types.JAVA_HOME = 'ERROR'
+    argumentVector.diagnosticError = true
+}
+if (!pathRead || argumentVector.outcomes.ARG19 != 'ACCEPT') {
+    argumentVector.outcomes.ARG20 = 'UNOBSERVED_ARG19'
+} else if (argumentVector.types.ARG19 != 'STRING' || argumentVector.types.JAVA_HOME != 'STRING' ||
+        argumentValues.ARG19 != JDK || javaHome != JDK) {
+    argumentVector.outcomes.ARG20 = 'UNOBSERVED_NONFIXED_PATH'
+} else {
+    observeArgument('ARG20') { new File(argumentValues.ARG19).canonicalFile != new File(javaHome).canonicalFile }
+}
+String argumentVectorJson = JsonOutput.toJson(argumentVector)
+if (argumentVectorJson.getBytes('UTF-8').length > 4096) {
+    reject('bounded argument diagnostic unavailable; all task actions forbidden')
+}
+println('PASSVAULT_ANDROID_ARG_VECTOR=' + argumentVectorJson)
+if (argumentVector.diagnosticError) reject('argument diagnostic read failed; all task actions forbidden')
+if (argumentVector.compatibilityShape != 'EXACT_CLI_NATIVE_PLUS_FIXED_TOOLCHAIN_9') {
+    reject('argument predicate rejected: ARG13_EXACT_PROJECT_PROPERTY_CONTRACT')
+}
+// Original ARG14..ARG20 immediately follow unchanged. Their fresh reads still
+// decide those predicates; observations are not an immutable map snapshot.
+if (props['passvault.audit.mode'] != 'android-framework-package-actions') {
+    reject('argument predicate rejected: ARG14_AUDIT_MODE')
+}
+if (props['kotlin.compiler.execution.strategy'] != 'in-process') {
+    reject('argument predicate rejected: ARG15_KOTLIN_COMPILER_STRATEGY')
+}
+if (props['android.builder.sdkDownload'] != 'false') {
+    reject('argument predicate rejected: ARG16_ANDROID_SDK_DOWNLOAD_OFF')
+}
+if (sys['org.gradle.java.installations.auto-download'] != 'false') {
+    reject('argument predicate rejected: ARG17_JDK_AUTO_DOWNLOAD_OFF')
+}
+if (sys['org.gradle.java.installations.auto-detect'] != 'false') {
+    reject('argument predicate rejected: ARG18_JDK_AUTO_DETECT_OFF')
+}
+if (!sys['org.gradle.java.installations.paths']) {
+    reject('argument predicate rejected: ARG19_JDK_PATH_REQUIRED')
+}
+if (new File(sys['org.gradle.java.installations.paths']).canonicalFile != new File(System.getProperty('java.home')).canonicalFile) {
+    reject('argument predicate rejected: ARG20_JDK_CANONICAL_HOME_MATCH')
+}
+// Accepted Dependency03 native-route policy, newly composed here: Graph04 lacked it.
+// This is not a general download ban or a promise the requested graph will configure.
+def nativeData = runtime.resolve('konan').toFile()
+def nativeProperties = [
+    'kotlin.native.toolchain.enabled': 'true',
+    'kotlin.native.distribution.downloadFromMaven': 'true',
+    'konan.data.dir': nativeData.path,
+]
+def forbiddenNativeOverrides = ['kotlin.native.home', 'org.jetbrains.kotlin.native.home',
+    'kotlin.native.version', 'org.jetbrains.kotlin.native.version', 'kotlin.native.reinstall']
+if (nativeProperties.any { key, value -> start.projectProperties[key] != value } ||
+        forbiddenNativeOverrides.any { start.projectProperties.containsKey(it) } ||
+        System.getenv('KONAN_DATA_DIR') != nativeData.path || nativeData.canonicalFile != nativeData ||
+        !nativeData.isDirectory() || nativeData.list()?.length != 0) {
+    reject('pinned native route and fresh empty native data directory required')
+}
+gradle.beforeProject { project ->
+    if (nativeProperties.any { key, value -> project.findProperty(key) != value } ||
+            forbiddenNativeOverrides.any { project.findProperty(it) != null }) {
+        reject('native route/home/version/reinstall overrides forbidden')
+    }
+}
+gradle.addListener([
+    beforeResolve: { ResolvableDependencies incoming ->
+        if (incoming.name == 'kotlinNativeBundleConfiguration') {
+            nativeDenied.set(true)
+            reject('Kotlin/Native compiler provisioning forbidden; no retry')
+        }
+    },
+    afterResolve: { ResolvableDependencies ignored -> },
+] as DependencyResolutionListener)
+bindingOk = true
+
+final Map SCHEMAS = [
+    'com.passvault.core.database.VaultDatabase/1.json': '76985152ec6593ee7eb13343bf30e86b1fd7beacbb27e89c4a2cfcb286eeb586',
+    'com.passvault.core.database.VaultDatabase/2.json': '3c09e59f2ab2b59a2535c82a404b9af27b9e3934f88e4161c1a9478cdef38d94',
+    'com.passvault.core.database.VaultDatabase/3.json': '080ac957b9dcdb58bc4950cb3e1f6a8279a0432e2a3ea580ba3aa0c84add9136',
+    'com.passvault.core.database.VaultDatabase/4.json': '9dc4f187784ca4a409b258debab1fbf9ad8a700778e060c44b98d9d4d8d14224',
+    'com.passvault.core.database.VaultDatabase/5.json': '431ed8a2dbfcde5c132f45a2e4443894d45aa0010bf9b6616780f62be3cd354b',
+]
+def schemaRoot = checkout.resolve('core/database/schemas')
+def outputs = [:], actualByPath = [:], expectedByPath = [:], tasksByPath = [:]
+def entered = [], completedTasks = [], outputRows = [], inputEvidence = [:], producedEvidence = [:]
+def roomOutputBinding = null
+long hashedBytes = 0L
+// Cooperative original-root/path guards, not a sandbox against arbitrary plugin
+// code or hostile concurrent root writers. The outer binds the original R inode.
+def checked = { File file, boolean outputPath ->
+    def p = file.toPath().toAbsolutePath().normalize()
+    if (!(outputPath ? p.startsWith(checkout) : readRoots.any { p.startsWith(new File(it).toPath()) })) reject('path escaped fixed private read/write envelope')
+    for (def q = p; q != null; q = q.parent) {
+        if (Files.isSymbolicLink(q)) reject('symlink in a selected input/output path')
+        if (Files.exists(q, LinkOption.NOFOLLOW_LINKS)) {
+            def a = Files.readAttributes(q, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+            if (!a.isDirectory() && !a.isRegularFile()) reject('nonregular selected path/ancestor')
+            if (outputPath || q.startsWith(runtime)) {
+                if (Files.getAttribute(q, 'unix:uid', LinkOption.NOFOLLOW_LINKS) != 0) reject('nonowned private path')
+                if (a.isRegularFile() && Files.getAttribute(q, 'unix:nlink', LinkOption.NOFOLLOW_LINKS) != 1) reject('hardlinked private file')
+            }
+        }
+    }
+    p
+}
+def hashed = { p ->
+    def a = Files.readAttributes(p, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+    if (!a.isRegularFile() || a.size() > 256L * 1024 * 1024 || (hashedBytes += a.size()) > 512L * 1024 * 1024) reject('finite regular-file/hash budget exceeded')
+    def md = MessageDigest.getInstance('SHA-256')
+    byte[] buf = new byte[65536], header = new byte[8]
+    long seen = 0L; int copied = 0
+    Files.newInputStream(p, LinkOption.NOFOLLOW_LINKS).withCloseable { stream ->
+        int n
+        while ((n = stream.read(buf)) != -1) {
+            if (n == 0) continue
+            if ((seen += n) > a.size()) reject('file grew during read')
+            int take = Math.min(n, 8 - copied)
+            if (take > 0) { System.arraycopy(buf, 0, header, copied, take); copied += take }
+            md.update(buf, 0, n)
+        }
+    }
+    def z = Files.readAttributes(p, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+    if (seen != a.size() || z.size() != a.size() || z.lastModifiedTime() != a.lastModifiedTime() || z.fileKey() != a.fileKey()) reject('unstable file identity/read')
+    [path: p.toString(), bytes: seen, sha256: md.digest().encodeHex().toString(), header: header.encodeHex().toString()]
+}
+def members = { List roots, boolean mayBeAbsent, boolean outputPath ->
+    def files = new TreeMap(); int examined = 0
+    roots.each { File rootFile ->
+        def p = checked(rootFile, outputPath)
+        if (!Files.exists(p, LinkOption.NOFOLLOW_LINKS)) {
+            if (!mayBeAbsent) reject('required private output absent')
+        } else {
+            Files.walk(p).withCloseable { stream ->
+                def iterator = stream.iterator()
+                while (iterator.hasNext()) {
+                    def q = checked(iterator.next().toFile(), outputPath)
+                    if (++examined > 32768) reject('private output traversal bound')
+                    if (!Files.isDirectory(q, LinkOption.NOFOLLOW_LINKS)) files[q.toString()] = q
+                }
+            }
+        }
+    }
+    files.values().toList()
+}
+def schemaEqual = { String at ->
+    def rows = members([schemaRoot.toFile()], false, true).collect { hashed(it) }
+    def actual = rows.collectEntries { [(schemaRoot.relativize(new File(it.path).toPath()).toString()): it.sha256] }
+    if (actual != SCHEMAS) reject('runtime-copy canonical schema set/bytes drift')
+    emit(common() + [kind: 'schema-equality', at: at, root: schemaRoot.toString(), files: rows, equal: true])
+}
+def outputPaths = { task ->
+    def roots = task.outputs.files.files.toList()
+    if (roots.size() > 64) reject('per-task output-root bound')
+    def module = checkout.resolve(task.project.path.substring(1).replace(':', '/'))
+    def build = module.resolve('build')
+    def privateKey = runtime.resolve('home/.android/debug.keystore')
+    def paths = roots.collect { f ->
+        if (task.path == SIGNING && f.toPath() == privateKey) return privateKey
+        checked(f, true)
+    }.unique().sort { it.toString() }
+    paths.each { p ->
+        if (task.path == SIGNING && p == privateKey) {
+            // Signing gate validates the actual fresh key; do not read key bytes.
+        } else if (task.path == ROOM) {
+            if (p != schemaRoot) reject('Room finalizer output must be only the original private copied schemas')
+        } else if (p == build || !p.startsWith(build) || p.startsWith(build.resolve('outputs/bundle')) ||
+                (p.startsWith(build.resolve('outputs/apk')) &&
+                    !(task.path == PACKAGE && p.startsWith(build.resolve('outputs/apk/debug'))))) {
+            reject('output is not an allowed module build intermediate/report')
+        }
+    }
+    if (task.path == ROOM) {
+        // Room2.8.4 marks this real writer destination @Internal, not @OutputDirectory.
+        // Keep generic roots as a separate witness; never manufacture a declared output.
+        if (task.class.superclass?.name != 'androidx.room.gradle.RoomSchemaCopyTask') reject('Room writer class hierarchy changed')
+        def directory = task.getSchemaDirectory()
+        if (!(directory instanceof DirectoryProperty) || !directory.isPresent()) reject('Room writer destination property is absent or changed')
+        def destination = checked(directory.get().asFile, true)
+        if (destination != schemaRoot) reject('Room writer destination must be only the original private copied schemas')
+        def observed = [api: 'androidx.room.gradle.RoomSchemaCopyTask.getSchemaDirectory',
+            destination: destination.toString(), genericOutputs: paths.collect { it.toString() }]
+        if (roomOutputBinding != null && roomOutputBinding != observed) reject('Room writer/generic-output binding drift before action')
+        roomOutputBinding = observed
+        paths = [destination]
+    }
+    if (task.path in [COMPILER, PACKAGE, LEGAL] && paths.empty) reject('required producer has no bound generic output')
+    paths.collect { it.toFile() }
+}
+
+
+final String FRAMEWORK_TARGET = ':app-android:auditCompileDebugFrameworkInstrumentation'
+final String FRAMEWORK_FIXTURE = 'app-android/src/androidTest/kotlin/com/passvault/android/audit/' +
+    'AndroidClipboardLocaleInstrumentationTest.kt'
+final String FRAMEWORK_FIXTURE_SHA = '21ae72a59dae1ba8dea978f56c0bf862c73b3bb91b76980f92713c57633b61fb'
+def frameworkState = [pluginCallbacks: 0, debugCallbacks: 0]
+def frameworkBinding = null
+
+gradle.beforeProject { project ->
+    if (project.path != ':app-android') return
+    project.pluginManager.withPlugin('com.android.application') {
+        if (++frameworkState.pluginCallbacks != 1) reject('duplicate app plugin framework binding')
+        def components = project.extensions.findByName('androidComponents')
+        if (components == null) reject('application androidComponents is absent')
+        ClassLoader loader = components.getClass().getClassLoader()
+        Class applicationType = loader.loadClass('com.android.build.api.variant.ApplicationVariant')
+        Class androidTestType = loader.loadClass('com.android.build.api.variant.AndroidTest')
+        Class componentType = loader.loadClass('com.android.build.api.variant.Component')
+        Class function1Type = loader.loadClass('kotlin.jvm.functions.Function1')
+        Class scopeType = loader.loadClass('com.android.build.api.variant.ScopedArtifacts$Scope')
+        Class classesType = loader.loadClass('com.android.build.api.artifact.ScopedArtifact$CLASSES')
+        def projectScope = scopeType.getField('PROJECT').get(null)
+        def classesArtifact = classesType.getField('INSTANCE').get(null)
+        // Same existing selector().all()/onVariants DSL surface as app source665-694.
+        // Only the ordinary Debug callback can register the one new consumer.
+        components.onVariants(components.selector().all()) { variant ->
+            if (!applicationType.isInstance(variant) || !componentType.isInstance(variant)) {
+                reject('framework callback is not an application Component')
+            }
+            if (variant.name != 'debug') return
+            if (++frameworkState.debugCallbacks != 1 || variant.isMinifyEnabled() || !variant.getDebuggable()) {
+                reject('exactly one ordinary unminified debuggable variant is required')
+            }
+            def testComponent = variant.getAndroidTest()
+            if (testComponent == null || !androidTestType.isInstance(testComponent) ||
+                    !componentType.isInstance(testComponent)) {
+                reject('ordinary Debug AndroidTest Component is absent or different')
+            }
+            String componentName = testComponent.name
+            if (componentName == null || !(componentName ==~ /[A-Za-z0-9_]{1,128}/)) {
+                reject('bounded actual test component identity required')
+            }
+            def carrier = project.tasks.register('auditCompileDebugFrameworkInstrumentation', PassVaultFrameworkClassCarrier)
+            def jarsGetter = ({ PassVaultFrameworkClassCarrier task -> task.getClassJars() }).asType(function1Type)
+            def directoriesGetter = ({ PassVaultFrameworkClassCarrier task -> task.getClassDirectories() }).asType(function1Type)
+            if (!function1Type.isInstance(jarsGetter) || !function1Type.isInstance(directoriesGetter)) {
+                reject('same-loader Kotlin Function1 artifact accessors required')
+            }
+            testComponent.getArtifacts().forScope(projectScope).use(carrier).toGet(
+                classesArtifact, jarsGetter, directoriesGetter)
+            frameworkBinding = [provider: carrier, component: testComponent,
+                variantName: 'debug', componentName: componentName, target: FRAMEWORK_TARGET,
+                artifact: 'PROJECT/CLASSES', fixture: FRAMEWORK_FIXTURE, fixtureExpectedSha256: FRAMEWORK_FIXTURE_SHA]
+            emit(common() + [kind: 'framework-artifact-binding', project: project.path,
+                variantName: 'debug', componentName: componentName,
+                componentType: testComponent.getClass().getName(), target: FRAMEWORK_TARGET,
+                artifact: 'PROJECT/CLASSES', fixture: FRAMEWORK_FIXTURE,
+                fixtureExpectedSha256: FRAMEWORK_FIXTURE_SHA, observedCompilerCases: 0,
+                qualification: 'Configuration association only; actual producer graph, fixture input, fresh class and compiler outcomes remain unbound.'])
+        }
+    }
+}
+gradle.projectsEvaluated {
+    if (frameworkState.pluginCallbacks != 1 || frameworkState.debugCallbacks != 1 || frameworkBinding == null) {
+        reject('one exact framework artifact consumer must be registered before graph selection')
+    }
+}
+// The parent graph/compile gate must consume frameworkBinding.provider and its
+// real classJars/classDirectories providers. Never infer a compiler task spelling,
+// enable the old Host06/07 Test graph, or open control.gate from this fragment.
+
+// Fresh finite action gate. Original412-node graph is data, not reusable execution admission.
+final Path expectedGraphFile = new File('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance07/EXPECTED-GRAPH.json').toPath()
+final String EXPECTED_GRAPH_SHA = '90d55008a8e88d83a235eccdb61c59ae3dd4a0b1c62e328dfb907337584223e3'
+def packageInput = null
+
+def legalInputs = { task ->
+    def docs = task.legalDocuments.files.collect { checked(it, false).toString() }.toSet()
+    if (docs != ['LICENSE.txt', 'NOTICE.txt', 'THIRD_PARTY_NOTICES.md'].collect {
+            checkout.resolve(it).toString()
+        }.toSet() || checked(task.thirdPartyLicenseDirectory.get().asFile, false) !=
+            checkout.resolve('THIRD_PARTY_LICENSES')) reject('canonical legal input set changed')
+}
+def verifierBinding = { task ->
+    if (task.class.name != 'Build_gradle$VerifyAndroidPackageContents_Decorated' ||
+        task.archiveExtension.get() != 'apk' ||
+        checked(task.archiveDirectory.get().asFile, true) != checkout.resolve('app-android/build/outputs/apk/debug') ||
+        task.nativeLibraryPrefix.get() != 'lib/' || task.legalEntryPrefix.get() != 'assets/legal/' ||
+        task.expectedNativeAbis.get() != ['arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64'] ||
+        task.expectedNativeLibraries.get() != ['libandroidx.graphics.path.so', 'libimage_processing_util_jni.so',
+            'libjnidispatch.so', 'libsodium.so', 'libsqliteJni.so', 'libsurface_util_jni.so'] ||
+        task.expectedEntry.get() != 'assets/composeResources/com.passvault.core.designsystem.generated.resources/values/strings.commonMain.cvr') {
+        reject('ordinary Debug package verifier contract changed')
+    }
+    legalInputs(task)
+}
+def apkFile = { task ->
+    verifierBinding(task)
+    def root = checked(task.archiveDirectory.get().asFile, true)
+    def files = members([root.toFile()], false, true).findAll { it.parent == root && it.toString().endsWith('.apk') }
+    if (files.size() != 1) reject('one original Debug APK required')
+    files[0]
+}
+def packageEvidence = { task ->
+    def apk = apkFile(task)
+    def identity = hashed(apk)
+    if (identity != packageInput) reject('APK changed across actual verifier action')
+    def rows = []
+    long expanded = 0
+    new ZipFile(apk.toFile()).withCloseable { zip ->
+        if (zip.size() > 32768) reject('APK member count bound')
+        def names = [] as Set
+        zip.entries().each { entry ->
+            if (entry.name.size() > 1024 || !names.add(entry.name) || entry.size < 0 || entry.size > 128L * 1024 * 1024 ||
+                    entry.name.startsWith('/') || entry.name.tokenize('/').any { it == '..' }) reject('unsafe/duplicate APK member')
+            def row = [name: entry.name, bytes: entry.size, directory: entry.directory, crc: entry.crc]
+            if (!entry.directory && (entry.name.startsWith('assets/legal/') || entry.name.startsWith('lib/'))) {
+                def md = MessageDigest.getInstance('SHA-256')
+                byte[] buffer = new byte[65536], header = new byte[20]
+                long seen = 0; int copied = 0
+                zip.getInputStream(entry).withCloseable { stream ->
+                    int n
+                    while ((n = stream.read(buffer)) != -1) {
+                        if (n == 0) continue
+                        if ((seen += n) > entry.size || (expanded += n) > 256L * 1024 * 1024) reject('APK expansion bound')
+                        int take = Math.min(n, 20 - copied)
+                        if (take > 0) { System.arraycopy(buffer, 0, header, copied, take); copied += take }
+                        md.update(buffer, 0, n)
+                    }
+                }
+                if (seen != entry.size) reject('APK member size mismatch')
+                row.sha256 = md.digest().encodeHex().toString()
+                if (entry.name.startsWith('lib/')) row.elfHeader = header.encodeHex().toString()
+            }
+            rows.add(row)
+        }
+    }
+    if (hashed(apk) != identity) reject('APK identity changed during compact inventory')
+    emit([kind: 'debug-package-evidence', apk: identity, members: rows.sort { it.name },
+        qualification: 'Actual existing Debug verifier plus compact APK/legal/native bytes. NOT Release/candidate/runtime/hardware proof. APK/key binaries not retained.'])
+}
+gradle.taskGraph.whenReady { graph ->
+    readyCount++
+    try {
+        if (!bindingOk || nativeDenied.get() || readyCount != 1 || start.dryRun || control.gate) reject('graph gate entry')
+        if (Files.isSymbolicLink(expectedGraphFile) || !Files.isRegularFile(expectedGraphFile, LinkOption.NOFOLLOW_LINKS) ||
+            Files.size(expectedGraphFile) > 1024 * 1024) reject('bound graph source missing')
+        byte[] data = Files.readAllBytes(expectedGraphFile)
+        if (MessageDigest.getInstance('SHA-256').digest(data).encodeHex().toString() != EXPECTED_GRAPH_SHA) reject('expected graph bytes changed')
+        def expected = new JsonSlurper().parseText(new String(data, 'UTF-8'))
+        if (!(expected instanceof List) || expected.size() != 412) reject('exact412 graph required')
+        expectedByPath = expected.collectEntries { [(it.path): it] }
+        def tasks = graph.allTasks
+        if (tasks.size() != 412 || expectedByPath.size() != 412) reject('actual graph count changed')
+        def paths = tasks.collect { taskPath(it.path) }.toSet()
+        if (paths != expectedByPath.keySet()) reject('actual graph paths changed')
+        int edgeRefs = 0
+        def edge = { values ->
+            if (!(values instanceof Collection) || values.size() > 128 || (edgeRefs += values.size()) > 8192) reject('edge bound')
+            def names = values.collect { taskPath(it.path) }
+            if (names.toSet().size() != names.size()) reject('duplicate edge')
+            names.sort()
+        }
+        def rows = tasks.collect { task ->
+            [path: taskPath(task.path), type: typeName(task.class.name), enabled: task.enabled,
+             isTest: task instanceof Test, isExec: task instanceof Exec, isJavaExec: task instanceof JavaExec,
+             isArchive: task instanceof AbstractArchiveTask, dependencies: edge(graph.getDependencies(task)),
+             finalizers: edge(task.finalizedBy.getDependencies(task)), mustRunAfter: edge(task.mustRunAfter.getDependencies(task)),
+             shouldRunAfter: edge(task.shouldRunAfter.getDependencies(task))]
+        }
+        // Preserve the recorded AGP-disabled preDebugAndroidTestBuild node. Exact row
+        // equality rejects any enablement drift without requiring every dependency enabled.
+        def mismatches = rows.findAll { it != expectedByPath[it.path] }
+        if (!mismatches.empty || rows.any { it.isTest || it.isExec || it.isJavaExec }) {
+            emit([kind: 'graph-mismatch', rows: mismatches,
+                qualification: 'Bounded task metadata only; graph refused before task actions.'])
+            reject('actual graph type/edge/enablement differs; no task exclusion or expansion')
+        }
+        tasksByPath = tasks.collectEntries { [(it.path): it] }
+        actualByPath = rows.collectEntries { [(it.path): it] }
+        if (frameworkBinding == null || frameworkBinding.artifact != 'PROJECT/CLASSES' ||
+            frameworkBinding.variantName != 'debug' || frameworkBinding.target != TARGET) reject('framework binding absent')
+        // BEFORE all Gradle input fingerprinting: reject foreign keys/serialized configurations.
+        signingGate = new PassVaultPrivateDebugSigningGate(runtime, tasksByPath[SIGNING], tasksByPath[PACKAGE])
+        signingGate.bindGraph()
+        tasks.each { task ->
+            outputs[task.path] = outputPaths(task)
+            outputRows.add([task: task.path, outputs: outputs[task.path].collect { it.toString() }])
+        }
+        def legal = tasksByPath[LEGAL]
+        legalInputs(legal)
+        if (checked(legal.outputDirectory.get().asFile, true) != checkout.resolve('app-android/build/generated/assets/prepareAndroidLegalAssets') ||
+            !members(outputs[LEGAL], true, true).empty) reject('fresh exact legal Sync output required')
+        verifierBinding(tasksByPath[PACKAGE_TARGET])
+        compileGate = new PassVaultFrameworkCompileGate(tasksByPath[COMPILER], tasksByPath[TARGET],
+            checkout.resolve(FRAMEWORK_FIXTURE), FRAMEWORK_FIXTURE_SHA, checked, emit)
+        compileGate.bindGraph(outputs[COMPILER].collect { checked(it, true) })
+        schemaEqual('before-actions')
+        expectedPaths = paths
+        emit([kind: 'action-admission', tasks: rows, outputRoots: outputRows,
+            expectedGraphSha256: EXPECTED_GRAPH_SHA, taskCount: tasks.size(), edgeReferences: edgeRefs,
+            signing: 'NEW_PRIVATE_DEFAULT_DEBUG_KEY_ONLY_NO_SECRET_VALUES',
+            qualification: 'Fresh finite graph/source/output/signing guards; cooperative plugin contract, not adversarial sandbox.'])
+        control.actionsAdmitted = true
+        control.gate = true
+    } catch (Throwable failure) { control.gate = false; control.failed = true; throw failure }
+}
+beforeAction = { task ->
+    if (!expectedPaths.contains(task.path) || entered.contains(task.path) ||
+        task.enabled != actualByPath[task.path].enabled || task.class.name != actualByPath[task.path].type || outputPaths(task) != outputs[task.path]) {
+        reject('task/declared output changed')
+    }
+    entered.add(task.path)
+    if (task.path == ROOM) schemaEqual('before-schema-finalizer')
+    if (task.path == LEGAL) {
+        legalInputs(task)
+        if (!members(outputs[LEGAL], true, true).empty) reject('legal Sync output no longer fresh')
+    }
+    if (task.path == SIGNING) signingGate.beforeValidation()
+    if (task.path == PACKAGE) signingGate.beforePackage()
+    if (task.path == COMPILER) compileGate.beforeCompiler()
+    if (task.path == TARGET) compileGate.beforeCarrier()
+    if (task.path == PACKAGE_TARGET) packageInput = hashed(apkFile(task))
+}
+afterAction = { task, state ->
+    if (!entered.contains(task.path) || completedTasks.contains(task.path)) reject('unexpected/repeated outcome')
+    completedTasks.add(task.path)
+    emit([kind: 'task-state', task: task.path, executed: state.executed, skipped: state.skipped,
+        upToDate: state.upToDate, noSource: state.noSource, didWork: state.didWork,
+        skipMessage: state.skipMessage, failureType: state.failure?.class?.name])
+    if (state.failure != null) return
+    if (task.path == SIGNING) signingGate.afterValidation(state)
+    if (task.path == COMPILER) compileGate.afterCompiler(state)
+    if (task.path == ROOM) {
+        boolean action = state.executed && !state.skipped && !state.upToDate && !state.noSource && state.skipMessage == null
+        boolean unchanged = state.executed && state.skipped && !state.upToDate && state.noSource && !state.didWork && state.skipMessage == 'NO-SOURCE'
+        if (!action && !unchanged) reject('Room requires real action or unchanged NO-SOURCE')
+        schemaEqual('after-schema-finalizer')
+        schemaCompleted = true
+    }
+    if (task.path == PACKAGE_TARGET) {
+        if (!state.executed || state.skipped || state.upToDate || state.noSource || state.skipMessage != null) reject('fresh package verifier action required')
+        packageEvidence(task)
+        packageVerified = true
+    }
+}

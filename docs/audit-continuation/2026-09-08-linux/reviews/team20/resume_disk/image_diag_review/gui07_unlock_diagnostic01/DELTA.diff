@@ -1,0 +1,96 @@
+--- a/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt
++++ b/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt
+@@ -18,6 +18,8 @@
+ import com.passvault.shared.di.AppModule
+ import com.passvault.feature.backup.presentation.BackupViewModel
+ import com.passvault.feature.settings.presentation.SettingsViewModel
++import com.passvault.feature.unlock.presentation.UnlockViewModel
++import com.passvault.feature.vault.presentation.VaultViewModel
+ import java.awt.MenuItem
+ import java.awt.PopupMenu
+ import java.awt.SystemTray
+@@ -416,9 +418,7 @@
+         var homeDuring = false
+         var homeAfter = false
+         try {
+-            replaceText("Master password", PASSWORD, readable = false)
+-            click(button("Unlock vault"))
+-            await("PVU003_NATIVE_UNLOCK", 30) { onEdt { credentialCard(snapshot()) != null } }
++            nativeUnlock("PVU003_NATIVE_UNLOCK")
+             click(tab("Settings"))
+             await("PVU003_NATIVE_SETTINGS") { onEdt { tab("Settings")(snapshot())?.selected == true } }
+             click(named("Data Management"))
+@@ -559,9 +559,7 @@
+     }
+     private fun settingsTrayPropagationOnlyScenario() {
+         val originalFrame = frame
+-        replaceText("Master password", PASSWORD, readable = false)
+-        click(button("Unlock vault"))
+-        await("PVA027_MAIN_UNLOCK", 30) { onEdt { credentialCard(snapshot()) != null } }
++        nativeUnlock("PVA027_MAIN_UNLOCK")
+         click(tab("Settings"))
+         await("PVA027_MAIN_SETTINGS") { onEdt { tab("Settings")(snapshot())?.selected == true } }
+         pva027Click { nodes -> unique(nodes.filter { node ->
+@@ -760,10 +758,59 @@
+         failures.throwIfPresent() // No alternative coordinates, direct AX action, or radio-click retry.
+     }
+ 
++    private enum class NativeUnlockStage { INPUT, SUBMIT, RESULT }
++    private enum class NativeUnlockSession { UNINITIALIZED, LOCKED, UNLOCKING, UNLOCKED, LOCKING }
++
++    // Observe Main's existing singleton roots only; input and navigation remain native.
++    // Retain fixed booleans/enums, never model text/password/error content or AX names.
++    @Suppress("TooGenericExceptionCaught")
++    private fun nativeUnlock(timeoutMessage: String) {
++        replaceText("Master password", PASSWORD, readable = false)
++        val (unlock, vault, session) = onEdt {
++            val koin = GlobalContext.get()
++            Triple(koin.get<UnlockViewModel>(), koin.get<VaultViewModel>(),
++                assertNotNull(koin.get<VaultRepository>().getSessionState() as? StateFlow<VaultSessionState>))
++        }
++        var stage = NativeUnlockStage.INPUT
++        var inputAcknowledged = false
++        var diagnostic = "SAMPLE=NONE"
++        fun sample(input: Boolean): Boolean = onEdt {
++            val unlockState = unlock.state.value
++            val vaultState = vault.state.value
++            val sessionPhase = when (session.value) {
++                VaultSessionState.Uninitialized -> NativeUnlockSession.UNINITIALIZED
++                is VaultSessionState.Locked -> NativeUnlockSession.LOCKED
++                VaultSessionState.Unlocking -> NativeUnlockSession.UNLOCKING
++                is VaultSessionState.Unlocked -> NativeUnlockSession.UNLOCKED
++                is VaultSessionState.Locking -> NativeUnlockSession.LOCKING
++            }
++            val passwordMatches = unlockState.password == PASSWORD
++            val nativeCard = credentialCard(snapshot()) != null
++            diagnostic = "SESSION=$sessionPhase PASSWORD_MATCH=$passwordMatches" +
++                " UNLOCK_LOADING=${unlockState.isLoading} UNLOCK_ERROR=${unlockState.errorMessage != null}" +
++                " FAILED_ATTEMPTS=${unlockState.failedAttempts > 0}" +
++                " VAULT_LOADING=${vaultState.isLoading} VAULT_ERROR=${vaultState.errorMessage != null}" +
++                " ROW_LOADED=${vaultState.credentials.any { it.id.value == ID }}" +
++                " ROW_FILTERED=${vaultState.filteredCredentials.any { it.id.value == ID }}" +
++                " AX_CARD=$nativeCard WINDOW_ACTIVE=${frame.isShowing && frame.isActive}"
++            if (input) passwordMatches else nativeCard
++        }
++        try {
++            await("MAIN_NAV_NATIVE_PASSWORD_ACK") { sample(input = true).also { inputAcknowledged = it } }
++            stage = NativeUnlockStage.SUBMIT
++            click(button("Unlock vault")) // The same one native click; no direct event/action or retry.
++            stage = NativeUnlockStage.RESULT
++            await(timeoutMessage, 30) { sample(input = false) } // Original AX success predicate/deadline.
++        } catch (error: Throwable) {
++            runCatching {
++                System.err.println("MAIN_NAV_UNLOCK_DIAGNOSTIC STAGE=$stage INPUT_ACK=$inputAcknowledged $diagnostic")
++            }
++            throw error // Diagnostics do not replace the original assertion or native/input finalizers.
++        }
++    }
++
+     private fun scenario() {
+-        replaceText("Master password", PASSWORD, readable = false)
+-        click(button("Unlock vault"))
+-        await("MAIN_NAV_NATIVE_UNLOCK", 30) { onEdt { credentialCard(snapshot()) != null } }
++        nativeUnlock("MAIN_NAV_NATIVE_UNLOCK")
+         click(::credentialCard)
+         click(button("Edit credential"))
+         await("MAIN_NAV_EDITOR") { readText("Title") == TITLE }

@@ -1,0 +1,337 @@
+{
+  "status": "FIVE_INSTRUMENTED_CASES_PASSED",
+  "cases": 5,
+  "commands": [
+    {
+      "label": "source-identity",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/Users/runner/work/passvault/passvault",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "protocol.allow=never",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}",
+        "HEAD^"
+      ],
+      "exit": 0,
+      "original_group_absent": true,
+      "log": {
+        "bytes": 123,
+        "sha256": "92b30046bccef2c257ee80129c347eccacb581cea8be8a1897029258e8bb4353"
+      }
+    },
+    {
+      "label": "activation-delta",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/Users/runner/work/passvault/passvault",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "protocol.allow=never",
+        "diff-tree",
+        "--no-commit-id",
+        "--name-only",
+        "-r",
+        "HEAD"
+      ],
+      "exit": 0,
+      "original_group_absent": true,
+      "log": {
+        "bytes": 75,
+        "sha256": "a91bc31d1238677d504f35192720db4f81599362ef4db3140baf4cc9bc9ae4e4"
+      }
+    },
+    {
+      "label": "memory-total",
+      "argv": [
+        "/usr/sbin/sysctl",
+        "-n",
+        "hw.memsize"
+      ],
+      "exit": 0,
+      "original_group_absent": true,
+      "log": {
+        "bytes": 12,
+        "sha256": "6a0797daab88847a395edc9ccd8cf5ea0ccbf6e810f4bca7130049340f3e1e7c"
+      }
+    },
+    {
+      "label": "memory-available",
+      "argv": [
+        "/usr/bin/vm_stat"
+      ],
+      "exit": 0,
+      "original_group_absent": true,
+      "log": {
+        "bytes": 1136,
+        "sha256": "340c147c0b1b6d9c12e2e92543fd235da0b0aaa6724b44a0c796c2299df2190d"
+      }
+    },
+    {
+      "label": "toolchain",
+      "argv": [
+        "/usr/bin/xcrun",
+        "clang++",
+        "--version"
+      ],
+      "exit": 0,
+      "original_group_absent": true,
+      "log": {
+        "bytes": 207,
+        "sha256": "2837c5948b45916f519912ef23256ae973af42c72decd6185aec65f45b804d3f"
+      }
+    },
+    {
+      "label": "cmake-version",
+      "argv": [
+        "/usr/local/bin/cmake",
+        "--version"
+      ],
+      "exit": 0,
+      "original_group_absent": true,
+      "log": {
+        "bytes": 90,
+        "sha256": "9e2032657b821ca15fdf749298148b08afc4d86fe8a6f709a8459318fa1c018f"
+      }
+    },
+    {
+      "label": "configure",
+      "argv": [
+        "/usr/local/bin/cmake",
+        "-S",
+        "/Users/runner/work/_temp/passvault-macos-sanitizers01-34893068802-1/source",
+        "-B",
+        "/Users/runner/work/_temp/passvault-macos-sanitizers01-34893068802-1/build",
+        "-G",
+        "Unix Makefiles",
+        "-DBUILD_TESTING=ON",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DCMAKE_OSX_ARCHITECTURES=x86_64",
+        "-DCMAKE_CXX_FLAGS=-fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-pointer -g",
+        "-DCMAKE_OBJCXX_FLAGS=-fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-pointer -g",
+        "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined",
+        "-DCMAKE_SHARED_LINKER_FLAGS=-fsanitize=address,undefined"
+      ],
+      "exit": 0,
+      "original_group_absent": true,
+      "log": {
+        "bytes": 917,
+        "sha256": "c34e7f435cfb081b6ae1b0bc03b4eecd791f7406390448ab36f7c70ecb3d5a05"
+      }
+    },
+    {
+      "label": "build",
+      "argv": [
+        "/usr/local/bin/cmake",
+        "--build",
+        "/Users/runner/work/_temp/passvault-macos-sanitizers01-34893068802-1/build",
+        "--parallel",
+        "1",
+        "--verbose"
+      ],
+      "exit": 0,
+      "original_group_absent": true,
+      "log": {
+        "bytes": 8107,
+        "sha256": "87d0db2182a1d238e4e830f0637eb098a08e2531e66b89b51f0fedf60bb3e1d8"
+      }
+    },
+    {
+      "label": "passvault_biometric-instrumentation",
+      "argv": [
+        "/usr/bin/nm",
+        "-u",
+        "/Users/runner/work/_temp/passvault-macos-sanitizers01-34893068802-1/build/libpassvault_biometric.dylib"
+      ],
+      "exit": 0,
+      "original_group_absent": true,
+      "log": {
+        "bytes": 3539,
+        "sha256": "fd97e78305ae145a83c752dcec851cbb710add27bd1c312b1a0452d720c4f598"
+      }
+    },
+    {
+      "label": "passvault_biometric-architecture",
+      "argv": [
+        "/usr/bin/lipo",
+        "-archs",
+        "/Users/runner/work/_temp/passvault-macos-sanitizers01-34893068802-1/build/libpassvault_biometric.dylib"
+      ],
+      "exit": 0,
+      "original_group_absent": true,
+      "log": {
+        "bytes": 7,
+        "sha256": "aaf631698ae5160ceb04a97681a14887fdcab47cd6e0f163c87485b3b1340b62"
+      }
+    },
+    {
+      "label": "passvault_biometric_abi_test-instrumentation",
+      "argv": [
+        "/usr/bin/nm",
+        "-u",
+        "/Users/runner/work/_temp/passvault-macos-sanitizers01-34893068802-1/build/passvault_biometric_abi_test"
+      ],
+      "exit": 0,
+      "original_group_absent": true,
+      "log": {
+        "bytes": 474,
+        "sha256": "ea4d628ed95768e59ac321f53bb8fb0d7a414b5b819f275456659cad0f1f40a5"
+      }
+    },
+    {
+      "label": "passvault_biometric_abi_test-architecture",
+      "argv": [
+        "/usr/bin/lipo",
+        "-archs",
+        "/Users/runner/work/_temp/passvault-macos-sanitizers01-34893068802-1/build/passvault_biometric_abi_test"
+      ],
+      "exit": 0,
+      "original_group_absent": true,
+      "log": {
+        "bytes": 7,
+        "sha256": "aaf631698ae5160ceb04a97681a14887fdcab47cd6e0f163c87485b3b1340b62"
+      }
+    },
+    {
+      "label": "passvault_biometric_macos_security_test-instrumentation",
+      "argv": [
+        "/usr/bin/nm",
+        "-u",
+        "/Users/runner/work/_temp/passvault-macos-sanitizers01-34893068802-1/build/passvault_biometric_macos_security_test"
+      ],
+      "exit": 0,
+      "original_group_absent": true,
+      "log": {
+        "bytes": 4891,
+        "sha256": "0fa8b8c63da57a852f66a06cdab78447db6aa293e49a8efbf758a28ce0627034"
+      }
+    },
+    {
+      "label": "passvault_biometric_macos_security_test-architecture",
+      "argv": [
+        "/usr/bin/lipo",
+        "-archs",
+        "/Users/runner/work/_temp/passvault-macos-sanitizers01-34893068802-1/build/passvault_biometric_macos_security_test"
+      ],
+      "exit": 0,
+      "original_group_absent": true,
+      "log": {
+        "bytes": 7,
+        "sha256": "aaf631698ae5160ceb04a97681a14887fdcab47cd6e0f163c87485b3b1340b62"
+      }
+    },
+    {
+      "label": "ctest",
+      "argv": [
+        "/usr/local/bin/ctest",
+        "--test-dir",
+        "/Users/runner/work/_temp/passvault-macos-sanitizers01-34893068802-1/build",
+        "--parallel",
+        "1",
+        "--timeout",
+        "30",
+        "-R",
+        "^(passvault_biometric_abi|passvault_biometric_macos_security|passvault_biometric_macos_fixture_(normal|early_return|cpp_exception))$",
+        "--output-on-failure",
+        "--output-junit",
+        "/Users/runner/work/_temp/passvault-macos-sanitizers01-evidence-34893068802-1/native-sanitizers.xml"
+      ],
+      "exit": 0,
+      "original_group_absent": true,
+      "log": {
+        "bytes": 842,
+        "sha256": "9338e966d70bd9a6be8b1e6746fbfe108c26743e0de7d8da82fd8e508d7a9c13"
+      }
+    }
+  ],
+  "cleanup": "ORIGINAL_PRIVATE_RUNTIME_REMOVED",
+  "scope": "ASan+UBSan existing native paths only; no TSan, leak, provider, physical biometric, JNA or packaged-loader evidence.",
+  "gradle_stop": "NOT_APPLICABLE_NO_GRADLE",
+  "activation_commit": "4675ae486a5114508ff655122cf33783305ec81e",
+  "activation_tree": "4fc7b2d220bfc126dc5afd2e44441d936892317a",
+  "source_commit": "6f1200d7737fdbc6aed54d3d0c68fc86ed2853dd",
+  "request_sha256": "7fc0835c197183b694f6a0c29b1cd67d0ff231aa1612499021e85f8976a27033",
+  "native_inputs": {
+    "CMakeLists.txt": {
+      "bytes": 11398,
+      "sha256": "5bd3de7d16958c466ad740b2c14800f2f8b81e115323ad486ecf5a08f02a036e"
+    },
+    "include/passvault_biometric.h": {
+      "bytes": 4540,
+      "sha256": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85"
+    },
+    "src/macos/passvault_biometric_macos.mm": {
+      "bytes": 35723,
+      "sha256": "ba07db83b6ff8b482f4fd1d40afea2d10419c454d7856a6a1eb4ba92aa5542c9"
+    },
+    "tests/macos/passvault_biometric_macos_security_test.mm": {
+      "bytes": 20245,
+      "sha256": "946bda34cb6b536ab347539637e1f60bc41532d49e1cd08dc655398e9972fab4"
+    },
+    "tests/passvault_biometric_abi_test.cpp": {
+      "bytes": 826,
+      "sha256": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785"
+    }
+  },
+  "run_id": "34893068802",
+  "attempt": 1,
+  "resources": {
+    "entry_disk_bytes": 114949337088,
+    "total_ram_bytes": 15032385536,
+    "available_ram_bytes": 6192304128,
+    "ram_metric": "vm_stat free+inactive, cooperative reclaimable estimate, NOT hardfree or prior Mac02 free+speculative metric"
+  },
+  "memory_samples": [
+    {
+      "elapsed": 12.545653674999983,
+      "available_bytes": 6024146944,
+      "original_group_absent": true
+    },
+    {
+      "elapsed": 22.624362546999976,
+      "available_bytes": 5928054784,
+      "original_group_absent": true
+    }
+  ],
+  "instrumented_binaries": [
+    {
+      "target": "passvault_biometric",
+      "bytes": 242864,
+      "sha256": "ed172c106b25a2645621c52a12339779d5219509021d7b332d74fc814e6bc25e"
+    },
+    {
+      "target": "passvault_biometric_abi_test",
+      "bytes": 23000,
+      "sha256": "88b1d1565e77e3d922efa78308891c1df714b0700b90bf98465999bb3de2e1c7"
+    },
+    {
+      "target": "passvault_biometric_macos_security_test",
+      "bytes": 464208,
+      "sha256": "0f8a5a43e27dbfe6def321e87c54bc2f23dd2da0a15e18332d38c0e32e530212"
+    }
+  ],
+  "passes": 5,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "elapsed_seconds": 26.44112000499996
+}

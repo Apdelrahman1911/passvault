@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "reviewer": "/root/android_review",
+  "disposition": "ACCEPT_ONE_ACTUAL_HIGHFD_PIDFD_REGRESSION_AND_ORIGINAL_LOCAL_SCHEDULING_RELEASE",
+  "evidence": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui06-pidfd-regression01/ROOT-ADMISSION01.json",
+      "bytes": 2211,
+      "sha256": "dbb67a6c31994212120652b8441db1cd2b3c5a892113ad325344143c7bc77a6c"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui06-pidfd-regression01/ORIGINAL-TOOL-RESULT01.json",
+      "bytes": 1572,
+      "sha256": "0018affe25e52fe382f9ba0aad95fc668760a038b999d6a9658ce1d2fa1a6fe9"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui06-pidfd-regression01/pidfd_highfd_once.py",
+      "bytes": 6536,
+      "sha256": "1f883dce4ce3196653f7612dd1fbf727bff6a1ffaa434ace99143566a8baf6d6"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/android_review/gui06_source_review01/PROBE02-SOURCE-REVIEW.json",
+      "bytes": 4060,
+      "sha256": "fd707bfb81fca4c283a0c01823382b7c88ae8be4d81a33cd2adb2a790e672fde"
+    }
+  ],
+  "terminal": {
+    "original_exec_chunk": "9b5a45",
+    "exit": 0,
+    "session_id": null,
+    "provenance": "Root retained transcription of original exec result; reviewer did not execute or independently probe any process."
+  },
+  "independent_reconciliation": {
+    "source": "Promoted6536B/1f883dce4ce3196653f7612dd1fbf727bff6a1ffaa434ace99143566a8baf6d6 byte-identical to independently accepted probe02.",
+    "result": "Exact10key/typed JSON, retained parsed object and stdout SHA256 f91fd38525b88c014d6249e4ef85e9faa4e067388c31f75d4d2cf1f3b8bb5627 match; original terminal0 required in addition to printed JSON.",
+    "actual_risk_proved": "One synthetic original Linux child: duplicated original pidfd>=2048 is pending while gated; legacy select rejects the fd range; identical GUI06 poll primitive observes exit before own wait and remains readable after successful own wait; closed duplicate is rejected rather than terminal.",
+    "limits": "Not9cases, notJUnit/XML, no exact numeric pidfd/PID invented. ERR/unknown masks and cancellation/hard-interruption behavior were not dynamically exercised. No GUI/Room/crop/application/hardware evidence."
+  },
+  "cleanup": {
+    "original_child_wait_exit": 0,
+    "original_child_and_descriptors_settled": true,
+    "basis": "In exact accepted source, successful output is reachable only after original own wait0, one highduplicate close plus invalid check, finally stdin/original descriptor closes without errors, and sticky cancellation checks. Original terminal0 confirms no post-output rejection. No ongoing tool session was returned.",
+    "gradle_stop": "NOT_APPLICABLE_NO_GRADLE_LAUNCHED",
+    "filesystem_cleanup": "NOT_APPLICABLE_NO_PERSISTENT_TEMP_CACHE_OR_GENERATED_RUN_OUTPUT; retained6.5KiB source and compact results are necessary evidence.",
+    "qualification": "No new live-process scan, cleanup action or retry. Cooperative original-child scope only; no global-idleness/no-escape/hard-signal proof."
+  },
+  "scheduling": "Accept retirement of this consumed tiny-regression logical slot only, for root adoption. No outstanding original child/stop/disposable-output obligation established by accepted source+terminal. Next Image/GUI/build still requires its own admission.",
+  "accounting": "One useful actual OS-primitive regression,zero additional application/XMLcases or confirmed-family closures. GUI05failure/4unstartedcases and all oldFAIL/HOLD/UNKNOWN/STOP/NO-RETRY/CLOSED/PVD/platform gaps remain.",
+  "reviewer_activity": "Only retained SOURCE/DATA reads/comparisons and this permanent review; no execution/import/AST/compile/runtime probe or owned worker."
+}

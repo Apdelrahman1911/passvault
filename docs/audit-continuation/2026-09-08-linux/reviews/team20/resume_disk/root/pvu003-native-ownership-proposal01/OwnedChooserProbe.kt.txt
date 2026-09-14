@@ -1,0 +1,98 @@
+package com.passvault.desktop
+
+import java.awt.Rectangle
+import java.nio.file.Files
+import java.nio.file.LinkOption.NOFOLLOW_LINKS
+import java.nio.file.Path
+import java.security.MessageDigest
+import java.util.concurrent.TimeUnit
+import javax.swing.SwingUtilities
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.long
+import kotlinx.serialization.json.int
+
+/** Test-only, one original read-only probe; never starts or focuses a window. */
+internal object OwnedChooserProbe {
+    private const val RUNTIME = "/root/projects/PassVault/audit-runtime-linux-desktop-integration21"
+    private const val PROBE_HASH = "e8d4ae30de2e63b3e149dedee3d96ed2af086f7f21bb081ad58f6cbb9a0f8588"
+    private val probe = Path.of(RUNTIME, "checkout/scripts/audit/linux_owned_chooser_probe_01.py")
+
+    fun observe(mainXid: Long, displayBounds: Rectangle, deadlineNanos: Long): Rectangle {
+        check(!SwingUtilities.isEventDispatchThread()) { "Native observation must not block EDT" }
+        check(!Thread.currentThread().isInterrupted && System.nanoTime() < deadlineNanos)
+        check(mainXid > 1 && mainXid < (1L shl 32))
+        check(Files.isRegularFile(probe, NOFOLLOW_LINKS) && probe.toRealPath() == probe)
+        check(Files.size(probe) < 16 * 1024)
+        val bytes = Files.readAllBytes(probe)
+        val hash = MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
+        check(hash == PROBE_HASH) { "Unreviewed native observer" }
+        val caller = ProcessHandle.current().pid()
+        val builder = ProcessBuilder(
+            "/usr/bin/python3.12", "-I", "-S", "-B", probe.toString(), RUNTIME,
+            caller.toString(), mainXid.toString(),
+        ).redirectErrorStream(true)
+        builder.environment().apply {
+            clear()
+            put("PATH", "/usr/bin:/bin")
+            put("LANG", "C.UTF-8")
+            put("LC_ALL", "C.UTF-8")
+            put("TZ", "UTC")
+            put("DISPLAY", ":88")
+            put("XAUTHORITY", "/tmp/passvault-desktop-integration21/Xauthority")
+        }
+        // Fresh outer admission binds Python/libX11/probe/private display and captures every child in its namespace.
+        val process = builder.start()
+        var primary: Throwable? = null
+        try {
+            process.outputStream.close()
+            val remaining = minOf(TimeUnit.SECONDS.toNanos(3), deadlineNanos - System.nanoTime())
+            check(remaining > 0 && process.waitFor(remaining, TimeUnit.NANOSECONDS)) { "Observer deadline" }
+            val output = process.inputStream.readNBytes(4097)
+            check(output.size <= 4096 && process.exitValue() == 0) { "Observer failed/oversized" }
+            val result = Json.parseToJsonElement(output.toString(Charsets.UTF_8)).jsonObject
+            check(result.keys == setOf("format", "caller_pid", "main_xid", "chooser_xid", "focus_xid", "client", "frame_extents", "qualification"))
+            check(result.getValue("format").jsonPrimitive.content == "passvault-owned-chooser-observation-v1")
+            check(result.getValue("caller_pid").jsonPrimitive.long == caller)
+            check(result.getValue("main_xid").jsonPrimitive.long == mainXid)
+            val chooser = result.getValue("chooser_xid").jsonPrimitive.long
+            val focus = result.getValue("focus_xid").jsonPrimitive.long
+            check(chooser > 1 && chooser != mainXid && chooser < (1L shl 32))
+            check(focus > 1 && focus < (1L shl 32))
+            val client = result.getValue("client").jsonArray.map { it.jsonPrimitive.int }
+            val extents = result.getValue("frame_extents").jsonArray.map { it.jsonPrimitive.int }
+            check(client.size == 4 && extents.size == 4 && extents.all { it in 0..128 })
+            check(client[0] in -4096..4096 && client[1] in -4096..4096)
+            check(client[2] in 200..1400 && client[3] in 150..1000)
+            val bounds = Rectangle(client[0] - extents[0], client[1] - extents[2],
+                client[2] + extents[0] + extents[1], client[3] + extents[2] + extents[3])
+            check(displayBounds.contains(bounds)) { "Native chooser outside admitted display" }
+            check(System.nanoTime() < deadlineNanos && !Thread.currentThread().isInterrupted)
+            return bounds
+        } catch (error: Throwable) {
+            primary = error
+            throw error
+        } finally {
+            // Original Process handle only. This probe never creates descendants; no PID-name discovery/kill.
+            // A timeout or interrupted wait is a failure, never a retry. Outer namespace remains last-resort custody.
+            val interrupted = Thread.interrupted()
+            var cleanupError: Throwable? = null
+            try {
+                if (process.isAlive) process.destroyForcibly()
+                check(process.waitFor(3, TimeUnit.SECONDS)) { "Original observer settlement uncertain" }
+            } catch (error: Throwable) {
+                cleanupError = error
+            } finally {
+                for (stream in listOf<java.io.Closeable>(process.inputStream, process.errorStream, process.outputStream)) {
+                    try { stream.close() } catch (error: Throwable) {
+                        cleanupError?.addSuppressed(error) ?: run { cleanupError = error }
+                    }
+                }
+                if (interrupted) Thread.currentThread().interrupt()
+            }
+            cleanupError?.let { error -> primary?.addSuppressed(error) ?: throw error }
+        }
+    }
+}

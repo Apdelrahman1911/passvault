@@ -1,0 +1,98 @@
+{
+  "schema": "passvault-c20-android-action01-alias-source-challenge-v1",
+  "reviewer": "/root/image_diag_review",
+  "hypothesis_author": "/root",
+  "disposition": "CONFIRMED_CONDITIONAL_ALIAS_IMAGE_SCHEMA_DEFECT_NOT_UNIQUELY_LOCALIZED_ORIGINAL_FAILURE",
+  "scope": "Independent named retained SOURCE/DATA reads and comparisons only; no candidate import/eval/AST/compile, execution, live probe, Git/network, mutation of originals, signal, cleanup or retry.",
+  "inputs": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance01/OUTER.py",
+      "bytes": 106420,
+      "sha256": "8d28d79348d1149d7c92f8e47d0077b92d850bc5d6e6994f2eea6b33d99a8cf6"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance01/REQUEST.json",
+      "bytes": 20963,
+      "sha256": "b6042aecc473ae3ec5627a0ca5d823c43e1e5e863ea412d87d77cf5570c9db8d"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance01/FRESH-FACTS.json",
+      "bytes": 11730,
+      "sha256": "2f4cfcd9450a24125f02309402f9c48e5d4f9ef55c199d21ed34949a0a7580e3"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance01/EXECUTION-ADMISSION.json",
+      "bytes": 3936,
+      "sha256": "f97dda9aa6085e3050880ce7f50c184ad73600aec4b4084dad6035578425f261"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance01/ORIGINAL-TOOL-RESULT.json",
+      "bytes": 1456,
+      "sha256": "ea355a224c3c0053234fd4a6b5e35421731c77aa74544ccdc071c9a1e2c11a58"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-instance01/REQUEST.json",
+      "bytes": 20851,
+      "sha256": "adb7b27f4ea449834e13f76df074ab87124574a7fcfa038fbd0926c1c60aa709"
+    }
+  ],
+  "observed_original": {
+    "exit": 70,
+    "reason": [
+      "RuntimeError:input image/pin mismatch"
+    ],
+    "inner_started": false,
+    "children": [],
+    "resource_points": [],
+    "cleanup": "NOT_ATTEMPTED",
+    "status": "HOLD",
+    "preterminal": true,
+    "qualification": "Actual terminal70 is preserved. Generic input-loop diagnostic names no path, field or captured actual image. This review is not a new whole-lifecycle settlement audit."
+  },
+  "proved_source_mechanism": [
+    "OUTER52 sets ordinary outer PYTHON=/usr/bin/python3.12 and INNER_PYTHON=/usr/bin/python3. Capture218-242 performs nofollow lstat; only the explicit inner-Python direct symlink to python3.12 is allowed. It opens and hashes the ordinary target through the same retained parent descriptor, rechecks target and link pins, and returns pin+sha256 PLUS link_pin+link_target when alias=true.",
+    "OUTER1435-1437 compares the complete returned image dictionary with REQUEST.images[path]. There is no projection that drops alias fields. Therefore any allowed direct Python alias at this point necessarily disagrees with this consumed two-key request entry, even when all target bytes/hash/pin fields match.",
+    "All22 REQUEST images have exactly pin+sha256. FRESH-FACTS Python image equals the same incomplete request entry. Root execution admission records all22 target hashes/pins checked, but no original Python lstat/readlink result; a .stat-only preflight cannot establish this four-key equality.",
+    "GUI07 retained REQUEST Python image has the additional symlink link_pin and link_target=python3.12. Dropping exactly those two fields reproduces action01 Python image byte-value-for-value. This is historical evidence of the actual alias shape, not current action01 alias ownership or fresh execution authority.",
+    "OUTER100-101 and1408-1410 establish a fixed source tuple, independent of JSON key ordering: Python3 is19th of22. The first18 inputs may fail before it. The diagnostic literal input image/pin mismatch appears only at1437, but does not name that iteration.",
+    "Inventory-contract309-310 admits tool_aliases keys ONLY /usr/bin/git and /usr/bin/ruby; tool_aliases312-331 is their separate guard and does not repair or validate the Python image. It is called by authority after input intake. Adding Python there would violate the unchanged schema."
+  ],
+  "data_comparison": {
+    "images_count": 22,
+    "all_request_image_keys": [
+      "pin",
+      "sha256"
+    ],
+    "python_image_position_one_based": 19,
+    "python_target_fields_equal_prior_gui07": true,
+    "exact_omitted_fields": [
+      "link_pin",
+      "link_target"
+    ],
+    "prior_link_target": "python3.12",
+    "prior_link_mode": 41471,
+    "prior_link_bytes": 10,
+    "prior_link_data_is_not_fresh_authority": true
+  },
+  "counterexamples_and_causality_limits": [
+    "If /usr/bin/python3 were an admitted regular file rather than a symlink, capture would return two keys and this structural objection would disappear. Same target dev/inode/hash and nlink1 strongly support the ordinary direct-alias interpretation but are not a contemporaneous nofollow link observation.",
+    "Changed pin/hash for any earlier image would emit exactly the same generic reason. Root preflight reduces that concern under its custody assumptions but retained stdout contains no actual failing image, so original first failure is not uniquely proved.",
+    "An unexpected alias target, non-Python input symlink, changed alias or unsafe input would fail other capture guards; this correction must retain those guards rather than accepting arbitrary/chained aliases.",
+    "At this source location no watch/resource sample, E/R allocation or child launch has occurred; the original observed inner=false/children=[]/resource_points=[] is consistent. It is not an R8/native/JNA/product failure or PVA-001 regression result."
+  ],
+  "recommended_narrow_correction": [
+    "Leave consumed action01 REQUEST, approval, source and failure evidence unchanged. Prepare a genuinely new run/instance/request and independent exact admission; no replay or old-HOLD cleanup authority.",
+    "Root fresh input capture/preflight must match OUTER.capture semantics: bind target pin+sha256 AND current nofollow link_pin+literal link_target for the allowed /usr/bin/python3 direct alias. If the new environment instead provides a regular image, bind its real two-key shape; do not guess or copy historical link identity.",
+    "Keep /usr/bin/python3.12 as its ordinary target image. Keep existing Git/Ruby-only tool_aliases, full-image equality, direct-target checks, nofollow identity checks and all resource/scope restrictions. No production change, new helper, interpreter substitution or validation-guard weakening is needed to correct the request mismatch.",
+    "New request SHA, bindings, approval and fresh scheduling/resource/cleanup admission remain required. This source/data proof is not permission to execute or an assurance that later producer phases will pass."
+  ],
+  "ledger_effect": {
+    "new_product_findings": 0,
+    "new_product_fixes": 0,
+    "new_tests_or_XML": 0,
+    "new_closures": 0,
+    "retain_original_failure": true,
+    "causal_label": "Known deterministic schema incompatibility for the documented Python alias; consistent sufficient failure mechanism, NOT uniquely observed first failing input."
+  },
+  "owned_live_resources": 0
+}

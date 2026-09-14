@@ -1,0 +1,97 @@
+#!/usr/bin/python3.12
+"""Prospective four real-child / injected namespace-error policy controls, not namespace/kernel proof."""
+import ast, errno, hashlib, json, os, resource, signal, subprocess, sys, time
+from pathlib import Path
+D=Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root')
+I=D/'android-framework-terminal-observation-proposal01'
+E=D/'android-framework-terminal-observation-controls01'
+SOURCE_SHA='31cafd5bf6cd866ea68d5c376e5c4eead500b88f2a1de13162cd96fbab9f7f69'
+active=None
+cancelled=False
+records=[]
+def require(ok,message):
+    if not ok: raise RuntimeError(message)
+def interrupted(signum,frame):
+    global cancelled
+    cancelled=True
+for sig in (signal.SIGINT,signal.SIGTERM,signal.SIGHUP):signal.signal(sig,interrupted)
+resource.setrlimit(resource.RLIMIT_CORE,(0,0))
+resource.setrlimit(resource.RLIMIT_AS,(256*1024**2,256*1024**2))
+require(E.is_dir() and not E.is_symlink() and E.resolve()==E,'Fresh admitted evidence directory')
+require(not (E/'RESULT.json').exists(),'Unconsumed result')
+raw=(I/'OUTER.py.txt').read_bytes()
+require(hashlib.sha256(raw).hexdigest()==SOURCE_SHA,'Exact prospective source')
+module=ast.parse(raw)
+functions=[n for n in module.body if isinstance(n,ast.FunctionDef) and n.name=='bind_domain']
+require(len(functions)==1,'Single tested function')
+unit=ast.Module(body=functions,type_ignores=[])
+code=compile(unit,'<exact-prospective-bind-domain-function>','exec')
+# Only this newly proposed function is defined; no old runner/module body imported or executed.
+namespace={'require':require,'subprocess':subprocess,'os':os,'parent_ns':{'pid':'parent','mnt':'parent'}}
+exec(code,namespace)
+status='FAILED'
+try:
+    for name,delay,err,bound,expect_return in [
+        ('terminal_disappearance',0.035,errno.ENOENT,True,True),
+        ('still_live',0.5,errno.ENOENT,True,False),
+        ('permission_denied',0.5,errno.EACCES,True,False),
+        ('unbound_identity',0.5,errno.ENOENT,False,False),
+    ]:
+        require(not cancelled,'Cancelled before next original child')
+        record={'name':name,'injected_errno':err,'previously_bound':bound,'expected_return':expect_return}
+        records.append(record)
+        active=subprocess.Popen(['/usr/bin/python3.12','-I','-S','-B','-c',
+            'import time; time.sleep('+repr(delay)+')'],stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,start_new_session=True,close_fds=True,
+            cwd=E,env={'PATH':'/usr/bin:/bin','LANG':'C.UTF-8','LC_ALL':'C.UTF-8','TZ':'UTC'})
+        record['pid']=active.pid
+        try:
+            require(active.poll() is None,'Control must begin with a live original child')
+            def inject(_pid): raise OSError(err,'synthetic namespace lookup failure')
+            namespace.update(identity=inject,owned_domain={'pid':'bound','mnt':'bound'} if bound else None,
+                child={'p':active,'row':{}},birth=lambda _pid: None)
+            wait_calls=[]
+            original_wait=active.wait
+            def tracked_wait(*args,**kwargs):
+                wait_calls.append(dict(kwargs));return original_wait(*args,**kwargs)
+            active.wait=tracked_wait
+            start=time.monotonic();returned=False;failure=None
+            try:
+                namespace['bind_domain']();returned=True
+            except RuntimeError as error:failure=str(error)
+            record.update(returned=returned,error=failure,elapsed_seconds=time.monotonic()-start,
+                child_returncode_at_observation=active.returncode)
+            require(returned==expect_return,'Discriminating branch outcome')
+            if expect_return:require(active.returncode==0,'Only genuinely reaped original child is accepted')
+            else:require(failure=='live original child namespace unreadable' and active.returncode is None,
+                'Live/unowned/error child must not be accepted')
+            expected_wait_calls=1 if bound and err==errno.ENOENT else 0
+            require(len(wait_calls)==expected_wait_calls,'Only the intended original terminal wait')
+            if name=='still_live':
+                try:namespace['bind_domain']()
+                except RuntimeError as error:
+                    require(str(error)=='live original child namespace unreadable','Repeated live lookup fails closed')
+                else:raise RuntimeError('Repeated live lookup accepted')
+                require(len(wait_calls)==1,'Terminal observation wait cannot repeat after timeout')
+            record['terminal_observation_wait_calls']=len(wait_calls)
+            require(not cancelled,'Cancelled control is not pass')
+            record['status']='PASS'
+        finally:
+            if active.returncode is None:
+                # Only the unreaped child/group just created by this case can be signalled.
+                active.terminate()
+                try:active.wait(timeout=2)
+                except subprocess.TimeoutExpired:
+                    active.kill();active.wait(timeout=2)
+            record['final_exit']=active.returncode
+            # Fixed Python child only imports time/sleeps; it creates no descendants.
+            # Never probe a potentially reused numeric PGID after original reap.
+            record['original_child_settled']=active.returncode is not None
+            require(record['original_child_settled'],'Original child settlement failure')
+            active=None
+    status='FOUR_POLICY_CONTROLS_PASSED'
+finally:
+    result={'status':status,'controls':records,'source_sha256':SOURCE_SHA,
+        'limits':'Real original Popen/wait/timeout/settlement with an injected proc lookup error. Not a real namespace-disappearance reproduction, kernel-cause finding, application case, GUI19 cleanup or permission to recover an old HOLD. No files created by child; no Gradle invocation or daemon stop applicable.'}
+    with (E/'RESULT.json').open('x') as f:json.dump(result,f,indent=2);f.write('\n')
+require(status=='FOUR_POLICY_CONTROLS_PASSED','Controls incomplete')

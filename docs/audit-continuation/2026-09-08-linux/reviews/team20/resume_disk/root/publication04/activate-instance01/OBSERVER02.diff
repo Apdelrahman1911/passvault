@@ -1,0 +1,27 @@
+--- OBSERVE01
++++ OBSERVE02
+@@ -21,8 +21,8 @@
+ require(len(sys.argv)==3 and sys.argv[1] in ('discover','status','artifacts','download'),'Fixed observation phase')
+ phase,number=sys.argv[1:]
+ require(number.isdecimal() and number==str(int(number)) and 1<=int(number)<=64,'Finite unique observation index')
+-require(digest(Path(__file__).read_bytes())==json.loads((A/'OBSERVER-APPROVAL.json').read_text())['source_sha256'],'Independently reviewed observer bytes')
+-approval=json.loads((A/'OBSERVER-APPROVAL.json').read_text())
++require(digest(Path(__file__).read_bytes())==json.loads((A/'OBSERVER02-APPROVAL.json').read_text())['source_sha256'],'Independently reviewed observer bytes')
++approval=json.loads((A/'OBSERVER02-APPROVAL.json').read_text())
+ require(approval['reviewer']=='/root/current_ledger' and approval['status']=='ACCEPT_BOUNDED_ORIGINAL_CI_OBSERVER','Independent observer approval')
+ require(digest(Path(GH).read_bytes())=='2fd925d68889746976958342fb749bf102bc7dc8bcba3abfa533a80ad7791673','Original gh image')
+ activation=json.loads((A/'RESULT.json').read_text())
+@@ -35,11 +35,11 @@
+ require(time.time()<=context['activation_completed_epoch']+3600,'One hour total observation bound')
+ if phase=='discover':
+     require(time.time()<=context['activation_completed_epoch']+300,'Five minute discovery bound')
+-    args=['run','list','--repo',REPO,'--commit',commit,'--workflow','audit-macos-jna-lifetime01.yml','--limit','5','--json','databaseId,headSha,event,status,conclusion,attempt,url,workflowName,headBranch']
++    args=['api',f'repos/{REPO}/actions/runs?head_sha={commit}&event=push&per_page=5']
+ else:
+     identity=json.loads((E/'ORIGINAL-RUN.json').read_text());run=identity['databaseId']
+     require(type(run)is int and run>0 and identity['headSha']==commit and identity['event']=='push' and identity['attempt']==1 and identity['headBranch']=='codex/audit-continuation-linux-20260908','Original run identity')
+-    if phase=='status':args=['run','view',str(run),'--repo',REPO,'--json','databaseId,headSha,event,status,conclusion,attempt,jobs,url']
++    if phase=='status':args=['api',f'repos/{REPO}/actions/runs/{run}']
+     else:
+         terminal=json.loads((E/'TERMINAL.json').read_text())
+         require(terminal['databaseId']==run and terminal['headSha']==commit and terminal['status']=='completed' and terminal['attempt']==1,'Original terminal before artifact retrieval')

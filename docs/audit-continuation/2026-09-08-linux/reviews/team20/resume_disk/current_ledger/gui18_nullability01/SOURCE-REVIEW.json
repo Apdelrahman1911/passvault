@@ -1,0 +1,27 @@
+{
+  "after": {
+    "bytes": 99070,
+    "path": "reviews/team20/resume_disk/root/gui18-settings-nullability01/CredentialMainNavHostRoomIntegrationTest.kt",
+    "sha256": "791416a398e91818a72a965b1d76bb2e4517d058d3eba06f2896fedb6f2f3826"
+  },
+  "before": {
+    "bytes": 99043,
+    "path": "reviews/team20/resume_disk/root/gui17-instance01/CredentialMainNavHostRoomIntegrationTest.kt",
+    "sha256": "d699a64e0c2e52070da8e1225f50df88f1017f5bb8cf26a1fcde0bbd51870515"
+  },
+  "challenge": {
+    "compatibility": "Only nonshipping fixture. No production changes, additional dependency, changed test selection or removal of actual tray/chooser oracles.",
+    "counterexample": "A missing label still returns null before this declaration; duplicate labels still fail unique. The defensive check cannot permit a previously rejected null case.",
+    "guards_preserved": "Same exact or title-comma-space match, uniqueness, nearest actionable ancestor, depth48, predecessor index, window/live/bounds/nested-action constraints and native click behavior. No direct AX action or new callback shortcut.",
+    "reachability": "Outer branch excludes null label; requireNotNull makes the mutable local statically MainNavAx. Subsequent nodes[parent] is nonnullable; direct access no longer uses a nullable receiver.",
+    "remaining": "This corrects the observed compile diagnostic by source reasoning; does not yet prove a successful compile, actual AX representation, runtime selector or GUI behavior. Prior source-only review missed the defect; original GUI17 failure remains."
+  },
+  "decision": "ACCEPT_GUI18_ONE_STATEMENT_NULLABILITY_CORRECTION_SOURCE_ONLY",
+  "delta": "Exactly var row = label -> var row: MainNavAx = requireNotNull(label), one occurrence. No other bytes changed.",
+  "execution_approved": false,
+  "format": "passvault-independent-source-review-v1",
+  "next": "Parent must bind corrected fixture and renamed controls to a new exact reviewed instance. Existing successful Main case remains excluded; no automatic reuse of GUI17 approval.",
+  "reviewer": "/root/current_ledger",
+  "scope": "Only retained fixture source and exact byte/diff comparison; no compiler/build/test or fresh-instance admission.",
+  "utc": "2026-09-14T18:14:26.375056+00:00"
+}

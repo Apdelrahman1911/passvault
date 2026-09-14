@@ -1,0 +1,14 @@
+{
+  "utc": "2026-09-14T19:02:25.007105+00:00",
+  "status": "PROPOSED_NOT_ADMITTED",
+  "owner": "/root",
+  "repository": "Apdelrahman1911/passvault",
+  "scope": "ONE_ORIGINAL_MACOS_JNA_LIFETIME01_RUN_ONLY",
+  "identity": "After verified activation push, record commit/tree from original RESULT. gh run list -R Apdelrahman1911/passvault --commit <exactActivationCommit> --workflow audit-macos-jna-lifetime01.yml --json databaseId,headSha,event,status,conclusion,attempt,url,workflowName,headBranch (limit5). Require exactly one run,exactSHA,push,event,attempt1,continuationbranch. No run replay or rerun.",
+  "observation": "Bounded direct gh metadata commands; poll original run at >=60second intervals only when useful, maximum55minutes after first discovery. Each network command60s ceiling. Use gh run view <originalID> -R Apdelrahman1911/passvault --json databaseId,headSha,event,status,conclusion,attempt,jobs,url. Work on independent source/review while active. Do not hold a local long-lived watcher/daemon.",
+  "artifacts": "Once completed: gh api repos/Apdelrahman1911/passvault/actions/runs/<originalID>/artifacts. Require one exact name macos-jna-lifetime-01-<originalID>-1,notexpired,size<=32MiB,matchrun. Retrieve only that artifact into fresh0700 D/macos-jna-ci01/artifacts. Preflight disk>=3GiB. No applicationbinary or archive upload/download allowed. Read retained JSON/log/XML; independently review actual source/native hashes,one namedcase,stop/settlement/cleanup. Do not treat workflow success as test pass.",
+  "settlement": "Each direct gh command uses tools.exec_command with originalsession polling only; no automatic failedcommandretry. On network timeout, cancel only original positively-owned child/group, preserve incomplete receipt and uncertainty. No gh authentication output or credentials logged. No Gradlestop applies to metadata commands; CI controller owns original wrapperstop and privatecleanup.",
+  "cancellation": "Do not cancel unrelated runs. If original run exceeds50minute job ceiling plus5minute terminal grace, retain slot/UNKNOWN and request fresh bounded original-run-only cancellation admission; no automatic retry. A failed remote run is preserved and independently diagnosed.",
+  "retention": "Compact result/log/XML/hash evidence7days remotely. Keep local required audit evidence; no runtimebinary/Gradlecache expected in artifact. Retained artifact namespace is evidence,not cleanup target. Any unexpectedlarge/path/symlink content fails intake and remains unextracted/quarantined,not executed.",
+  "coordination": "No localbuild/test or secondCI until independently reviewed original remote terminal/cleanup and root adoption; activation reserves slot beforepush. No physicalTouchID/provider/PVA010closure credit."
+}

@@ -1,0 +1,240 @@
+// INERT SOURCE COMPONENT: no invocation, listener, task mutation, action admission,
+// direct process/network/file-content-read/file-write operation, or consumed binding.
+// Compose into a NEW reviewed two-producer init, never replay/modify Graph02.
+// Basis: API02 retained R8Task / MergeNativeLibsTask dumps, pinned AGP9.4.0.
+// This guards DECLARED paths under the normal vendor API contract, not writes by
+// arbitrary vendor/plugin code, completed-task bytes, or complete provenance.
+import org.gradle.api.GradleException
+import org.gradle.api.Task
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.Directory
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFile
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import org.gradle.api.provider.SetProperty
+import java.lang.reflect.Modifier
+import java.nio.file.Files
+import java.nio.file.LinkOption
+import java.nio.file.Path
+
+// SOURCE template only. All physical paths/selected identities remain UNBOUND.
+// Path values must be java.nio.file.Path, not path strings. The new composition
+// supplies the exact admitted task paths and original private checkout/build roots.
+final Map PASSVAULT_DECLARED_PRODUCER_BINDINGS = [
+    checkoutRoot: null, r8TaskPath: null, r8OutputRoot: null,
+    nativeTaskPath: null, nativeOutputRoot: null,
+]
+
+// Required caller controls (NOT supplied by this component):
+// - fresh source/tool/AGP identity and original private namespace admission;
+// - whole actual graph identity/edge/action eligibility and forbidden-final-action
+//   rejection BEFORE any permission to run tasks; never skip a rejected task;
+// - checked(File, boolean), with Host07 checked() semantics and the SAME fresh
+//   checkout/readRoots/runtime bindings (symlink/type/uid/nlink checks);
+// - repeat this contract at the producer's beforeTask barrier and reject drift;
+// - Room writer/schema/finalizer controls; complete before/after/final lifecycle;
+// - separate bounded effective-input / successful-output byte capture.
+// Resolving declared output providers can execute ordinary provider code; this is
+// not a sandbox and does not authorize configuration, input resolution, or actions.
+// No call site is provided here and no success result is an action-admission flag.
+def passvaultDeclaredProducerGuard = { Map b, Task r8Task, Task nativeTask, Closure checked ->
+    def deny = { String why -> throw new GradleException('DeclaredProducerGuard: ' + why) }
+    if (b == null || checked == null || r8Task == null || nativeTask == null ||
+            b.keySet() != ['checkoutRoot', 'r8TaskPath', 'r8OutputRoot', 'nativeTaskPath', 'nativeOutputRoot'].toSet()) {
+        deny('missing exact fresh bindings')
+    }
+    def pathShape = { Object value ->
+        if (!(value instanceof Path) || !value.isAbsolute() || value.normalize() != value ||
+                value.toString().length() > 1024 || !(value.toString() ==~ /[ -~]+/)) {
+            deny('absolute normalized typed Path required')
+        }
+        value
+    }
+    Path checkout = pathShape(b.checkoutRoot)
+    Path r8Root = pathShape(b.r8OutputRoot)
+    Path nativeRoot = pathShape(b.nativeOutputRoot)
+    [r8Root, nativeRoot].each { p ->
+        if (p == checkout || !p.startsWith(checkout)) deny('producer build root is not strictly inside private checkout')
+    }
+    [checkout, r8Root, nativeRoot].each { p ->
+        if (checked.call(p.toFile(), true) != p) deny('private path checker/binding mismatch')
+    }
+    [b.r8TaskPath, b.nativeTaskPath].each { value ->
+        if (!(value instanceof String) || value.length() > 512 ||
+                !(value ==~ /:(?:[A-Za-z0-9_-]+:)*[A-Za-z0-9_-]+/)) deny('exact admitted task path required')
+    }
+    if (b.r8TaskPath == b.nativeTaskPath || r8Task.path != b.r8TaskPath || nativeTask.path != b.nativeTaskPath ||
+            !r8Task.enabled || !nativeTask.enabled) deny('selected producer identity/enabled state changed')
+    def vendorOwner = { Task task, String name ->
+        Class current = task.getClass()
+        int depth = 0
+        while (current != null && depth++ < 32) {
+            if (current.name == name) return current
+            current = current.superclass
+        }
+        deny('selected task lacks exact vendor owner')
+    }
+    Class r8Owner = vendorOwner(r8Task, 'com.android.build.gradle.internal.tasks.R8Task')
+    Class nativeOwner = vendorOwner(nativeTask, 'com.android.build.gradle.internal.tasks.MergeNativeLibsTask')
+    [[r8Task, r8Root], [nativeTask, nativeRoot]].each { pair ->
+        def actual = checked.call(pair[0].project.layout.buildDirectory.get().asFile, true)
+        if (actual != pair[1]) deny('producer project build-directory binding changed')
+    }
+    def apiRows = []
+    // Only the finite literal members below. No guessed getter, getDeclaredMethod,
+    // setAccessible, metaClass, outputs.files fallback, or arbitrary API discovery.
+    def methodContract = { Class owner, String name, Class result, List parameters,
+                           boolean declared, String annotation ->
+        def method = owner.getMethod(name, parameters as Class[])
+        if (!Modifier.isPublic(method.modifiers) || Modifier.isStatic(method.modifiers) ||
+                method.returnType != result || method.parameterTypes.toList() != parameters ||
+                (declared && method.declaringClass != owner)) deny('exact public member contract unavailable')
+        def annotations = method.annotations.collect { it.annotationType().name }
+        if (annotation != null && !annotations.contains('org.gradle.api.tasks.' + annotation)) {
+            deny('retained declared annotation changed')
+        }
+        apiRows.add([symbolicOwner: owner.name, member: name,
+            parameterTypes: parameters.collect { it.name }, returnType: result.name,
+            retainedBasis: declared ? 'DECLARATION' : 'CALL_SITE_REFERENCE_NOT_CAPTURED_DECLARATION',
+            observedDeclaringOwner: method.declaringClass.name, invocation: 'NOT_INVOKED'])
+        [method: method, row: apiRows.last(), annotations: annotations]
+    }
+    def getterValue = { Task task, Map contract ->
+        def value = contract.method.invoke(task, new Object[0])
+        if (value == null || !contract.method.returnType.isInstance(value)) deny('getter return type/null changed')
+        contract.row.invocation = 'GETTER_ONLY_NO_INPUT_VALUE_QUERY'
+        value
+    }
+    // R8Task call-site #56: Property -> ComponentType.isAar():boolean.
+    // A non-null non-AAR value is required here (stricter than vendor null fallback).
+    def componentApi = methodContract(r8Owner, 'getComponentType', Property, [], false, null)
+    def component = getterValue(r8Task, componentApi).getOrNull()
+    Class componentType = r8Owner.classLoader.loadClass('com.android.builder.core.ComponentType')
+    if (component == null || !componentType.isInstance(component)) deny('R8 component type is unbound/changed')
+    componentApi.row.invocation = 'GETTER_AND_COMPONENT_VALUE'
+    def aarApi = methodContract(componentType, 'isAar', Boolean.TYPE, [], false, null)
+    def aar = aarApi.method.invoke(component, new Object[0])
+    aarApi.row.invocation = 'NON_AAR_BRANCH_CHECK'
+    if (!(aar instanceof Boolean) || aar) deny('DEX producer requires the observed non-AAR branch')
+    def analyzerApi = methodContract(r8Owner, 'getEnableR8ConfigurationAnalyzerReport', Property, [], true, 'Input')
+    def analyzer = getterValue(r8Task, analyzerApi).getOrNull()
+    analyzerApi.row.invocation = 'GETTER_AND_BOOLEAN_VALUE'
+    if (!(analyzer instanceof Boolean)) deny('R8 analyzer switch is unbound')
+
+    // [getter, property type, declared here, source @Optional, required now, role]
+    // Mapping getters are exact #489/#493 call-site references, NOT declarations
+    // supplied by these dumps. Public lookup/descriptor mismatch refuses outright.
+    def r8Outputs = [
+        ['getOutputClasses', RegularFileProperty, true, true, false, 'AAR_BRANCH_CLASSES'],
+        ['getOutputDex', DirectoryProperty, true, true, true, 'NON_AAR_DEX_DIRECTORY'],
+        ['getFeatureDexDir', DirectoryProperty, true, true, false, 'FEATURE_DEX_DIRECTORY'],
+        ['getFeatureJavaResourceOutputDir', DirectoryProperty, true, true, false, 'FEATURE_JAVA_RESOURCES'],
+        ['getOutputResources', RegularFileProperty, true, false, true, 'JAVA_RESOURCE_OUTPUT'],
+        ['getR8ConfigurationAnalyzerDataOutput', RegularFileProperty, true, true, analyzer, 'ANALYZER_DATA'],
+        ['getR8ConfigurationAnalyzerReportOutput', RegularFileProperty, true, true, analyzer, 'ANALYZER_REPORT'],
+        ['getMainDexListOutput', RegularFileProperty, true, true, false, 'MAIN_DEX_LIST_OUTPUT'],
+        ['getOutputArtProfile', RegularFileProperty, true, true, false, 'ART_PROFILE_OUTPUT'],
+        ['getProguardSeedsOutput', RegularFileProperty, true, false, true, 'SEEDS_DIAGNOSTIC'],
+        ['getProguardUsageOutput', RegularFileProperty, true, false, true, 'USAGE_DIAGNOSTIC'],
+        ['getProguardConfigurationOutput', RegularFileProperty, true, false, true, 'CONFIGURATION_OUTPUT_NOT_RULE_INPUTS'],
+        ['getMissingKeepRulesOutput', RegularFileProperty, true, false, true, 'MISSING_KEEP_RULES_DIAGNOSTIC'],
+        ['getR8Metadata', RegularFileProperty, true, false, true, 'R8_METADATA'],
+        ['getMappingFile', RegularFileProperty, false, null, true, 'RAW_MAPPING_WORKER_PARAMETER'],
+        ['getMappingPartitionFile', RegularFileProperty, false, null, true, 'MAPPING_PARTITION_WORKER_PARAMETER'],
+    ]
+    def nativeOutputs = [
+        ['getOutputDir', DirectoryProperty, true, false, true, 'MERGED_NATIVE_DECLARED_DIRECTORY'],
+        ['getTestOnlyDir', DirectoryProperty, true, true, false, 'TEST_ONLY_NATIVE_DIRECTORY'],
+        ['getMergeBlameFile', RegularFileProperty, true, true, false, 'NATIVE_MERGE_BLAME'],
+    ]
+    def outputRows = []
+    def outputContract = { Task task, Class owner, Path root, List specification ->
+        String name = specification[0]
+        Class propertyType = specification[1]
+        boolean directory = propertyType == DirectoryProperty
+        boolean declared = specification[2]
+        def api = methodContract(owner, name, propertyType, [], declared,
+            declared ? (directory ? 'OutputDirectory' : 'OutputFile') : null)
+        if (declared && api.annotations.contains('org.gradle.api.tasks.Optional') != specification[3]) {
+            deny('retained output optionality changed')
+        }
+        def location = getterValue(task, api).getOrNull()
+        api.row.invocation = 'GETTER_AND_DECLARED_OUTPUT_LOCATION'
+        if (location == null && specification[4]) deny('required selected output location is unbound')
+        Path p = null
+        boolean exists = false
+        if (location != null) {
+            if (directory ? !(location instanceof Directory) : !(location instanceof RegularFile)) {
+                deny('declared output location type changed')
+            }
+            p = pathShape(location.asFile.toPath())
+            if (p == root || !p.startsWith(root)) deny('declared output escaped exact private producer build root')
+            if (checked.call(p.toFile(), true) != p) deny('declared output private-path check mismatch')
+            exists = Files.exists(p, LinkOption.NOFOLLOW_LINKS)
+            if (exists && (directory ? !Files.isDirectory(p, LinkOption.NOFOLLOW_LINKS) :
+                    !Files.isRegularFile(p, LinkOption.NOFOLLOW_LINKS))) deny('existing declared output has wrong file kind')
+        }
+        // Existence is checked, not returned: later legitimate file creation must
+        // not look like drift in the stable declared-location/API contract.
+        outputRows.add([task: task.path, owner: owner.name, getter: name, role: specification[5],
+            retainedBasis: api.row.retainedBasis, pathKind: directory ? 'DIRECTORY' : 'REGULAR_FILE',
+            present: location != null, path: p == null ? null : p.toString(),
+            evidenceScope: 'DECLARED_LOCATION_ONLY_NO_COMPLETED_TASK_OR_CONTENT_CLAIM'])
+    }
+    r8Outputs.each { outputContract(r8Task, r8Owner, r8Root, it) }
+    nativeOutputs.each { outputContract(nativeTask, nativeOwner, nativeRoot, it) }
+
+    // Native declarations: bind the actual getter objects, never resolve files or
+    // ArtifactCollection values here. @Internal is not a Gradle output/input-file
+    // declaration. The task body visits UNFILTERED project native libs, not merely
+    // the filtered @InputFiles project collection (API02 native offsets313–332).
+    [
+        ['getProjectNativeLibs', ConfigurableFileCollection, 'InputFiles'],
+        ['getSubProjectNativeLibs', ConfigurableFileCollection, 'InputFiles'],
+        ['getExternalLibNativeLibs', ConfigurableFileCollection, 'InputFiles'],
+        ['getTestOnlyNativeLibs', ConfigurableFileCollection, 'InputFiles'],
+        ['getUnfilteredProjectNativeLibs', ConfigurableFileCollection, 'Internal'],
+        ['getProfilerNativeLibs', DirectoryProperty, 'Classpath'],
+        ['getExternalArtifactCollection', Property, 'Internal'],
+        ['getSubProjectArtifactCollection', Property, 'Internal'],
+        ['getExcludes', SetProperty, 'Input'],
+        ['getPickFirsts', SetProperty, 'Input'],
+        ['getTestOnly', SetProperty, 'Input'],
+    ].each { specification ->
+        getterValue(nativeTask, methodContract(nativeOwner, specification[0], specification[1], [], true, specification[2]))
+    }
+    // R8 reference-only provider/collection getter objects; no .files/.asFileTree,
+    // iteration, input Property.get(), byte read, or new resolution is requested.
+    [
+        ['getBootClasspath', ConfigurableFileCollection],
+        ['getFeatureClassJars', ConfigurableFileCollection],
+        ['getFeatureJavaResourceJars', ConfigurableFileCollection],
+        ['getResourcesJar', RegularFileProperty],
+        ['getReferencedClasses', ConfigurableFileCollection],
+        ['getReferencedResources', ConfigurableFileCollection],
+        ['getTestedMappingFile', ConfigurableFileCollection],
+        ['getExtractedDefaultProguardFile', DirectoryProperty],
+        ['getFailOnMissingProguardFiles', Property],
+    ].each { specification ->
+        getterValue(r8Task, methodContract(r8Owner, specification[0], specification[1], [], false, null))
+    }
+    // These are public-capability/descriptor checks ONLY. In particular do not
+    // invoke keep-rule/default reconciliation early, before generated prerequisites;
+    // its implementation/purity and List element types were not captured.
+    ['getProgramClasses', 'getCombinedMainDexListFiles', 'getCombinedMainDexRulesFiles',
+     'obtainKeepRules$gradle_core', 'getProguardConfigurations'].each { name ->
+        methodContract(r8Owner, name, List, [], false, null)
+    }
+    methodContract(r8Owner, 'reconcileDefaultProguardFile$gradle_core', List,
+        [List, Provider, Boolean.TYPE], false, null)
+    [scope: 'DECLARED_PRODUCER_API_AND_PRIVATE_PATH_CONTRACT_ONLY',
+     r8Task: b.r8TaskPath, nativeTask: b.nativeTaskPath,
+     checkoutRoot: checkout.toString(), r8OutputRoot: r8Root.toString(), nativeOutputRoot: nativeRoot.toString(),
+     r8NonAarBranch: true, configurationAnalyzerReportEnabled: analyzer,
+     declaredOutputs: outputRows, apiContracts: apiRows,
+     inputValues: 'NOT_REQUESTED_NO_EFFECTIVE_RULE_OR_ARTIFACT_PROVENANCE_CLAIM',
+     taskActionsAdmitted: false, directFileContentsRead: false,
+     qualification: 'Cooperative declared-path component; not whole-graph/action validation, a sandbox, successful production, or PVA closure.']
+}

@@ -1,0 +1,77 @@
+--- accepted-consumed-sanitizer-source-NOT-EXECUTED
++++ new-windows-after-flush-source-proposal
+@@ -1,5 +1,5 @@
+ #!/usr/bin/python3.12
+-"""SOURCE proposal. One reviewed request-only activation commit/nonforce continuation push for macOS ASan/UBSan01.
++"""SOURCE proposal. One reviewed request-only activation commit/nonforce continuation push for Windows after-flush01.
+ No checkout, tag/protected-ref mutation, signing, production artifact or release action.
+ """
+ import fcntl
+@@ -16,17 +16,17 @@
+ P = Path('/root/projects/PassVault')
+ W = P / 'passvault-linux'
+ D = W / 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root'
+-HERE = D / 'publication04/sanitizer-activate-instance01'
++HERE = D / 'publication04/windows-activate-instance01'
+ REPO = P / 'passvault-publication-20260914-04'
+-ROOT = P / 'audit-publication04-sanitizer-activate01'
++ROOT = P / 'audit-publication04-windows-activate01'
+ LOCK = P / '.audit-coordination-linux-20260914-c20/build.lock'
+-BASE = '6f1200d7737fdbc6aed54d3d0c68fc86ed2853dd'
++BASE = 'SOURCE_COMMIT_TO_BIND_AFTER_PUBLICATION'
+ LOCAL_HEAD = '832ed5f5aee56fbbf4c298ef0d2b10de154484cf'
+ BRANCH = 'refs/heads/codex/audit-continuation-linux-20260908'
+ REMOTE = 'https://github.com/Apdelrahman1911/passvault.git'
+ GIT, GH = '/usr/bin/git', '/usr/bin/gh'
+-MESSAGE = 'Run reviewed non-publishing macOS ASan UBSan native batch\n'
+-ACTIVATION = 'docs/audit-continuation/2026-09-08-linux/requests/macos-sanitizers-01.json'
++MESSAGE = 'Run reviewed non-publishing Windows after-flush native batch\n'
++ACTIVATION = 'docs/audit-continuation/2026-09-08-linux/requests/windows-after-flush-01.json'
+ REFS = [BRANCH, 'refs/heads/codex/remediation-handoff-20260908', 'refs/heads/main',
+         'refs/heads/testing', 'refs/heads/release', 'refs/tags/v1.0.7-rc.1017001']
+ result = {'status': 'UNSTARTED', 'commands': [], 'cases': 0, 'push_attempted': False}
+@@ -133,9 +133,9 @@
+     raw = read(HERE / 'REQUEST.json', 65536)
+     request = json.loads(raw)
+     approval = json.loads(read(HERE / 'APPROVAL.json', 65536))
+-    require(request['scope'] == 'MACOS_SANITIZERS_REQUEST_ONLY_ACTIVATION01' and request['base'] == BASE,
++    require(request['scope'] == 'WINDOWS_AFTER_FLUSH_REQUEST_ONLY_ACTIVATION01' and request['base'] == BASE,
+             'Request-only nonpublishing activation scope')
+-    require(approval['reviewer'] == '/root/current_ledger' and approval['status'] == 'ACCEPT_EXACT_MACOS_ACTIVATION_ONLY'
++    require(approval['reviewer'] == '/root/current_ledger' and approval['status'] == 'ACCEPT_EXACT_WINDOWS_ACTIVATION_ONLY'
+             and approval['request_sha256'] == sha(raw), 'Genuine exact independent review')
+     require(sha(read(Path(__file__), 65536)) == request['controller_sha256'], 'Reviewed controller source')
+     for tool in (GIT, GH):
+@@ -163,10 +163,13 @@
+     activation = read(HERE / 'ACTIVATION.json', 65536)
+     require(sha(activation) == request['activation_sha256'], 'Independently reviewed activation bytes')
+     fields = json.loads(activation)
+-    require(set(fields) == {'purpose', 'source_commit', 'controller_sha256', 'workflow_sha256', 'native_inputs'}
+-            and fields['source_commit'] == BASE
+-            and fields['purpose'] == 'ONE_MACOS_X64_ASAN_UBSAN_FIVE_NATIVE_CTESTS',
+-            'Exact reviewed source parent and sanitizer request')
++    require(fields['source_commit'] == BASE and fields['schema'] == 1
++            and fields['suite'] == 'windows-after-flush-01' and fields['owner'] == '/root'
++            and fields['target'] == 'passvault_biometric_windows_after_flush_test'
++            and fields['case_names'] == ['passvault_biometric_windows_after_flush_continue',
++                                          'passvault_biometric_windows_after_flush_process_death']
++            and fields['audit_controls'] is False and fields['after_flush_controls'] is True,
++            'Exact reviewed source parent and two-case Windows after-flush request')
+     git('read-tree', ['read-tree', BASE])
+     blob = git('activation-blob', ['hash-object', '-w', '--stdin'], activation).decode().strip()
+     require(blob == hashlib.sha1(b'blob ' + str(len(activation)).encode() + b'\0' + activation).hexdigest(),
+@@ -190,7 +193,7 @@
+     git('push', ['push', '--porcelain', '--no-follow-tags', REMOTE, commit + ':' + BRANCH], network=True)
+     after = refs('refs-after')
+     require(after == (before | {BRANCH: commit}), 'Remote acknowledgement/ref conservation unknown')
+-    result.update(status='MACOS_ACTIVATION_PUSH_VERIFIED_RUN_MUST_BE_IDENTIFIED', refs_after=after)
++    result.update(status='WINDOWS_ACTIVATION_PUSH_VERIFIED_RUN_MUST_BE_IDENTIFIED', refs_after=after)
+ except BaseException as failure:
+     result.update(status='FAILED_OR_REMOTE_STATE_UNCERTAIN_NO_AUTOMATIC_RETRY',
+                   error=type(failure).__name__ + ': ' + str(failure))
+@@ -210,4 +213,4 @@
+         os.close(lock_fd)
+     result['elapsed_seconds'] = time.monotonic() - started
+     (HERE / 'RESULT.json').write_text(json.dumps(result, indent=2) + '\n')
+-raise SystemExit(0 if result['status'] == 'MACOS_ACTIVATION_PUSH_VERIFIED_RUN_MUST_BE_IDENTIFIED' else 1)
++raise SystemExit(0 if result['status'] == 'WINDOWS_ACTIVATION_PUSH_VERIFIED_RUN_MUST_BE_IDENTIFIED' else 1)

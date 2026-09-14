@@ -1,0 +1,41 @@
+{
+  "label": "push",
+  "argv": [
+    "/usr/bin/git",
+    "--git-dir=/root/projects/PassVault/passvault-publication-20260914-04/.git",
+    "-c",
+    "core.hooksPath=/dev/null",
+    "-c",
+    "core.fsmonitor=false",
+    "-c",
+    "gc.auto=0",
+    "-c",
+    "maintenance.auto=false",
+    "-c",
+    "commit.gpgsign=false",
+    "-c",
+    "protocol.allow=never",
+    "-c",
+    "protocol.https.allow=always",
+    "-c",
+    "credential.helper=",
+    "-c",
+    "credential.helper=!/usr/bin/gh auth git-credential",
+    "push",
+    "--porcelain",
+    "--no-follow-tags",
+    "https://github.com/Apdelrahman1911/passvault.git",
+    "6f1200d7737fdbc6aed54d3d0c68fc86ed2853dd:refs/heads/codex/audit-continuation-linux-20260908"
+  ],
+  "network": true,
+  "exit": 0,
+  "stdout": {
+    "bytes": 168,
+    "sha256": "75ef6e3d0d03005195ac0ac75d6b12852d26fd6f523a2fa20de970e88e8cdd79"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "group_settled": true
+}

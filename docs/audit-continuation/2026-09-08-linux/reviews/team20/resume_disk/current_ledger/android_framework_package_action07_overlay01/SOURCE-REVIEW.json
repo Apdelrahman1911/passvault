@@ -1,0 +1,106 @@
+{
+  "format": "passvault-android07-reviewed-overlay-control-source-review-v1",
+  "utc": "2026-09-14T21:01:46.506119+00:00",
+  "reviewer": "/root/current_ledger",
+  "author": "/root",
+  "status": "ACCEPT_REVISION02_EXACT_SOURCE_ONLY_NOT_EXECUTION",
+  "execution_approved": false,
+  "sources": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action07-overlay-proposal01/PROPOSAL.json",
+      "bytes": 1316,
+      "sha256": "1b8a69b7477793dee4de9ecde847a32fce9f3d720c9ee294fdec9e21825b9951"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action07-overlay-proposal01/REVISION02.json",
+      "bytes": 638,
+      "sha256": "277d202ae6cd898841f7851e6042080cb56fb8ff4bd832e2c037f0aef90c0671"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action07-overlay-proposal01/INIT.gradle.txt",
+      "bytes": 61149,
+      "sha256": "9a5aa244001ccdddd9738eecb1ef3db56bc8db4aa6c6a82c54b9e8298d778998"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action07-overlay-proposal01/INNER.py.txt",
+      "bytes": 72290,
+      "sha256": "76ef8a80f26155eb45f7730a7756dd8cc22c80efe1db3d276f779421b4d5b194"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action07-overlay-proposal01/OUTER.py.txt",
+      "bytes": 93682,
+      "sha256": "a246a474961643cc249f9d0d3cc19a9da8e9381104c2cd1599ffeae2347acb86"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action07-overlay-proposal01/INIT.gradle.diff",
+      "bytes": 5641,
+      "sha256": "8b0025c0af4a2f962a47cb1a3b90864adf0b483527984c2f18671790e5ea2bce"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action07-overlay-proposal01/INNER.py.diff",
+      "bytes": 15446,
+      "sha256": "4ad922da25a8218ba9fb577f33744995980a71f7ca3df154aa20dff84a678500"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action07-overlay-proposal01/OUTER.py.diff",
+      "bytes": 22665,
+      "sha256": "6de28c83ee106e781eae0298e90c57d56a59cc6f3ae1e0616deb25470ed59a16"
+    }
+  ],
+  "reused_reviews": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/android_framework_package_action_instance06/SOURCE-REVIEW.json",
+      "bytes": 4094,
+      "sha256": "5871bc918b9a54ff53b7970294966037359aebbcc8ef1868c3d23e9889e376fe"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/android_framework_package_action_actual06/ACTUAL-REVIEW.json",
+      "bytes": 8186,
+      "sha256": "065423c16c82f8640164acc271e179613f709d1ebbe3600a1d2f31598fcffc44"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/android_locale_public_api01/SOURCE-REVIEW.json",
+      "bytes": 4187,
+      "sha256": "6ca5ca4de9f1596ab575d8e1404d3b6d5e6879a6b3eab67659b3255825dc172b"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui20_controls01/SOURCE-REVIEW.json",
+      "bytes": 6301,
+      "sha256": "5f3ef62a444e26a753948763645af61eec00e4bff6ffb4ad4b36d43a9283c665"
+    }
+  ],
+  "superseded_source01_objection": {
+    "status": "REJECTED_BEFORE_INSTALL_OR_EXECUTION",
+    "observed_images": {
+      "INIT.gradle": "d0400d5a7a5f7fdb2db637d8be0bdc14ac15afc41e7625cc654eff92b51fabad",
+      "INNER.py": "25abcffc5de43a233d775a58e962aa3fd20cb1c336e457c8a92b09550ead4755",
+      "OUTER.py": "07a626b2428f77c97335010273fb0716c956c01e3b0db060866b50dae0a73f34"
+    },
+    "findings": [
+      "INNER referenced TEST_OVERLAY without definition; reachable intake NameError would block meaningful compilation.",
+      "Final INNER source_references wrongly retained RAW_GIT_BLOBS for transformed fixture.",
+      "Matching but stale06prefix/purpose/hostpolicy/currentauthoritylabels flagged; normalized07 in revision02."
+    ],
+    "resolution": "Current exactrevision02 definesidenticalINNER/OUTER overlayconstants, reports base+overlay in sourcechecks/subject/finalsource_references, normalizescurrent07identities. Priorproposals/sourcegenerationfailedguessedlength retained; not runtimeevents."
+  },
+  "checks": [
+    "Independentlyreproducedallthreecomplete06->07unifieddiffs; ASTparsed,noimport. Afternormalizingexplicitidentity/subject/dependentpins, INITunchanged; INNERchangedonlyoverlayconstant/intake/effective_source_row/source_check/subject/finalrepresentation; OUTERonlyoverlayconstant/source_checkrepresentation/apply_test_overlay/maincallsequence. Original412nodes819relations/twoexactselectors unchanged; no speculativegraphrepeat needed.",
+    "Extractedliteralreplacementpairs asDATA. Twoexactunique substitutions onacceptedBEFORE produce full29393B acceptedafterimage SHA21ae72a59dae1ba8dea978f56c0bf862c73b3bb91b76980f92713c57633b61fb/Gitblob43cd9c74e7b41ef9a00ac48584f5ac46826fe4e8. Bothbefore/afterlength/SHA256/GitSHA1 andexactbaseSOURCErow independentlyverified.",
+    "Newwriteprimitive deadline->samefdwrite/truncate/fsync/file+parent/readback/descriptornamemetadata/close block ASTexactlyequalsacceptedGUI20 apply_approved_desktop_test_overlay. Onlyonefixednewownedcheckoutfileafterwholebaserawscan; beforecompletehash/cardinality/aftercompletehashcheckedbeforewrite. No genericpatchinput/hostW/SOURCE/index/oldruntimewrite; no rollback/retry onpartialfailure.",
+    "Outerupdatesonlyeffectiveexpectedrow,dropsexactoldobserved_checkout_pin, rescansall4548effectivefiles, savesoverlayreceipt, retainsoriginalrawstreamdoublepass/indexbase. InnerderivessameoneeffectiveGitblob/size/SHA256 row fromvalidatedbase row; normalwrapperstop/sourceafter loopsunchanged. BaseSOURCEcapacityisrawtransportcapacity,not falselynewGitcommit.",
+    "Independentfullmetadatarecompositionmatchesoldbase4548members140474293B/SHA5ebc10615710ecb56d381ad41b803c18bc087edfc1d3a9784a8fa18d0f22b717. Afterone209Bdelta:4548members140474502B/SHA d6a6319faf73b5078b7a59c94c098c6706bfef524181a038eb6002d75872b7eb. Thisiseffectivesourceaffinitynotactualtransport/runtimeverification.",
+    "INNERconstant definedbeforeclass/main; INNERandOUTERTEST_OVERLAY equal, FROZENINIT9a5aa244/INNER76ef8a80 andgraph90d55008 matchcurrentimages. Correct07run/logprefix/format/purpose/hostpolicy/assertion coherent; historicalARG06algorithmqualificationunchanged.",
+    "Sourceconfinesactualscope tofixturecompiler/Debugresources-package. Alloneworker/JDK17/no-daemon/noCOD/strictverification/8entry5running3private/25-20RAM/2400saction600soriginalstop6000scontroller/settlement/allowlistedreportpreservingcleanup controls unchanged. No device/Android32/clipboard/nativeprompt/runtimecases/Release/storecredit."
+  ],
+  "next": [
+    "Rootmayinstallonlyrevision02acceptedimagesandexpectedunchangedgraph,preparefresh07request explicitlybaseP22plusreviewedtestoverlay. Neednewsource/tool/store/lock/resource/custodyrequestandgenuineinstanceapproval afterGUI20originalsettlementadopted. Not06replay orunchangedreassurancerun.",
+    "Actualevidence must bindbase+overlay before/after, solecompilerinput/newcompiledclass/packageproof,terminal,originalwrapperstop andscopedcleanup. Preserveactual06compileFAILandanynewfailure,noautomaticretry.",
+    "Rootstillneedsfinalpayload/canonicalledger/reportreconciliation; source-onlypreparationnotfamilyclosure. Supersededrevision01bytes/objectionsremaininledger."
+  ],
+  "credit": {
+    "new_cases": 0,
+    "new_closures": 0,
+    "runtime_passes": 0
+  },
+  "restrictions": "No helperimport/execution/Git/network/liveprobes/cleanup byreviewer. PVU007STOP/PVU011NO-RETRY/PVA029FAIL-noautomaticretry/G7G8CLOSED/WindowsGraph03CLOSEDremoteUNKNOWN/allHOLD-refusedwitnesses/protectedrefs-tags-mobile1017001/eightPVDpreserved."
+}

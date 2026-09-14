@@ -1,0 +1,92 @@
+{
+  "utc": "2026-09-14T17:29:22.441907+00:00",
+  "owner": "/root",
+  "status": "ROOT_ADMITS_ONE_ORIGINAL_GUI16",
+  "request": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui16-instance01/REQUEST.json",
+    "bytes": 26062,
+    "sha256": "49e7ac9774233ad32ae4c32c883e08e94ec6fe291b0e1db70c672841938022ab"
+  },
+  "approval": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui16-instance01/APPROVAL.json",
+    "bytes": 1687,
+    "sha256": "29946283d5fbc35514ecb9489d7be0b86cd779fc8371be1bc756602184b87798"
+  },
+  "review": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui16_instance01/SOURCE-REVIEW.json",
+    "bytes": 9186,
+    "sha256": "744b4ea751ae90a1e6b3a4c8ba6b97df13261a000033c2987a11173b1588f09c"
+  },
+  "command": [
+    "/usr/bin/env",
+    "-i",
+    "PATH=/usr/bin:/bin",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TZ=UTC",
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui16-instance01/OUTER.py"
+  ],
+  "findings": [
+    "PVA-007",
+    "PVA-031",
+    "PVA-027",
+    "PVU-003"
+  ],
+  "purpose": "One batch of three remaining isolated cases; exact-token readiness before single Edit click, independent tray/chooser continue via failFast=false. No unchanged passing tests.",
+  "effective_source": {
+    "representation": "P23_RAW_GIT_BLOBS_PLUS_DESKTOPTEST_FIXTURE_AND_TEMPORARY_NAV_DIAGNOSTIC_OVERLAYS",
+    "base_commit": "59bee33096f538b9444f00236448d7fc0ea740b2",
+    "base_tree": "76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6",
+    "source_manifest_sha256": "1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc",
+    "members": 5121,
+    "base_raw_bytes": 153458946,
+    "observed_checkout_bytes": 153460893,
+    "framed_transport_bytes": 153725453,
+    "effective_bytes": 153469661,
+    "base_content_identity_sha256": "19211d126337ddf19a37a6b89522642d62dcc247c199a6420cdc1e4b28abd91c",
+    "effective_content_identity_sha256": "2ac87b54962dbd2208a3b50a029e7e51a8e00d00aabd97bdf896953cd20157e2",
+    "diagnostic_overlay": {
+      "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+      "git_mode": "100644",
+      "before": {
+        "bytes": 88602,
+        "sha256": "5fe322e48fef5fe7b6d2729817ad6fdbeb6bec182bf1cde5198ffdb1bb8c01a3",
+        "git_blob": "91858bd15c2ab211bc263b881157cebd9a283154"
+      },
+      "after": {
+        "bytes": 98904,
+        "sha256": "e011f6d605fa2ac1f78468bcaf772f0b323c7f0e3919916ccd155ce9eb728fe2",
+        "git_blob": "1968a40c3a34a4534eba23c3aeb62e5d88403911"
+      },
+      "scope": "Owned child-only fixed readiness observation, bounded wait before original single native Edit click; unchanged downstream AX/Room guards/assertions."
+    },
+    "navigation_diagnostic_overlay": {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/adapters/VaultRouteAdapters.kt",
+      "git_mode": "100644",
+      "before": {
+        "bytes": 11636,
+        "sha256": "4a155566bd433f2905f6e13137d1b8e7b03da06a54fd9e12b706b4f7d3061b98",
+        "git_blob": "cc0a198b2e1d0aab221efdd8d12fa73358ed10b7"
+      },
+      "after": {
+        "bytes": 11992,
+        "sha256": "b011c6da2183deba3ae56689016dec9d3e3483cff1040883b70b580a1ef017ac",
+        "git_blob": "d14ae2ae31fbdc889c46256c5d895c3deda07245"
+      },
+      "scope": "Temporary nonshipping SideEffect observation of exact committed detail-entry token; no production behavior change or guard bypass. Replaces GUI15 outcome overlay."
+    }
+  },
+  "resources": {
+    "MemTotal": 33666850816,
+    "MemAvailable": 31252447232,
+    "disk_available": 13536731136
+  },
+  "cleanup": "Original installed controllers stop wrapper after each phase, settle original workers/helpers/private namespace, preserve exact compact evidence and delete only validated originalruntime outputs. Unknown remains HOLD; no automatic retry.",
+  "bounds": "JDK17/oneworker/non-daemon/strictverification/noCOD;12GiBentry/3GiBrunning+private,256MiBdisk/512MiBRAMcleanup reserve;5250seconds work+boundedcleanup.",
+  "coordination": "Root sole build owner; one reviewer only. GUI15 retired; no other owned CI/build/test/stop known active. Independent Android source/data work allowed without build.",
+  "nonshipping": "Both fixture readiness and adapter overlay are paired validation-only, canonical source remains unchanged."
+}

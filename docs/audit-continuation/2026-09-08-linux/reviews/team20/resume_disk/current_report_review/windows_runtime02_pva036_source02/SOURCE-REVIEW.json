@@ -1,0 +1,183 @@
+{
+  "schema": 1,
+  "reviewer": "/root/current_report_review",
+  "author": "/root/postfix_transport",
+  "base_author": "/root/windows_author",
+  "disposition": "ACCEPT_WINDOWS_RUNTIME02_PVA036_NATIVE02_SOURCE02_ONLY",
+  "scope": "Independent inert implementation and exact-byte challenge; not an INSTANCE, runtime admission, actual graph acceptance or case/closure credit",
+  "packet": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_runtime02_source02/PACKET.json",
+    "bytes": 13256,
+    "sha256": "7ab4288beb0f124d507525210fccf51fe16060aab7d241f65b3dec058aabd6b2"
+  },
+  "accepted_afterimages": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_runtime02_source02/AFTER-windows_real_jna_02.py.txt",
+      "bytes": 166067,
+      "sha256": "d45abaaef131b83a293470d30892fd82de9017574c292c8c16a63b1627f33b81"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_runtime02_source02/AFTER-audit-windows-real-jna-02-validation.yml.txt",
+      "bytes": 2383,
+      "sha256": "9ade7dcdb9856a815c1b2bd9d2a71558b57bbb34961be0629171ee5aabde1d43"
+    }
+  ],
+  "scope_input": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_runtime02_source02/SOURCE-SCOPE.txt",
+    "bytes": 7710,
+    "sha256": "e1804bac47a6c92d8001d6079e4ecfb93180ff42a63ef48659ac27de7c823d7a"
+  },
+  "unchanged_init": {
+    "canonical": {
+      "path": "scripts/audit/windows_real_jna_02.init.gradle",
+      "bytes": 18767,
+      "sha256": "85c633c05840ef5c49d0659e4d9d02762db9b3b7b57c3a2ab6052716a05cecad"
+    },
+    "literal": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_runtime02_source02/UNCHANGED-windows_real_jna_02.init.gradle.txt",
+      "bytes": 18767,
+      "sha256": "85c633c05840ef5c49d0659e4d9d02762db9b3b7b57c3a2ab6052716a05cecad"
+    }
+  },
+  "basis": [
+    "Completed source01 challenge of the full native extension, producer, source validation, command/cleanup integration and workflow delta is retained, not restarted.",
+    "Source02 challenged against both canonical BEFORE files and nonaccepted source01, using only named text, literal bytes and JSON/hash/integer processing.",
+    "Every source02 packet file descriptor was independently rehashed: 25 descriptors/25 distinct named files, all exact. Source01 packet and afterimage remain unchanged.",
+    "Independently reconstructed all 42 helper and 3 workflow canonical-baseline disjoint byte-range replacements; old/new length/SHA and complete afterimages matched.",
+    "Independently reconstructed all 16 source01-to-source02 disjoint helper replacements and regenerated both complete unified diffs exactly.",
+    "Observed canonical helper/workflow equal their BEFORE bytes and canonical init equals its unchanged literal. This is read-time source evidence, not permission to alter or execute them."
+  ],
+  "reconstruction": {
+    "canonical_baseline_delta": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_runtime02_source02/DELTA.json",
+      "bytes": 76254,
+      "sha256": "f4842ce9fe49b3acfb564cec5cb688cebb30510df130dc02f298d4003966e729"
+    },
+    "canonical_baseline_diff": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_runtime02_source02/DIFF.patch.txt",
+      "bytes": 67379,
+      "sha256": "b102e0a1feb4af64c77d96d64b074d58d874a946c5321c801f165d49adf6640d"
+    },
+    "source01_delta": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_runtime02_source02/SOURCE01-DELTA.json",
+      "bytes": 11744,
+      "sha256": "f3ccc41e9db8c779bae81dcc84c19a12ad2f9a1bc27a2252f08a9cdcc795cab1"
+    },
+    "source01_diff": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_runtime02_source02/SOURCE01-DIFF.patch.txt",
+      "bytes": 9405,
+      "sha256": "0a8dc0ea9858315a11aba903c360c86dc4c41858a1408799fb32882b4d91c01c"
+    },
+    "canonical_helper_edit_ranges": 42,
+    "canonical_workflow_edit_ranges": 3,
+    "source01_successor_edit_ranges": 16,
+    "all_slice_hashes_lengths_reconstruction_and_diff_bytes_exact": true
+  },
+  "source01_nonacceptance": {
+    "packet": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_runtime02_source01/PACKET.json",
+      "bytes": 10801,
+      "sha256": "d68b397b80d1e6a65452434f709039c84f664c76ca22d92168f3bba5fc82877f"
+    },
+    "helper": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_runtime02_source01/AFTER-windows_real_jna_02.py.txt",
+      "bytes": 165143,
+      "sha256": "b5b50ce464ad92837b9d204b905be743385760b562c07990cb21cf27d0e7fa6b"
+    },
+    "disposition": "NONACCEPTED_IMMUTABLE_SOURCE_PROPOSAL; not installed or executed by this review",
+    "message_basis": "Two required corrections were communicated in the independent final-batch team message; no separate sealed source01 correction leaf existed.",
+    "findings": [
+      {
+        "id": "RUNTIME02-SOURCE01-LOGCOUNT",
+        "kind": "Validation-helper source defect, not a newly confirmed product family",
+        "found_by": "/root/current_report_review; independently confirmed by author",
+        "before_location": "AFTER source01 line826 check_outputs; parent cap at899 in source02",
+        "reachable_counterexample": "Successful original commands1-10 consume Git4/CMake3/inventory1/native2. Java11 creates the eleventh original log; check_outputs still requires <=10 and rejects. Thus the intended JNA12 cannot be reached despite parent cap13.",
+        "source02_correction": "check_outputs line827 accepts <=13, matching command cap13. Its only delta is the count and diagnostic; original per-log2MiB and aggregate8MiB byte/identity logic remains exact.",
+        "compatibility_challenge": "No open-ended command expansion, new launcher, byte-bound increase, deadline rebase or extra selected case. Java11/JNA12/Stop13 fit the fixed intended schedule.",
+        "disposition": "CORRECTED_IN_ACCEPTED_SOURCE02_ONLY; no execution proof claimed"
+      },
+      {
+        "id": "RUNTIME02-SOURCE01-PRELAUNCH-REFUSAL",
+        "kind": "Validation-helper evidence/deletion-veto defect, not a newly confirmed product family",
+        "found_by": "Author /root/postfix_transport; independently confirmed by /root/current_report_review",
+        "before_location": "source01 require_no_native_fixtures1615-1626; retain_native_evidence1692; generic cleanup guard2503",
+        "reachable_counterexample": "A passvault-after-flush- prefix detected before case1 throws with native_fixture_attempted=false. Source01 retain_native_evidence then resets native_cleanup_safe=not attempted to true; result.failures alone is not a universal generic whole-G deletion veto. A detected unknown fixture could therefore be erased.",
+        "source02_correction": "A distinct native_fixture_refused latch is set true and cleanup_safe false before the detected-prefix throw at1629-1631. Prelaunch attempted stays false. No-launch reset1698, retained final gate1739-1746, retention-exception2499-2500, whole-G guard2511-2512 and final status2558 all respect refusal.",
+        "counterexample_challenge": "For the same prelaunch trace, retention now resets to not(false or true)=false, its not-refused final predicate fails and cleanup selects HOLD. If retention itself fails, the catch keeps unsafe. If a residual is first detected by the final scan, that late latch is preserved and refreshed into final evidence before reporting.",
+        "compatibility_challenge": "Exactly one false initialization and one true assignment exist; no reset/recovery path or fabricated attempted test was added. Prefix inspection remains names-only, with no traversal/open/delete of the refused entry. Ordinary unattempted/no-refusal cleanup retains original policy; successful attempted pair still needs both complete retained native contracts.",
+        "disposition": "CORRECTED_IN_ACCEPTED_SOURCE02_ONLY; no runtime simulation or cleanup success claimed"
+      }
+    ]
+  },
+  "independent_contract_challenge": {
+    "product": "Exact full P23 commit59bee33096f538b9444f00236448d7fc0ea740b2/tree76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6;5121members/153458946raw bytes. Complete source copy and final ordered raw aggregate remain. No approved57B Desktop-test overlay or canonical W overlay.",
+    "derived_native_view": "Separate G/native-source has six files/192290bytes: four unchanged P23 inputs and two exact accepted test/CMake controls. Prior review joined all six size/SHA/Git-blob/mode tuples to retained P23 manifest and both control paths to disjoint member/parent/casefold namespaces; source02 native literal is byte-identical to source01.",
+    "producer": "Same three CMake parents, now BUILD_TESTING and after-flush ON, historical/PRK OFF. Build only ordinary DLL plus dedicated after-flush EXE. ABI source supports configure declaration only; no ABI/security/historical/PRK case is selected or executed.",
+    "image_and_configuration": "Generated projects and successful original CL tracking records independently bind direct sources, allowed macros, Release/x64 settings and security flags. DLL must exclude test/after-flush/historical/PRK instrumentation; EXE is distinct AMD64 PE32+. CMake/CTest sibling image and cache source/tool joins are required.",
+    "executor_custody": "Original Run.command only. Same atomic JOB_LIST plus explicit NUL/current-log HANDLE_LIST, suspended creation flags, noninherited/nonbreakaway Job, per-parent pre-Gradle natural Job-zero drain, original stop/final settlement and cleanup machinery. Outer Job membership precedes inner native AssignProcess gap. CTest timeout alone is not custody evidence.",
+    "schedule": [
+      "1-4 original Git controls",
+      "5 CMake version",
+      "6 configure",
+      "7 serial build ordinary DLL and after-flush EXE",
+      "8 filtered CTest inventory",
+      "9 continue",
+      "10 process_death",
+      "11 original Java version",
+      "12 unchanged JNA selector",
+      "13 original wrapper --stop"
+    ],
+    "selection": "Exactly two anchored CTest cases; inventory must match image/argv/order/RUN_SERIAL/TIMEOUT30/working directory. --no-tests=error, parallel1, parent30s and CTest30s; death follows successful continuation work observation only. No native retry or alternate selector.",
+    "environment": "PASSVAULT_NATIVE_TEST_PARENT == TMP == TEMP == original G/tmp for native pair. Original Gradle preparation replaces the environment and forbids that variable from entering JNA. No system-temp fallback.",
+    "evidence": "Both native cases require exact two source-bound setup/success markers in original verbose log and separate nonfailed/nonskipped one-case XML. Bounded original process/creation/exit/root/stage/destination identities join action RELEASED/NONE or TERMINATED/OWNED_FLUSHED_STAGING. Final retained log, XML, source, image, project and CL-record joins are required; work observations alone are not adoption.",
+    "failure_evidence_and_cleanup": "Failure XML is copied before semantic validation when original Job/handle custody permits. Launch intent is sticky before fallible Run.command. Any attempted incomplete/failed/unknown pair or any detected fixture refusal keeps entire G HOLD. Missing/oversize XML, changed source/identity, termination/timeout or close failure cannot be treated as success. No failure root upload or old-root recovery is added.",
+    "jna": "Original sole :app-desktop:auditJnaLifetimeTest selector, method, init, source/graph/tool guards and strict dependency verification remain. Native2/JNA1 counters stay separate; XML-passing count for JNA is explicitly one-case-scoped.",
+    "workflow": "Only descriptive name/step wording changes. Existing dedicated branch/request-only activation, contents:read, immutable pinned actions, no secrets/signing/publishing and compact retention3days remain.",
+    "bounds": {
+      "parent_commands_and_logs": 13,
+      "work_stop_cleanup_seconds": [
+        1500,
+        1560,
+        1620
+      ],
+      "workflow_seconds": 1800,
+      "job_processes": 16,
+      "job_committed_bytes": 3221225472,
+      "disk_launch_ongoing_GiB": [
+        12,
+        8
+      ],
+      "RAM_launch_ongoing_percent": [
+        25,
+        20
+      ],
+      "per_log_bytes": 2097152,
+      "aggregate_log_bytes": 8388608,
+      "native_XML_per_case_bytes": 262144,
+      "native_stdout_per_case_bytes": 65536
+    },
+    "protected_byte_conclusions": "Source01 independent span challenge is reused; source02 complete minimal delta adds only two corrections and scope/evidence wording. Log-monitor exact replacement was independently checked so the old whole-log-block unchanged claim is not reused. Native fragment appears exactly once. All eight actual-graph assignment lines remain byte-identical and UNBOUND; init remains unchanged."
+  },
+  "remaining_limits_and_prerequisites": [
+    "This accepts exact inert SOURCE02 only. Root alone may decide canonical installation/publication, and must separately bind/admit any actual instance. This report is not the future REAL-JNA02-PVA036-INSTANCE-ACCEPT.json and does not create it.",
+    "Actual graph/result/toolchain/reviewer evidence and init actualGraphSha256 remain UNBOUND. Existing Graph03 failure/zero artifacts and scheduling-only retirement do not satisfy original cleanup or graph acceptance. Diagnostic scope is closed: no query, endpoint/log/artifact fallback or retry is authorized by this source review.",
+    "Actual Windows MSBuild/CTest project/tracking/JSON/XML format fitness, native compilation, installed runner/toolchain prerequisites and total deadline fit are UNOBSERVED. Checks fail closed; future failure is not automatic permission to widen, bypass or retry.",
+    "Fresh exact control-source identity, source-only activation parent, nonce/request, root exclusive-slot/cleanup attestations and genuine expanded independent INSTANCE are absent. Source02 preserves Windows12/8GiB, not GUI-only resource elections.",
+    "The process-death case can only observe real flush before close/rename and expected owned staging residue. It does not prove product orphan cleanup, crash-RAII cleanup, application cancellation, physical power-loss durability, physical Hello/provider/iPhone/native-active/PVA037 or full PVA036 closure.",
+    "All unchanged successful evidence is retained. No old Windows4 KDF/IO case, failed/closed helper or recovery path is rerun or reclassified."
+  ],
+  "accounting": {
+    "subject_import_eval_AST_compile_execute": false,
+    "builds": 0,
+    "runtime_or_mock_test_cases": 0,
+    "new_native_cases_executed": 0,
+    "jna_cases_executed": 0,
+    "product_fixes": 0,
+    "family_closures": 0,
+    "canonical_edits": [],
+    "network_Git_CI_live_host_process_resource_store_probes": false,
+    "owned_sessions_workers_stop_obligations": false
+  },
+  "preserved": "PVU007STOP;PVU011NO-RETRY/no inquiry;PVA02949/44PASS/5FAIL/no automatic retry;G7/G8CLOSED;native/PVU008 refusals;FAIL/HOLD/UNKNOWN;eight PVD;15EOL+2raw checkout qualifications;protected refs/tags/build1017001;version/dependency/application-identity/signing/Store/publication boundaries."
+}

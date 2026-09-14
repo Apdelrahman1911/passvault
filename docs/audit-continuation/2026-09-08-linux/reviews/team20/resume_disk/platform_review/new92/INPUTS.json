@@ -1,0 +1,202 @@
+{
+  "schema": 1,
+  "owner": "/root/platform_review",
+  "created_utc": "2026-09-14T05:24:08.961486+00:00",
+  "status": "SOURCE_ONLY_NARROW_FOREGROUND_AUTOLOCK_CANDIDATE_REUSED_C16_CONCRETE_MISSING_ORDER",
+  "verification_scope": "Exact final readback hashes for cited retained/current inputs; focused source line scopes only, not whole-file semantic coverage or execution.",
+  "context": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/REPORT.md",
+      "bytes": 14378,
+      "sha256": "fedae4cb95697f26e36d6da26cc3804075644096f32061c7c00c492de7f139a0",
+      "focused_read_scope": "PVU001/002 sections22-88; rejected-example106-143 retained as exclusion"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/ISSUE_LEDGER.json",
+      "bytes": 373479,
+      "sha256": "bd59cedaa7c6eb218f4145b8f464110f6750b3a4d3fe49e74adb63f35c8723e8",
+      "focused_read_scope": "original_suspicions001/002 and c16_permitted_source_outcomes.pvu001_pvu002_feasibility only; not final-ledger audit"
+    },
+    {
+      "path": "docs/audit-handoff/current/unresolved-investigations-outcome-only.json",
+      "bytes": 62958,
+      "sha256": "420b7eb1a419aabec37cbc323bc7d9a9b32ca160395dcc2d5f109488820eed19",
+      "focused_read_scope": "findings001/002 only"
+    },
+    {
+      "path": "docs/audit-handoff/current/issue-to-fix.json",
+      "bytes": 908650,
+      "sha256": "5782666330bc2eb017e42b7a8725db1efdf54223462f3648c8acf25cb21b245e",
+      "focused_read_scope": "applicable PVA006/011/012 historical result metadata and PVA033 distinction; no underlying archive/XML replay"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/PVU001-PVU002-MAIN-FIXTURE-NEXT-EVIDENCE.md",
+      "bytes": 7045,
+      "sha256": "7c8ca9608c167a64761a51e66740fe317ed7ee60d9c7922a5364c0ecb8ea959c",
+      "focused_read_scope": "retained C16 author feasibility; reuse, not new result"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/PVU001-PVU002-MAIN-FIXTURE-FEASIBILITY-INDEPENDENT.md",
+      "bytes": 6593,
+      "sha256": "6c00719f5736ccec9a919d5dbfe1df6a840cfcda3ff5d860090abf0d74c28234",
+      "focused_read_scope": "retained C16 independent acceptance/limits; reuse, not new review credit"
+    }
+  ],
+  "sources": [
+    {
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt",
+      "bytes": 37182,
+      "sha256": "ce012cc2b0ffc76783b081f31285c7247bdc6192e4301f6af637c2df5cdac8e8",
+      "focused_read_scope": "367-417,496-670,814-850"
+    },
+    {
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/DefaultBiometricUnlockService.kt",
+      "bytes": 9170,
+      "sha256": "431356205bb300aeb0a7c14759eef0bbf09583d3100082e5dd0103ac731a90f5",
+      "focused_read_scope": "54-88,170-194"
+    },
+    {
+      "path": "feature/settings/src/commonMain/kotlin/com/passvault/feature/settings/presentation/SettingsViewModel.kt",
+      "bytes": 32872,
+      "sha256": "a19baf0425234acdae2c2d923d74dbabf1e2b6a4822d923d80b9cccabfd6d723",
+      "focused_read_scope": "366-391,426-525"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricRuntime.kt",
+      "bytes": 1830,
+      "sha256": "111d03d9d074f0dc46dfcd670bcf2b3669b6a9104236fdb88287d41ad2b2e496",
+      "focused_read_scope": "14-43"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricKeyStore.kt",
+      "bytes": 6861,
+      "sha256": "0e4cb1569508466614af3782b3b58a1b22a1b3a3a89a124f7a14516d34c62499",
+      "focused_read_scope": "36-45,74-127"
+    },
+    {
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/attachment/AttachmentRepositoryImpl.kt",
+      "bytes": 20200,
+      "sha256": "58693cb59658f4cbba4aca4c6e1cc42c7efc69b0a7aa98a9128bf91ebea3929e",
+      "focused_read_scope": "231-249,330-382"
+    },
+    {
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/dao/AttachmentDao.kt",
+      "bytes": 2611,
+      "sha256": "bda157a025405a9e12f69631b6c384d204558f618438e7281b052fbb8c1a74d4",
+      "focused_read_scope": "32-33,59-60"
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialAttachmentController.kt",
+      "bytes": 14219,
+      "sha256": "61f3d3a8b9c17baaef3d7def87919d5e831c48c6ac160ee0f6e5cb16cd92412c",
+      "focused_read_scope": "43-74,161-183,240-268"
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialViewModel.kt",
+      "bytes": 25441,
+      "sha256": "b9a9c5e6a9e9a5eee86a13a639fa32826dbfdfbd09fa81a032935a37f58f0611",
+      "focused_read_scope": "58-122,314-336,463-481"
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialEventRouter.kt",
+      "bytes": 17962,
+      "sha256": "0423e8e78c70fa6944efa771feb33feb91169f7e458bf22036e21067fbf4c255",
+      "focused_read_scope": "24-45"
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/ui/components/CredentialAttachmentSection.kt",
+      "bytes": 12024,
+      "sha256": "0723eb3221bf09f5d8076040736a03fd96c2e508d37023ee914037bb7fd899f4",
+      "focused_read_scope": "202-220,271-308"
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/adapters/VaultRouteAdapters.kt",
+      "bytes": 11636,
+      "sha256": "4a155566bd433f2905f6e13137d1b8e7b03da06a54fd9e12b706b4f7d3061b98",
+      "focused_read_scope": "75-99"
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/PassVaultNavigationHost.kt",
+      "bytes": 26617,
+      "sha256": "50ec002a8b7b9e2c9324980662baff166596dddb31cef4823b4ffdfd784c9006",
+      "focused_read_scope": "142-209,356-425,630-647"
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/security/AutoLockTimer.kt",
+      "bytes": 3143,
+      "sha256": "811f38c29c0610d0d1b7538e59ff78b7a9ada82f8f3aa06b8ff9af27906b261d",
+      "focused_read_scope": "26-56"
+    },
+    {
+      "path": "core/security/src/commonMain/kotlin/com/passvault/core/security/VaultUiSecurityCoordinator.kt",
+      "bytes": 3806,
+      "sha256": "1a6c7ac9be3cd4ca5979ab9b09eced6b323b0282d1529b1c7039175d6fbc19e4",
+      "focused_read_scope": "53-95"
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/di/AppModule.kt",
+      "bytes": 8995,
+      "sha256": "9b486df509202e65311caf92895ba8db6a44e6eae351266c8daa952bc553af25",
+      "focused_read_scope": "197-234"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/PassVaultDesktopWindow.kt",
+      "bytes": 17188,
+      "sha256": "794a8fdbaea87edca986b2f729753dad3d434467f21e59ec1fcbb9027402e702",
+      "focused_read_scope": "185-279,329-344"
+    },
+    {
+      "path": "core/security/src/desktopMain/kotlin/com/passvault/desktop/security/DesktopWindowProtection.kt",
+      "bytes": 12362,
+      "sha256": "92c473e21c262972983b111b61adc18610bc17fcea92c6cc2b7f65ea4d5ee128",
+      "focused_read_scope": "98-174"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/DesktopShutdownCoordinator.kt",
+      "bytes": 6062,
+      "sha256": "7156e03eb7e5d2ea7636a9320a49aeaf15d0694522d88f78836b075c74e9043d",
+      "focused_read_scope": "89-109,155-172"
+    },
+    {
+      "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+      "bytes": 88602,
+      "sha256": "5fe322e48fef5fe7b6d2729817ad6fdbeb6bec182bf1cde5198ffdb1bb8c01a3",
+      "focused_read_scope": "85-110,247-395,1353,1582-1585; existing roles only, no new PVU002 execution"
+    },
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/RepositorySecurityIntegrationTest.kt",
+      "bytes": 96319,
+      "sha256": "4ab2395754910b118e9f56b11044fed7f316caa6b597fcb590d10a39ac70d9df",
+      "focused_read_scope": "1525-1567,1721-1776,1782-1916; existing source controls, not freshly executed"
+    },
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/attachment/AttachmentRepositoryTest.kt",
+      "bytes": 56876,
+      "sha256": "b82fd47b06d793d1fc8bb983e1ba818da6b5f9a6549b3ad6ca303c0414f93835",
+      "focused_read_scope": "77-120,372-393,941-988; existing source controls, not freshly executed"
+    },
+    {
+      "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialAttachmentControllerTest.kt",
+      "bytes": 11781,
+      "sha256": "ee6b7aa8ce78521ed4e4e864926005c3347a929396f4dd47647d3cd266b69d3e",
+      "focused_read_scope": "51-73,148-190; fake/controller source scope only"
+    },
+    {
+      "path": "feature/settings/src/commonTest/kotlin/com/passvault/feature/settings/presentation/SettingsBiometricViewModelTest.kt",
+      "bytes": 10830,
+      "sha256": "dd8e7badd1022f0a72980c096c9c6c04bedf89a39d1379baefa0a1703073d407",
+      "focused_read_scope": "44-118,204-273; fake-service/repository source scope only"
+    }
+  ],
+  "afterimage_authored": false,
+  "canonical_edits": false,
+  "test_or_helper_execution": false,
+  "accounting_delta": {
+    "cases": 0,
+    "findings": 0,
+    "fixes": 0,
+    "conclusive_suspicions": 0,
+    "closures": 0
+  },
+  "owned_sessions_workers_required_stop": false
+}

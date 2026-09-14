@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "reviewer": "/root/windows_author",
+  "author": "/root/android_review",
+  "disposition": "ACCEPT_TWO_UNRUN_GRAPH_RESOURCE_ONLY_SOURCE_8_ENTRY_5_RUNNING_NOT_INSTANCE_OR_EXECUTION",
+  "packet": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/android_review/new37/PACKET.json",
+    "bytes": 16780,
+    "sha256": "972fa861abaf0ef7367a81bfc78c0b7a050e6f75cf446193db2d7cd5e00646d3"
+  },
+  "scope": "Independent narrow SOURCE/literal/hashcascade review requested by root; reuse exact accepted new30/new32 lifecycle/actions-refused controls. No broader machinery qualification, runtime or installation assertion.",
+  "lanes": [
+    {
+      "lane": "releaseGraph01",
+      "init_unchanged": {
+        "path": "reviews/team20/resume_disk/android_review/new30/android_release_graph_01.init.gradle.txt",
+        "bytes": 27891,
+        "sha256": "7d5c53dd799fd6af2a3de4eee62bdf8583c3ddc4f2961650579da9ab642128b0"
+      },
+      "new_sources": [
+        {
+          "path": "reviews/team20/resume_disk/android_review/new37/release/linux_android_release_graph_01.py.txt",
+          "bytes": 73244,
+          "sha256": "a063676289d316a1618e861a48788f7181bb41173ce4b07b3dc25ce3d81a2035"
+        },
+        {
+          "path": "reviews/team20/resume_disk/android_review/new37/release/LAUNCH.py.txt",
+          "bytes": 80571,
+          "sha256": "5fb659dff583176d41a4a79a80525bf3ef8db975ea11283e8e71eb34e1e30df7"
+        }
+      ],
+      "base_source_acceptance": {
+        "path": "reviews/team20/resume_disk/platform_review/new65/ANDROID-RELEASEGRAPH01-SOURCE-REVIEW.json",
+        "bytes": 3028,
+        "sha256": "6480c485dabb33188659dac3e7a55ad3a6ca0b8d36ce2177eb2ceecbb8e485f4"
+      },
+      "exact_changed_lines": {
+        "INNER": [
+          581
+        ],
+        "OUTER": [
+          85,
+          552
+        ]
+      },
+      "request_and_admission_changed_leaf_paths": {
+        "request_data": [
+          "images//root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/android-release-graph01-outer/LAUNCH.py/sha256",
+          "images//root/projects/PassVault/passvault-linux/scripts/audit/linux_android_release_graph_01.py/sha256"
+        ],
+        "admission_data": [
+          "expected_images/5/expected_sha256",
+          "expected_images/8/expected_sha256",
+          "resource_policy"
+        ]
+      },
+      "request_null_leaves_before_after": [
+        61,
+        61
+      ],
+      "entry_calls": {
+        "inner": [
+          836,
+          1025
+        ],
+        "outer": []
+      },
+      "unchanged_sample_cap": [
+        "require(sample['files'] <= 200000 and sample['logical_bytes'] <= 3 * GIB, 'runtime inventory cap')"
+      ]
+    },
+    {
+      "lane": "frameworkGraph01",
+      "init_unchanged": {
+        "path": "reviews/team20/resume_disk/android_review/new32/android_framework_graph_01.init.gradle.txt",
+        "bytes": 34715,
+        "sha256": "1eae82da9bba83c9e416693559f521533d294615a11beb03c496034023b48309"
+      },
+      "new_sources": [
+        {
+          "path": "reviews/team20/resume_disk/android_review/new37/framework/linux_android_framework_graph_01.py.txt",
+          "bytes": 74867,
+          "sha256": "70d1d8ec5a0afcc31915c610f0de6278aefb74312b67a25010f342a2a1a3e874"
+        },
+        {
+          "path": "reviews/team20/resume_disk/android_review/new37/framework/LAUNCH.py.txt",
+          "bytes": 80690,
+          "sha256": "6f41d3bae8f2baca4d25293393014ebe637ceca2f02a978233cbee109a3181ee"
+        }
+      ],
+      "base_source_acceptance": {
+        "path": "reviews/team20/resume_disk/platform_review/new68/ANDROID-FRAMEWORKGRAPH01-SOURCE-REVIEW.json",
+        "bytes": 3052,
+        "sha256": "7cc74a7643237c63f153de0f635e5904d23015265009dd8aa0fa5f3bfc64b1b3"
+      },
+      "exact_changed_lines": {
+        "INNER": [
+          594
+        ],
+        "OUTER": [
+          85,
+          552
+        ]
+      },
+      "request_and_admission_changed_leaf_paths": {
+        "request_data": [
+          "images//root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/android-framework-graph01-outer/LAUNCH.py/sha256",
+          "images//root/projects/PassVault/passvault-linux/scripts/audit/linux_android_framework_graph_01.py/sha256"
+        ],
+        "admission_data": [
+          "expected_images/5/expected_sha256",
+          "expected_images/8/expected_sha256",
+          "resource_policy"
+        ]
+      },
+      "request_null_leaves_before_after": [
+        61,
+        61
+      ],
+      "entry_calls": {
+        "inner": [
+          849,
+          1040
+        ],
+        "outer": []
+      },
+      "unchanged_sample_cap": [
+        "require(sample['files'] <= 200000 and sample['logical_bytes'] <= 3 * GIB, 'runtime inventory cap')"
+      ]
+    }
+  ],
+  "named_descriptor_data_checks": 25,
+  "framework_original_install_data": {
+    "path": "reviews/team20/resume_disk/root/FRAMEWORKGRAPH01-CONTROLS-INSTALL01.json",
+    "bytes": 2311,
+    "sha256": "a7f330f3cf358922fed0fe3968c22dff63e868a64da55e316b4ecb9b50e13353"
+  },
+  "proof": [
+    "Both independent original SOURCE acceptances and exact init/before/after/data/diff descriptors rehashed. Entire new INNER equals original after one8else8->8else5 literal;entire new OUTER equals original after one threshold literal and exactly one actual INNER SHA replacement. Regenerated each diff byte-for-byte. No changed linecounts/other source bytes.",
+    "Each REQUEST changes only two image SHA leaves for its exact canonical INNER/OUTER destinations;17keys/20images/11host assertions/61nullleaves remain. Each ADMISSION changes those same two SHA leaves plus explicit8entry/5running resource_policy text. No live physical pin,rootassertion,empty evidence list or approving instance added.",
+    "Textually traced resources(launch=False):True only at isolation and graphphase entry;stop command periodic resources() and settle() defaultFalse use5GiB/RAM20%,not8. Outer watch(entry=False):True only at admission;tick/supervise/beforecleanup/default routes use5GiB/RAM20%. Exact4changed policycallsite definitions across2lanes;callers byte-identical to accepted sources.",
+    "Original finally path still check_inputs(stopping=True),wrapper-only STOP sourcecheck,once-only original copied-wrapper --stop600s,then owned namespace settlement. Outer authority/watch/remove_runtime and final supervise remain unchanged;cleanup inventory/deletion/evidence ticks feed defaultFalse. No second stop, oldroot recovery, altered descriptorclose, or bypass of original identity gates.",
+    "Writable-R sample cap3GiB/200000files,readonlyGit/SDK exclusions,RAM25/20%,900sgraph/600sstop/work5250s/outer6000s/settlement accounting,JDK17oneworkerXmx2g/non-daemon/inprocess/noCoD/strictverification unchanged. Both exact original INIT images reused:actions permanently refused,512graphnodes/128edges/8192refs/4MiBlog and originalreceipt caps retained."
+  ],
+  "counterexamples_and_limits": [
+    "A6GiB point cannot pass fresh entry8;after genuinely admittedentry it can pass running5,includingoriginalstop/cleanup. Under5GiB or RAM20%,a resourcefault may still fail/hold originalstop or cleanup. This change does not create a resource-independent guarantee or admission to retry.",
+    "Writable-R3GiB and free5GiB checks are cooperative samples,not hardpeakquotas/reservations. Root hypothetical~9.2GiB minus3GiB~6.2GiB is not a capacity observation;retained evidence and unrelated pressure can consume slack. Fresh measured admission and sole root quietslot still required.",
+    "Root states bases are UNRUN;reviewer did not inspect processes/slot/runtime or execute graph. SOURCE acceptance permits consideration of installation only,not literal replacement of installed files by this reviewer or transport/execution. Exact newrequest/instance/actualevidence need their original independent gates.",
+    "Initial independent DATA arithmetic used nonexistent REQUEST expected_sha256 key and stopped with KeyError;actual schema is sha256. Reader corrected;all source/templates remained unchanged. This was no subject/helper/build/test invocation or regression result."
+  ],
+  "accounting": {
+    "subject_executions_imports_eval_AST_compile": 0,
+    "builds_tests": 0,
+    "product_fixes": 0,
+    "actual_test_cases": 0,
+    "qualified_closures": 0
+  },
+  "restrictions": "PVU007STOP;PVU011NO-RETRY/noinquiry;PVA02949checks44PASS5FAIL/noautomaticretry;G7G8CLOSED;allHOLD/UNKNOWN/native/PVD8;15EOL+2raw;P22SOURCE/INDEX;protectedrefs/tags/build1017001/dependencies/versions/identities/signing/Store. No canonicalwrite,Git/API,SDK/license/private/runtime/processprobe,cleanup or executionadmission."
+}

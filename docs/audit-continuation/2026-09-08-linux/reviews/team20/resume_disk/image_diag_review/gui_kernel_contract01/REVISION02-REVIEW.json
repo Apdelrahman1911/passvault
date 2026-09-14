@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "reviewer": "/root/image_diag_review",
+  "author": "/root/current_ledger",
+  "status": "ACCEPT_REVISION02_TINY_KERNEL_FIXTURE_SOURCE_PENDING_FRESH_OUTER_ADMISSION_AND_ACTUALS",
+  "use_probe": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_kernel_contract01/revision02/probe.py",
+    "bytes": 12585,
+    "sha256": "2814ef187893e20d86c850a80bab47cea25409dc96b757455c67e52ada2464d4"
+  },
+  "delta": {"bytes": 1632, "sha256": "995ad725a369dc4710969d721c6e6fa5ae2f0c7504a543f6a2fbcbdd2b48dcda"},
+  "change_record": {"bytes": 1343, "sha256": "02cfc19d35739d2df0cadc75f273d467669defe08d3128be9491a7e45369a7d5"},
+  "prior_review": {"path": "SOURCE-REVIEW.json", "bytes": 6401, "sha256": "1a74d61f3745240dc78ada58a4ffdb87238c90c3030bddf599dc49e488d95440"},
+  "reason": "Author caught a real benign scheduling window before any execution: clear_child_tid wakes pthread_join before exit_notify publishes EXIT_ZOMBIE; even namespace teardown can already have happened. A single immediate Z assertion was needlessly flaky. Reviewer agreed with a state-only bounded wait, not relaxed identity or terminal classification.",
+  "verified_delta": [
+    "Recorded PROBE.diff exactly equals the complete original-to-revision02 source delta. Original C, original probe and README content hashes remain unchanged.",
+    "Only the post-WORKER_ALIVE leader-Z observation changes: deadline is capped at min(existing six-second deadline, now plus one second), each iteration ticks the original deadline/cancellation guard, requires a nonterminal original pidfd, then reads the same anchored stat and requires unchanged PID/PPID/starttime.",
+    "Malformed states and read/identity/pidfd errors remain immediate failures. Only recognized non-Z state transition is polled with 10ms sleeps; PASS still requires Z followed by the existing live-worker nonterminal check. Attempt count is retained. Deadlines remain best-effort scheduling/syscall bounds, not hard real-time proof.",
+    "Child binding, C protocol/static cookie, ten-second child alarm, twelve-second reap cleanup, original-pidfd-only signals, descriptor closure, resource scope and no-retry boundaries are unchanged; no repeated full-body review was needed."
+  ],
+  "supersession": "For a future root admission use the unchanged C2049B/35ea9e52bb561dab693bd610cf22390933d8ac12a310e387200bf94bfa592c32 with this revision02 probe, not the preserved original probe. All other safety/evidence qualifications in SOURCE-REVIEW.json remain. Neither version was executed by reviewer and no kernel actuals are established here."
+}

@@ -1,0 +1,132 @@
+{
+  "schema": 1,
+  "suite": "windows-after-flush-01",
+  "nonce": "387fd36902d1a78c09f284d8d257897b",
+  "case_names": [
+    "passvault_biometric_windows_after_flush_continue",
+    "passvault_biometric_windows_after_flush_process_death"
+  ],
+  "case_argv": {
+    "passvault_biometric_windows_after_flush_continue": [
+      "--after-flush-case",
+      "continue"
+    ],
+    "passvault_biometric_windows_after_flush_process_death": [
+      "--after-flush-case",
+      "process_death"
+    ]
+  },
+  "target": "passvault_biometric_windows_after_flush_test",
+  "audit_controls": false,
+  "after_flush_controls": true,
+  "sdk": "10.0.26100.0",
+  "max_seconds": 480,
+  "helper_sha256": "4d39b8c7e2294386bcb8d9c40c82a3464cd685dd33b753a7c2a200addebe6de4",
+  "workflow_sha256": "daecc3db9b987b52ed9dc24c29622dc22360297d7527933967a6596301cba202",
+  "scope_sha256": "c7331543d91d516088eeb55aa14fbc17ccb26da9507e5517fbce0e332ac93014",
+  "input_sha256": {
+    ".gitattributes": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5",
+    "app-desktop/native/biometric-bridge/CMakeLists.txt": "5bd3de7d16958c466ad740b2c14800f2f8b81e115323ad486ecf5a08f02a036e",
+    "app-desktop/native/biometric-bridge/include/passvault_biometric.h": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+    "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp": "93746b0cdb399aa17dd8c3c915e907244d4e86e5b566c51714ccc7f80310bd5d",
+    "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.rc": "13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c",
+    "app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+    "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp": "27be38ad9ed1292b085e706f8fc4b829eb1c98dcf59e4ceb9c53957ed26c7f0c",
+    "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/platform_review/new80/PVA036-AFTER-FLUSH-SOURCE-REVIEW.json": "742c0c820bdbfe1c31d3dc96ed1a04cfd8a5449285651ea05bb773456c59c9d2"
+  },
+  "utc": "2026-09-14T21:25:43.409700+00:00",
+  "reviewer": "/root/current_ledger",
+  "author": "/root",
+  "disposition": "ACCEPT_WINDOWS_AFTER_FLUSH_01_INSTANCE",
+  "authority_scope": "EXACT_NONCE_AND_SOURCE_CONTENT_CONTRACT_ONLY_NOT_PUBLICATION_ACTIVATION_OR_CI_EXECUTION",
+  "proposal": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-after-flush01-instance-proposal/PROPOSAL.json",
+    "bytes": 2513,
+    "sha256": "02dc48db7ee9499012a86e9da3283ad50a8876754bd69b3b7fad78bdbf8b6e64"
+  },
+  "reused_source_review": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/windows_after_flush01_source/SOURCE-REVIEW.json",
+    "bytes": 10141,
+    "sha256": "92bd8b4de186cdcb482e0f085ebd1da5074ea29db74fee1c4a7a7fe95f6a3514"
+  },
+  "independent_controls_actual": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/windows_after_flush01_controls_actual/ACTUAL-REVIEW.json",
+    "bytes": 5720,
+    "sha256": "6348a9f06912d951b614ab4464a8232b5e5062f6497d139a5b644259a1c8a81f"
+  },
+  "canonical_install": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-after-flush01-proposal/INSTALL.json",
+    "bytes": 923,
+    "sha256": "6d66ae11e16fc7af839f1944b24aa6c5b9dda2af34af36d7cfc393833d736248"
+  },
+  "independently_hashed_native_inputs": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/.gitattributes",
+      "bytes": 270,
+      "sha256": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5",
+      "repository_path": ".gitattributes"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "bytes": 11398,
+      "sha256": "5bd3de7d16958c466ad740b2c14800f2f8b81e115323ad486ecf5a08f02a036e",
+      "repository_path": "app-desktop/native/biometric-bridge/CMakeLists.txt"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/app-desktop/native/biometric-bridge/include/passvault_biometric.h",
+      "bytes": 4540,
+      "sha256": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+      "repository_path": "app-desktop/native/biometric-bridge/include/passvault_biometric.h"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp",
+      "bytes": 99579,
+      "sha256": "93746b0cdb399aa17dd8c3c915e907244d4e86e5b566c51714ccc7f80310bd5d",
+      "repository_path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.rc",
+      "bytes": 812,
+      "sha256": "13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c",
+      "repository_path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.rc"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp",
+      "bytes": 826,
+      "sha256": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+      "repository_path": "app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+      "bytes": 75135,
+      "sha256": "27be38ad9ed1292b085e706f8fc4b829eb1c98dcf59e4ceb9c53957ed26c7f0c",
+      "repository_path": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/platform_review/new80/PVA036-AFTER-FLUSH-SOURCE-REVIEW.json",
+      "bytes": 3726,
+      "sha256": "742c0c820bdbfe1c31d3dc96ed1a04cfd8a5449285651ea05bb773456c59c9d2",
+      "repository_path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/platform_review/new80/PVA036-AFTER-FLUSH-SOURCE-REVIEW.json"
+    }
+  ],
+  "checks": [
+    "Exact promotedcanonicalhelper78618B/SHA4d39b8c7,workflow2480B/SHAdaecc3db,scope1308B/SHAc7331543 match acceptedrevision04. All8 native/attributes/review images independently readandhashedagain; their complete mapping equals helper literalINPUTS and proposedmapping. No selectednative drift, dependencies, production identity/version or product boundary change.",
+    "Exactly two namedcases and exact --after-flush-case continue/process_death argv with dedicatedtarget; historical/PRK/auditcontrolsOFF, afterflushcontrolsON, SDK10.0.26100.0/global480sunchanged. Not a defaultnative suite, Gradle/JNA/WindowsGraph03/recovery/KDF/fileIO replay.",
+    "Reused conditional C++SOURCEreview is genuine independentplatform_review and hashbound. Creation-time outerJOB_LIST/nonbreakaway inheritance and originalkill-on-close handle SOURCEcondition was accepted in rev04 review; native suspendedchild remains outer-owned before innerAssign. NativeJob/CTesttimeoutalone would not suffice. Actual Windows ownership/settlement still unproven.",
+    "Eight originalinmemorydisposalcontrols independentlyaccepted terminal2da678exit0; negativeHOLD/missing/duplicate/action/retention failures refuse disposal; successrequires exact ordered setupOWNED then terminalcleanupPASS pair percase. These controls are not nativecaseexecution or filesystemcleanup proof.",
+    "Read currentvalidated_inputs SOURCE: helper requires this exactreviewpath, genuine reviewer/disposition, nonce/target/cases/argv/flags/inputmap, helper/workflow/scope hashes; separatefinalrequest must bind actualsourcecommit/tree, reviewhash and allfreshrootattestations. Content-beforecommitreview avoids a selfhashcycle; no commit/tree or livequietstate is falsely asserted here."
+  ],
+  "remaining_before_any_ci_execution": [
+    "Root publishes exact approvedsource plus thisreview in a separately admitted nonpublishing continuation-sourcecommit. Final stagedtree/blob/delta, privacy/licensing/omissions and bothpush workflow/PR/cohort effects must be independently reviewed; preserve allprotectedrefs/tags/mobile1017001.",
+    "After originalsourcetransport settlement, bind actualsourcecommit/tree and thisreviewSHA in freshrequest-only direct-childactivation JSON with thisnonce. Its completebytes, activationcontroller, originalcustody/tool/resource/cleanup facts, all6rootattestations and local+queued+pending+runningCIquietslot require separate independentactivationinstanceapproval.",
+    "Root alone launches oneWindows2022/MSVC2022x64/SDK10.0.26100.0job. Configure120s/build240s/eachCTest45s(native30s)/global480s/cleanup540s/workflow20min;16process/3GiBJob,12GiB25percententry/8GiB20percentrunning. Immutableactions,contentsread,no signing/storesecrets,flatcompactartifacts3days.",
+    "Independent finalsource/nativecommands/2XML/native setup+terminal/witnesses/originalouterJob and explicitclosedhandles/cleanup/originalterminal review required. Any uncertain native attempt/failedoracle/missingmarker keeps entire newruntimeHOLD; stop/settlement and evidence retention still mandatory, no automaticretry/recovery."
+  ],
+  "credit": {
+    "new_xml_cases": 0,
+    "new_native_cases": 0,
+    "new_family_closures": 0
+  },
+  "limitations": "No universalpowerloss,durability,appcancellation,productorphanrecovery,PVA037allocationcut,provider/Hello/interactivephysicaldevice or closure proof. PVA036remainsopen. This is not executionadmission merely because itsfixedname says INSTANCE.",
+  "restrictions": "PVU007STOP/PVU011NO-RETRY/noinquiry/PVA029failure-noautomaticretry/G7G8CLOSED/WindowsGraph03CLOSEDremoteUNKNOWN/allHOLD includingGUI18GUI19Android07/refusedwitnesses/protectedrefs-tags-mobile1017001/eightPVDseparate preserved. Reviewer namedSOURCE/DATA/hash/ASTread and ownreviewwrite only; noGit/network/build/test/native/helperimport/execution/liveprobe/cleanup."
+}

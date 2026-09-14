@@ -1,0 +1,685 @@
+{
+  "schema": "passvault-c20-current-ledger-update-proposal-v1",
+  "created_utc": "2026-09-14T06:10:43.161411+00:00",
+  "author": "/root/current_ledger",
+  "status": "INERT_REPORT_PROPOSAL_PENDING_INDEPENDENT_REVIEW_NOT_CANONICAL",
+  "canonical_write_owner": "/root",
+  "cutoff": {
+    "root_reported_current_asof_utc": "2026-09-14T06:07:34.573869+00:00",
+    "root_latest_message_incorporated": true,
+    "qualification": "Later execution/diagnostic results must be separately adopted before root refreshes current state; no live process/Git/CI/resource probe by report author"
+  },
+  "accounting": {
+    "confirmed_closed": 27,
+    "confirmed_total": 39,
+    "confirmed_open": 12,
+    "confirmed_percent": 69.2,
+    "original_confirmed_closed": 19,
+    "original_confirmed_total": 25,
+    "original_confirmed_open": 6,
+    "original_confirmed_percent": 76.0,
+    "suspicions_conclusive": 2,
+    "suspicions_total": 12,
+    "suspicions_open": 10,
+    "suspicions_percent": 16.7,
+    "PVD_explanations_documented": 8,
+    "PVD_owner_decisions_separate": true,
+    "XML_elements_retained": 231,
+    "XML_semantics": "Mixed historical intended-regression/native/investigation/control elements, not231 passes or unique behaviors",
+    "manifest_parser_cases_separate": 8,
+    "new_OS_primitive_case_separate": 1,
+    "new_product_families": 0,
+    "new_product_closures": 0,
+    "readiness_percentage_claimed": false
+  },
+  "readiness": "INCOMPLETE_NOT_READY",
+  "identities": {
+    "P22": {
+      "commit": "d2d79ad52ce816a36f708bd35bd736a7d8068789",
+      "tree": "2e83afec1894238f59c1e9916cbf548ad54f5da2",
+      "source_sha256": "5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6",
+      "index_sha256": "0eaa0642a49f0f99a6cd0a0054157de8efc114945a7f4303aeee707361df28f3"
+    },
+    "P23": {
+      "commit": "59bee33096f538b9444f00236448d7fc0ea740b2",
+      "tree": "76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6",
+      "source_sha256": "1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc",
+      "index_sha256": "36f9edc3b2f4e6eff79f66d78da1c86a92cb8156edd2b08e879b08f4c124909c"
+    },
+    "latest_recorded_publication": {
+      "commit": "832ed5f5aee56fbbf4c298ef0d2b10de154484cf",
+      "tree": "24d4157fff0d5fcc5cb694e598f21f561d1921d4",
+      "branch": "codex/audit-continuation-linux-20260908",
+      "evidence": [
+        "windows_a_publication"
+      ],
+      "semantics": "Retained accepted original Windows A publication, not a fresh Git check; P23 raw/index remains distinct"
+    },
+    "current_test_overlay_sha256": "d0ead442c57c9465333d036bcb4d96f1ac5b06fd8d04dfe5b45fc571100265e3",
+    "publication_gap": "New GUI05/GUI06/Image01/ReleaseGraph02 source/results/report additions remain W-only until separately reviewed continuation publication; no retired Git store or consumed publisher reuse",
+    "EOL": "All declared checkout-EOL/raw-source qualifications retained; no full-current-tree identity recheck in this report"
+  },
+  "current_updates": {
+    "desktop_test_dependency": {
+      "state": "OWNER_AUTHORIZED_APPLIED_TEST_ONLY_COMPILED",
+      "declaration": "desktopTest implementation(libs.lifecycle.viewmodel)",
+      "version_changed": false,
+      "production_runtime_changed": false,
+      "authority": "Explicit owner instruction in current session; no separate approval inferred from Telegram",
+      "evidence": [
+        "desktop_test_dependency_current_source",
+        "gui05_overlay",
+        "gui05_independent"
+      ]
+    },
+    "gui05": {
+      "state": "ORIGINAL_CONSUMED_FAILURE_CLEANUP_ADOPTED",
+      "prepare_exit": 0,
+      "prepare_reported_seconds": 428,
+      "task_executions": 130,
+      "test_cases": 0,
+      "xml": 0,
+      "screenshots": 0,
+      "failure": "ValueError: filedescriptor out of range in select() before rendering",
+      "stop_exit": 0,
+      "removed_runtime_entries": 27943,
+      "runtime_absent": true,
+      "native_owner_descriptor_capture_validation": false,
+      "qualification": "Original cooperative helper/namespace cleanup only; no native validation or global-idleness claim",
+      "evidence": [
+        "gui05_actual",
+        "gui05_independent"
+      ]
+    },
+    "gui06": {
+      "state": "CORRECTION_SOURCE_REVIEWED_AND_INSTALLED_NO_INSTANCE_NO_RUN_AT_CUTOFF",
+      "change": "One fail-closed poll(0) primitive replaces seven pidfd select readiness sites; ownership/waits/deadlines preserved",
+      "selected_methods": 4,
+      "selected_serial_test_tasks": 2,
+      "source_basis": "P23 plus sole57-byte approved test-only dependency overlay",
+      "resource_policy_gib": {
+        "entry": 7.5,
+        "ongoing": 3
+      },
+      "probe": {
+        "count": 1,
+        "kind": "OS primitive regression, not application/GUI test",
+        "xml": 0,
+        "outcome": "Original legacy high-fd select failure reproduced; new pending/exit/reaped/closed-fd behavior accepted; child reaped/descriptors closed"
+      },
+      "evidence": [
+        "gui06_probe_actual",
+        "gui06_install"
+      ]
+    },
+    "android_releasegraph02": {
+      "state": "ORIGINAL_ACCEPTED_GRAPH_ONLY_AND_CLEANUP_ADOPTED",
+      "source_basis": "P22 raw/retained index",
+      "nodes": 562,
+      "edges": 1377,
+      "dependencies": 1373,
+      "finalizers": 3,
+      "ordering": 1,
+      "graph_command_exit": 1,
+      "graph_exit_semantics": "Exact intended refusal before task actions, not project failure",
+      "outer_exit": 0,
+      "stop_exit": 0,
+      "task_actions": 0,
+      "test_cases": 0,
+      "removed_runtime_entries": 15058,
+      "runtime_absent": true,
+      "elapsed_seconds": 132.844,
+      "evidence": [
+        "releasegraph02_actual",
+        "releasegraph02_elapsed"
+      ]
+    },
+    "android_minified_action": {
+      "state": "ACTIVE_SOFTWARE_SOURCE_WORK_ACTION_NOT_ADMITTED",
+      "two_proposed_existing_roots": [
+        ":app-android:minifyReleaseWithR8",
+        ":app-android:mergeReleaseNativeLibs"
+      ],
+      "recorded_relation_union": 390,
+      "critical_limit": "Original assemble relation reaches450 of562 observed nodes:112 implicit/unexplained members.390 is not a proven future scheduled-action envelope. Output APIs/effective R8 inputs/native provenance/Room guards remain unbound. No graph recapture/action from the source note.",
+      "independent_final_source_acceptance": "Pending for this latest cut note; do not elevate author DATA to action approval",
+      "evidence": [
+        "android_release_cut"
+      ]
+    },
+    "android_frameworkgraph01": {
+      "state": "SOURCE_INSTALLED_NOT_RUN",
+      "resource_policy_gib": {
+        "entry": 8,
+        "ongoing": 5
+      },
+      "node_cap": 512,
+      "qualification": "Different fresh instance from ReleaseGraph02; no compiler/framework/device credit",
+      "evidence": [
+        "resource85_install"
+      ]
+    },
+    "desktop_image01": {
+      "state": "ORIGINAL_FAILURE_HOLD_SAFE_ACTUAL_ADOPTED_SCHEDULING_ONLY_RETIRED",
+      "source_basis": "P23 raw without GUI test-dependency overlay",
+      "gradle_exit": 1,
+      "stop_exit": 0,
+      "inner_exit": 70,
+      "outer_exit": 70,
+      "elapsed_seconds": 128.585,
+      "requested_selectors": 3,
+      "selector_outcomes": "UNKNOWN, not three failed tests",
+      "task_actions": "UNKNOWN",
+      "application_cases": 0,
+      "underlying_cause": "UNKNOWN_PRODUCT_VERSUS_HARNESS",
+      "original_private_namespace_settled": true,
+      "source_before_after_equal": true,
+      "runtime": "HOLD_NOT_CLEANED",
+      "original_cleanup_clause_satisfied": false,
+      "private_raw_output_exported": false,
+      "no_replay_no_additional_stop": true,
+      "diagnostic": "Separate two-leaf source accepted, exact instance pending independent review at cutoff; NOT RUN and no cleanup authority granted",
+      "evidence": [
+        "image01_safe_actual",
+        "image01_adoption",
+        "image01_diagnostic_proposal"
+      ]
+    },
+    "windows_graph03": {
+      "state": "ORIGINAL_COMPLETED_FAILURE_ZERO_OBSERVED_ARTIFACTS",
+      "run_id": 34802830816,
+      "attempt": 1,
+      "job_id": 103848778021,
+      "metadata_scope": "FOUR_CALLS_CONSUMED_CLOSED_NO_RETRY_OR_ALTERNATE_FALLBACK",
+      "remote_stop_workers_job_handles_cleanup": "UNKNOWN/HOLD",
+      "retirement": "Prospective logical scheduling/local reader only, not original cleanup clause",
+      "runtime02_prerequisite_met": false,
+      "evidence": [
+        "windows_graph03_scheduling"
+      ]
+    },
+    "pva036_runtime02": {
+      "pva036_test_source": "After-flush two-case source installed/unrun; production C++ unchanged",
+      "runtime02": "Composition source02 independently accepted; not installed/admitted/executed; original Graph03 failure cannot meet prerequisite",
+      "qualification": "Test/CMake current files differ from older full-file affinity pins; preserve guard/PRK/KDF per-method evidence, not whole-current-binary proof",
+      "evidence": [
+        "runtime02_source",
+        "runtime02_source_review",
+        "pva037_caller_cut"
+      ]
+    },
+    "apple": {
+      "selected_methods": 10,
+      "selection": "seven attachment + one prompt-language + VEK wrapping roundtrip + wrong-KEK unwrap rejection, not CSV",
+      "state": "Suitable-host/RAM feasibility blocked; no unchanged availability/CI retry",
+      "hardware_limit": "Simulator/macOS does not establish physical iPhone security",
+      "evidence": [
+        "apple_selectors"
+      ]
+    },
+    "pvu006": {
+      "state": "SOURCE_PREFIX_CHALLENGE_ACCEPTED_REAL_ROOM_PUBLICATION_TAIL_UNPROVED",
+      "afterimage": false,
+      "authoring_gap": "Two author turns ended in platform tool safety failure per root; implementation lane stopped/reassigned, no bypass. Not a new product STOP or hardware conclusion.",
+      "new_finding": false,
+      "test_cases": 0,
+      "evidence": [
+        "pvu006_independent"
+      ]
+    },
+    "pva037": {
+      "state": "SOURCE_CUT_BOUNDARY_RECORDED_NO_PERMITTED_REAL_CALLER_AFTERIMAGE",
+      "qualification": "Unfinished software verification under existing seam/native scope limits; not automatically hardware-only. Latest cut is author boundary DATA, not new independent closure.",
+      "evidence": [
+        "pva037_caller_cut"
+      ]
+    }
+  },
+  "remaining_confirmed": [
+    {
+      "id": "PVA-001",
+      "title": "Android32 password-hash adapter passes a 64-bit value for size_t",
+      "status_preserved": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "remaining": "Actual 32-bit native size_t/KDF compatibility, historical password encoding, create/unlock/backup behavior; bound Release-minified JNA/R8 and same-resolution native-carrier evidence. Existing compilation/static package facts are not this runtime proof.",
+      "current_gate": "Target/license gate external; minified action-envelope/output-API source work actively progressing, not external."
+    },
+    {
+      "id": "PVA-007",
+      "title": "Page Save and Back silently discard active inline custom-field edits",
+      "status_preserved": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "remaining": "Real Room Save/reopen and actual Main/NavHost dirty Back/tab/Add retention; remaining pre-frame, delivered-key/IME/a11y/RTL and Android/iOS lifecycle/input behavior. Prior 49 logical/Composition and bounded GUI evidence retained.",
+      "current_gate": "GUI06 four-case shared batch prepared; entry/resource/instance pending; mobile device gaps separate."
+    },
+    {
+      "id": "PVA-008",
+      "title": "Cancelled iOS attachment adoption can orphan an owned plaintext copy",
+      "status_preserved": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "remaining": "Execute the seven already-selected iOS attachment cancellation/adoption methods; retain physical file-protection and provider lifecycle limits.",
+      "current_gate": "Apple suitable-host/RAM evidence unavailable; no unchanged CI retry."
+    },
+    {
+      "id": "PVA-009",
+      "title": "Unavailable Android clipboard reads discard cleanup ownership",
+      "status_preserved": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "remaining": "Actual Android framework clipboard unavailable-read/cleanup ownership and recopy behavior. Retain Host07 single fake-host case separately from framework/device proof and its original cleanup HOLD.",
+      "current_gate": "FrameworkGraph01 installed 8/5 policy, not run; actual device/framework execution separately unadmitted."
+    },
+    {
+      "id": "PVA-010",
+      "title": "Desktop close-time native cancellation is outside context lifetime accounting",
+      "status_preserved": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "remaining": "Real JNA pre-entry lifetime integration plus remaining active-native cancellation/concurrency, provider/sanitizer and packaged context-lifetime evidence. Existing Mac/Windows boundary checks retained.",
+      "current_gate": "Runtime02 source accepted but Graph03 successful prerequisite missing; native/device gates distinct."
+    },
+    {
+      "id": "PVA-014",
+      "title": "Native biometric prompt text does not consistently follow app language",
+      "status_preserved": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "remaining": "Actual supported-platform prompt-language display/propagation; Apple prompt-property method is only one of the ten selected methods and not displayed biometric proof.",
+      "current_gate": "Apple host and genuine interactive platform/device evidence remain unavailable."
+    },
+    {
+      "id": "PVA-027",
+      "title": "Already-installed Desktop tray does not follow runtime app language",
+      "status_preserved": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "remaining": "Actual Settings -> publisher/window -> installed tray EN/AR/EN, tooltip, native Lock/Exit, five independently viewed crops; other platform/packaged behavior remains separate.",
+      "current_gate": "GUI06 prepared; earlier native endpoint pass retained, not full chain proof."
+    },
+    {
+      "id": "PVA-029",
+      "title": "Same-tree different-SHA flow mismatches candidate identity with attestation invocation identity",
+      "status_preserved": "IMPLEMENTED — REGRESSION VERIFICATION FAILED",
+      "remaining": "Preserve original 49 named checks:44 PASS/5 FAIL; five capture-cleanup fixture failures remain, exact signal/wait cause unverified.",
+      "current_gate": "NO AUTOMATIC RETRY; no new diagnostic/repair authority inferred from this report."
+    },
+    {
+      "id": "PVA-030",
+      "title": "Android SYSTEM language reapplies a process-lifetime stale locale snapshot",
+      "status_preserved": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "remaining": "Actual Android SYSTEM locale refresh after device locale change, with framework/lifecycle behavior.",
+      "current_gate": "Framework graph/configuration is not runtime locale proof; device execution pending separate admission."
+    },
+    {
+      "id": "PVA-031",
+      "title": "Custom-field Add remains enabled at full capacity and loses the rejected new draft",
+      "status_preserved": "IMPLEMENTED — VERIFICATION BLOCKED",
+      "remaining": "Real Room capacity/draft persistence and remaining rapid/pre-frame, keyboard/a11y/RTL/mobile and backend rejection/ack contracts; do not claim universal retention after owner disposal.",
+      "current_gate": "Shares GUI06 Room method with PVA007, not a separate duplicate test. Historical setup failure/cause preserved."
+    },
+    {
+      "id": "PVA-036",
+      "title": "Windows temporary-file failure cleanup deletes before close or without creation ownership",
+      "status_preserved": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "remaining": "Run installed after-FlushFileBuffers normal-release/controlled-child-death cases; remaining synthetic TMP/TEMP crash/cancellation/cleanup evidence with exact ownership. Two cases do not prove power loss or orphan recovery.",
+      "current_gate": "Source implemented/unrun; Runtime02 graph prerequisite blocked; historical whole-root HOLDs retained."
+    },
+    {
+      "id": "PVA-037",
+      "title": "Windows native secret-array erasure is skipped by C++ allocation exceptions",
+      "status_preserved": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "remaining": "Actual create/retrieve caller PRF/wrapping allocation cuts at post-PRF AAD and post-KDF AES/later sites; retain guard4/actual-PRK2/KDF1 evidence without rerun. Genuine Hello/provider/physical erasure separate.",
+      "current_gate": "No permitted caller test afterimage under current boundary; no new provider/refactoring/production instrumentation seam admitted. Software scope limitation, not automatically hardware-only."
+    }
+  ],
+  "remaining_suspicions": [
+    {
+      "id": "PVU-001",
+      "remaining": "Genuinely admitted production caller/provider lock/lease schedule and measured settlement; artificial suspension alone not a defect."
+    },
+    {
+      "id": "PVU-002",
+      "remaining": "Actual newly post-lock UI delete admission plus durable real-DAO deletion before teardown; distinguish already-admitted actions."
+    },
+    {
+      "id": "PVU-003",
+      "remaining": "Real chooser/Home/cancel admission and relevant cycle proof. GUI06 observation alone cannot conclusively resolve it."
+    },
+    {
+      "id": "PVU-004",
+      "remaining": "Pinned iOS interactive gesture plus other Back input/scene timing, then appropriate real hardware-keyboard LTR/RTL evidence."
+    },
+    {
+      "id": "PVU-005",
+      "remaining": "Remaining backend/platform lock-curtain behavior; retained Linux SOFTWARE_FAST native-input case is bounded nonreproduction, not universal disproof."
+    },
+    {
+      "id": "PVU-006",
+      "remaining": "Reachable source prefix independently challenged; real Room/terminal late-publication tail unproved. Two authoring turns failed on platform tooling; no afterimage or test; do not bypass refusal or relabel as hardware/permanent STOP."
+    },
+    {
+      "id": "PVU-007",
+      "remaining": "STOP: no investigation or reformulation."
+    },
+    {
+      "id": "PVU-008",
+      "remaining": "Applicable provider backing-content/destruction contract/evidence missing; original native/refusal boundaries unchanged. No provider experiment admitted."
+    },
+    {
+      "id": "PVU-009",
+      "remaining": "Actual native cancellation/late-return latency evidence; source placement before deadline is conditional ordering, not measured shutdown hang."
+    },
+    {
+      "id": "PVU-011",
+      "remaining": "NO RETRY/no containment relaxation or procedure inquiry."
+    }
+  ],
+  "resource_and_schedule": {
+    "capacity_including_root": 6,
+    "root": "Sole build/test/CI/Git/cleanup owner",
+    "heavy_job_limit": 1,
+    "parallel_use": "Up to five bounded source/review/preparation lanes alongside root; not twenty platform slots",
+    "normal_disk_target_gib": 12,
+    "latest_bound_resource_bytes": 7942787072,
+    "latest_bound_resource_gib_approx": 7.3973,
+    "memory_available_bytes": 32695025664,
+    "memory_total_bytes": 33666850816,
+    "resource_evidence": [
+      "image01_diagnostic_proposal"
+    ],
+    "GUI_entry_gib": 7.5,
+    "Framework_entry_gib": 8,
+    "current_floors_met": false,
+    "other_disposable_targets": "Earlier cleanup assessment found no further safe old targets per root update; no fresh search or cleanup by this author",
+    "next": "Obtain separately admitted Image01 minimal diagnostic/closeout as appropriate, preserving R HOLD until actually released. Source and independent review work continue; no generic3GiB fallback overrides the installed operation floors."
+  },
+  "work_sequence_not_execution_authority": [
+    "Review/admit the pending minimal Image01 diagnostic; it is not a rerun or cleanup approval. Diagnose/close out only within separately approved bounds; preserve unknown outcome/HOLD.",
+    "Once actual disk and exact instance gates are met, run the prepared four-method GUI06 batch and the separate Framework graph-only observation serially; prepare/review minified action APIs and reports in parallel.",
+    "Immediately adopt original stop/settlement/allowlisted cleanup and independently reconcile each original result. Interpret graph/task/OS/source evidence separately from app/device cases; retain every failure.",
+    "Root applies one compact current-state supplement to six ledgers and owner brief, independently reviewed at exact frozen bytes, then publishes the resumable continuation safely. No final READY or closure beyond supported evidence."
+  ],
+  "estimate": {
+    "scope": "Already-prepared local GUI06 + separate Framework graph-only observation, result review and compact ledger/owner-brief reconciliation only",
+    "engineering_hours_range": [
+      3,
+      6
+    ],
+    "serial_machine_minutes_range": [
+      20,
+      90
+    ],
+    "confidence": "Planning range, low/moderate; not a total-project completion estimate",
+    "conditions": [
+      "Fresh exact instance/cleanup admission and GUI7.5/Framework8GiB entry floors satisfied",
+      "No new failure invalidating prepared controls/fixtures",
+      "Focused batching and parallel source/review continue; no repeated unaffected builds"
+    ],
+    "observed_basis": {
+      "gui05_prepare_seconds": 428,
+      "gui05_outer_seconds": 454.936,
+      "releasegraph02_outer_seconds": 132.844,
+      "image01_failed_outer_seconds": 128.585,
+      "qualification": "Image failure duration is not a benchmark for successful installed-image build; graph preparation is not device/framework execution duration"
+    },
+    "excluded_unscoped_engineering": [
+      "Image01 held diagnostic/closeout/failure repair, duration unknown until admitted evidence",
+      "Android minified scheduling/output-API work actively progressing, not external",
+      "Further permitted PVU006/native-caller software implementation within current tool/scope boundaries",
+      "Any newly exposed product failure or further required platform integration"
+    ],
+    "external_waits": "Unbounded/not estimated: licensed usable Android32 target, suitable Apple host/RAM, genuine hardware/provider access, any genuinely new owner authorization for closed Windows diagnosis, separate design/legal/account/Store/release decisions",
+    "overall_finish_date": "NOT_SUPPORTABLE_FROM_CURRENT_EVIDENCE"
+  },
+  "canonical_application_proposal": {
+    "files": [
+      "C20_CURRENT_STATE.json",
+      "ISSUE_LEDGER.json",
+      "VERIFICATION_LEDGER.json",
+      "COVERAGE_DELTA.json",
+      "C20_POSTPUBLICATION_LEDGER.json",
+      "C20-WORKSTREAMS.json",
+      "C20_OWNER_BRIEF_2026-09-14.md"
+    ],
+    "method": "Root-only single additive current supplement/pointer plus explicit supersession of stale current aliases; preserve historical blocks, original failures and exact evidence. Refresh current hashes only at actual freeze. No recursive history duplication needed.",
+    "supersede_current_aliases": [
+      "Desktop dependency authorization pending/not applied",
+      "GUI05 not compiled/running",
+      "GUI06 source uninstalled",
+      "ReleaseGraph02 running/instance pending",
+      "Image01 affinity pending/unrun",
+      "Framework8/8 or not installed",
+      "Windows A unrun/Graph03 successful prerequisite possible without new authority",
+      "PVA036 after-flush tests unimplemented",
+      "PVA037 current three-file equality with old whole-file test/CMake pins",
+      "PVU006 source challenge unfinished or implementation failure treated as hardware",
+      "Apple two CSV methods",
+      "Old2-4week total engineering estimate"
+    ],
+    "keep_status_unchanged": "All family/suspicion statuses and denominators unchanged; no changes to historical ledger evidence",
+    "final_independent_review_required": true
+  },
+  "restrictions": [
+    "PVU007 STOP/no investigation",
+    "PVU011 NO RETRY/no inquiry",
+    "PVA02949checks44PASS5FAIL/no automatic retry",
+    "G7/G8 CLOSED and unadmitted old runner never executed/imported",
+    "Native/PVU008 refusals and all HOLD/UNKNOWN retained",
+    "Image01 private R HOLD/no raw export/no replay/additional stop; only separately reviewed minimal operation can proceed",
+    "WindowsGraph03 metadata/status/log/annotation/endpoint/artifact fallback CLOSED; remote cleanup UNKNOWN",
+    "Protected branches/tags/mobile1017001/versions/app identities/dependencies/signing/store unchanged except sole explicitly approved test-only dependency declaration",
+    "Eight PVD decisions separate; no compatibility/product-boundary redesign",
+    "Authoritative skill ledger validator unavailable/not executed; manual independent reconciliation is not its substitute execution"
+  ],
+  "activity": {
+    "named_retained_source_and_DATA_reads_only": true,
+    "canonical_edits": 0,
+    "builds_tests_subject_imports": 0,
+    "Git_network_process_resource_probes": 0,
+    "private_R_or_HOLD_access": 0,
+    "cleanup_deletions_stops": 0,
+    "outputs_only_under": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger",
+    "no_new_sessions_workers_or_stop_duties": true
+  },
+  "refs": [
+    {
+      "id": "prior_proposal",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/remaining_report/current_brief02/UPDATE-PROPOSAL.json",
+      "bytes": 9479,
+      "sha256": "f02e59c055d4e9c730d7971b2c0b73517f465fa639358922c38f9f4ab41e7c46",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "prior_checklist",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/platform_review/new90/CURRENT-BRIEF02-RECONCILIATION-CHECKLIST.md",
+      "bytes": 6462,
+      "sha256": "861ce6f67b731bd180592367de9bd6ba1a7c86eb541052eb78206fc21c45fb15",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "issue_ledger_snapshot",
+      "path": "docs/audit-continuation/2026-09-08-linux/ISSUE_LEDGER.json",
+      "bytes": 373479,
+      "sha256": "bd59cedaa7c6eb218f4145b8f464110f6750b3a4d3fe49e74adb63f35c8723e8",
+      "semantics": "Mutable canonical read-time snapshot, not a frozen final ledger"
+    },
+    {
+      "id": "state_snapshot",
+      "path": "docs/audit-continuation/2026-09-08-linux/C20_CURRENT_STATE.json",
+      "bytes": 105456,
+      "sha256": "3ad0b930e5d081ca74d92efec12adcd6d5089d6f2fcd93d90f94088459dbead7",
+      "semantics": "Mutable canonical read-time snapshot, not a frozen final ledger"
+    },
+    {
+      "id": "verification_snapshot",
+      "path": "docs/audit-continuation/2026-09-08-linux/VERIFICATION_LEDGER.json",
+      "bytes": 336875,
+      "sha256": "1d03906392ab085668d980b8b91ae15383ad413187fa38858778495b7b522c82",
+      "semantics": "Mutable canonical read-time snapshot, not a frozen final ledger"
+    },
+    {
+      "id": "coverage_snapshot",
+      "path": "docs/audit-continuation/2026-09-08-linux/COVERAGE_DELTA.json",
+      "bytes": 535684,
+      "sha256": "e2ace25e421b62ff5ae120d0a8839f576d11d853a7765fbac40e17ab59e8830b",
+      "semantics": "Mutable canonical read-time snapshot, not a frozen final ledger"
+    },
+    {
+      "id": "postpublication_snapshot",
+      "path": "docs/audit-continuation/2026-09-08-linux/C20_POSTPUBLICATION_LEDGER.json",
+      "bytes": 58008,
+      "sha256": "53e821f86f0872b8fa8395da855721d55b5ba42f73e6b39e3ae993784617b26f",
+      "semantics": "Mutable canonical read-time snapshot, not a frozen final ledger"
+    },
+    {
+      "id": "workstreams_snapshot",
+      "path": "docs/audit-continuation/2026-09-08-linux/C20-WORKSTREAMS.json",
+      "bytes": 60798,
+      "sha256": "dff117e958b0856d38d75096126b5445416a783af2d4a5de8d801e835084c818",
+      "semantics": "Mutable canonical read-time snapshot, not a frozen final ledger"
+    },
+    {
+      "id": "gui05_actual",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/GUI05-ACTUAL-ADOPTION01.json",
+      "bytes": 2310,
+      "sha256": "1eb8d4bfa6d6ccc0d67b32bbfe4ec887360e18babc1315934d36ce183a00215a",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "gui05_independent",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/android_review/gui05_actual_review01/ACTUAL-REVIEW.json",
+      "bytes": 16678,
+      "sha256": "d3fe6f6faa5bc4557163c7dbe8837d93947d8ae6bf1a376502db7d716175f243",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "gui05_overlay",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration05/SOURCE-OVERLAY.json",
+      "bytes": 3487,
+      "sha256": "b653349a7944183468b7f74e537a43168f3af15774b0a08f00f2e9f867a6442c",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "desktop_test_dependency_current_source",
+      "path": "app-desktop/build.gradle.kts",
+      "bytes": 63975,
+      "sha256": "d0ead442c57c9465333d036bcb4d96f1ac5b06fd8d04dfe5b45fc571100265e3",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "gui06_probe_actual",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/GUI06-PIDFD-REGRESSION01-ACTUAL-ADOPTION.json",
+      "bytes": 1231,
+      "sha256": "e3c9dab3cd4d5ecd3b596bcdde89339cb97038c574fd192fb89268f70f81837b",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "gui06_install",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui06-preparation01/SOURCE-INSTALL01.json",
+      "bytes": 2202,
+      "sha256": "c9259f2096a00a82b0a62b213db050a77eadcde3eb86890577113f670e26d1e9",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "releasegraph02_actual",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/ANDROID-RELEASEGRAPH02-ACTUAL-ADOPTION01.json",
+      "bytes": 2682,
+      "sha256": "7d3d8b378b0287ceaec8146e2f8dcdf696160edfb33734c2b0863dffd67c867d",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "releasegraph02_elapsed",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-android-release-graph02/OUTER-RECEIPT.json",
+      "bytes": 20353,
+      "sha256": "308b9f30f2106f34593361db75dc979846312fa1104f18e53f43fb9c6ce37f29",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "resource85_install",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/ANDROID-GRAPHS-RESOURCE85-INSTALL01.json",
+      "bytes": 4714,
+      "sha256": "d83645e46321b5006c9f06b3fd50d61e433bf0f88cdcccac9d9fc933db5f1085",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "image01_safe_actual",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_report_review/desktop_image01_actual_hold01/ACTUAL-HOLD-REVIEW.json",
+      "bytes": 15712,
+      "sha256": "94767b9e91aea0ab713ac79caef1f08855e4189d4ff9c0271e79cec92086b78e",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "image01_adoption",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/DESKTOP-IMAGE01-ACTUAL-HOLD-ADOPTION01.json",
+      "bytes": 1823,
+      "sha256": "4e19b2f1b38a6c295b9b3f63a142e6a99af3dd1bdb3d19f2b9f21194f4a458a1",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "image01_diagnostic_proposal",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image01-diagnostic01/INSTANCE-PROPOSAL01.json",
+      "bytes": 4892,
+      "sha256": "248aae77b07a447b6ea5e513cebf2a7766d3df6ebe4e1e096a5a581d30db5c35",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "windows_a_publication",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/WINDOWS-GRAPH03-A-ACTUAL-ADOPTION01.json",
+      "bytes": 1644,
+      "sha256": "6a8cde1de44d363a074cb86eac987a97f9513d50be1659bf180eec143bb10404",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "windows_graph03_scheduling",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/WINDOWS-GRAPH03-SCHEDULING-RETIREMENT-ADOPTION01.json",
+      "bytes": 3899,
+      "sha256": "4d32795912bb6508aa0de17b00edc8ac6890cb84fd8b818bb870dbcc6f1fba58",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "runtime02_source",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_runtime02_source02/PACKET.json",
+      "bytes": 13256,
+      "sha256": "7ab4288beb0f124d507525210fccf51fe16060aab7d241f65b3dec058aabd6b2",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "runtime02_source_review",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_report_review/windows_runtime02_pva036_source02/SOURCE-REVIEW.json",
+      "bytes": 15544,
+      "sha256": "f3e0bac7e1551390c93f98412d92539174359f48452a97bd9ce06726be7c22af",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "android_release_cut",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/remaining_report/android_release_cut01/SOURCE-CUT.md",
+      "bytes": 10595,
+      "sha256": "cb47eedbed0c33b31a1ced2a917bec07217636b30454a036046c45e8207a87f3",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "pva037_caller_cut",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/remaining_report/pva037_caller_cut01/OUTCOME.json",
+      "bytes": 7328,
+      "sha256": "60527593a8a23ed71c46450a4926911f04f19001181bf43dafcaab535b1bac84",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "pvu006_independent",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/platform_review/new89/PVU006-INDEPENDENT-SOURCE-CHALLENGE.json",
+      "bytes": 16665,
+      "sha256": "91cd6e6383353a28def7c712e84da753b0290748c562481c78deb30e7ef6cb93",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "apple_selectors",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/remaining_report/refresh_disk_nextwork03/MAP-REVIEW04-ADDENDUM.json",
+      "bytes": 8861,
+      "sha256": "282af09f2a3cc5f271a944283d03ff2f44c235323d965b645b4a4fb036487c6c",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "suspicion_projection",
+      "path": "docs/audit-handoff/current/unresolved-investigations-outcome-only.json",
+      "bytes": 62958,
+      "sha256": "420b7eb1a419aabec37cbc323bc7d9a9b32ca160395dcc2d5f109488820eed19",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    },
+    {
+      "id": "design_decisions",
+      "path": "docs/audit-handoff/current/OWNER_DESIGN_DECISIONS.md",
+      "bytes": 43407,
+      "sha256": "bfd7a86eaae9f4412e52a7092845fca4656f6da798ef45d8aba8f0561669b55a",
+      "semantics": "Named retained DATA/source bytes; no subject execution"
+    }
+  ]
+}

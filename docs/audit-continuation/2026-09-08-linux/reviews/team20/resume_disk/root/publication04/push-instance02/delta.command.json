@@ -1,0 +1,37 @@
+{
+  "label": "delta",
+  "argv": [
+    "/usr/bin/git",
+    "--git-dir=/root/projects/PassVault/passvault-publication-20260914-04/.git",
+    "-c",
+    "core.hooksPath=/dev/null",
+    "-c",
+    "core.fsmonitor=false",
+    "-c",
+    "gc.auto=0",
+    "-c",
+    "maintenance.auto=false",
+    "-c",
+    "commit.gpgsign=false",
+    "-c",
+    "protocol.allow=never",
+    "diff-tree",
+    "--no-commit-id",
+    "--name-status",
+    "-r",
+    "--no-renames",
+    "6438f2dc69229aeb8d7cb755c630e427450b42a5",
+    "846f9eb06a60294f68865546c818be064b735524"
+  ],
+  "network": false,
+  "exit": 0,
+  "stdout": {
+    "bytes": 1882,
+    "sha256": "8aa1feeeaf43fa53b631c577db89398c2a6d537a17fada52d1e9ebfb74672f0f"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "group_settled": true
+}

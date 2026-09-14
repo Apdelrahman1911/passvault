@@ -1,0 +1,101 @@
+import groovy.json.JsonOutput
+import org.gradle.api.GradleException
+import org.gradle.api.tasks.testing.Test
+
+// SOURCE ONLY: one existing amended method; no runner or execution admission supplied.
+def mode = gradle.startParameter.projectProperties['passvault.audit.mode']
+if (mode != 'editor-save-ack') throw new GradleException('Exactly editor-save-ack mode required; no default suite')
+if (System.getenv('PASSVAULT_PVA038_FIXTURE') != null) throw new GradleException('No provider fixture in editor-save-ack')
+def runtime = '/root/projects/PassVault/audit-runtime-linux-editor-save-ack01'
+def jdk = '/usr/lib/jvm/java-17-openjdk-amd64'
+def testTasks = [':feature:credential:desktopTest']
+def requested = testTasks
+if (gradle.startParameter.taskNames != requested || gradle.startParameter.dryRun ||
+        !gradle.startParameter.excludedTaskNames.empty || gradle.startParameter.continueOnFailure) {
+    throw new GradleException('Only the exact credential Test; no dry-run/exclusions/continue')
+}
+def selections = [
+    ':feature:credential': [worker: 'credential', methods: [
+        'com.passvault.feature.credential.presentation.CredentialCustomFieldDraftTest.failed page Save keeps adopted values dirty and retry persists them',
+    ]],
+]
+
+gradle.beforeProject { project ->
+    def selection = selections[project.path]
+    if (selection == null) return
+    project.tasks.withType(Test).configureEach { Test test ->
+        if (test.name != 'desktopTest') return
+        def workerRoot = runtime + '/workers/' + selection.worker
+        def temporary = workerRoot + '/tmp'
+        test.executable = jdk + '/bin/java'
+        test.maxHeapSize = '512m'
+        test.maxParallelForks = 1
+        test.forkEvery = 0
+        test.ignoreFailures = false
+        test.jvmArgs('-XX:-UsePerfData')
+        // Test.systemProperty creates worker STARTUP -D arguments, not client flags.
+        test.systemProperty('file.encoding', 'UTF-8')
+        test.systemProperty('user.home', workerRoot + '/home')
+        test.systemProperty('jna.tmpdir', workerRoot + '/jna')
+        test.systemProperty('java.io.tmpdir', temporary)
+
+        // Root supplies a clean allowlisted client environment. Do not forward its
+        // JVM-option variables or stale provider mode/root/fixture to test workers.
+        def workerEnvironment = new LinkedHashMap(test.environment)
+        ['JAVA_TOOL_OPTIONS', 'JDK_JAVA_OPTIONS', '_JAVA_OPTIONS', 'JAVA_OPTS', 'GRADLE_OPTS',
+         'PASSVAULT_PVA038_MODE', 'PASSVAULT_PVA038_RUN_ROOT', 'PASSVAULT_PVA038_FIXTURE'].each {
+            workerEnvironment.remove(it)
+        }
+        workerEnvironment.putAll([
+            'JAVA_HOME': jdk, 'HOME': workerRoot + '/home',
+            'TMPDIR': workerRoot + '/tmp', 'TMP': workerRoot + '/tmp', 'TEMP': workerRoot + '/tmp',
+            'SQLITE_TMPDIR': workerRoot + '/sqlite',
+            'XDG_CACHE_HOME': workerRoot + '/xdg-cache', 'XDG_CONFIG_HOME': workerRoot + '/xdg-config',
+            'XDG_DATA_HOME': workerRoot + '/xdg-data', 'XDG_STATE_HOME': workerRoot + '/xdg-state',
+        ])
+        test.setEnvironment(workerEnvironment)
+
+        test.filter.setIncludePatterns(selection.methods as String[])
+        test.filter.failOnNoMatchingTests = true
+    }
+}
+
+// Bounded observation only: no added/disabled task and no generated test declaration.
+def emit = { Map value ->
+    String raw = JsonOutput.toJson(value)
+    if (raw.getBytes('UTF-8').length > 256 * 1024) throw new GradleException('Editor-save graph/state record cap')
+    println('PASSVAULT_EDITOR_SAVE_ACK01=' + raw)
+}
+gradle.taskGraph.whenReady { graph ->
+    def tasks = graph.allTasks
+    if (tasks.size() > 512 || tasks.findAll { it instanceof Test }.collect { it.path }.sort() != testTasks.sort(false)) {
+        throw new GradleException('Exactly the selected credential Test; no other Test task')
+    }
+    tasks.each { task ->
+        def name = task.name.toLowerCase(java.util.Locale.ROOT)
+        if (task instanceof org.gradle.api.tasks.Exec || task instanceof org.gradle.api.tasks.JavaExec ||
+                name.contains('android') || name.contains('ios') || name.contains('native') ||
+                name.startsWith('detekt') || name.startsWith('lint') || name.startsWith('package') ||
+                name.startsWith('publish') || name.startsWith('sign') ||
+                name.startsWith('install') || name.startsWith('connected') || name in ['assemble', 'run', 'desktoprun',
+                    'createdistributable', 'createreleasedistributable', 'jlink', 'jpackage']) {
+            throw new GradleException('Out-of-scope execution task: ' + task.path)
+        }
+        if (task instanceof Test) {
+            def selection = selections[task.project.path]
+            if (!task.enabled || task.ignoreFailures || task.maxParallelForks != 1 || task.forkEvery != 0 ||
+                    task.filter.includePatterns != selection.methods.toSet() || !task.filter.excludePatterns.empty ||
+                    !task.filter.commandLineIncludePatterns.empty || !task.filter.failOnNoMatchingTests) {
+                throw new GradleException('Changed exact method filters/Test policy or CLI override: ' + task.path)
+            }
+        }
+    }
+    emit([kind: 'graph', selectors: requested, testTasks: testTasks.sort(false),
+          tasks: tasks.collect { [path: it.path, type: it.class.name] }.sort { it.path }])
+    graph.afterTask { task, state ->
+        if (!(task.path in requested)) return
+        emit([kind: 'task-state', task: task.path, type: task.class.name, executed: state.executed,
+              skipped: state.skipped, upToDate: state.upToDate, noSource: state.noSource,
+              didWork: state.didWork, skipMessage: state.skipMessage, failureType: state.failure?.class?.name])
+    }
+}

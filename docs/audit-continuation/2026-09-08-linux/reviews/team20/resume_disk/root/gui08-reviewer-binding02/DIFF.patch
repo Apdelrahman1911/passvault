@@ -1,0 +1,11 @@
+--- OUTER-before
++++ OUTER-proposed
+@@ -1354,7 +1354,7 @@
+     receipt['parent_at_entry'] = entry_parent  # Provenance only, never signalling/adoption/deletion authority.
+     require(set(request['directories']) == {str(p) for p in PARENTS} and set(request['images']) == {str(p) for p in IMAGES}, 'fixed sets')
+     require(set(approval) == {'format', 'reviewer', 'disposition', 'purpose', 'run_id', 'request_sha256', 'sources'} and
+-            approval['format'] == 'passvault-linux-desktop-integration08-approval-v5' and approval['reviewer'] == '/root/remaining_report' and
++            approval['format'] == 'passvault-linux-desktop-integration08-approval-v5' and approval['reviewer'] == '/root/current_ledger' and
+             approval['disposition'] == 'ACCEPT_EXACT_NEW_INSTANCE' and approval['purpose'] == PURPOSE and approval['run_id'] == RUN and
+             approval['request_sha256'] == request_image['sha256'] and approval['sources'] ==
+             {str(p): request['images'][str(p)]['sha256'] for p in (SELF, INNER, INIT, SOURCE, DIAGNOSTIC)}, 'missing/stale/nonaccepting genuine review')

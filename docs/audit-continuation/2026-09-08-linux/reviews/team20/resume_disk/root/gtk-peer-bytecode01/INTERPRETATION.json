@@ -1,0 +1,21 @@
+{
+  "status": "ROOT_BOUNDED_BYTECODE_INTERPRETATION_PENDING_REVIEW",
+  "input": {
+    "bytes": 14509,
+    "sha256": "26672d5adb5ae6b2b6a11fdfff3a469c63118de2dcfc92c4e55a4b89e8f533aa"
+  },
+  "observed": [
+    "GtkFileDialogPeer extends XDialogPeer and creates a separate ShowDialog thread from setVisible(true).",
+    "showNativeDialog delegates to native run. A separate standaloneWindow handle is populated by setWindow and used by requestXFocus through XNETProtocol.setActiveWindow.",
+    "Native return resets standaloneWindow and hides the FileDialog."
+  ],
+  "limits": [
+    "Does not identify the actual peer chosen inGUI18 or prove nativefocus/geometry/cancellation. Native run implementation was not inspected.",
+    "Does not justify dropping the existing focus/ownership/client-geometryguards or classifyPVU003.",
+    "Confirms a concrete reason not to treatJavaisShowing as native-readinessor retryonlywithsleep. A trustworthy native-windowfocus/geometry witness or supportedinteractive target remains needed."
+  ],
+  "credit": {
+    "cases": 0,
+    "closures": 0
+  }
+}

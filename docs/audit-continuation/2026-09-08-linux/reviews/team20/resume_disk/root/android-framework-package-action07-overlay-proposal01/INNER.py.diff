@@ -1,0 +1,177 @@
+--- action06/INNER.py
++++ PROSPECTIVEaction07/INNER.py
+@@ -20,10 +20,10 @@
+ 
+ W = Path('/root/projects/PassVault/passvault-linux')
+ B = W / 'docs/audit-continuation/2026-09-08-linux'
+-R = Path('/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06')
+-E = B / 'runs/linux-android-framework-package-action06'
++R = Path('/root/projects/PassVault/audit-runtime-linux-android-framework-package-action07')
++E = B / 'runs/linux-android-framework-package-action07'
+ CHECKOUT = R / 'checkout'
+-SELF, INIT = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance06/INNER.py'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance06/INIT.gradle')
++SELF, INIT = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance07/INNER.py'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance07/INIT.gradle')
+ EXPECTED_GRAPH = INIT.parent / 'EXPECTED-GRAPH.json'
+ 
+ SOURCE = B / 'reviews/checkpoint22/source-prepare01/SOURCE.json'  # Accepted checkpoint22 SOURCE bytes/hash; fresh cohort physical binding/review required.
+@@ -33,7 +33,7 @@
+     'platforms/android-37.0/package.xml', 'build-tools/36.0.0/source.properties',
+     'build-tools/36.0.0/package.xml', 'licenses/android-sdk-license'))
+ SDK_OPERATION = 'READ_ONLY_EXISTING_COMPILE_SDK_NO_COPY_INSTALL_LICENSE_CHANGES'
+-ACTION_BINDING = {'runtimeRoot': '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06', 'evidenceRoot': '/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-framework-package-action06', 'readRoots': ['/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06/checkout', '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06/gradle-home', '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06/tmp', '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06/konan', '/usr/lib/jvm/java-17-openjdk-amd64', '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06/sdk-readonly'], 'offline': False, 'sourceManifestSha256': '5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6', 'subjectSha256': '580c71e5fc5c917b7f62535282fa3436a3eada15e35ac7afa3bcd584f890c29d'}  # Accepted checkpoint22 SOURCE literals; fresh cohort physical binding remains root-owned.
++ACTION_BINDING = {'runtimeRoot': '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action07', 'evidenceRoot': '/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-framework-package-action07', 'readRoots': ['/root/projects/PassVault/audit-runtime-linux-android-framework-package-action07/checkout', '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action07/gradle-home', '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action07/tmp', '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action07/konan', '/usr/lib/jvm/java-17-openjdk-amd64', '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action07/sdk-readonly'], 'offline': False, 'sourceManifestSha256': '5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6', 'subjectSha256': '21ae72a59dae1ba8dea978f56c0bf862c73b3bb91b76980f92713c57633b61fb'}  # Accepted checkpoint22 SOURCE literals; fresh cohort physical binding remains root-owned.
+ READ_ROOT_ENVELOPE = (CHECKOUT, R / 'gradle-home', R / 'tmp', R / 'konan', JAVA, SDK_VIEW)
+ PUBLICATION_GIT = Path('/root/projects/PassVault/passvault-publication-20260912-02/.git')
+ GIT_DIR, GIT_INDEX = R / 'git-metadata', R / 'git-index'
+@@ -51,9 +51,9 @@
+ GIT_IMAGE = Path('/usr/bin/git')
+ RUBY_IMAGE = Path('/usr/bin/ruby3.2')
+ EXCLUDE_STATE = 'INFO_ABSENT'  # Retained checkpoint22 candidate; root must admit unchanged current U.
+-FROZEN = {EXPECTED_GRAPH: '90d55008a8e88d83a235eccdb61c59ae3dd4a0b1c62e328dfb907337584223e3', SOURCE: '5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6', INIT: '26b1d79158e908aafd3dfbd2ed8a08cc20698ef2a4b0e3932d873ab858dde225'}  # Accepted SOURCE/proposed NEW control hashes; fresh physical admission pending.
++FROZEN = {EXPECTED_GRAPH: '90d55008a8e88d83a235eccdb61c59ae3dd4a0b1c62e328dfb907337584223e3', SOURCE: '5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6', INIT: '9a5aa244001ccdddd9738eecb1ef3db56bc8db4aa6c6a82c54b9e8298d778998'}  # Accepted SOURCE/proposed NEW control hashes; fresh physical admission pending.
+ INPUTS = (SELF, INIT, SOURCE, EXPECTED_GRAPH, JAVA / 'bin/java', JAVA / 'release', MOUNT, GIT_INDEX) + SDK_METADATA
+-RUN_ID = 'linux-android-framework-package-action06'
++RUN_ID = 'linux-android-framework-package-action07'
+ REVIEW_ASSERTIONS = (
+     'ordinary_full_stage0_index_matches_source', 'no_split_sparse_unmerged_index',
+     'standalone_store_without_redirects', 'local_config_and_excludes_reviewed',
+@@ -130,11 +130,13 @@
+             errors.append('Additional errors omitted at the 128-entry evidence bound')
+ 
+ 
++TEST_OVERLAY = {'path': 'app-android/src/androidTest/kotlin/com/passvault/android/audit/AndroidClipboardLocaleInstrumentationTest.kt', 'git_mode': '100644', 'before': {'bytes': 29184, 'sha256': '580c71e5fc5c917b7f62535282fa3436a3eada15e35ac7afa3bcd584f890c29d', 'git_blob': 'b07de02be60b8ce085d72ebc446d5c1563dcb539'}, 'after': {'bytes': 29393, 'sha256': '21ae72a59dae1ba8dea978f56c0bf862c73b3bb91b76980f92713c57633b61fb', 'git_blob': '43cd9c74e7b41ef9a00ac48584f5ac46826fe4e8'}, 'scope': 'Test-only public LocaleList API and pre-mutation index-zero admission; no production change'}
++
+ ACTION_TARGET = ':app-android:auditCompileDebugFrameworkInstrumentation'
+ ACTION_PACKAGE_TARGET = ':app-android:verifyDebugComposeResources'
+ ACTION_TARGETS = [ACTION_TARGET, ACTION_PACKAGE_TARGET]
+ ACTION_FILTER = None  # No Test filter: framework producer graph only.
+-ACTION_SUBJECT_SHA = '580c71e5fc5c917b7f62535282fa3436a3eada15e35ac7afa3bcd584f890c29d'
++ACTION_SUBJECT_SHA = '21ae72a59dae1ba8dea978f56c0bf862c73b3bb91b76980f92713c57633b61fb'
+ ACTION_WRAPPERS = {'org.gradle.internal.exceptions.LocationAwareException',
+                   'org.gradle.internal.event.ListenerNotificationException',
+                   'org.gradle.execution.MultipleBuildFailures'}
+@@ -195,7 +197,7 @@
+     allowed = {'framework-artifact-binding', 'schema-equality', 'action-admission', 'task-state',
+                'framework-compiler-input', 'framework-compiled-class', 'debug-package-evidence', 'finished'}
+     for row in rows:
+-        require(row.get('format') == 'passvault-android-framework-package-action06-v1'
++        require(row.get('format') == 'passvault-android-framework-package-action07-v1'
+                 and row.get('runId') == RUN_ID and row.get('sourceManifestSha256') == binding['sourceManifestSha256']
+                 and row.get('subjectSha256') == binding['subjectSha256'] and row.get('selector') == ACTION_TARGETS
+                 and row.get('graphOnly') is False and row.get('observedTestCases') == 0
+@@ -388,7 +390,7 @@
+     return {'parent': parent, 'self': current, 'nonpropagating_mounts': True, 'mount_rows': len(lines)}
+ 
+ 
+-class AndroidFrameworkPackageAction06:
++class AndroidFrameworkPackageAction07:
+     def __init__(self, files, parent):
+         self.f, self.parent, self.started = files, parent, time.monotonic()
+         self.errors, self.phases, self.inputs = [], [], {}
+@@ -413,11 +415,12 @@
+     def intake(self):
+         data, image = self.f.read(E / 'OUTER-INTENT.json', 4 * MIB)
+         value = self.outer = json.loads(data)
+-        require(value['format'] == 'passvault-linux-android-framework-package-action06-outer-v1' and value['run_id'] == RUN_ID
++        require(value['format'] == 'passvault-linux-android-framework-package-action07-outer-v1' and value['run_id'] == RUN_ID
+                 and value['commit'] == COMMIT and value['tree'] == TREE and value['source_members'] == MEMBERS
+-                and value['source_representation'] == 'RAW_GIT_BLOBS' and value['parent_namespaces'] == self.parent
++                and value['source_representation'] == 'RAW_GIT_BLOBS_PLUS_REVIEWED_TEST_OVERLAY'
++                and value['source_overlay'] == TEST_OVERLAY and value['parent_namespaces'] == self.parent
+                 and value['source_capacity'] == SOURCE_CAPACITY,
+-                'fixed fresh AndroidFrameworkPackageAction06 intake; not independent execution admission')
++                'fixed fresh AndroidFrameworkPackageAction07 intake; not independent execution admission')
+         self.f.expected = dict(value['directories'])
+         # Do not compare the future mounted alias against its outer empty-directory inode.
+         self.f.expected.pop(str(GIT_DIR), None)
+@@ -489,9 +492,20 @@
+         if not stopping:
+             self.check_aliases()
+ 
++    def effective_source_row(self, row):
++        if row['path'] != TEST_OVERLAY['path']:
++            return row
++        old, after = TEST_OVERLAY['before'], TEST_OVERLAY['after']
++        require(row['git_mode'] == TEST_OVERLAY['git_mode'] and row['git_blob'] == old['git_blob']
++                and row['raw_size'] == old['bytes'] and row['raw_sha256'] == old['sha256'],
++                'exact base test overlay row mismatch')
++        return dict(row, git_blob=after['git_blob'], git_size=after['bytes'], raw_size=after['bytes'],
++                    raw_sha256=after['sha256'], checkout_size=after['bytes'], checkout_sha256=after['sha256'])
++
+     def source_check(self, label, wrapper_only=False):
+         started, count, size = time.monotonic(), 0, 0
+-        for row in self.source['files']:
++        for base_row in self.source['files']:
++            row = self.effective_source_row(base_row)
+             if wrapper_only and row['path'] not in ('gradlew', 'gradle/wrapper/gradle-wrapper.jar',
+                                                    'gradle/wrapper/gradle-wrapper.properties'):
+                 continue
+@@ -508,7 +522,7 @@
+         if not wrapper_only:
+             require(not os.path.lexists(CHECKOUT / '.git'), 'raw source only: Git directory appeared')
+             self.f.write(E / ('SOURCE-' + label + '.json'), canonical({'commit': COMMIT, 'tree': TREE,
+-                'representation': 'RAW_GIT_BLOBS_NOT_CHECKOUT_EOL', 'members': count, 'bytes': size,
++                'representation': 'RAW_GIT_BLOBS_PLUS_REVIEWED_TEST_OVERLAY', 'source_overlay': TEST_OVERLAY, 'members': count, 'bytes': size,
+                 'checkout_eol_qualifications': self.source['checkout_eol_qualifications']}))
+ 
+     def resources(self, launch=False):
+@@ -815,11 +829,11 @@
+         rows = [r for r in self.source['files'] if r['path'] == relative]
+         require(len(rows) == 1, 'exact framework fixture graph subject membership in final source manifest')
+         data, image = self.f.read(CHECKOUT / relative, MIB)
+-        require(len(data) == 29184 and sha(data) == ACTION_SUBJECT_SHA
+-                and hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest() == rows[0]['git_blob'],
++        require(len(data) == 29393 and sha(data) == ACTION_SUBJECT_SHA
++                and hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest() == self.effective_source_row(rows[0])['git_blob'],
+                 'framework fixture graph subject SHA256/final raw Git-blob affinity')
+         self.f.write(E / 'FRAMEWORK-SUBJECT.json', canonical({'relative_source': relative, 'image': image,
+-                     'sha256': ACTION_SUBJECT_SHA, 'source_manifest_sha256': ACTION_BINDING['sourceManifestSha256'],
++                     'sha256': ACTION_SUBJECT_SHA, 'source_overlay': TEST_OVERLAY, 'source_manifest_sha256': ACTION_BINDING['sourceManifestSha256'],
+                      'not_compiler_visitation_or_test_evidence': True}))
+ 
+ 
+@@ -847,7 +861,7 @@
+         # Raw command log is already durable. Index exact marker bodies without duplicating hundreds of files.
+         captures, rows, collection_errors, validation_errors = [], [], [], []
+         argument_captures, argument_rows = [], []
+-        prefix, argument_prefix = b'PASSVAULT_ANDROID_FRAMEWORK_PACKAGE_ACTION06=', b'PASSVAULT_ANDROID_ARG_VECTOR='
++        prefix, argument_prefix = b'PASSVAULT_ANDROID_FRAMEWORK_PACKAGE_ACTION07=', b'PASSVAULT_ANDROID_ARG_VECTOR='
+         log_image, marker_count, summary, mapped = None, 0, None, False
+         argument_count, argument_summary = 0, None
+         signals = {'task_headers': 0, 'dry_run_outcomes': 0, 'build_success_lines': 0,
+@@ -983,7 +997,7 @@
+             state['observation_ok'] = bool(state['stop_ok'] and state['settled'] and self.action_mapping_ok
+                                            and not self.cancelled())
+             state['record_image'] = self.f.write(E / 'PHASE-android-framework-actions.json', canonical(state))
+-        require(state['observation_ok'], 'AndroidFrameworkPackageAction06 incomplete; no automatic retry')
++        require(state['observation_ok'], 'AndroidFrameworkPackageAction07 incomplete; no automatic retry')
+ 
+ 
+ def main():
+@@ -1012,7 +1026,7 @@
+     for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+         signal.signal(sig, lambda number, _frame: CANCEL.add(number))
+     files = Files()
+-    batch = AndroidFrameworkPackageAction06(files, dict(zip(('pid', 'mnt'), sys.argv[1:])))
++    batch = AndroidFrameworkPackageAction07(files, dict(zip(('pid', 'mnt'), sys.argv[1:])))
+     settled, code = False, 70
+     try:
+         batch.intake()
+@@ -1054,7 +1068,7 @@
+             and phase_names == ['git-sdk-isolation', 'android-framework-actions']
+             and all(p.get('setup_ok') if p['phase'] == 'git-sdk-isolation' else p.get('observation_ok')
+                     for p in batch.phases))
+-        result = {'format': 'passvault-linux-android-framework-package-action06-inner-v1', 'run_id': RUN_ID,
++        result = {'format': 'passvault-linux-android-framework-package-action07-inner-v1', 'run_id': RUN_ID,
+             'commit': COMMIT, 'tree': TREE, 'parent_namespaces': batch.parent,
+             'source_before': batch.before, 'source_after': batch.after, 'source_capacity': SOURCE_CAPACITY,
+             'all_required_stops_ok': stops, 'namespace_empty_before_exit': settled, 'cleanup_safe': safe,
+@@ -1068,7 +1082,7 @@
+             'declared_test_cases': 0, 'errors': batch.errors, 'phases': batch.phases,
+             'independent_semantic_acceptance': False,
+             'source_references': {'manifest_sha256': FROZEN[SOURCE], 'init_sha256': FROZEN[INIT],
+-                                  'representation': 'RAW_GIT_BLOBS'},
++                                  'representation': 'RAW_GIT_BLOBS_PLUS_REVIEWED_TEST_OVERLAY', 'source_overlay': TEST_OVERLAY},
+             'resource_point_samples_not_ownership_or_cleanup_proof': batch.inventories,
+             'incomplete_resource_samples': sum(not s['traversal_finished'] or bool(s['vanished_entries']
+                 or s['vanished_scan_directories']) for s in batch.inventories),

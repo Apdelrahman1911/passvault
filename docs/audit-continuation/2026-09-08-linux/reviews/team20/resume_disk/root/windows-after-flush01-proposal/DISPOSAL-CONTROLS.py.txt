@@ -1,0 +1,76 @@
+"""New in-memory disposal-policy controls only; no Windows/native/build/helper replay."""
+import ast
+import hashlib
+import json
+from pathlib import Path
+import re
+
+SOURCE = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-after-flush01-proposal/windows_after_flush_01.py.txt')
+EXPECTED = '4d39b8c7e2294386bcb8d9c40c82a3464cd685dd33b753a7c2a200addebe6de4'
+data = SOURCE.read_bytes()
+assert hashlib.sha256(data).hexdigest() == EXPECTED
+parsed = ast.parse(data)
+functions = [node for node in parsed.body if isinstance(node, ast.FunctionDef) and node.name == 'native_case_disposal_admission']
+assert len(functions) == 1
+case_nodes = [node.value for node in parsed.body if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name) and target.id == 'CASE_ARGV' for target in node.targets)]
+assert len(case_nodes) == 1
+argv = ast.literal_eval(case_nodes[0])
+cases = list(argv)
+assert len(cases) == 2
+images = {}
+def require(value, message):
+    if not value: raise RuntimeError(message)
+def no_duplicates(pairs):
+    result = {}
+    for key, value in pairs:
+        require(key not in result, 'duplicate')
+        result[key] = value
+    return result
+ns = dict(CASES=cases, CASE_ARGV=argv, re=re, hashlib=hashlib, json=json, Path=Path,
+          require=require, frozen_bytes=lambda path: images[str(path)], no_duplicate_keys=no_duplicates)
+exec(compile(ast.Module(body=functions, type_ignores=[]), '<reviewed-new-disposal-policy-only>', 'exec'), ns)
+class Run:
+    evidence = Path('/synthetic-in-memory-only')
+    def cleanup_time(self): pass
+
+def fixture():
+    images.clear(); run = Run(); run.case_results = {}; run.command_results = []
+    for index, case in enumerate(cases, 1):
+        selected = argv[case][1]
+        action, residual, code = ('RELEASED', 'NONE', 0) if selected == 'continue' else ('TERMINATED', 'OWNED_FLUSHED_STAGING', 0x036af053)
+        setup = f'{index}: PVA036_AFTER_FLUSH case={selected} fixture=passvault-after-flush-0123456789abcdef root_id=1:0:2 setup=OWNED'
+        terminal = f'{index}: PVA036_AFTER_FLUSH case={selected} process=123 creation=1:2 exit={code} stage_id=1:0:3 destination_id=1:0:4 real_flush=PASS held_before_close=PASS action={action} residual={residual} pre_teardown=PASS cleanup=PASS'
+        name = f'08-case-{index}.log'
+        run.case_results[case] = {'state': 'CTEST_EXIT_OBSERVED; XML_PENDING', 'ctest_exit_code': 0}
+        run.command_results.append({'log': name, 'exit_code': 0})
+        set_log(run, name, (setup + '\n' + terminal + '\n').encode())
+    return run
+
+def set_log(run, name, raw):
+    digest = hashlib.sha256(raw).hexdigest()
+    images[str(run.evidence / name)] = raw
+    images[str(run.evidence / (Path(name).stem + '-retention.json'))] = json.dumps(dict(
+        complete=True, owned_job_settled=True, retained_bytes=len(raw), retained_sha256=digest,
+        settled_full_sha256=digest)).encode()
+
+results = []
+for case in ('successful_pair', 'precase_failure', 'case_failure', 'missing_terminal', 'extra_hold', 'duplicate_setup', 'wrong_action', 'retention_hash_drift'):
+    run = fixture(); completed = True; errors = []
+    name = run.command_results[0]['log']; raw = images[str(run.evidence / name)]
+    if case == 'precase_failure':
+        run.case_results = {name: {'state': 'UNSTARTED'} for name in cases}; completed = False; errors = ['configure failure']
+    elif case == 'case_failure':
+        run.case_results[cases[0]]['ctest_exit_code'] = 1; completed = False
+    elif case == 'missing_terminal': set_log(run, name, raw.splitlines(keepends=True)[0])
+    elif case == 'extra_hold': set_log(run, name, raw + b'1: PVA036_AFTER_FLUSH case=continue result=FAIL cleanup=HOLD retry=NO\n')
+    elif case == 'duplicate_setup': set_log(run, name, raw.splitlines(keepends=True)[0] + raw)
+    elif case == 'wrong_action': set_log(run, name, raw.replace(b'action=RELEASED', b'action=TERMINATED'))
+    elif case == 'retention_hash_drift': images[str(run.evidence / name)] = raw + b'x'
+    try: allowed = ns['native_case_disposal_admission'](run, completed, errors)['allowed']
+    except RuntimeError: allowed = False
+    expected = case in ('successful_pair', 'precase_failure')
+    assert allowed is expected, case
+    results.append({'control': case, 'allowed': allowed, 'result': 'PASS'})
+assert hashlib.sha256(SOURCE.read_bytes()).hexdigest() == EXPECTED
+print(json.dumps({'source_sha256': EXPECTED, 'controls': results,
+                  'qualification': '8 in-memory parser/disposal-decision controls; no native/Job/filesystem cleanup/Windows evidence; no files or child processes created.'}, sort_keys=True))

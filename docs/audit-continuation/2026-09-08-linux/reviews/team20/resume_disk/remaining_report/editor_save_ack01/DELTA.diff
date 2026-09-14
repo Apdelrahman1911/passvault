@@ -1,0 +1,75 @@
+--- before/feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldDraftTest.kt
++++ after/feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldDraftTest.kt
+@@ -3,6 +3,7 @@
+ import app.cash.turbine.test
+ import com.passvault.core.crypto.SecurePasswordGenerator
+ import com.passvault.core.designsystem.generated.resources.Res
++import com.passvault.core.designsystem.generated.resources.error_credential_save
+ import com.passvault.core.designsystem.generated.resources.validation_credential_custom_field_name
+ import com.passvault.core.designsystem.text.UiText
+ import com.passvault.core.domain.model.Credential
+@@ -159,16 +160,54 @@
+         val model = loadedModel()
+         change(model, firstId, CredentialCustomFieldDraft("Retry", "must survive", true))
+         repository.setShouldFail()
+-        model.onEvent(CredentialEvent.OnSaveClick)
+-        runCurrent()
+-        assertTrue(model.state.value.hasUnsavedChanges)
+-        assertEquals("must survive", model.state.value.customFields.first().value.toStringUnsafe())
+-        assertEquals("old first", stored { it.customFields.first().value.toStringUnsafe() })
+-        repository.setShouldFail(null)
+-        model.onEvent(CredentialEvent.OnSaveClick)
+-        runCurrent()
+-        assertEquals("must survive", stored { it.customFields.first().value.toStringUnsafe() })
+-        assertFalse(model.state.value.hasUnsavedChanges)
++
++        model.effect.test {
++            model.onEvent(CredentialEvent.OnSaveClick)
++            runCurrent()
++            expectNoEvents() // Result.failure must not acknowledge Save or navigate away.
++            val failed = model.state.value
++            assertFalse(failed.isSaving)
++            assertTrue(failed.canSave)
++            assertTrue(failed.hasUnsavedChanges)
++            assertTrue(failed.customFieldDrafts.isEmpty()) // The adopted tuple now owns the unsaved edit.
++            assertEquals(
++                Res.string.error_credential_save,
++                assertIs<UiText.Resource>(failed.errorMessage).resource,
++            )
++            assertEquals("Retry", failed.customFields.first().name)
++            assertEquals("must survive", failed.customFields.first().value.toStringUnsafe())
++            assertTrue(failed.customFields.first().isSecret)
++            assertEquals("old first", stored { it.customFields.first().value.toStringUnsafe() })
++
++            // The existing fake delays successful persistence, not its immediate failure branch.
++            // This checks a logical acknowledgement boundary, not Room or native input timing.
++            repository.setShouldFail(null)
++            repository.setOperationDelay(1_000)
++            model.onEvent(CredentialEvent.OnSaveClick)
++            runCurrent()
++            assertTrue(model.state.value.isSaving)
++            assertTrue(model.state.value.hasUnsavedChanges)
++            expectNoEvents()
++            assertEquals("old first", stored { it.customFields.first().value.toStringUnsafe() })
++
++            advanceTimeBy(1_000)
++            runCurrent()
++            stored { credential ->
++                assertEquals(listOf(firstId, secondId), credential.customFields.map { it.id })
++                assertEquals(listOf("Retry", "Second"), credential.customFields.map { it.name })
++                assertEquals(
++                    listOf("must survive", "old second"),
++                    credential.customFields.map { it.value.toStringUnsafe() },
++                )
++                assertEquals(listOf(true, true), credential.customFields.map { it.isSecret })
++            }
++            assertFalse(model.state.value.isSaving)
++            assertFalse(model.state.value.hasUnsavedChanges)
++            assertEquals(null, model.state.value.errorMessage)
++            val completed = assertIs<CredentialEffect.SaveCompleted>(awaitItem())
++            assertEquals(model.state.value.credentialId, completed.credentialId)
++            expectNoEvents()
++        }
+     }
+ 
+     @Test

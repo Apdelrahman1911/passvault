@@ -1,0 +1,165 @@
+{
+  "author": "/root/image_diag_review",
+  "cleanup": {
+    "natural_settlement_grace_seconds_per_phase": 12,
+    "preserve": "All source and E evidence, shared dependencies/caches/toolchains, other workspaces and all old/new uncertain HOLD content. No Gradle invocation or wrapper stop is due.",
+    "remove_allowlist": [
+      "R/leader-exit-child",
+      "original empty R/home",
+      "original empty R/tmp",
+      "original empty R"
+    ],
+    "signals": "At most one TERM to that phase's originally acquired pidfd, only if its original direct child has not been reaped. No process scans, numeric/group signals, forced KILL, recovery fallback or old identity adoption.",
+    "subreaper": "PR_SET_CHILD_SUBREAPER applies only inside this otherwise-childless fresh driver. Original/adopted child statuses are collected by waitpid(WNOHANG); only ECHILD proves this driver's entire child tree settled. Direct original return codes must be actual waits, not Popen poll/wait's ECHILD-as-success behavior.",
+    "uncertainty": "Unsettled children, changed directory bindings, unexpected files or nonempty HOME/TMP prevent deletion and leave explicit HOLD. Close/signal/evidence errors prevent PASS; original terminal result must still be reconciled independently. Once all child/descriptor cleanup is safe, the late-signal handler raises a nonzero SystemExit; a final cancellation return veto also prevents retained PASS JSON alone being mistaken for original terminal success."
+  },
+  "compiler": {
+    "flags": [
+      "-pipe",
+      "-std=c11",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-pedantic",
+      "-pthread",
+      "-x",
+      "c",
+      "-",
+      "-o",
+      "/root/projects/PassVault/audit-runtime-linux-kernel-contract01/leader-exit-child"
+    ],
+    "observation_seconds": 30,
+    "program": "/usr/bin/x86_64-linux-gnu-gcc-13",
+    "stdin_source_bytes": 2049,
+    "stdin_source_sha256": "35ea9e52bb561dab693bd610cf22390933d8ac12a310e387200bf94bfa592c32"
+  },
+  "coordination": {
+    "identity": [
+      24,
+      13719326,
+      0,
+      384,
+      1
+    ],
+    "parent_identity": [
+      23,
+      534,
+      0,
+      448
+    ],
+    "path": "/root/projects/PassVault/.audit-coordination-linux-20260914-c20/build.lock"
+  },
+  "driver": {
+    "bytes": 14763,
+    "lines": 200,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/image_diag_review/kernel_execution01/revision02/driver.py",
+    "sha256": "2e289402d3b0c1f26146d9fbeaed446fa3587c56e0ada506a656399340dd81cf"
+  },
+  "environment": {
+    "LANG": "C",
+    "LC_ALL": "C",
+    "PATH": "/usr/bin:/bin",
+    "TZ": "UTC"
+  },
+  "evidence": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/kernel-contract01",
+  "evidence_boundary": "One current-host Linux/glibc synthetic contract case only, not product/GUI/native app readiness or historical PID13733 proof. Exact anchored ENOENT/ESRCH observations remain separate from scanner compatibility. STOP/NO-RETRY/CLOSED scopes, all old HOLDs, protected refs and build1017001 remain untouched.",
+  "evidence_identity": [
+    23,
+    277717,
+    0,
+    448
+  ],
+  "expected_evidence": "Compile exit0, probe exit0, one standalone kernel case PASS, anchored thread-group/pidfd/errno records, direct/adopted waits and final ECHILD, exact binary hash, original runtime removed, all compact phase/outer logs retained. No application or XML cases.",
+  "fresh_facts": {
+    "bytes": 1453,
+    "path": "reviews/team20/resume_disk/root/kernel-contract01/FRESH-FACTS.json",
+    "sha256": "94b850826626777d06e25513d0f17a3ac888a76d657e8935fcb1e0f9c09ab656"
+  },
+  "independent_reviewer_and_execution_owner": "/root",
+  "independent_source_review": {
+    "bytes": 2974,
+    "path": "reviews/team20/resume_disk/root/kernel-contract01/SOURCE-REVIEW.json",
+    "sha256": "5a817d7e9207c811b4b7a0be64ab0af857ff467b9974b7c8e47bdbe4c0b5fdb8"
+  },
+  "limits": "30s compiler/20s probe observation begins after Popen, pidfd capture and any compiler stdin delivery. Cancellation latches before spawning; cleanup gets its full12s grace. These are cooperative userspace bounds, not guarantees against Popen/loader/kernel/filesystem stalls, SIGKILL, OOM or host loss. Do not use a short blind outer timeout; forced interruption has no cleanup promise and needs HOLD. No automatic retry. Before spawning any child, core dumps are disabled and per-file size, CPU and address-space limits are capped without increasing stricter inherited limits; actual selected soft/hard limits are retained. Forced kernel resource-limit termination is not an original-child settlement proof.",
+  "owner": "/root",
+  "probe": {
+    "application_cases": 0,
+    "invocation": "python3.12 -I -B -S -c EXACT_PINNED_SOURCE_BYTES ABSOLUTE_FRESH_BINARY",
+    "observation_seconds": 20,
+    "source_bytes": 12585,
+    "source_sha256": "2814ef187893e20d86c850a80bab47cea25409dc96b757455c67e52ada2464d4",
+    "synthetic_kernel_cases": 1
+  },
+  "proposed_argv": [
+    "/usr/bin/python3.12",
+    "-I",
+    "-B",
+    "-S",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/image_diag_review/kernel_execution01/revision02/driver.py",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/kernel-contract01/ADMISSION.json",
+    "Exact final admission SHA256 supplied by root launcher outside this self-bound record"
+  ],
+  "resource_policy": {
+    "disk_floor_bytes": 3221225472,
+    "entry_memory_absolute_bytes": 12884901888,
+    "entry_memory_fraction": [
+      1,
+      4
+    ],
+    "inherited_limits_never_increased": true,
+    "maximum_rlimits": {
+      "address_space_bytes": [
+        536870912,
+        536870912
+      ],
+      "core_bytes": [
+        0,
+        0
+      ],
+      "cpu_seconds": [
+        20,
+        25
+      ],
+      "file_bytes": [
+        1048576,
+        1048576
+      ]
+    },
+    "running_and_post_memory_absolute_bytes": 8589934592,
+    "running_and_post_memory_fraction": [
+      1,
+      5
+    ]
+  },
+  "revision": "revision02: root-requested non-increasing resource caps, unchanged memory fractions/absolute gates including post-run, and late-cancellation exit veto; original187-line source preserved, no execution.",
+  "root_commitment": "Only root launches; all agents SOURCE/DATA/review only; no known audit build/test/CI/Git or required current stop in flight. One run only, no automatic retry. Original held runtime restrictions unchanged.",
+  "root_fill_requirements": [
+    "Independently review this source, fill fresh current directory identities [st_dev,st_ino,st_uid,permission_mode], and fill lock leaf identity with its additional st_nlink. These are prospective inputs, not historical process/lock custody evidence.",
+    "Fill gcc and python exact {bytes,sha256} from DATA reads of the fixed installed /usr/bin/x86_64-linux-gnu-gcc-13 and /usr/bin/python3.12 regular files. Driver reads at most16MiB per tool and rejects symlinks or content mismatch. It does not claim transitive linker/header/libc byte hermeticity.",
+    "Root alone creates the fresh retained E before launch, with no pre-existing compile.stdout, compile.stderr, probe.stdout or probe.stderr. R must not exist: driver uses exclusive mkdir, no reuse or retry. Author has neither inspected nor allocated R or E.",
+    "Adopt one quiet audit slot with no other audit-owned local/CI build/test/Git process. No memory-policy lowering: MemAvailable must meet both12GiB and25% of MemTotal before allocation and each phase; both8GiB and20% during observation and after cleanup. Disk floor remains3GiB at every sample. Record actual gate inputs; no host-resource/process scan beyond fixed /proc/meminfo.",
+    "Seal final ADMISSION.json at the fixed E path and its SHA-256, record original driver source identity, and launch exactly one otherwise-childless fresh Python process. Do not import/exec this driver into a controller that already has children. Capture compact driver stdout/stderr and original terminal/settlement in E."
+  ],
+  "runtime": "/root/projects/PassVault/audit-runtime-linux-kernel-contract01",
+  "runtime_parent_identity": [
+    23,
+    403,
+    0,
+    493
+  ],
+  "schema": 1,
+  "status": "ROOT_ADMITTED_ONE_COMPILER_PLUS_ONE_SYNTHETIC_KERNEL_CASE",
+  "tools": {
+    "gcc": {
+      "bytes": 1023032,
+      "sha256": "1b99826121ae6682a634e5efe09bd3e3df58ce58e0b28f849114ab5b89139c26"
+    },
+    "python": {
+      "bytes": 8020928,
+      "sha256": "1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118"
+    }
+  },
+  "utc": "2026-09-14T09:11:24.463079+00:00"
+}

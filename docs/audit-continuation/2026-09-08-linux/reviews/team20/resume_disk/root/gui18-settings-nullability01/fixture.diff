@@ -1,0 +1,11 @@
+--- GUI17-fixture
++++ GUI18-fixture
+@@ -1504,7 +1504,7 @@
+ private fun settingsRow(title: String): (List<MainNavAx>) -> MainNavAx? = { nodes ->
+     val label = unique(nodes.filter { it.name == title || it.name?.startsWith("$title, ") == true })
+     if (label == null) null else {
+-        var row = label
++        var row: MainNavAx = requireNotNull(label)
+         var depth = 0
+         while (row.actionCount == 0 && row.parent != null) {
+             val parent = requireNotNull(row.parent)

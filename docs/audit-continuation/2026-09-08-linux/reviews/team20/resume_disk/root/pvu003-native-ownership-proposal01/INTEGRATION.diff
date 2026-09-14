@@ -1,0 +1,78 @@
+--- accepted-GUI20-current
++++ unreviewed-GUI21-chooser-proposal
+@@ -437,7 +437,8 @@
+                 pvu003VisibleChooser()?.also { chooser = it } != null
+             } }
+             val dialog = requireNotNull(chooser)
+-            val home = onEdt { pvu003ModalHomeTarget(dialog) }
++            val nativeBounds = pvu003NativeChooserBounds(dialog)
++            val home = onEdt { pvu003ModalHomeTarget(dialog, nativeBounds) }
+             val rectangle = Rectangle(assertNotNull(home.screen))
+             assertFalse(home.selected, "PVU003_HOME_ALREADY_SELECTED")
+             onEdt { assertTrue(backup.state.value.isExporting, "PVU003_NOT_EXPORTING") }
+@@ -458,8 +459,9 @@
+             listener = observer // Registration may finish after a timed-out onEdt; preserve removal ownership.
+             onEdt { Toolkit.getDefaultToolkit().addAWTEventListener(observer, AWTEvent.MOUSE_EVENT_MASK) }
+             robot.mouseMove(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2)
++            val currentNativeBounds = pvu003NativeChooserBounds(dialog)
+             onEdt {
+-                val current = pvu003ModalHomeTarget(dialog)
++                val current = pvu003ModalHomeTarget(dialog, currentNativeBounds)
+                 assertTrue(current.context === home.context && current.screen == rectangle, "PVU003_MOVED_HOME")
+                 assertFalse(current.selected, "PVU003_HOME_CHANGED_BEFORE_INPUT")
+                 assertTrue(backup.state.value.isExporting, "PVU003_EXPORT_CHANGED_BEFORE_INPUT")
+@@ -487,13 +489,7 @@
+                 // send OnCancelOperation, change modality, call dispose, or act on an unowned window.
+                 val dialog = chooser ?: onEdt { pvu003VisibleChooser() }
+                 assertNotNull(dialog, "PVU003_NO_SAFE_NATIVE_CANCEL_TARGET")
+-                await("PVU003_CANCEL_TARGET_FOCUS") { onEdt {
+-                    assertTrue(dialog.owner === frame && dialog in ownedWindows(), "PVU003_CANCEL_OWNER_CHANGED")
+-                    assertEquals(FileDialog.SAVE, dialog.mode)
+-                    assertEquals("Save encrypted backup", dialog.title)
+-                    dialog.isShowing && dialog.isActive && dialog.isFocused
+-                } }
+-                assertNativeWindow(dialog)
++                pvu003NativeChooserBounds(dialog) // Read-only owned native focus witness, no AWT focus assumption.
+                 withKey(KeyEvent.VK_ESCAPE) { } // Exactly one Escape; no retry or synthesized Cancel callback.
+                 await("PVU003_NATIVE_CHOOSER_CANCELLED") { onEdt { !dialog.isShowing } }
+                 onEdt { assertEquals(null, dialog.file, "PVU003_UNEXPECTED_FILE_SELECTION") }
+@@ -533,22 +529,35 @@
+         return candidates.singleOrNull()
+     }
+ 
+-    private fun pvu003ModalHomeTarget(dialog: FileDialog): MainNavAx {
++    private fun pvu003NativeChooserBounds(dialog: FileDialog): Rectangle {
++        val nativeOwner = onEdt {
++            assertTrue(dialog.owner === frame && dialog in ownedWindows(), "PVU003_CANCEL_OWNER_CHANGED")
++            assertTrue(dialog.isShowing && dialog.isModal && frame.isShowing && frame.isDisplayable)
++            assertEquals(FileDialog.SAVE, dialog.mode)
++            assertEquals("Save encrypted backup", dialog.title)
++            assertEquals(Dialog.ModalityType.APPLICATION_MODAL, dialog.modalityType)
++            assertEquals(Dialog.ModalExclusionType.NO_EXCLUDE, frame.modalExclusionType)
++            com.sun.jna.Native.getWindowID(frame) to Rectangle(frame.graphicsConfiguration.bounds)
++        }
++        return OwnedChooserProbe.observe(nativeOwner.first, nativeOwner.second, deadline)
++    }
++
++    private fun pvu003ModalHomeTarget(dialog: FileDialog, nativeBounds: Rectangle): MainNavAx {
+         check(SwingUtilities.isEventDispatchThread())
+         val visible = ownedWindows().filter { it.isShowing }
+         assertTrue(visible.size == 2 && frame in visible && dialog in visible, "PVU003_UNEXPECTED_OWNED_SURFACE")
+         assertTrue(dialog.owner === frame && frame.isShowing && frame.isDisplayable, "PVU003_WRONG_CHOOSER_OWNER")
+         assertEquals(FileDialog.SAVE, dialog.mode)
+         assertEquals("Save encrypted backup", dialog.title)
+-        assertTrue(dialog.isModal && dialog.isActive && dialog.isFocused, "PVU003_CHOOSER_NOT_FOCUSED_MODAL")
++        assertTrue(dialog.isModal, "PVU003_CHOOSER_NOT_MODAL") // Native focus is established separately.
+         assertEquals(Dialog.ModalityType.APPLICATION_MODAL, dialog.modalityType)
+         assertEquals(Dialog.ModalExclusionType.NO_EXCLUDE, frame.modalExclusionType)
+-        clientBounds(dialog) // Existing admitted-display/client-size preconditions; never change window bounds.
++        assertTrue(frame.graphicsConfiguration.bounds.contains(nativeBounds), "PVU003_NATIVE_CHOOSER_OUTSIDE_DISPLAY")
+         val home = assertNotNull(tab("Home")(snapshot().filter { it.window === frame }))
+         val rectangle = assertNotNull(home.screen)
+         assertTrue(home.enabled && rectangle.width > 0 && rectangle.height > 0, "PVU003_HOME_NOT_LIVE")
+         assertTrue(clientBounds(frame).contains(rectangle), "PVU003_HOME_OUTSIDE_CLIENT")
+-        val chooserArea = Rectangle(dialog.locationOnScreen, dialog.size).apply { grow(16, 16) }
++        val chooserArea = Rectangle(nativeBounds).apply { grow(16, 16) }
+         assertFalse(chooserArea.intersects(rectangle), "PVU003_HOME_OCCLUDED_BY_CHOOSER")
+         return home
+     }

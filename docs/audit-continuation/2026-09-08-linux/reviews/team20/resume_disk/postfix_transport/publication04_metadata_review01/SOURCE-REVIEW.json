@@ -1,0 +1,108 @@
+{
+  "schema": "passvault-publication04-metadata01-independent-source-review-v1",
+  "reviewer": "/root/postfix_transport",
+  "execution_owner": "/root",
+  "status": "ACCEPT_NARROW_INERT_SOURCE_ONLY_PENDING_FRESH_ROOT_INSTANCE_AND_ORIGINAL_ACTUAL_REVIEW",
+  "blocking_findings": [],
+  "inputs": [
+    {
+      "path": "reviews/team20/resume_disk/remaining_report/publication04_metadata01/SUPERVISOR.py.txt",
+      "bytes": 17731,
+      "sha256": "cdc18c3b5eddaebeb1bad1e0d1ba84c8cf0f749417e6006c1c1121ce6da87f4d"
+    },
+    {
+      "path": "reviews/team20/resume_disk/remaining_report/publication04_metadata01/PLAN.md",
+      "bytes": 8800,
+      "sha256": "aa920c168b99b4f093fbd9ce831432a5e4ab1fa78f3fa2f5dbdfe37b91d800e4"
+    },
+    {
+      "path": "reviews/team20/resume_disk/remaining_report/publication04_metadata01/REQUEST-TEMPLATE.json",
+      "bytes": 2735,
+      "sha256": "0b4049d0992b517be74e312ffbda54f97c9546872861c03b9b8b95a0eaf8e2f3"
+    },
+    {
+      "path": "reviews/team20/resume_disk/remaining_report/publication04_metadata01/MANIFEST.json",
+      "bytes": 4563,
+      "sha256": "e9952539c0611f17af89c213c489a6ef3e96a447aeb118f11bb120b43cf0143d"
+    },
+    {
+      "path": "reviews/team20/resume_disk/remaining_report/publication04_metadata01/OUTPUTS.sha256",
+      "bytes": 326,
+      "sha256": "8e9ee9c339563918df96cc150de1823374bec07dd511813a564f1cb4457fdcb6"
+    },
+    {
+      "path": "reviews/team20/resume_disk/root/publication04/clone01/REQUEST.json",
+      "bytes": 4495,
+      "sha256": "3fbfe5b0bb5218de5bddb5ec01e676b7c5167e196d65bfa54a69d6d4deb3a1e2"
+    },
+    {
+      "path": "reviews/team20/resume_disk/root/publication04/clone01/ACTUAL-ADOPTION.json",
+      "bytes": 1562,
+      "sha256": "69b4e20e5f56ffe9e30f3fde370728dd435a9839fdacfd055b7ac413447f902f"
+    },
+    {
+      "path": "reviews/team20/resume_disk/root/publication04/clone01/ORIGINAL-TERMINAL.json",
+      "bytes": 405,
+      "sha256": "56780b2a6ee4762a6ade5f3c68f6c7897b256ad1bc2dc87ff77c1e65444aa2d2"
+    },
+    {
+      "path": "reviews/team20/resume_disk/root/publication04/clone01/evidence/RESULT.json",
+      "bytes": 931,
+      "sha256": "2599b8c81f46a0374870c81163085dcfb9def86897655713dc7bc7e52a19d519"
+    },
+    {
+      "path": "reviews/team20/resume_disk/image_cleanup_prep/publication04/CLONE01-ACTUAL-REVIEW.json",
+      "bytes": 7137,
+      "sha256": "09f61b5c4efd3afc043c5c2aae37d673a24dc616ef3a4630ede4f3c4587013fb"
+    }
+  ],
+  "review_basis": {
+    "method": "Exact named SOURCE/DATA reads, full manual sealed-supervisor reread, byte hashes and retained JSON descriptor/projection comparisons; no candidate execution, import, evaluation, AST, compile or syntax probe.",
+    "draft_handling": "An earlier named draft was read for core challenges; acceptance applies only to the final 216-line supervisor and exact sealed packet listed above, which were reread and rehashed after author seal.",
+    "retained_data_join": "Original clone request/adoption/result/terminal and independent actual review agree on the sole retained path /root/projects/PassVault/passvault-publication-20260914-04 and identity [23,250699,0,448]. Historical Git/Python descriptors are copied exactly into the template. These records prove only the previously adopted original clone DATA/cooperative settlement, not current tool state, HEAD/tree, resource admission or this new phase.",
+    "root_message_basis": "Root supplied literal coordinator parent /root/projects/PassVault/.audit-coordination-linux-20260914-c20 with identity [23,534,0,448] and current lock identity [24,13719326,0,384]. No reviewer live observation or historical inode substitution was made."
+  },
+  "source_findings": [
+    {
+      "topic": "Fixed command reachability and no repository mutation",
+      "lines": "4-19,64-73,175-190",
+      "finding": "There is one subprocess callsite and exactly three sequential callers: cat-file commit HEAD, ls-tree -r -z HEAD, and cat-file --batch. The final stdin is generated only from distinct validated lowercase 40-hex workflow blob IDs; at most 64 IDs yield 2624 bytes, with zero IDs still invoking the third builtin on EOF. No request-supplied argv, shell, retry, fallback query, checkout, stage, ref/config write, fetch, push, build or cleanup callsite exists. Fixed cwd/GIT_DIR target only the adopted fresh clone. Clean child environment plus no-pager/no-optional-locks, disabled lazy fetch/replacements/global-system configuration, denied protocols and helper exec-path, and raw builtins without filters/textconv support the cooperative no-helper claim. This is not an adversarial repository-configuration/custody or host-wide nonaccess proof."
+    },
+    {
+      "topic": "Original child, pipes and cancellation",
+      "lines": "26-28,64-137,199-216",
+      "finding": "Handlers latch INT/TERM/HUP before launch; direct-child pidfd is captured before wait/reap. Nonempty stdin gets a single nonblocking PIPE_BUF-checked write and original-writer close even on pidfd failure. Original stdout/stderr are read nonblocking; waitid(P_PIDFD,WEXITED|WNOHANG|WNOWAIT) does not prematurely release identity. Success requires both observed EOFs and own-child wait status0, with no errors/cancellation. TERM/KILL address only the original pidfd, never a numeric PID/group. Final close/wait is bounded; no next command follows a failed child. Failed pidfd capture cannot claim settlement or authorize cleanup; it can leave an explicitly unknown original child for root disposition. Exact builtin/no-competing-reaper custody is a genuine root precondition, not inferred from a scan."
+    },
+    {
+      "topic": "Resource and original-coordinator refinements",
+      "lines": "6,8-10,41-56,151-174",
+      "finding": "The original requested phase is positive and at most90s, includes entry, and cannot be extended; work ends18s before its deadline and each command has at most20s. Four exact already-inherited finite rlimit pairs are mandatory, including CORE0, AS<=2GiB, FSIZE<=4MiB and CPU<=90s, without setrlimit. Bounded meminfo sampling records current/min available and total, enforcing12GiB AND25% at entry and8GiB AND20% while running. Original directory FDs supply current/min free-byte samples, always requiring3GiB. The final seal fixes both literal coordinator-parent path and [23,534,0,448], opens it no-follow, then opens/checks/locks the coordinator leaf relative to that FD and rechecks both bindings. Fresh root admission must still supply the original leaf's full pin, sufficient inherited limits and actual current resources."
+    },
+    {
+      "topic": "Raw commit/tree and workflow verification",
+      "lines": "34,138-143,175-197",
+      "finding": "Raw commit bytes are SHA1 Git-object framed and must equal expected HEAD832ed5f5aee56fbbf4c298ef0d2b10de154484cf, with the sole declared tree24d4157fff0d5fcc5cb694e598f21f561d1921d4. Complete NUL-delimited recursive leaves are validated for canonical admitted mode/type/OID and path components; duplicate/prefix collisions fail. Recursive reconstruction uses Git directory-versus-leaf sorting, 40000 tree modes and raw20-byte OIDs, requiring the expected root hash. Every blob leaf below literal .github/workflows/ retains its path/mode/OID association; batch OIDs alone are deduplicated. Each exact OID/blob header, body length, body object ID, delimiter and final byte offset is checked. Workflow body SHA256 and offsets point into retained raw batch output. No YAML or hosting/PR policy interpretation is claimed."
+    },
+    {
+      "topic": "Compact evidence, caps and finalization",
+      "lines": "57-63,106-111,132-137,163-174,197-216",
+      "finding": "Overall/per-command intents, all six raw streams, compact metadata and final record share one4MiB aggregate payload budget with64KiB final reserve. Full parsed-tree duplication is removed: metadata keeps expected root, leaf count and exact raw-tree descriptor; workflow associations and body offsets remain. Writes are fixed-name exclusive/no-follow root0600, fsynced and retained; admission must finish before any result write. Read/write/cap failures remain unsuccessful even if partial files exist. RESULT is explicitly preterminal. Post-result guards and FD-close errors affect terminal success; after FD closure DONE makes later handled cancellation exit nonzero, including during terminal printing. Actual terminal0, fully settled terminal streams and error/signal-free final receipt remain mandatory, not inferred from RESULT."
+    }
+  ],
+  "limitations_and_root_conditions": [
+    "This is source acceptance only. The unbound null/false template is neither a runnable instance nor genuine execution authority. Root must bind/check exact source, public tools, original coordinator, private empty evidence, no-overlap/no-reaper custody, inherited limits and fresh original phase before one launch.",
+    "No source review can authenticate the request's independent-review hash or custody booleans. Root's separate admission and original tool result are required; old phase, store, query or clone slots are not revived.",
+    "Unsupported modes, invisible empty subtrees, excessive/deep trees, nonblob/non-UTF8 workflow paths, excess unique workflow IDs, output caps or unavailable originals can conservatively refuse; none permits a fourth command or replay.",
+    "Resource samples are observations, not reservations; cooperative polling does not bound an OS/filesystem stall in hard real time. Original terminal chronology must establish the admitted <=90s phase; an overrun or unknown terminal remains unaccepted.",
+    "Root actual review must independently rehash complete retained raw streams, reconcile all three pidfd/reap/EOF/exit0 rows and final receipt, reconstruct the commit/tree/workflow joins, and then inspect the captured workflow trigger content. Metadata alone does not establish safe CI/PR/publication, branch ancestry, current immutable refs, product correctness or a test pass.",
+    "No cleanup authority is created. All earlier HOLD/UNKNOWN/STOP/NO-RETRY/CLOSED decisions and protected product/version/identity/signing/Store state remain unchanged."
+  ],
+  "activities_not_performed": [
+    "Candidate or helper execution/import/AST/compile/syntax/test",
+    "Any Git invocation, old or fresh Git-store read, network, staging or push",
+    "Current process/proc/runtime/SDK/cache/resource/HOLD probing",
+    "Runtime path allocation, removal or modification of author sealed sources"
+  ],
+  "new_product_tests_fixes_closures": 0,
+  "owned_runtime_sessions_workers_or_cleanup_duties": []
+}

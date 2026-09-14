@@ -1,0 +1,11 @@
+--- accepted-cap1600
++++ proposed-cap1800
+@@ -140,7 +140,7 @@
+     candidate = read(Path(request['candidate']['path']), 2 * 1024**2)
+     require(digest(candidate) == request['candidate']['sha256'], 'Exact reviewed selection')
+     entries = json.loads(candidate)['entries']
+-    require(len(entries) <= 1600 and len({e['path'] for e in entries}) == len(entries), 'Unique finite selection')
++    require(len(entries) <= 1800 and len({e['path'] for e in entries}) == len(entries), 'Unique finite selection')
+     expected = []
+     total = 0
+     for e in entries:

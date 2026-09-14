@@ -1,0 +1,147 @@
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor01/OUTER.py
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor02/OUTER.py
+@@ -30,7 +30,7 @@
+ B = W / 'docs/audit-continuation/2026-09-08-linux'
+ R = Path('/root/projects/PassVault/audit-runtime-linux-desktop-integration07')
+ E = B / 'runs/linux-desktop-integration07'
+-SELF = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor01/OUTER.py')
++SELF = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor02/OUTER.py')
+ REQUEST = B / 'requests/LINUX-DESKTOP-INTEGRATION-07-PENDING.json'
+ APPROVAL = B / 'reviews/desktop-integration07-outer/INSTANCE-ACCEPT-PENDING.json'
+ LOCK = Path('/root/projects/PassVault/UNBOUND_GUI7_COORDINATION/build.lock')
+@@ -39,7 +39,7 @@
+ # P23 content selection remains exact; root must bind a permitted original raw-OID store.
+ # Never borrow GUI03 or other consumed-instance authority; old runtime HOLD remains.
+ GITDIR = Path('/root/projects/PassVault/UNBOUND_GUI7_SOURCE_STORE/.git')
+-INNER, INIT = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor01/INNER.py'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor01/INIT.gradle')
++INNER, INIT = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor02/INNER.py'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor02/INIT.gradle')
+ SOURCE = B / 'reviews/checkpoint23/source-prepare01/SOURCE.json'
+ JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64/bin/java')
+ RELEASE = JAVA.parent.parent / 'release'
+@@ -47,7 +47,7 @@
+ RUN, PURPOSE = 'linux-desktop-integration07', 'ONE_LINUX_DESKTOP_INTEGRATION07'
+ PROSPECTIVE_ADMISSION_BOUND = False  # Root must bind/review a NEW instance, never adopt old HOLDs.
+ CLEANUP_DISK_RESERVE_BYTES = CLEANUP_RAM_RESERVE_BYTES = None  # Fresh root reservation/election required.
+-HOST_POLICY_ID = 'GUI6_SCHEDULING_ONLY_BOUND_NONLIVE_UNKNOWN_V4'
++HOST_POLICY_ID = 'GUI7_SCHEDULING_ONLY_BOUND_NONLIVE_UNKNOWN_ERRNO_V5'
+ DISPOSAL_POLICY_ID = 'GUI7_ORIGINAL_PRE_GUI_CANCELLED_COPY_ONLY_V1'
+ HOST_POLICY_ASSERTIONS = (
+     'complete_prior_and_current_audit_launch_accounting',
+@@ -105,7 +105,7 @@
+ PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
+ DEVICE = None  # No historical device identity is execution authority for this proposal.
+ EXPECTED_LOCK = None  # Fresh original custody/pin must be supplied and independently admitted.
+-FROZEN = {INNER: '6fa032851905700ee350f50f1d8d3031e75932420d56409ca2175263a858ae37', INIT: 'f943b2c24f682073dd09d78eedf5605af55ef8265ffbace86a263ce845a6f53e', SOURCE: '1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc'}
++FROZEN = {INNER: '08c135db5eb9d5bee3593a35b15e20c690b1eb332bdceb824be2a9ed62a223a2', INIT: 'f943b2c24f682073dd09d78eedf5605af55ef8265ffbace86a263ce845a6f53e', SOURCE: '1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc'}
+ TOP = 'checkout home tmp jna sqlite gradle-home konan android-user xdg-cache xdg-config xdg-data xdg-state workers mainnav pvu003 pva027'.split()
+ WORKERS = ['mainnav', 'editor-room']
+ PVA027_CROPS = ('tray-tooltip-en1.png', 'tray-tooltip-ar.png', 'tray-tooltip-en2.png',
+@@ -305,8 +305,9 @@
+ 
+ def screen():
+     global churn
+-    require(host_policy_admitted and HOST_POLICY_ID == 'GUI6_SCHEDULING_ONLY_BOUND_NONLIVE_UNKNOWN_V4',
++    require(host_policy_admitted and HOST_POLICY_ID == 'GUI7_SCHEDULING_ONLY_BOUND_NONLIVE_UNKNOWN_ERRNO_V5',
+             'prospective bound-terminal policy requires genuine fresh exact-instance intake')
++    import errno
+ 
+     def terminal(fd, diagnostic, label):
+         diagnostic['pidfd_observations'][label] = None
+@@ -333,22 +334,30 @@
+         def __init__(self, original):
+             self.original = original
+ 
++    def proc_read(operation, *args, **kwargs):
++        # Only anchored open/read/readlink calls below enter this boundary.
++        # Close, clock, parsing, policy and readiness errors are never wrapped.
++        try:
++            return operation(*args, **kwargs)
++        except OSError as error:
++            if error.errno not in (errno.ENOENT, errno.ESRCH):
++                raise
++            raise MissingTask(error) from error
++
+     def task_text(anchor, leaf, cap, diagnostic):
+         require(leaf in ('comm', 'stat'), 'fixed proc task leaf required')
+         leaf_fd = None
+         try:
+-            leaf_fd = os.open(leaf, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC,
+-                              dir_fd=anchor)
++            leaf_fd = proc_read(os.open, leaf, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC,
++                                dir_fd=anchor)
+             data = bytearray()
+             while True:
+                 require(time.monotonic() < deadline, 'proc task read deadline')
+-                part = os.read(leaf_fd, cap + 1 - len(data))
++                part = proc_read(os.read, leaf_fd, cap + 1 - len(data))
+                 if not part:
+                     return bytes(data).decode('utf-8')
+                 data.extend(part)
+                 require(len(data) <= cap, 'proc task text bound')
+-        except FileNotFoundError as error:  # ENOENT only; ESRCH is not elected here.
+-            raise MissingTask(error) from error
+         finally:
+             if leaf_fd is not None:
+                 try:
+@@ -368,10 +377,7 @@
+ 
+     def task_namespace(anchor, namespace):
+         require(namespace in ('pid', 'mnt'), 'fixed proc namespace required')
+-        try:
+-            return os.readlink('ns/' + namespace, dir_fd=anchor)
+-        except FileNotFoundError as error:  # No broader OSError/dead-process fallback.
+-            raise MissingTask(error) from error
++        return proc_read(os.readlink, 'ns/' + namespace, dir_fd=anchor)
+ 
+     def parent_policy(owner, original_birth):
+         require(owned_domain is None or all(owned_domain[k] != parent_ns[k] for k in ('pid', 'mnt')),
+@@ -394,7 +400,7 @@
+         if diagnostic['owned_proof']:
+             require(not terminal(owner['fd'], diagnostic, 'owner-at-' + kind),
+                     'original namespace owner ended before departure exemption')
+-            suffix = 'enoent' if kind == 'enoent' else 'postread'
++            suffix = kind if kind in ('enoent', 'esrch') else 'postread'
+             retain('host_screen_first_owned_terminal_' + suffix, diagnostic)
+             key = 'host_screen_owned_terminal_' + suffix + '_count'
+         else:
+@@ -442,8 +448,10 @@
+                     diagnostic['stage'] = 'comm-initial'
+                     try:
+                         comm = task_text(anchor, 'comm', 256, diagnostic).strip()
+-                    except MissingTask:
+-                        require(terminal(fd, diagnostic, 'prepositive-enoent'),
++                    except MissingTask as error:
++                        kind = errno.errorcode[error.original.errno].lower()
++                        diagnostic['read_' + kind] = error_record(error.original)
++                        require(terminal(fd, diagnostic, 'prepositive-' + kind),
+                                 'live/unreadable potential host workload')
+                         churn += 1
+                         continue
+@@ -511,12 +519,13 @@
+                         diagnostic['observed_birth'] = task_birth(anchor, int(name), diagnostic)
+                         require(diagnostic['observed_birth'] == original_birth, 'positive birth changed')
+                     except MissingTask as error:
+-                        diagnostic['read_enoent'] = error_record(error.original)
++                        kind = errno.errorcode[error.original.errno].lower()
++                        diagnostic['read_' + kind] = error_record(error.original)
+                         if diagnostic['owned_proof']:
+-                            diagnostic['reread_enoent'] = diagnostic['read_enoent']
+-                        require(terminal(fd, diagnostic, 'candidate-at-enoent'),
+-                                'positive ENOENT without original terminal pidfd')
+-                        record_terminal(owner, diagnostic, 'enoent')
++                            diagnostic['reread_' + kind] = diagnostic['read_' + kind]
++                        require(terminal(fd, diagnostic, 'candidate-at-' + kind),
++                                'positive ' + kind.upper() + ' without original terminal pidfd')
++                        record_terminal(owner, diagnostic, kind)
+                         continue
+                     diagnostic['stage'] = 'reread-candidate-pidfd'
+                     if terminal(fd, diagnostic, 'candidate-final'):
+@@ -1302,7 +1311,7 @@
+     for path in PARENTS:
+         require(same_dir(pin(os.fstat(directory(path)), True), request['directories'][str(path)]), 'original parent mismatch')
+     authority()
+-    host_policy_admitted = True  # Only after fresh V4 request/review and locked original input intake.
++    host_policy_admitted = True  # Only after fresh V5 request/review and locked original input intake.
+     receipt['host_policy'] = dict(request['host_policy'], qualification=
+         'Root-supplied, independently reviewed cooperative assumptions; not runtime ownership or hard-cap proof.')
+     watch(entry=True)

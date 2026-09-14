@@ -1,0 +1,51 @@
+{
+  "utc": "2026-09-14T20:17:08.746265+00:00",
+  "reviewer": "/root/current_ledger",
+  "author": "/root",
+  "status": "SOURCE_CHANGE_REQUESTED_NO_EXECUTION_ADMISSION",
+  "scope": "Prospective new Android05 control only. Named source/data/AST/diff reads; no execution/import of either runner/function/harness. No GUI19HOLD reclassification/recovery/deletion/retry.",
+  "sources": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance05/OUTER.py",
+      "bytes": 87544,
+      "sha256": "8e01b9b5d7ae31f4a81a1a76f454a85becd8ed1d3d5a869a61bd3875b1c705f1"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-terminal-observation-proposal01/OUTER.py.txt",
+      "bytes": 88442,
+      "sha256": "31cafd5bf6cd866ea68d5c376e5c4eead500b88f2a1de13162cd96fbab9f7f69"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-terminal-observation-proposal01/CONTROLS.py.txt",
+      "bytes": 6038,
+      "sha256": "b572a6a817f1f34f8894689c32f471f5b9617322b4cac4e78f57eb0a9306a8c8"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-terminal-observation-proposal01/PROPOSAL.json",
+      "bytes": 897,
+      "sha256": "68c7daffb57c6a957a825797e975207b934ad25417eea68928ca722c80101234"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-terminal-observation-proposal01/CONTROLS-PROPOSAL.json",
+      "bytes": 577,
+      "sha256": "d7e89cffff3e1b0829f04b05f113ac5d2929c9a51c17ab9966463d16ead9875a"
+    }
+  ],
+  "source_delta": "Only bind_domain except-OSError branch changes. A 100ms wait on the same original Popen after previously bounddomain and ENOENT/ESRCH can safely observe original terminal state; existing final child code/source/readback/disposal guards still apply. It does not establish GUI19 errno/cause.",
+  "required_changes": [
+    {
+      "id": "ONE_SHOT_WAIT",
+      "finding": "On TimeoutExpired, supervise latches HOLD but loops and unconditionally calls bind_domain again while returncodeNone. The new timed wait can repeat. This contradicts intended one-shot/no-retry bounded observation. It does not create success because HOLD reasons remain, but exact future control contract is not implemented.",
+      "small_fix": "Latch a child-owned attempt before p.wait; a repeated would-wait path must failclosed without another timed wait. One existing still_live control can assert the second call adds no wait; no extra product test."
+    },
+    {
+      "id": "POST_REAP_GROUP_IDENTITY",
+      "finding": "Harness finally calls killpg(pid,0) after wait has reaped original child. PGID can have been reused, making this probe neither original identity proof nor needed settlement. killpg ProcessLookupError before wait can also bypass final original wait.",
+      "small_fix": "These exact python sleeper children spawn no descendants. Settle only original Popen/pidfd, handling terminal-before-signal without omitting originalwait; do not probe a numericgroup afterreap or scan otherprocesses."
+    }
+  ],
+  "wording_qualification": "Permission/unbound stayHOLD only describes a still-live immediatepoll result/newWAIT path. Pre-existing immediatepoll-terminal behavior accepts OSError irrespective of errno/bound state and is unchanged. Do not claim blanket failclosed for every permission error without changing that policy.",
+  "controls_value": "Four realchild/wait/timeout controls plus injected namespace-error seam are useful helperpolicy evidence, not actualLinuxprocdisappearance reproduction, productcases, or platform/native/security closure. Source hash and exact function extraction prevent importing old module body.",
+  "admission_remaining": "After correctedsource review, root must install/bind exact newcontrol and source images with fresh requested execution, quietslot/resource/ownership/cleanup admission. Android heavy-run8GiBfloor remains separately unqualified; Macworkflow work is independent.",
+  "restrictions": "AllSTOP/NO-RETRY/CLOSED/HOLD/refusedwitnesses/protectedrefs/tags/mobile1017001/eightPVD preserved."
+}

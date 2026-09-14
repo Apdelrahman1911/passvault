@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "reviewer": "/root/android_review",
+  "author": "/root/postfix_transport",
+  "disposition": "ACCEPT_GUI06_CORE_MINIMAL_PIDFD_SOURCE_ONLY_NOT_INSTANCE_OR_EXECUTION",
+  "packet": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/gui06_source01/PACKET.json",
+    "bytes": 5150,
+    "sha256": "936d57758f011f6020b15a371a483e55e3892dd911ba95d38d36c44e362ebbe5"
+  },
+  "accepted_core": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/gui06_source01/AFTER-linux_desktop_integration_06.py.txt",
+      "bytes": 99280,
+      "sha256": "8da3ca065ac1facbfe5d8b800906730cd8641c3af8bdcd9fda961a722bba52b0"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/gui06_source01/AFTER-desktop_integration_06.init.gradle.txt",
+      "bytes": 11651,
+      "sha256": "da840aa9beec10e75ad2383810ccf969615f9be2240fb5a40a44deb0908297ea"
+    }
+  ],
+  "method": "Bounded source/DATA reads, whole-byte hashes and literal delta reconstruction; no subject import/eval/AST/compile/execution or live resource/process/runtime/U/V/SDK/cache probes.",
+  "independent_checks": {
+    "fourteen_packet_artifact_hashes_and_sizes": "ALL_MATCH",
+    "before_helper_and_init_match_current_canonical_GUI05_bytes": true,
+    "repair_only_delta": "8 edits: one primitive insertion plus exactly seven existing pidfd select-site replacements; reconstructed99312B intermediate matches0d6f34b3c10ba498c36461df691ece0e7f4a6ec58c32a4f335317b1f27981439.",
+    "control_only_delta": "19helper/10init edits reconstruct accepted afterimages from repair-only baseline; only fresh06 path/label/class/mode/task/receipt/marker identity, exact init hash and route flagFalse. No numerical limits or source/test scope change.",
+    "combined_delta": "27helper/10init edits independently reconstruct exact accepted afterimages. Original offsets/text, replacement offsets/text and final whole-byte hashes checked.",
+    "init_reversal": "Replacing only coordinated INTEGRATION06/integration06/Integration06 back to05 restores the exact11651B original init.",
+    "primitive": "Exactly923B starting at def pidfd_terminal through three terminal LF bytes has SHA256 d986985e19db0d517de00558b957bd5e30b73cd3949385769dbdad378dfea869. Identical primitive bytes in helper and proposed tiny probe. Pure text equality, not an executed primitive test.",
+    "calls": "Original select.select count7; proposed0. Proposed pidfd_terminal count8 including its definition. Existing selectors.DefaultSelector stdout loop remains1 and unchanged.",
+    "source_manifest": "2846405B/1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc;5121file members and1330unique parent directories including checkout independently recomputed from retained JSON only.",
+    "route": "PANEL_ROUTE_ADMITTED=False and existing is True main guard retained; proposal cannot supply fresh execution admission."
+  },
+  "risk_challenge": [
+    "The manifest/source_check/Files.directory retention path can exceed the traditional select FD_SETSIZE=1024 before GUI owner capture. This source proof and original GUI05 ValueError identify a reachable harness defect, not a measured original fd number or recovered stack trace.",
+    "poll(0) observes only the same retained original pidfd and has no select numeric ceiling. It opens/adopts/signals/waits/closes nothing. One original fd is registered for POLLIN; no readiness returnsFalse, not proof of liveness over an interval.",
+    "Exactly one event for the original fd containing IN/HUP only returnsTrue. POLLNVAL/POLLERR, wrong fd, excess event count, zero/unknown mask and register/poll exceptions fail closed. Invalid descriptor is not silently treated as settled. HUP is read-select readiness, including reaped original pidfds; it does not replace original child wait or custody.",
+    "All seven sites need the same correction, not only first capture: sticky owner-exit observation, guarded capture, pre-cleanup owner state, orphan signal decision, orphan wait loop, orphan terminal receipt and owner terminal-before-close. Existing error-to-uncertainty paths remain.",
+    "Original birth/namespace/cwd matching, source directory custody, pidfd-only signaling, original child waits, single close/no retry, namespace emptiness, source-after, cleanup_safe/pass predicates and screenshot/XML requirements are unchanged. No directory eviction, numeric-PID workaround, ulimit change or swallowed error introduced.",
+    "The same P23 raw source plus the sole approved57B desktopTest lifecycle-viewmodel overlay, same4prospective cases/two serial KMP Testtasks, JDK17/oneworker/strictverification/offline render and resource/time/evidence caps remain. No unchanged successful application check is rerun by this source review."
+  ],
+  "tiny_probe_source01": {
+    "source": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/gui06_source01/PROPOSED-pidfd_highfd_once.py.txt",
+      "bytes": 5839,
+      "sha256": "e5c9765ba588ea3f82fd5fbbd11c57ef3230d8839c5bd1d6b853f0ff738e09bc"
+    },
+    "disposition": "NOT_ACCEPTED_FOR_EXECUTION_ELECTION_PENDING_MINIMAL_CANCEL_CORRECTION",
+    "finding": "Default SIGTERM/SIGHUP can terminate the probe without entering its try/finally, leaving its original pipe-gated child until EOF/10s expiry. finally covers ordinary exceptions/normalSIGINT, not these termination defaults. This is a prospective probe-control gap, not another product finding or executed failure.",
+    "requested_delta": "Install pre-child sticky SIGINT/SIGTERM/SIGHUP handlers; check cancellation before child/gate and during readiness; reject successful output after finally if cancelled. Repeated signals must not throw from cleanup. Keep original-only signals/waits/closes, no new retry or resource-limit change.",
+    "author_response": "Author agreed; will produce distinct gui06_probe02 source packet without modifying accepted core/source01 evidence.",
+    "separation": "This gap does not block core source acceptance. No probe execution or malformed-kernel-event test result claimed; revised tiny regression requires its own small source challenge and root scheduling/execution admission."
+  },
+  "required_before_any_GUI06_execution": [
+    "Root elects new one-shot successor, not automatic replay of consumed GUI05.",
+    "Fresh source/route/tool/current coordination/resource/outer/request/instance bindings and independent acceptance; proposed inner routeFalse remains until separately bound.",
+    "Original lifetime/stop/evidence/cleanup handlers admitted before launch; primary remains sole heavy-build owner.",
+    "Actual four-case XML/Room/events/exits and independent decoding of five PVA027 crops remain required; compilation/poll primitive success cannot replace them."
+  ],
+  "preserved_actual": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/android_review/gui05_actual_review01/ACTUAL-REVIEW.json",
+    "bytes": 16678,
+    "sha256": "d3fe6f6faa5bc4557163c7dbe8837d93947d8ae6bf1a376502db7d716175f243"
+  },
+  "accounting": "No product closure or executed test added. GUI05 remains failed-cleaned with130prepare task executions,4unstartedcases/0XML/0PNG; originalconfirmed19/25(76%),allconfirmed27/39(69.2%),suspicions2/12(16.7%) unchanged;8PVD separate.",
+  "restrictions": "All STOP/NO-RETRY/CLOSED, oldFAIL/HOLD/UNKNOWN, PVU007/PVU011/PVA029/G7/G8/native/PVU008, protectedrefs/tags/mobile1017001 and dependency/version/identity/signing/Store boundaries preserved. No current GUI request or outer source accepted by this core-only review.",
+  "owned_workers_or_disposable_outputs": 0
+}

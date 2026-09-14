@@ -1,0 +1,21 @@
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/editor_save_execution02/INNER.py
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/editor-save-instance01/INNER.py
+@@ -27,15 +27,15 @@
+ R = Path('/root/projects/PassVault/audit-runtime-linux-editor-save-ack01')
+ E = B / 'runs/linux-editor-save-ack01'
+ CHECKOUT = R / 'checkout'
+-SELF, INIT, OVERLAY = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/editor_save_execution02/INNER.py'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/editor_save_execution02/INIT.gradle'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/editor_save_execution02/CredentialCustomFieldDraftTest.kt')
++SELF, INIT, OVERLAY = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/editor-save-instance01/INNER.py'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/editor-save-instance01/INIT.gradle'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/editor-save-instance01/CredentialCustomFieldDraftTest.kt')
+ SOURCE = B / 'reviews/checkpoint23/source-prepare01/SOURCE.json'
+ JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64')
+-PROSPECTIVE_ADMISSION_BOUND = False
++PROSPECTIVE_ADMISSION_BOUND = True
+ INPUTS = (SELF, INIT, SOURCE, OVERLAY, JAVA / 'bin/java', JAVA / 'release')
+ COMMIT, TREE, MEMBERS = '59bee33096f538b9444f00236448d7fc0ea740b2', '76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6', 5121
+ SOURCE_BINDING = {'representation': 'P23_RAW_GIT_BLOBS_PLUS_ONE_EDITOR_TEST_OVERLAY', 'base_commit': '59bee33096f538b9444f00236448d7fc0ea740b2', 'base_tree': '76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6', 'source_manifest_sha256': '1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc', 'members': 5121, 'base_raw_bytes': 153458946, 'observed_checkout_bytes': 153460893, 'framed_transport_bytes': 153725453, 'effective_bytes': 153460963, 'base_content_identity_sha256': '19211d126337ddf19a37a6b89522642d62dcc247c199a6420cdc1e4b28abd91c', 'effective_content_identity_sha256': '67290541b1cfa3a170617122a2b6a381e2f1eaa52ab103ea93d9eca1464dd726'}
+ SOURCE_OVERLAY = {'path': 'feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldDraftTest.kt', 'git_mode': '100644', 'before': {'bytes': 15170, 'sha256': 'b45ded2bb7e092e73975f7b7d4e77c8e649ae72f1b7f07db9445b47559c176c2', 'git_blob': 'c790bd877a79bb6a96577a614e28ac28f3b79c06'}, 'after': {'bytes': 17187, 'sha256': '1db3bbb9edd917351093634dc92ab1b2a1d1a6a18f6ef7e675d7f54ad782334b', 'git_blob': 'a146557630de2deb7f7e8e4db934570c5975d301'}, 'scope': 'Exactly one existing amended Save acknowledgement method and import; no new methods, dependency or production edit'}
+-RESOURCE_POLICY = 'UNBOUND_EDITOR_SAVE_ACK01_RESOURCE_POLICY'
++RESOURCE_POLICY = 'EDITOR_SAVE_ACK01_12GiB_ENTRY_3GiB_RUNNING_3GiB_PRIVATE_256MiB_DISK_512MiB_RAM_V1'
+ DISPOSAL_POLICY_ID = 'EDITOR_SAVE_ACK1_ORIGINAL_SETTLED_TEST_WORK_CANCELLED_COPY_ONLY_V1'
+ RUN_ID = 'linux-editor-save-ack01'
+ FROZEN = {SOURCE: '1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc', INIT: '1ab0e58856856fd37a9a1f883678f4a3311c569045758be7456b3d7c555fc2dd', OVERLAY: '1db3bbb9edd917351093634dc92ab1b2a1d1a6a18f6ef7e675d7f54ad782334b'}

@@ -1,0 +1,88 @@
+--- /root/projects/PassVault/passvault-linux/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt
++++ reviewedGUI19fixture
+@@ -421,7 +421,7 @@
+             nativeUnlock("PVU003_NATIVE_UNLOCK")
+             click(tab("Settings"))
+             await("PVU003_NATIVE_SETTINGS") { onEdt { tab("Settings")(snapshot())?.selected == true } }
+-            click(named("Data Management"))
++            click(settingsRow("Data Management"))
+             click(button("Export"))
+             val passphrase = "jveoqzxvcuomndkrpsghwaxyfitbel" // Synthetic; a..z native driver; not the master.
+             replaceText("Backup passphrase", passphrase, readable = false)
+@@ -562,10 +562,7 @@
+         nativeUnlock("PVA027_MAIN_UNLOCK")
+         click(tab("Settings"))
+         await("PVA027_MAIN_SETTINGS") { onEdt { tab("Settings")(snapshot())?.selected == true } }
+-        pva027Click { nodes -> unique(nodes.filter { node ->
+-            node.actionCount > 0 &&
+-                (node.name == "App language" || node.name?.startsWith("App language, ") == true)
+-        }) }
++        pva027Click(settingsRow("App language"))
+ 
+         // Real route, target and scroll-ancestor geometry before VM lookup.
+         pva027VisibleTarget(pva027LanguageOption("English"))
+@@ -730,7 +727,17 @@
+             val viewport = target.viewport
+             robot.mouseMove(viewport.x + viewport.width / 2, viewport.y + viewport.height / 2)
+             val fresh = pva027Find(selector)
+-            assertTrue(pva027SameGeometry(target, fresh), "PVA027_MOVED_SCROLL_TARGET_OR_VIEWPORT")
++            if (!pva027SameGeometry(target, fresh)) {
++                // Hover/layout can replace AX nodes. Never scroll using stale geometry: reacquire
++                // within the same finite attempt budget, retaining every window/viewport guard.
++                System.err.println("PVA027_TARGET_DRIFT nodeContext=" +
++                    (target.node.context !== fresh.node.context) + " nodeRect=" +
++                    (target.node.screen != fresh.node.screen) + " ancestorContext=" +
++                    (target.scrollAncestor.context !== fresh.scrollAncestor.context) + " viewport=" +
++                    (target.viewport != fresh.viewport))
++                Thread.sleep(80)
++                return@repeat
++            }
+             assertNativeWindow(frame)
+             robot.mouseWheel(if (rectangle.y < viewport.y) -3 else 3)
+             Thread.sleep(80) // Native scroll spacing only, not Compose/frame/persistence acknowledgement.
+@@ -1501,6 +1508,45 @@
+     assertTrue(nodes.size <= 1, "NAV_AMBIGUOUS_TARGET")
+     return nodes.singleOrNull()
+ }
++// SettingsItem has a clickable Surface around headline/supporting Text. Desktop AX can
++// expose text on a non-actionable child or merge the title and subtitle with ", ".
++// Resolve only the named row's nearest actionable ancestor; never invoke AX actions.
++private fun settingsRow(title: String): (List<MainNavAx>) -> MainNavAx? = { nodes ->
++    val label = unique(nodes.filter { it.name == title || it.name?.startsWith("$title, ") == true })
++    if (label == null) null else {
++        var row: MainNavAx = requireNotNull(label)
++        var depth = 0
++        while (row.actionCount == 0 && row.parent != null) {
++            val parent = requireNotNull(row.parent)
++            assertTrue(++depth <= 48 && parent in 0 until row.index, "SETTINGS_ROW_ANCESTRY")
++            row = nodes[parent]
++        }
++        if (row.actionCount == 0) null else {
++            assertTrue(row.window === label.window && row.enabled && label.enabled, "SETTINGS_ROW_NOT_LIVE")
++            val labelBounds = label.screen
++            val rowBounds = row.screen
++            if (labelBounds == null || rowBounds == null) null else {
++                assertTrue(rowBounds.contains(labelBounds), "SETTINGS_ROW_LABEL_OUTSIDE")
++                // These two production SettingsItem rows have no trailing/nested actions.
++                // Reject an unexpectedly broad ancestor containing a different actionable row.
++                val rowIndex = row.index
++                val nestedAction = nodes.any { candidate ->
++                    if (candidate.index <= rowIndex || candidate.actionCount == 0) false else {
++                        var parent = candidate.parent
++                        var steps = 0
++                        while (parent != null && parent > rowIndex) {
++                            assertTrue(++steps <= 48 && parent < candidate.index, "SETTINGS_ROW_CHILD_ANCESTRY")
++                            parent = nodes[parent].parent
++                        }
++                        parent == rowIndex
++                    }
++                }
++                assertFalse(nestedAction, "SETTINGS_ROW_NESTED_ACTION")
++                row
++            }
++        }
++    }
++}
+ private fun named(name: String): (List<MainNavAx>) -> MainNavAx? = { nodes -> unique(nodes.filter { it.name == name }) }
+ private fun button(name: String): (List<MainNavAx>) -> MainNavAx? = { nodes -> unique(nodes.filter {
+     it.role == AccessibleRole.PUSH_BUTTON && it.name == name

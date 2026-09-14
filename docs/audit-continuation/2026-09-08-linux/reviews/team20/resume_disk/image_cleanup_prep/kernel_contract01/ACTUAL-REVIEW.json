@@ -1,0 +1,109 @@
+{
+  "schema": "passvault-kernel-contract01-original-actual-independent-review-v1",
+  "reviewer": "/root/image_cleanup_prep",
+  "driver_author": "/root/image_diag_review",
+  "fixture_author": "/root/current_ledger",
+  "execution_owner_and_driver_source_reviewer": "/root",
+  "status": "ACCEPT_ONE_ORIGINAL_SYNTHETIC_KERNEL_CONTRACT_PASS_AND_ORIGINAL_OWNED_RUNTIME_CLEANUP",
+  "evidence": [
+    {
+      "path": "reviews/team20/resume_disk/root/kernel-contract01/ADMISSION.json",
+      "bytes": 8744,
+      "sha256": "791a06fef52bc25f4ba225aca85e72e1ff62aa7f8950cb54c186b4396fc6f583"
+    },
+    {
+      "path": "reviews/team20/resume_disk/root/kernel-contract01/SOURCE-REVIEW.json",
+      "bytes": 2974,
+      "sha256": "5a817d7e9207c811b4b7a0be64ab0af857ff467b9974b7c8e47bdbe4c0b5fdb8"
+    },
+    {
+      "path": "reviews/team20/resume_disk/root/kernel-contract01/FRESH-FACTS.json",
+      "bytes": 1453,
+      "sha256": "94b850826626777d06e25513d0f17a3ac888a76d657e8935fcb1e0f9c09ab656"
+    },
+    {
+      "path": "reviews/team20/resume_disk/root/kernel-contract01/outer.stdout",
+      "bytes": 4158,
+      "sha256": "349ea87c2db4af39d742a5e65ba6dff9979fa9839e7de4a454ba08c90860a577"
+    },
+    {
+      "path": "reviews/team20/resume_disk/root/kernel-contract01/outer.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "reviews/team20/resume_disk/root/kernel-contract01/compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "reviews/team20/resume_disk/root/kernel-contract01/compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "reviews/team20/resume_disk/root/kernel-contract01/probe.stdout",
+      "bytes": 1183,
+      "sha256": "ffd94a703ca5428f427220eb3aeaf52fe021bc10b4c30f3d2bbb0f7b0b488005"
+    },
+    {
+      "path": "reviews/team20/resume_disk/root/kernel-contract01/probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "reviews/team20/resume_disk/root/kernel-contract01/ORIGINAL-TERMINAL.json",
+      "bytes": 824,
+      "sha256": "5891c734ec4770b18773721d459a1c77d0f8f137ca0f37315c2169d0c8a54471"
+    }
+  ],
+  "driver_source": {
+    "path": "reviews/team20/resume_disk/image_diag_review/kernel_execution01/revision02/driver.py",
+    "bytes": 14763,
+    "sha256": "2e289402d3b0c1f26146d9fbeaed446fa3587c56e0ada506a656399340dd81cf",
+    "review_use": "Exact source hash and retained-output/settlement/cleanup emission semantics checked as text; unchanged root independent SOURCE review and original fixture/revision reviews reused, not a duplicate exhaustive driver review or execution."
+  },
+  "exact_source_and_original_result": [
+    "Original tool chunk7adbe8 exits0. Retained terminal receipt binds both outer output hashes and states one otherwise-childless fresh driver exec, no replay. The late-signal veto means this original exit0 is required in addition to PASS JSON.",
+    "Outer admission SHA-256 equals the8744-byte root-filled admission. Actual C2049B/35ea9e52 and probe12585B/2814ef18 match accepted sources, exact admitted tool descriptors agree with fresh facts, compiler argv matches the complete admitted flags/destination, and probe argv matches pinned-source isolated Python-I-B-S invocation.",
+    "Both compile and probe phases exit0. All four phase logs plus both outer logs were read/rehashed; phase hashes equal outer descriptors, outer hashes equal the original terminal record, and decoded probe.stdout equals nested outer probe data. Empty stderr/stdout records are real zero-byte captures, not omitted error output.",
+    "Actual selected CORE0,FSIZE1MiB,CPU20/25s andAS512MiB caps equal admission. All four retained resource samples satisfy their3GiB disk and12/8GiB plus25/20percent RAM gates. These are historical sampled floors, not peak/global reserved resource guarantees."
+  ],
+  "kernel_observations": {
+    "host": {
+      "libc": "glibc 2.39",
+      "machine": "x86_64",
+      "python": "3.12.3",
+      "release": "6.1.72",
+      "system": "Linux"
+    },
+    "case_count": 1,
+    "application_gui_hardware_cases": 0,
+    "observations": [
+      "Original child2523 is bound once under direct parent2522/starttime428018. Markers READY,LEADER_JOINED,WORKER_ALIVE establish worker liveness after original initial-thread join. Anchored stat reachesZ on first observed attempt with unchanged PID/PPID/starttime.",
+      "While the worker remains live, anchored leader ns/mnt becomes ENOENT on the first attempt while flags0 pidfd stays nonterminal mask0. Missing leader namespace alone does not prove thread-group termination.",
+      "After release of the last thread, original flags0 pidfd becomes readable mask1 before original child reap. After original reap the sampled mask is also1 and all three anchored stat/ns-mnt/ns-pid reads return ESRCH3.",
+      "Probe assertions complete, original child reaped with exit0, no numeric PID signal fallback or numeric proc reopen, no forced PID reuse, no cancellation or cleanup errors."
+    ],
+    "errno_limit": "The accepted scanner currently classifies MissingTask only for ENOENT. This probe deliberately accepts/records ENOENT or ESRCH after reap; observed ESRCH is NOT evidence that scanner accepts ESRCH, nor permission to broaden it. The accepted ESRCH path remains fatal until a separate justified source change/review. This case corroborates the current host contract only.",
+    "claim_limits": "One Linux6.1.72/x86_64/glibc2.39/Python3.12.3 synthetic kernel case, not empirical proof for all kernels, physical devices, Android32, Apple/Windows/native application security, forced PID-reuse behavior, natural cause of historical PID13733, global idleness or GUI06 disposal/source-after."
+  },
+  "settlement_and_cleanup": [
+    "Compiler direct child2517 and probe direct child2522 have actual wait-derived exit0 rows. Accepted fresh subreaper source sets all_children_settled only after waitpid(WNOHANG) raises ECHILD; both phase flags and final flag are true. This is original-driver child-tree settlement, not a host-wide process scan or proof against an adversarial outside parent.",
+    "Probe independently records its original fixture child2523 reaped0. No adopted-child wait was needed in the normal path; this absence is not a hidden extra case.",
+    "Original binary before and cleanup descriptors are exactly equal:16720B/SHA2569ab4709afb13470616474b36d14261edae98631cf56539e45353047e09f4521a, identity[24,13726647,0,448], same timestamps. Accepted driver validates original runtime/root/name/type/link bindings and retains its compact evidence before unlinking only that binary, original empty home/tmp and original empty R.",
+    "Actual runtime_cleanup reports REMOVED_VALIDATED_BINARY_AND_ORIGINAL_EMPTY_DIRS after successful removals; cleanup_errors is empty, original terminal0 and post-cleanup resource sample are retained. No build cache, server, Gradle worker or wrapper-stop duty was created. No reviewer live runtime/process/probe or deletion was performed.",
+    "Root may adopt and retire only this original tiny compile/probe slot. Original GUI06/Image01/Windows and all other HOLD/UNKNOWN/restricted scopes remain untouched; no automatic retry or historical cleanup claim."
+  ],
+  "counting_and_time": {
+    "new_synthetic_kernel_contract_cases": 1,
+    "new_product_cases_fixes_closures": 0,
+    "compiler_invocations_not_test_cases": 1,
+    "probe_seconds": 0.004983,
+    "driver_seconds": 0.286923,
+    "original_tool_reported_seconds": 0.21462466,
+    "qualification": "Distinct clock scopes, not cumulative engineering estimates. Seven pidfd samples and three errno leaves are observations inside one case, not additional test cases. Keep this case separate from12fake scanner methods,231mixedXML elements and existing parser/OS-primitive evidence."
+  },
+  "activity": "Exact named safe evidence and bounded source semantics read/rehashed/decoded as DATA only; report authored in assigned own directory. No helper import/AST/compilation/execution, Git/network, runtime/resource/process/HOLD probe, build/test, signal, cleanup, source/canonical/root-selection edit or old evidence deletion.",
+  "owned_sessions_workers_cleanup_duties": []
+}

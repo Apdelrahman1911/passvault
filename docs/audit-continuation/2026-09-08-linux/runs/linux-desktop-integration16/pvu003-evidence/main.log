@@ -1,0 +1,22 @@
+Sep 14, 2026 5:38:16 PM java.util.prefs.FileSystemPreferences$1 run
+INFO: Created user preferences directory.
+[SKIKO] warn: Fallback to next API
+org.jetbrains.skiko.RenderException: Cannot create Linux GL context
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#noProviders for further details.
+MAIN_NAV_FAILURE
+java.lang.AssertionError: MAIN_NAV_UNIQUE_TARGET
+	at org.junit.Assert.fail(Assert.java:89)
+	at kotlin.test.junit.JUnitAsserter.fail(JUnitSupport.kt:56)
+	at kotlin.test.AssertionsKt__AssertionsKt.fail(Assertions.kt:565)
+	at kotlin.test.AssertionsKt.fail(Unknown Source)
+	at com.passvault.desktop.NativeMainNav.await(CredentialMainNavHostRoomIntegrationTest.kt:1140)
+	at com.passvault.desktop.NativeMainNav.await$default(CredentialMainNavHostRoomIntegrationTest.kt:1133)
+	at com.passvault.desktop.NativeMainNav.find(CredentialMainNavHostRoomIntegrationTest.kt:1071)
+	at com.passvault.desktop.NativeMainNav.scrollTo(CredentialMainNavHostRoomIntegrationTest.kt:999)
+	at com.passvault.desktop.NativeMainNav.click(CredentialMainNavHostRoomIntegrationTest.kt:982)
+	at com.passvault.desktop.NativeMainNav.pvu003ChooserHomeThenCancel(CredentialMainNavHostRoomIntegrationTest.kt:465)
+	at com.passvault.desktop.NativeMainNav.run(CredentialMainNavHostRoomIntegrationTest.kt:404)
+	at com.passvault.desktop.CredentialMainNavHostRoomProbe.main$lambda$0(CredentialMainNavHostRoomIntegrationTest.kt:286)
+	at java.base/java.lang.Thread.run(Thread.java:840)

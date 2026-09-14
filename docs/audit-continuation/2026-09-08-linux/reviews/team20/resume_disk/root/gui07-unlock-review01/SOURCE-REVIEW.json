@@ -1,0 +1,51 @@
+{
+  "actual_basis": "GUI07 retained1RoomPASS/1MainFAIL/1traySKIP/1chooserUNSTARTED; main unlock AX timeout alone does not identify product/input/auth/navigation/AX cause. Same GLwarning inRoompass refutes fatal-rendering inference;137 is consistent with fixtureforcedshutdown after DRIVER_FAILURE,notOOMproof.",
+  "after": {
+    "bytes": 91370,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/image_diag_review/gui07_unlock_diagnostic01/CredentialMainNavHostRoomIntegrationTest.kt.txt",
+    "sha256": "ec28c00aa71fb7c3db26c0e2fb5c68d80b2e0f658e562164e046a1dbef44a4c5"
+  },
+  "author": "/root/image_diag_review",
+  "author_manifest": {
+    "bytes": 10752,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/image_diag_review/gui07_unlock_diagnostic01/CANDIDATE.json",
+    "sha256": "744c206c04dde9c0be55463828c2b9bffd82581f25f726ecdda78a45034fea20"
+  },
+  "before": {
+    "bytes": 88602,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/image_diag_review/gui07_unlock_diagnostic01/BEFORE.kt.txt",
+    "sha256": "5fe322e48fef5fe7b6d2729817ad6fdbeb6bec182bf1cde5198ffdb1bb8c01a3"
+  },
+  "challenges": [
+    {
+      "disposition": "PassVaultNavigationHost remembers singletons at101/105 before rendering usable Unlock controls; AppModule195/199 registers same singletons. Helper first reaches passwordcontrol via native replaceText, then observes already-required roots; no fresh standalone testVM or event injection.",
+      "risk": "DirectVMaccess might create new actors/change lifecycle"
+    },
+    {
+      "disposition": "No: one native click remains; finalcredentialCard AX predicate and30secondbound retained. Back/tab/Add,role/durableRoom oracle unchanged. Newpreclick5secondack is clipped by existing150seconddriverdeadline,notdeadlineextension or clickretry.",
+      "risk": "VMack replaces actual UI/credential persistence oracle"
+    },
+    {
+      "disposition": "Only equalitytoexisting syntheticconstant and fixed booleans/enums printed once onfailure; no stateupdates/callbacks/directAXaction/password/error/names output. Allproductionfiles unchanged.",
+      "risk": "Diagnostic leaks password/content or changes authentication"
+    },
+    {
+      "disposition": "Allstatefields and sealedVaultSessionState alternatives exist; same GlobalContextKoin andStateFlow contract. Already-approved desktopTest lifecycle dependency remains onlychange. Originalfailurerethrown,outerdriverfailure/inputrelease/rolesettleunchanged.",
+      "risk": "Mismatched stateAPI/dependency/cleanup"
+    }
+  ],
+  "diff": {
+    "bytes": 5427,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/image_diag_review/gui07_unlock_diagnostic01/DELTA.diff",
+    "sha256": "a2c0bd3318c6501578e93e3dcfb87ce6ef186cf8e86b499698c8424718ff839a"
+  },
+  "independence": "Root did not author the proposed fixture change. Entire small diff reviewed plus reached Main/NavHost/Koin/UnlockViewModel/VaultViewModel state and fixed await/cleanup code. No full-file freshness/runtime claim from line excerpts.",
+  "new_family_closures": 0,
+  "new_product_findings": 0,
+  "remaining": "Actual compile and3remaining GUI methods stillunrun; no claim this fixes originalcause. PreservepassedRoomwithoutreassurancerun. Fresh sourcecomposition/instance/cleanup/independentreviewrequired fornexttargetedrun; no oldGUI07replay.",
+  "restricted_scopes": "STOP/NO-RETRY/CLOSED/HOLD,PVA029,PVA037seams,PVU002006toolrefusals,protectedrefs/tags/build1017001 unchanged.",
+  "reviewer": "/root",
+  "schema": 1,
+  "status": "ACCEPT_TEST_ONLY_NATIVE_UNLOCK_ACKNOWLEDGEMENT_AND_DIAGNOSTIC_SOURCE",
+  "utc": "2026-09-14T11:33:35.136519+00:00"
+}

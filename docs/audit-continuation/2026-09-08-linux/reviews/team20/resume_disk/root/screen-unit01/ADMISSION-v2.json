@@ -1,0 +1,109 @@
+{
+  "bounds": "20s test timeout plus2s escalation, Python-only single test process with no subprocess/network/live proc reads/test disk I/O; compact stdout/stderr preserved.",
+  "cleanup": "No build artifacts, temporary runtime or cache created (-B, isolated stdlib). Test imports only these two exact new modules, never archived runners. Finally closes original coordination descriptor; foreground timeout must settle. No Gradle invocation or stop owed.",
+  "command_prefix": [
+    "/usr/bin/timeout",
+    "--foreground",
+    "--signal=TERM",
+    "--kill-after=2s",
+    "20s",
+    "/usr/bin/python3.12",
+    "-I",
+    "-B",
+    "-S",
+    "-c",
+    "import fcntl, hashlib, json, os, pathlib, stat, sys, types, unittest\np = pathlib.Path(sys.argv[1]); raw = p.read_bytes()\nassert hashlib.sha256(raw).hexdigest() == sys.argv[2]\na = json.loads(raw)\nparent = lock = None\ntry:\n    parent_path = os.path.dirname(a['coordination']['path'])\n    parent = os.open(parent_path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)\n    def identity(s): return [s.st_dev, s.st_ino, s.st_uid, stat.S_IMODE(s.st_mode)]\n    assert identity(os.fstat(parent)) == a['coordination']['parent_identity']\n    lock = os.open('build.lock', os.O_RDWR | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=parent)\n    s = os.fstat(lock)\n    assert stat.S_ISREG(s.st_mode) and s.st_size == 0\n    assert identity(s) + [s.st_nlink] == a['coordination']['identity']\n    assert identity(os.stat(parent_path, follow_symlinks=False)) == a['coordination']['parent_identity']\n    named = os.stat('build.lock', dir_fd=parent, follow_symlinks=False)\n    assert identity(named) + [named.st_nlink] == a['coordination']['identity'] and named.st_size == 0\n    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)\n    fs = os.statvfs(p.parent)\n    assert fs.f_bavail * fs.f_frsize >= a['resource_floor_bytes']\n    for name, descriptor in [('screen_replacement', a['source']), ('screen_replacement_tests', a['fixture'])]:\n        source = pathlib.Path(descriptor['path']).read_bytes()\n        assert len(source) == descriptor['bytes'] and hashlib.sha256(source).hexdigest() == descriptor['sha256']\n        module = types.ModuleType(name); module.__file__ = descriptor['path']; sys.modules[name] = module\n        exec(compile(source, descriptor['path'], 'exec'), module.__dict__)\n    suite = unittest.defaultTestLoader.loadTestsFromModule(module)\n    assert suite.countTestCases() == 12\n    result = unittest.TextTestRunner(verbosity=2).run(suite)\n    print(json.dumps(dict(testsRun=result.testsRun, failures=len(result.failures), errors=len(result.errors), skipped=len(result.skipped), boundary='deterministic fake proc/pidfd only; zero application cases')))\n    raise SystemExit(0 if result.wasSuccessful() and result.testsRun == 12 and not result.skipped else 1)\nfinally:\n    try:\n        if lock is not None: os.close(lock)\n    finally:\n        if parent is not None: os.close(parent)\n"
+  ],
+  "coordination": {
+    "identity": [
+      24,
+      13719326,
+      0,
+      384,
+      1
+    ],
+    "parent_identity": [
+      23,
+      534,
+      0,
+      448
+    ],
+    "path": "/root/projects/PassVault/.audit-coordination-linux-20260914-c20/build.lock"
+  },
+  "environment": {
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PATH": "/usr/bin:/bin",
+    "TZ": "UTC"
+  },
+  "expected_methods": [
+    "test_live_anchor_binding_precedes_every_positive_observation",
+    "test_terminal_before_binding_never_samples_a_replacement_numeric_task",
+    "test_first_proof_missing_terminal_is_not_owned_or_global_idle",
+    "test_missing_leader_namespace_while_group_live_stays_fatal",
+    "test_terminal_at_postread_checks_does_not_move_the_departure_failure",
+    "test_foreign_prefix_or_direct_parent_child_cannot_be_hidden_by_later_enoent",
+    "test_observed_birth_comm_or_namespace_mismatch_is_sticky",
+    "test_owner_proof_and_owned_departure_keep_owner_live_requirement",
+    "test_unrecognized_errors_and_malformed_data_are_not_departure",
+    "test_invalid_terminal_readiness_is_never_an_exemption",
+    "test_close_failures_remain_fatal_and_each_other_descriptor_still_closes",
+    "test_old_policy_cannot_implicitly_admit_the_new_terminal_classification"
+  ],
+  "expected_testcases": 12,
+  "fixture": {
+    "bytes": 17947,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_screen_fix01/revision02/test_screen_replacement.py",
+    "pin": {
+      "ctime_ns": 1789372426857865222,
+      "dev": 24,
+      "ino": 14705785,
+      "mode": 33152,
+      "mtime_ns": 1789372426857865222,
+      "nlink": 1,
+      "uid": 0
+    },
+    "sha256": "8e97e605a84d3f53a28f7e3138bdaf2c21bf3453869d604a298e48341714fa04"
+  },
+  "independent_source_review": {
+    "bytes": 6517,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/image_diag_review/gui_screen_fix01/SOURCE-REVIEW.json",
+    "pin": {
+      "ctime_ns": 1789372608521854394,
+      "dev": 24,
+      "ino": 13725931,
+      "mode": 33152,
+      "mtime_ns": 1789372608521854394,
+      "nlink": 1,
+      "uid": 0
+    },
+    "sha256": "c37a2591e2c39aa03ca3f5d26a98d4a1f4d29e8ab41394905d7165310568cdaf"
+  },
+  "owner": "/root",
+  "previous_unexecuted_admission": {
+    "bytes": 5536,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/screen-unit01/ADMISSION.json",
+    "sha256": "81cb189a285732a5a88933941f679bcbda9b2016f4b2f77bf45a396b41eafda3"
+  },
+  "purpose": "Prove prospective scanner classification/guards/failure/descriptor-close contract with deterministic fakes; not product or kernel behavior.",
+  "resource_floor_bytes": 3221225472,
+  "restrictions": "Root sole test owner; no overlapping audit-owned build/test/CI/Git invocation. No original HOLD, GUI06, resource policy or CLOSED scope changed. No retries by this admission.",
+  "revision": "v2: foreground timeout and exact anchored parent/leaf coordination checks; no subject/fixture/selection change",
+  "schema": 1,
+  "source": {
+    "bytes": 15089,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_screen_fix01/screen_replacement.py",
+    "pin": {
+      "ctime_ns": 1789372037258888444,
+      "dev": 24,
+      "ino": 14177026,
+      "mode": 33152,
+      "mtime_ns": 1789372037258888444,
+      "nlink": 1,
+      "uid": 0
+    },
+    "sha256": "12bf17068b04a6759a0f8c0b6c2ed813e9b4aeaaabdadabd20afe0bab854b16d"
+  },
+  "status": "PROPOSED_EXACT_FOCUSED_TEST_ADMISSION",
+  "utc": "2026-09-14T08:34:46.372747+00:00"
+}

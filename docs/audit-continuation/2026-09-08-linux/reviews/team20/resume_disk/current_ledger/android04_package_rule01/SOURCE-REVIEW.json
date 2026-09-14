@@ -1,0 +1,81 @@
+{
+  "build_source": {
+    "bytes": 30600,
+    "path": "app-android/build.gradle.kts",
+    "sha256": "c7a382773cb11383d583b6fd1dcead85aac30ccc0a38f81995f535dc1029da42"
+  },
+  "credits": {
+    "closures": 0,
+    "new_findings": 0,
+    "runtime_passes": 0,
+    "tests_executed": 0
+  },
+  "preserved_superseded_note": {
+    "bytes": 1856,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android04-package-followup01/SOURCE-NOTE.json",
+    "sha256": "8fc3c24fabb91ae80d477a9c8b367fd1364ed1a7176532a3813c78a17d42b566"
+  },
+  "restrictions": "All STOP/NO-RETRY/CLOSED/HOLD/refused-seam/protected-reference/build1017001 restrictions preserved. Source and binary metadata do not substitute for Android32 runtime or unavailable authoritative ledger validator.",
+  "retained_rule_comparison": {
+    "P22_source": {
+      "commit": "d2d79ad52ce816a36f708bd35bd736a7d8068789",
+      "git_blob": "34bb60909fa885b8aa142d0416546d313334be29",
+      "manifest": {
+        "bytes": 2519894,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint22/source-prepare01/SOURCE.json",
+        "sha256": "5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6"
+      },
+      "path": "app-android/proguard-rules.pro",
+      "raw_bytes": 622,
+      "raw_sha256": "7d065f82f2f55a000d3cc1137576bfa9cefa4b38c9059fc6bcfef657c965ac5c",
+      "tree": "2e83afec1894238f59c1e9916cbf548ad54f5da2"
+    },
+    "artifacts_manifest": {
+      "bytes": 124908,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-android-release-action04/ARTIFACTS.json",
+      "sha256": "29f1f505141c76df317a4a18208019cb70f9a8139ee773032cb91fb4e159d626"
+    },
+    "configuration_output": {
+      "bytes": 92472,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-android-release-action04/artifacts/00037.bin",
+      "sha256": "b3a0bb3e9a9d1b1495e3ba9d57a1bad38c25c81908f51fc4c01fe42919253af1"
+    },
+    "matched_manifest_roles": {
+      "artifacts/00037.bin": [
+        "CONFIGURATION_OUTPUT_NOT_RULE_INPUTS"
+      ],
+      "artifacts/00041.bin": [
+        "R8_RECONCILED_RULE_INPUT"
+      ]
+    },
+    "original_producer_review": {
+      "bytes": 12205,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/android_action04_actual01/ACTUAL-REVIEW.json",
+      "sha256": "3ffbc074671faba009baeb477018ceb0aae8508300a9ec016910470737d2c418"
+    },
+    "qualification": "Reconciled input and literal retained output-section evidence only. Configuration output is explicitly NOT authority for the complete R8 rule-input list. Appearance does not prove every compiler visitation or necessity of all preserved names,method signatures/native loading,installed-package behavior or Android32 derivation compatibility. Existing conservative retention policy remains pending actual minified-device crypto matrix; readable names are not a security control. No narrowing of rules proposed.",
+    "result": "Entire622B rule input occurs exactly once byte-for-byte in92472B retained configuration output. Header93 identifies the app proguard-rules.pro section; exact conservative -keep class com.ionspin.kotlin.crypto.** { *; } at103; section closes105. Input bytes equal P22 raw row and saved/original/observed artifact manifest hashes.",
+    "rule_input": {
+      "bytes": 622,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-android-release-action04/artifacts/00041.bin",
+      "sha256": "7d065f82f2f55a000d3cc1137576bfa9cefa4b38c9059fc6bcfef657c965ac5c"
+    }
+  },
+  "reviewer": "/root/current_ledger",
+  "schema": 1,
+  "scope": "Named SOURCE/DATA only; no build/test,packaging,signing,keystore inspection,Git/network/CI,tool/native/runtime probe,helper execution/import,signals or cleanup.",
+  "source_challenge": {
+    "intermediate_native_counterexample": "Merged producer extra armeabi/mips/mips64 JNA carriers do not prove a final unexpected-ABI defect. ndk.abiFilters547-552 has four supported ABIs; verifier111-156 checks exact ABI/library entry set and calls header verification159+. These are surrounding source guards,not an observed final APK pass.",
+    "mandatory_gate": "verifyReleaseSigningConfiguration697-704 requires complete valid inputs. signedReleaseArchiveTasks709-716 unconditionally adds it to packageRelease,packageReleaseBundle,assembleRelease,bundleRelease. verifyReleaseApkContents752-766 dependsOn(assembleRelease); aggregate798-802 also includes bundle verifier. Existing release contents task is not credential-free unsigned validation.",
+    "no_bypass": "No -x/skipped signing guard,secret access,release job,candidate1017001 replacement,version/identity/dependency change or packaging execution is admitted. Any separately authorized nonpublishing design needs independent review and preserves release guards.",
+    "original_gap": "Conditional release signingConfig604 alone did not permit unsigned verifyReleaseApkContents. Reviewer challenged the omitted mandatory signing gate; corrected note explicitly preserves it. Original note remains retained,not silently replaced.",
+    "remaining": "Final APK/AAB native carriers and legal file-set/byte correspondence are not validated by merge/R8. FrameworkGraph01 preparation remains unexecuted and graph evidence alone would not establish Android clipboard/locale behavior. No new product defect or closure from this note."
+  },
+  "source_note": {
+    "bytes": 2477,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android04-package-followup01/SOURCE-NOTE02.json",
+    "sha256": "7a19fd09cacd9f46235e68186ca4e7276fd7991162791ffa255d667b8c367046"
+  },
+  "status": "ACCEPT_CORRECTED_SOURCE_NOTE_AND_BOUNDED_RETAINED_RULE_COMPARISON",
+  "utc": "2026-09-14T15:01:09.329733+00:00"
+}

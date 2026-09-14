@@ -1,0 +1,328 @@
+{
+  "status": "SOURCE_CONTINUATION_PUSH_VERIFIED_NO_CI_ACTIVATION",
+  "commands": [
+    {
+      "label": "head",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir=/root/projects/PassVault/passvault-publication-20260914-04/.git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "-c",
+        "protocol.allow=never",
+        "rev-parse",
+        "HEAD"
+      ],
+      "network": false,
+      "exit": 0,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "c4af9e16a068ff7a7c0d48e9d436392eee005456d37a007d55a6ad717eecea3e"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "group_settled": true
+    },
+    {
+      "label": "delta",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir=/root/projects/PassVault/passvault-publication-20260914-04/.git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "-c",
+        "protocol.allow=never",
+        "diff-tree",
+        "--no-commit-id",
+        "--name-status",
+        "-r",
+        "--no-renames",
+        "832ed5f5aee56fbbf4c298ef0d2b10de154484cf",
+        "4355502876bfede728e760e2eddb244f873137b0"
+      ],
+      "network": false,
+      "exit": 0,
+      "stdout": {
+        "bytes": 363,
+        "sha256": "7bd145417d08c4d966cb36bb280f5ce7439b808f6432be450b17d8468c0b0107"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "group_settled": true
+    },
+    {
+      "label": "refs-before",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir=/root/projects/PassVault/passvault-publication-20260914-04/.git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "-c",
+        "protocol.allow=never",
+        "-c",
+        "protocol.https.allow=always",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "credential.helper=!/usr/bin/gh auth git-credential",
+        "ls-remote",
+        "--refs",
+        "https://github.com/Apdelrahman1911/passvault.git",
+        "refs/heads/codex/audit-continuation-linux-20260908",
+        "refs/heads/codex/remediation-handoff-20260908",
+        "refs/heads/main",
+        "refs/heads/testing",
+        "refs/heads/release",
+        "refs/tags/v1.0.7-rc.1017001"
+      ],
+      "network": true,
+      "exit": 0,
+      "stdout": {
+        "bytes": 425,
+        "sha256": "3f0dfd836114ad32f7e2742fd0d5375456a3be872f72576e47cc3aee801400b4"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "group_settled": true
+    },
+    {
+      "label": "open-prs",
+      "argv": [
+        "/usr/bin/gh",
+        "pr",
+        "list",
+        "--repo",
+        "Apdelrahman1911/passvault",
+        "--state",
+        "open",
+        "--head",
+        "codex/audit-continuation-linux-20260908",
+        "--json",
+        "number,baseRefName",
+        "--limit",
+        "20"
+      ],
+      "network": true,
+      "exit": 0,
+      "stdout": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "group_settled": true
+    },
+    {
+      "label": "commit",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir=/root/projects/PassVault/passvault-publication-20260914-04/.git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "-c",
+        "protocol.allow=never",
+        "commit-tree",
+        "4355502876bfede728e760e2eddb244f873137b0",
+        "-p",
+        "832ed5f5aee56fbbf4c298ef0d2b10de154484cf"
+      ],
+      "network": false,
+      "exit": 0,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "0d026a388626c045a7c31fd0b504efe356a7e346d80b13bd10c4fe8f03e3145b"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "group_settled": true
+    },
+    {
+      "label": "refs-prepush",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir=/root/projects/PassVault/passvault-publication-20260914-04/.git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "-c",
+        "protocol.allow=never",
+        "-c",
+        "protocol.https.allow=always",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "credential.helper=!/usr/bin/gh auth git-credential",
+        "ls-remote",
+        "--refs",
+        "https://github.com/Apdelrahman1911/passvault.git",
+        "refs/heads/codex/audit-continuation-linux-20260908",
+        "refs/heads/codex/remediation-handoff-20260908",
+        "refs/heads/main",
+        "refs/heads/testing",
+        "refs/heads/release",
+        "refs/tags/v1.0.7-rc.1017001"
+      ],
+      "network": true,
+      "exit": 0,
+      "stdout": {
+        "bytes": 425,
+        "sha256": "3f0dfd836114ad32f7e2742fd0d5375456a3be872f72576e47cc3aee801400b4"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "group_settled": true
+    },
+    {
+      "label": "push",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir=/root/projects/PassVault/passvault-publication-20260914-04/.git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "-c",
+        "protocol.allow=never",
+        "-c",
+        "protocol.https.allow=always",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "credential.helper=!/usr/bin/gh auth git-credential",
+        "push",
+        "--porcelain",
+        "--no-follow-tags",
+        "https://github.com/Apdelrahman1911/passvault.git",
+        "38b222a5219da83da7ef4c00ee9cb2ba408e717b:refs/heads/codex/audit-continuation-linux-20260908"
+      ],
+      "network": true,
+      "exit": 0,
+      "stdout": {
+        "bytes": 168,
+        "sha256": "bcdee099a34736497c8f7806ce092f9bff7c91c5988a636bfd9d303f57c9f304"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "group_settled": true
+    },
+    {
+      "label": "refs-after",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir=/root/projects/PassVault/passvault-publication-20260914-04/.git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "-c",
+        "protocol.allow=never",
+        "-c",
+        "protocol.https.allow=always",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "credential.helper=!/usr/bin/gh auth git-credential",
+        "ls-remote",
+        "--refs",
+        "https://github.com/Apdelrahman1911/passvault.git",
+        "refs/heads/codex/audit-continuation-linux-20260908",
+        "refs/heads/codex/remediation-handoff-20260908",
+        "refs/heads/main",
+        "refs/heads/testing",
+        "refs/heads/release",
+        "refs/tags/v1.0.7-rc.1017001"
+      ],
+      "network": true,
+      "exit": 0,
+      "stdout": {
+        "bytes": 425,
+        "sha256": "19f7adc517d14980b3325911bfc1ddb8eafb13fb7695591b01171ee81057a44b"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "group_settled": true
+    }
+  ],
+  "cases": 0,
+  "push_attempted": true,
+  "commit": "38b222a5219da83da7ef4c00ee9cb2ba408e717b",
+  "tree": "4355502876bfede728e760e2eddb244f873137b0",
+  "base": "832ed5f5aee56fbbf4c298ef0d2b10de154484cf",
+  "refs_after": {
+    "refs/heads/codex/audit-continuation-linux-20260908": "38b222a5219da83da7ef4c00ee9cb2ba408e717b",
+    "refs/heads/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "refs/heads/main": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "refs/heads/release": "61f55216302023d9872aba17546126450e5fbad3",
+    "refs/heads/testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+    "refs/tags/v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3"
+  },
+  "cleanup": "ORIGINAL_EMPTY_PRIVATE_DIRS_REMOVED",
+  "elapsed_seconds": 5.7574850380042335
+}

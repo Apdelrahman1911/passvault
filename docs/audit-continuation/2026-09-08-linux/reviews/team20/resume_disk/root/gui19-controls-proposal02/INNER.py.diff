@@ -1,0 +1,34 @@
+--- GUI19controls01/INNER.py
++++ GUI19controls02/INNER.py
+@@ -1339,7 +1339,7 @@
+         expected = {CHECKOUT / v['module'] / 'build/test-results/desktopTest' / ('TEST-' + v['class'] + '.xml'): v
+                     for v in SELECTIONS}
+         listings = []
+-        # Two app classes in one KMP Test task. No successful Room case rerun; inventory module once;
++        # One tray class in one KMP Test task. No successful Room case rerun; inventory module once;
+         # each distinct expected XML path retains its own class/method oracle, including any fatal worker absences.
+         for module in dict.fromkeys(v['module'] for v in SELECTIONS):
+             directory = CHECKOUT / module / 'build/test-results/desktopTest'
+@@ -1349,7 +1349,7 @@
+             except FileNotFoundError:
+                 names = []
+             listings.append((module, task, directory, names))
+-        require(sum(len(row[3]) for row in listings) <= 6, 'one-module two-case XML aggregate file count bound')
++        require(sum(len(row[3]) for row in listings) <= 6, 'one-module bounded XML aggregate file count')
+         for module, task, directory, names in listings:
+             for name in sorted(names):
+                 path = directory / name
+@@ -1382,10 +1382,10 @@
+         self.xml_preserved, self.xml_ok = True, mapping and observed == set(expected)
+         self.f.write(E / 'XML-RESULT.json', canonical({
+             'captures': captures, 'preserved': True, 'mapping_ok': self.xml_ok,
+-            'declared_cases': 2, 'declared_xml_suites': 2, 'declared_test_tasks': 1,
++            'declared_cases': 1, 'declared_xml_suites': 1, 'declared_test_tasks': 1,
+             'preserved_xml_suites': self.preserved_xml_suites,
+-            'qualification': 'Two cases/two suites/one KMP task; app class order unspecified; '
+-                             'failFast=false; fatal worker failures can still leave siblings unstarted. Main roles/events are not extra cases',
++            'qualification': 'One tray case/one suite/one KMP task; '
++                             'failFast=false; fatal worker failures can still leave the case unstarted. Main roles/events are not extra cases',
+         }))
+         if not self.xml_ok:
+             self.note('missing/extra/failed/skipped rendering XML; no success from task counts or compilation')

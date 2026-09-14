@@ -1,0 +1,203 @@
+#!/usr/bin/python3.12
+"""SOURCE proposal. One reviewed source commit/nonforce continuation push; no CI activation.
+No checkout, tag/protected-ref mutation, signing, production artifact or release action.
+"""
+import fcntl
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import signal
+import stat
+import subprocess
+import time
+
+P = Path('/root/projects/PassVault')
+W = P / 'passvault-linux'
+D = W / 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root'
+HERE = D / 'publication04/push-instance02'
+REPO = P / 'passvault-publication-20260914-04'
+ROOT = P / 'audit-publication04-push02'
+LOCK = P / '.audit-coordination-linux-20260914-c20/build.lock'
+BASE = '6438f2dc69229aeb8d7cb755c630e427450b42a5'
+LOCAL_HEAD = '832ed5f5aee56fbbf4c298ef0d2b10de154484cf'
+BRANCH = 'refs/heads/codex/audit-continuation-linux-20260908'
+REMOTE = 'https://github.com/Apdelrahman1911/passvault.git'
+GIT, GH = '/usr/bin/git', '/usr/bin/gh'
+MESSAGE = 'Preserve independently reviewed C20 continuation results [skip ci]\n'
+REFS = [BRANCH, 'refs/heads/codex/remediation-handoff-20260908', 'refs/heads/main',
+        'refs/heads/testing', 'refs/heads/release', 'refs/tags/v1.0.7-rc.1017001']
+result = {'status': 'UNSTARTED', 'commands': [], 'cases': 0, 'push_attempted': False}
+cancelled, active, lock_fd, allocated = False, None, None, False
+started = time.monotonic()
+env = {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC',
+       'GIT_CONFIG_GLOBAL': '/dev/null', 'GIT_CONFIG_SYSTEM': '/dev/null', 'GIT_CONFIG_NOSYSTEM': '1',
+       'GIT_NO_LAZY_FETCH': '1', 'GIT_NO_REPLACE_OBJECTS': '1', 'GIT_OPTIONAL_LOCKS': '0',
+       'GIT_TERMINAL_PROMPT': '0', 'GIT_SSL_CAINFO': '/etc/ssl/certs/ca-certificates.crt',
+       'GIT_AUTHOR_NAME': 'Codex', 'GIT_AUTHOR_EMAIL': 'codex@openai.com',
+       'GIT_COMMITTER_NAME': 'Codex', 'GIT_COMMITTER_EMAIL': 'codex@openai.com'}
+
+
+def require(value, message):
+    if not value:
+        raise RuntimeError(message)
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def read(path, limit):
+    require(path.resolve() == path and not path.is_symlink() and path.is_file(), 'Canonical ordinary input')
+    before = path.stat()
+    require(before.st_size <= limit, 'Input limit')
+    data = path.read_bytes()
+    after = path.stat()
+    require((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) ==
+            (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns), 'Input drift')
+    return data
+
+
+def interrupt(_signal, _frame):
+    global cancelled
+    cancelled = True
+
+
+def command(label, argv, data=None, network=False):
+    global active
+    require(not cancelled and time.monotonic() - started < 900, 'Original phase cancelled/deadline')
+    st = os.statvfs(P)
+    require(st.f_bavail * st.f_frsize >= 3 * 1024**3, 'DATA disk floor')
+    record = {'label': label, 'argv': argv, 'network': network, 'exit': None}
+    result['commands'].append(record)
+    active = subprocess.Popen(argv, cwd=ROOT, env=env, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE, start_new_session=True, close_fds=True)
+    try:
+        try:
+            out, err = active.communicate(data, timeout=300 if label == 'push' else 60)
+        except BaseException:
+            if active.returncode is None:
+                # Original leader is not reaped; its newly created process group cannot be reused.
+                os.killpg(active.pid, signal.SIGTERM)
+                try:
+                    active.communicate(timeout=10)
+                except subprocess.TimeoutExpired:
+                    os.killpg(active.pid, signal.SIGKILL)
+                    active.communicate(timeout=10)
+            raise
+        record.update(exit=active.returncode, stdout={'bytes': len(out), 'sha256': sha(out)},
+                      stderr={'bytes': len(err), 'sha256': sha(err)})
+        require(len(out) <= 1024**2 and len(err) <= 65536, 'Compact response limits')
+        # Successful public Git outputs only. Credential-provider environments/contents are never logged.
+        if active.returncode == 0:
+            (HERE / (label + '.stdout')).write_bytes(out)
+        require(active.returncode == 0 and not cancelled, 'Original command failed/cancelled; no automatic retry')
+        return out
+    finally:
+        record['exit'] = active.returncode
+        require(active.returncode is not None, 'Original child settlement uncertain')
+        # Network Git/gh may create helpers. Refuse subsequent work if captured group still exists.
+        try:
+            os.killpg(active.pid, 0)
+        except ProcessLookupError:
+            record['group_settled'] = True
+        else:
+            record['group_settled'] = False
+        (HERE / (label + '.command.json')).write_text(json.dumps(record, indent=2) + '\n')
+        active = None
+        require(record['group_settled'], 'Original helper group unsettled; HOLD')
+
+
+def git(label, args, data=None, network=False):
+    flags = ['-c', 'core.hooksPath=/dev/null', '-c', 'core.fsmonitor=false', '-c', 'gc.auto=0',
+             '-c', 'maintenance.auto=false', '-c', 'commit.gpgsign=false', '-c', 'protocol.allow=never']
+    if network:
+        flags += ['-c', 'protocol.https.allow=always', '-c', 'credential.helper=',
+                  '-c', 'credential.helper=!/usr/bin/gh auth git-credential']
+    return command(label, [GIT, '--git-dir=' + str(REPO / '.git'), *flags, *args], data, network)
+
+
+def refs(label):
+    output = git(label, ['ls-remote', '--refs', REMOTE, *REFS], network=True).decode()
+    rows = [row.split('\t') for row in output.splitlines()]
+    require(len(rows) == 6 and {row[1] for row in rows} == set(REFS) and
+            all(re.fullmatch('[0-9a-f]{40}', row[0]) for row in rows), 'Exact six public refs')
+    return {name: oid for oid, name in rows}
+
+
+for sig in (signal.SIGINT, signal.SIGTERM):
+    signal.signal(sig, interrupt)
+try:
+    raw = read(HERE / 'REQUEST.json', 65536)
+    request = json.loads(raw)
+    approval = json.loads(read(HERE / 'APPROVAL.json', 65536))
+    require(request['scope'] == 'C20_COMPACT_HANDOFF_PUSH02_NO_ACTIVATION' and request['base'] == BASE,
+            'Source-only continuation scope')
+    require(approval['reviewer'] == '/root/current_ledger' and approval['status'] == 'ACCEPT_EXACT_SOURCE_PUSH_ONLY'
+            and approval['request_sha256'] == sha(raw), 'Genuine exact independent review')
+    require(sha(read(Path(__file__), 65536)) == request['controller_sha256'], 'Reviewed controller source')
+    for tool in (GIT, GH):
+        require(sha(read(Path(tool), 64 * 1024**2)) == request['tool_sha256'][tool], 'Reviewed original tool')
+    require(REPO.resolve() == REPO and [REPO.stat().st_dev, REPO.stat().st_ino] == request['repo_identity'],
+            'Original fresh publication-store identity')
+    lock_fd = os.open(LOCK, os.O_RDONLY | os.O_NOFOLLOW)
+    st = os.fstat(lock_fd)
+    require([st.st_dev, st.st_ino, st.st_uid, stat.S_IMODE(st.st_mode)] == request['lock_identity'],
+            'Exact current coordination lock')
+    fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    require(not ROOT.exists() and not ROOT.is_symlink(), 'Unconsumed original private paths')
+    ROOT.mkdir(mode=0o700)
+    allocated = True
+    identity = (ROOT.stat().st_dev, ROOT.stat().st_ino)
+    for name in ('home', 'tmp'):
+        (ROOT / name).mkdir(mode=0o700)
+    env.update(HOME=str(ROOT / 'home'), TMPDIR=str(ROOT / 'tmp'), TMP=str(ROOT / 'tmp'), TEMP=str(ROOT / 'tmp'))
+    # Elect existing CLI authentication context only; never read, print or copy its contents.
+    env['GH_CONFIG_DIR'] = request['gh_config_dir']
+    for key in ('GH_TOKEN', 'GITHUB_TOKEN'):
+        if key in os.environ:
+            env[key] = os.environ[key]  # Kept memory-only and deliberately excluded from receipts.
+    require(git('head', ['rev-parse', 'HEAD']).decode().strip() == LOCAL_HEAD, 'Original local HEAD; activation parent BASE separately bound')
+    tree = request['tree']
+    require(re.fullmatch('[0-9a-f]{40}', tree), 'Exact reviewed staged tree')
+    delta = git('delta', ['diff-tree', '--no-commit-id', '--name-status', '-r', '--no-renames', BASE, tree])
+    require(sha(delta) == request['delta_sha256'], 'Independently reviewed compact handoff delta')
+    require(all('requests/' not in line and not line.startswith('D\t') for line in delta.decode().splitlines()),
+            'No activation or deletion')
+    before = refs('refs-before')
+    require(before == request['expected_refs'] and before[BRANCH] == BASE, 'Public ref drift; revalidate without retry')
+    prs = command('open-prs', [GH, 'pr', 'list', '--repo', 'Apdelrahman1911/passvault', '--state', 'open',
+                              '--head', BRANCH.removeprefix('refs/heads/'), '--json', 'number,baseRefName', '--limit', '20'],
+                  network=True)
+    require(json.loads(prs) == [], 'Open PR requires separate trigger review')
+    commit = git('commit', ['commit-tree', tree, '-p', BASE], MESSAGE.encode()).decode().strip()
+    require(re.fullmatch('[0-9a-f]{40}', commit), 'Original source commit identity')
+    result.update(commit=commit, tree=tree, base=BASE)
+    require(refs('refs-prepush') == before, 'Late ref drift; no push')
+    result['push_attempted'] = True
+    git('push', ['push', '--porcelain', '--no-follow-tags', REMOTE, commit + ':' + BRANCH], network=True)
+    after = refs('refs-after')
+    require(after == (before | {BRANCH: commit}), 'Remote acknowledgement/ref conservation unknown')
+    result.update(status='SOURCE_CONTINUATION_PUSH_VERIFIED_NO_CI_ACTIVATION', refs_after=after)
+except BaseException as failure:
+    result.update(status='FAILED_OR_REMOTE_STATE_UNCERTAIN_NO_AUTOMATIC_RETRY',
+                  error=type(failure).__name__ + ': ' + str(failure))
+finally:
+    if allocated and active is None and all(r.get('group_settled') is True for r in result['commands']):
+        try:
+            require(ROOT.resolve() == ROOT and (ROOT.stat().st_dev, ROOT.stat().st_ino) == identity,
+                    'Original cleanup root identity')
+            for name in ('home', 'tmp'):
+                (ROOT / name).rmdir()
+            ROOT.rmdir()
+            result['cleanup'] = 'ORIGINAL_EMPTY_PRIVATE_DIRS_REMOVED'
+        except BaseException as failure:
+            result['cleanup'] = 'HOLD_' + type(failure).__name__
+    else:
+        result['cleanup'] = 'NOT_ALLOCATED_OR_UNSETTLED_HOLD'
+    if lock_fd is not None:
+        os.close(lock_fd)
+    result['elapsed_seconds'] = time.monotonic() - started
+    (HERE / 'RESULT.json').write_text(json.dumps(result, indent=2) + '\n')
+raise SystemExit(0 if result['status'] == 'SOURCE_CONTINUATION_PUSH_VERIFIED_NO_CI_ACTIVATION' else 1)

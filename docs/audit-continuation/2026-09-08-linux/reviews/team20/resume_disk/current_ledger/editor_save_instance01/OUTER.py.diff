@@ -1,0 +1,59 @@
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/editor_save_execution02/OUTER.py
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/editor-save-instance01/OUTER.py
+@@ -23,19 +23,20 @@
+ B = W / 'docs/audit-continuation/2026-09-08-linux'
+ R = Path('/root/projects/PassVault/audit-runtime-linux-editor-save-ack01')
+ E = B / 'runs/linux-editor-save-ack01'
+-SELF = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/editor_save_execution02/OUTER.py')
+-INNER, INIT, OVERLAY = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/editor_save_execution02/INNER.py'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/editor_save_execution02/INIT.gradle'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/editor_save_execution02/CredentialCustomFieldDraftTest.kt')
+-REQUEST = B / 'requests/LINUX-EDITOR-SAVE-ACK-01-PENDING.json'
+-APPROVAL = B / 'reviews/editor-save-ack01/INSTANCE-ACCEPT-PENDING.json'
+-LOCK = Path('/root/projects/PassVault/UNBOUND_EDITOR_SAVE_ACK_COORDINATION/build.lock')
+-GITDIR = Path('/root/projects/PassVault/UNBOUND_EDITOR_SAVE_ACK_SOURCE_STORE/.git')
++SELF = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/editor-save-instance01/OUTER.py')
++INNER, INIT, OVERLAY = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/editor-save-instance01/INNER.py'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/editor-save-instance01/INIT.gradle'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/editor-save-instance01/CredentialCustomFieldDraftTest.kt')
++REQUEST = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/editor-save-instance01/REQUEST.json')
++APPROVAL = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/editor-save-instance01/APPROVAL.json')
++LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260914-c20/build.lock')
++GITDIR = Path('/root/projects/PassVault/passvault-publication-20260913-03/.git')
+ SOURCE = B / 'reviews/checkpoint23/source-prepare01/SOURCE.json'
+ JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64/bin/java')
+ RELEASE = JAVA.parent.parent / 'release'
+ PYTHON, INNER_PYTHON, GIT, UNSHARE = '/usr/bin/python3.12', '/usr/bin/python3', '/usr/bin/git', '/usr/bin/unshare'
+ RUN, PURPOSE = 'linux-editor-save-ack01', 'ONE_LINUX_EDITOR_SAVE_ACK01'
+-PROSPECTIVE_ADMISSION_BOUND = False
+-CLEANUP_DISK_RESERVE_BYTES = CLEANUP_RAM_RESERVE_BYTES = None
++PROSPECTIVE_ADMISSION_BOUND = True
++CLEANUP_DISK_RESERVE_BYTES = 268435456
++CLEANUP_RAM_RESERVE_BYTES = 536870912
+ HOST_POLICY_ID = 'EDITOR_SAVE_ACK1_SCHEDULING_ONLY_BOUND_NONLIVE_UNKNOWN_ERRNO_V5'
+ DISPOSAL_POLICY_ID = 'EDITOR_SAVE_ACK1_ORIGINAL_SETTLED_TEST_WORK_CANCELLED_COPY_ONLY_V1'
+ HOST_POLICY_ASSERTIONS = (
+@@ -59,14 +60,14 @@
+ COMMIT, TREE, MEMBERS = '59bee33096f538b9444f00236448d7fc0ea740b2', '76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6', 5121
+ SOURCE_BINDING = {'base_commit': '59bee33096f538b9444f00236448d7fc0ea740b2', 'base_content_identity_sha256': '19211d126337ddf19a37a6b89522642d62dcc247c199a6420cdc1e4b28abd91c', 'base_raw_bytes': 153458946, 'base_tree': '76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6', 'effective_bytes': 153460963, 'effective_content_identity_sha256': '67290541b1cfa3a170617122a2b6a381e2f1eaa52ab103ea93d9eca1464dd726', 'framed_transport_bytes': 153725453, 'members': 5121, 'observed_checkout_bytes': 153460893, 'representation': 'P23_RAW_GIT_BLOBS_PLUS_ONE_EDITOR_TEST_OVERLAY', 'source_manifest_sha256': '1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc'}
+ SOURCE_OVERLAY = {'after': {'bytes': 17187, 'git_blob': 'a146557630de2deb7f7e8e4db934570c5975d301', 'sha256': '1db3bbb9edd917351093634dc92ab1b2a1d1a6a18f6ef7e675d7f54ad782334b'}, 'before': {'bytes': 15170, 'git_blob': 'c790bd877a79bb6a96577a614e28ac28f3b79c06', 'sha256': 'b45ded2bb7e092e73975f7b7d4e77c8e649ae72f1b7f07db9445b47559c176c2'}, 'git_mode': '100644', 'path': 'feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldDraftTest.kt', 'scope': 'Exactly one existing amended Save acknowledgement method and import; no new methods, dependency or production edit'}
+-RESOURCE_POLICY = 'UNBOUND_EDITOR_SAVE_ACK01_RESOURCE_POLICY'
++RESOURCE_POLICY = 'EDITOR_SAVE_ACK01_12GiB_ENTRY_3GiB_RUNNING_3GiB_PRIVATE_256MiB_DISK_512MiB_RAM_V1'
+ ENV = {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC'}
+ REQUIRED = (INNER, INIT, SOURCE, OVERLAY, JAVA, RELEASE)
+ IMAGES = REQUIRED + (SELF, Path(GIT), Path(UNSHARE), Path(PYTHON), Path(INNER_PYTHON), Path('/usr/bin/env'))
+ PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
+-DEVICE = None
+-EXPECTED_LOCK = None
+-FROZEN = {INNER: 'b1787293d273a18f057af61dd2b548babc4caaa437e29ce6f95406dd6b4b86a8', INIT: '1ab0e58856856fd37a9a1f883678f4a3311c569045758be7456b3d7c555fc2dd', SOURCE: '1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc', OVERLAY: '1db3bbb9edd917351093634dc92ab1b2a1d1a6a18f6ef7e675d7f54ad782334b'}
++DEVICE = {'directory_device': 23, 'regular_file_device': 24}
++EXPECTED_LOCK = {'bytes': 0, 'ctime_ns': 1789367939912132665, 'dev': 24, 'ino': 13719326, 'mode': 33152, 'mtime_ns': 1789367939912132665, 'nlink': 1, 'uid': 0}
++FROZEN = {INNER: 'b83d6189a72cea1b844bd4dbe89fa2b40150db2fbb75ca07be9acf7177951380', INIT: '1ab0e58856856fd37a9a1f883678f4a3311c569045758be7456b3d7c555fc2dd', SOURCE: '1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc', OVERLAY: '1db3bbb9edd917351093634dc92ab1b2a1d1a6a18f6ef7e675d7f54ad782334b'}
+ TOP = 'checkout home tmp jna sqlite gradle-home konan android-user xdg-cache xdg-config xdg-data xdg-state workers'.split()
+ WORKERS = ['credential']
+ CHILDREN = 'home tmp jna sqlite xdg-cache xdg-config xdg-data xdg-state'.split()
+@@ -1223,7 +1224,7 @@
+     receipt['parent_at_entry'] = entry_parent  # Provenance only, never signalling/adoption/deletion authority.
+     require(set(request['directories']) == {str(p) for p in PARENTS} and set(request['images']) == {str(p) for p in IMAGES}, 'fixed sets')
+     require(set(approval) == {'format', 'reviewer', 'disposition', 'purpose', 'run_id', 'request_sha256', 'sources'} and
+-            approval['format'] == 'passvault-linux-editor-save-ack01-approval-v1' and approval['reviewer'] == '/root/INDEPENDENT_EDITOR_REVIEWER_UNBOUND' and
++            approval['format'] == 'passvault-linux-editor-save-ack01-approval-v1' and approval['reviewer'] == '/root/remaining_report' and
+             approval['disposition'] == 'ACCEPT_EXACT_NEW_INSTANCE' and approval['purpose'] == PURPOSE and approval['run_id'] == RUN and
+             approval['request_sha256'] == request_image['sha256'] and approval['sources'] ==
+             {str(p): request['images'][str(p)]['sha256'] for p in (SELF, INNER, INIT, SOURCE, OVERLAY)}, 'missing/stale/nonaccepting genuine review')

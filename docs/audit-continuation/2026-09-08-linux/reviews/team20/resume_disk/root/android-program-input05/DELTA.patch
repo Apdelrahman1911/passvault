@@ -1,0 +1,43 @@
+--- INIT-before
++++ INIT-proposed
+@@ -709,14 +709,19 @@
+         ['getTestedMappingFile', ConfigurableFileCollection],
+         ['getExtractedDefaultProguardFile', DirectoryProperty],
+         ['getFailOnMissingProguardFiles', Property],
++        ['getShrinkingWithDynamicFeatures', Property],
++        ['getHasAllAccessTransformers', Property],
++        ['getClasses', ConfigurableFileCollection],
++        ['getBaseJar', RegularFileProperty],
+     ].each { specification ->
+         getterValue(r8Task, methodContract(r8Owner, specification[0], specification[1], [], false, null))
+     }
+     // These are public-capability/descriptor checks ONLY. In particular do not
+     // invoke keep-rule/default reconciliation early, before generated prerequisites;
+     // its implementation/purity and List element types were not captured.
+-    ['getProgramClasses', 'getCombinedMainDexListFiles', 'getCombinedMainDexRulesFiles',
+-     'obtainKeepRules$gradle_core', 'getProguardConfigurations'].each { name ->
++    // BaseR8Task's program/combined-main-dex helpers are protected, not public.
++    // Only public helpers actually consumed below are capability requirements.
++    ['obtainKeepRules$gradle_core', 'getProguardConfigurations'].each { name ->
+         methodContract(r8Owner, name, List, [], false, null)
+     }
+     methodContract(r8Owner, 'reconcileDefaultProguardFile$gradle_core', List,
+@@ -784,7 +789,17 @@
+             failOnMissingProguardFiles: missing, inMemoryConfigurations: strings(task.getProguardConfigurations()),
+             ruleBasis: 'EXACT_R8_CALL_SITE_CHAIN_NOT_GENERATED_CONFIGURATION_OUTPUT',
+             generatedConfigurationOutputIsNotInputList: true]
+-        def program = task.getProgramClasses()
++        // Exact BaseR8Task.getProgramClasses branch reconstructed from public inputs;
++        // never invoke the protected helper or bypass Java visibility.
++        def shrinking = task.getShrinkingWithDynamicFeatures().get()
++        if (!(shrinking instanceof Boolean)) reject('R8 dynamic-feature Boolean contract')
++        def useBaseJar = false
++        if (shrinking) {
++            def allTransformers = task.getHasAllAccessTransformers().get()
++            if (!(allTransformers instanceof Boolean)) reject('R8 transformer Boolean contract')
++            useBaseJar = !allTransformers
++        }
++        def program = useBaseJar ? [task.getBaseJar().get().asFile] : task.getClasses().toList()
+         if (!(program instanceof List)) reject('R8 program List type')
+         inventory('R8_PROGRAM_CLASSES_PARAMETER', program)
+         fileCollection('R8_BOOT_CLASSPATH_PARAMETER', task.getBootClasspath())

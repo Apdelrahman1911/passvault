@@ -1,0 +1,21 @@
+--- ACTION03
++++ file-path-correction
+@@ -135,7 +135,8 @@
+             carrier.class.name == 'PassVaultFrameworkClassCarrier_Decorated', 'carrier identity')
+         // Carrier PROJECT/CLASSES providers are produced by resource/Kotlin/Java tasks.
+         // Reading them at graph-ready (or before this compiler) violates Gradle's provider lifecycle.
+-        require(!declaredCompilerRoots.empty && declaredCompilerRoots.size() <= 32 &&
++        require(!declaredCompilerRoots.empty && declaredCompilerRoots.every { it instanceof Path } &&
++            declaredCompilerRoots.size() <= 32 &&
+             declaredCompilerRoots.toSet().size() == declaredCompilerRoots.size(), 'compiler output root bound')
+         compilerRoots = new ArrayList<Path>(declaredCompilerRoots)
+         compilerRoots.each { p ->
+@@ -1030,7 +1031,7 @@
+         verifierBinding(tasksByPath[PACKAGE_TARGET])
+         compileGate = new PassVaultFrameworkCompileGate(tasksByPath[COMPILER], tasksByPath[TARGET],
+             checkout.resolve(FRAMEWORK_FIXTURE), FRAMEWORK_FIXTURE_SHA, checked, emit)
+-        compileGate.bindGraph(outputs[COMPILER])
++        compileGate.bindGraph(outputs[COMPILER].collect { checked(it, true) })
+         schemaEqual('before-actions')
+         expectedPaths = paths
+         emit([kind: 'action-admission', tasks: rows, outputRoots: outputRows,

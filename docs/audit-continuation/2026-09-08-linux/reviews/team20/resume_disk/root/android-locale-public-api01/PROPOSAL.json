@@ -1,0 +1,9 @@
+{
+  "utc": "2026-09-14T20:54:12.379546+00:00",
+  "status": "SOURCE_ONLY_PENDING_INDEPENDENT_REVIEW",
+  "issue": "PVA030 framework instrumentation preparation, not new production defect",
+  "cause": "ACTION06 compileDebugAndroidTestKotlin rejects hidden indexed LocaleList.setDefault overload",
+  "correction": "Require original default index zero BEFORE defaultsTouched/mutation, then public setDefault(list). Preserve exact post-cleanup list/default/DISPLAY/FORMAT assertions and destruction ordering. Nonzero original index fails precondition, not silently reordered or passed.",
+  "limits": "No runtime, target, source installation, or retry credit. Fresh source-bound compile/package admission needed after review.",
+  "after_sha256": "21ae72a59dae1ba8dea978f56c0bf862c73b3bb91b76980f92713c57633b61fb"
+}

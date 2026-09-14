@@ -1,0 +1,173 @@
+--- GUI17/INNER.py
++++ GUI18/INNER.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/python3
+-"""Fresh prospective GUI17 two-case PID1 source; SOURCE ONLY, NOT admission.
++"""Fresh prospective GUI18 two-case PID1 source; SOURCE ONLY, NOT admission.
+ 
+ Accepted GUI07 source controls are reused as DATA, never its runtime/namespace/lock.
+ Exactly two remaining Settings/tray and chooser/Home/cancel
+@@ -27,12 +27,12 @@
+ 
+ W = Path('/root/projects/PassVault/passvault-linux')
+ B = W / 'docs/audit-continuation/2026-09-08-linux'
+-R = Path('/root/projects/PassVault/audit-runtime-linux-desktop-integration17')
+-E = B / 'runs/linux-desktop-integration17'
++R = Path('/root/projects/PassVault/audit-runtime-linux-desktop-integration18')
++E = B / 'runs/linux-desktop-integration18'
+ CHECKOUT = R / 'checkout'
+-SELF, INIT = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui17-instance01/INNER.py'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui17-instance01/INIT.gradle')
++SELF, INIT = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui18-instance01/INNER.py'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui18-instance01/INIT.gradle')
+ SOURCE = B / 'reviews/checkpoint23/source-prepare01/SOURCE.json'
+-DIAGNOSTIC = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui17-instance01/CredentialMainNavHostRoomIntegrationTest.kt')
++DIAGNOSTIC = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui18-instance01/CredentialMainNavHostRoomIntegrationTest.kt')
+ JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64')
+ XVFB, XAUTH, WM, DBUS = (Path('/usr/bin/' + n) for n in ('Xvfb', 'xauth', 'xfwm4', 'dbus-daemon'))
+ MOUNT, IP, XDPYINFO, XPROP = (Path('/usr/bin/' + n) for n in ('mount', 'ip', 'xdpyinfo', 'xprop'))
+@@ -76,17 +76,17 @@
+  'base_raw_bytes': 153458946,
+  'observed_checkout_bytes': 153460893,
+  'framed_transport_bytes': 153725453,
+- 'effective_bytes': 153469444,
++ 'effective_bytes': 153469471,
+  'base_content_identity_sha256': '19211d126337ddf19a37a6b89522642d62dcc247c199a6420cdc1e4b28abd91c',
+- 'effective_content_identity_sha256': '2a5e7c547c4e37d567f6dedcef216bf0d9e3342bc58927ca507db3d6e76cddab',
++ 'effective_content_identity_sha256': '0192ebc871c6d1543c2923558a864820d942f9cf6bc1b92dfb7387380f69f166',
+  'diagnostic_overlay': {'path': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt',
+                         'git_mode': '100644',
+                         'before': {'bytes': 88602,
+                                    'sha256': '5fe322e48fef5fe7b6d2729817ad6fdbeb6bec182bf1cde5198ffdb1bb8c01a3',
+                                    'git_blob': '91858bd15c2ab211bc263b881157cebd9a283154'},
+-                        'after': {'bytes': 99043,
+-                                  'sha256': 'd699a64e0c2e52070da8e1225f50df88f1017f5bb8cf26a1fcde0bbd51870515',
+-                                  'git_blob': '40ef3af6cb86034a43e8d373d95542aae1bf2145'},
++                        'after': {'bytes': 99070,
++                                  'sha256': '791416a398e91818a72a965b1d76bb2e4517d058d3eba06f2896fedb6f2f3826',
++                                  'git_blob': '58793e4c83c67726d7f62fd858892102f4123a5c'},
+                         'scope': 'Two Settings row selectors for native tray/chooser only; no production '
+                                  'readiness overlay. Successful Main case excluded.'}}
+ DIAGNOSTIC_OVERLAY = SOURCE_BINDING['diagnostic_overlay']
+@@ -100,14 +100,14 @@
+            'git_blob': 'a8895db34f68cf10b7795079c433c9ef283d4cba'},
+  'scope': 'Exactly one pinned libs.lifecycle.viewmodel implementation line in desktopTest only; no version or '
+           'production-runtime change'}
+-RESOURCE_POLICY = 'GUI17_12GiB_ENTRY_3GiB_RUNNING_3GiB_PRIVATE_256MiB_DISK_512MiB_RAM_V1'
+-DISPOSAL_POLICY_ID = 'GUI17_ORIGINAL_PRE_GUI_CANCELLED_COPY_ONLY_V1'
+-RUN_ID = 'linux-desktop-integration17'
++RESOURCE_POLICY = 'GUI18_12GiB_ENTRY_3GiB_RUNNING_3GiB_PRIVATE_256MiB_DISK_512MiB_RAM_V1'
++DISPOSAL_POLICY_ID = 'GUI18_ORIGINAL_PRE_GUI_CANCELLED_COPY_ONLY_V1'
++RUN_ID = 'linux-desktop-integration18'
+ FROZEN = {
+     SOURCE: '1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc',
+     
+-    DIAGNOSTIC: 'd699a64e0c2e52070da8e1225f50df88f1017f5bb8cf26a1fcde0bbd51870515',
+-    INIT: '4ad00e327be182a7058c3930115c89befa1a24e77a58c9e80031f60999c68463',
++    DIAGNOSTIC: '791416a398e91818a72a965b1d76bb2e4517d058d3eba06f2896fedb6f2f3826',
++    INIT: 'd7174401eb9aba52dc4ec91af3abeff1646fb57629b2eb110fcc1c41c406d64f',
+ }
+ MIB, GIB = 1024 ** 2, 1024 ** 3
+ SELECTIONS = ({'module': 'app-desktop',
+@@ -117,7 +117,7 @@
+   'suite': 'Pvu003NativeChooserAdmissionIntegrationTest[desktop]',
+   'methods': ('actual Main samples Home while the export chooser is modal then cancels',),
+   'fixture': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt',
+-  'sha256': 'd699a64e0c2e52070da8e1225f50df88f1017f5bb8cf26a1fcde0bbd51870515'},
++  'sha256': '791416a398e91818a72a965b1d76bb2e4517d058d3eba06f2896fedb6f2f3826'},
+  {'module': 'app-desktop',
+   'task': ':app-desktop:desktopTest',
+   'worker': 'mainnav',
+@@ -125,7 +125,7 @@
+   'suite': 'Pva027MainSettingsTrayPropagationIntegrationTest[desktop]',
+   'methods': ('actual Main Settings updates installed tray properties through English Arabic English',),
+   'fixture': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt',
+-  'sha256': 'd699a64e0c2e52070da8e1225f50df88f1017f5bb8cf26a1fcde0bbd51870515'})
++  'sha256': '791416a398e91818a72a965b1d76bb2e4517d058d3eba06f2896fedb6f2f3826'})
+ PRODUCTION_SOURCE = {
+     'app-desktop/src/desktopMain/kotlin/com/passvault/desktop/Main.kt':
+         '9a67a8a5c2f05331e91ec5c18f6317a3562bd26e2c720105a8a21773edd8ae93',
+@@ -184,7 +184,7 @@
+ ORIGINAL_DIRS = (R, E, E / 'logs', E / 'xml', *MAINNAV_EVIDENCE.values()) + tuple(
+     R / p for p in PRIVATE) + tuple(
+     p for w in WORKERS for p in (R / 'workers' / w, *(R / 'workers' / w / c for c in CHILDREN)))
+-G = Path('/tmp/passvault-desktop-integration17')
++G = Path('/tmp/passvault-desktop-integration18')
+ AUTH, BUS = G / 'Xauthority', G / 'bus'
+ FLAGS = ['--no-daemon', '--max-workers=1', '--console=plain', '--no-parallel', '--no-configure-on-demand',
+          '--no-configuration-cache', '--no-build-cache', '--dependency-verification=strict', '--stacktrace',
+@@ -454,12 +454,12 @@
+     def intake(self):
+         data, image = self.f.read(E / 'OUTER-INTENT.json', 4 * MIB)
+         value = json.loads(data)
+-        require(value['format'] == 'passvault-linux-desktop-integration17-outer-v1' and value['run_id'] == RUN_ID
++        require(value['format'] == 'passvault-linux-desktop-integration18-outer-v1' and value['run_id'] == RUN_ID
+                 and value['commit'] == COMMIT and value['tree'] == TREE and value['source_members'] == MEMBERS
+                 and value['source_representation'] == SOURCE_BINDING['representation']
+                 and value['source_binding'] == SOURCE_BINDING and value['source_overlay'] == SOURCE_OVERLAY
+                 and value['resource_policy'] == RESOURCE_POLICY and value['parent_namespaces'] == self.parent,
+-                'fixed fresh INTEGRATION17 outer intake; not independent execution admission')
++                'fixed fresh INTEGRATION18 outer intake; not independent execution admission')
+         require(isinstance(value['disposal_policy'], dict)
+                 and value['disposal_policy']['id'] == DISPOSAL_POLICY_ID
+                 and value['disposal_policy']['runtime'] == str(R)
+@@ -518,7 +518,7 @@
+             require(len(selected) == 1, 'single P23 selected fixture/production source row')
+             expected_digest = (DIAGNOSTIC_OVERLAY['after']['sha256'] if path == DIAGNOSTIC_OVERLAY['path']
+                                else selected[0]['raw_sha256'])
+-            require(expected_digest == digest, 'frozen effective GUI17 fixture/production-loop source')
++            require(expected_digest == digest, 'frozen effective GUI18 fixture/production-loop source')
+         require(not os.path.lexists(CHECKOUT / '.git'), 'disposable raw source only; no borrowed repository')
+         for case in MAINNAV_CASES:
+             require(not os.listdir(self.f.directory(MAINNAV_RUNTIME[case]))
+@@ -552,7 +552,7 @@
+                             and digest == overlay['after']['sha256'], 'fixed approved overlay afterimage drift')
+             require(blob == expected_blob and row['git_mode'] in ('100644', '100755')
+                     and bool(image['pin']['mode'] & 0o111) == (row['git_mode'] == '100755'),
+-                    'INTEGRATION17 explicit base/effective blob/mode drift')
++                    'INTEGRATION18 explicit base/effective blob/mode drift')
+             identities.append([row['path'], row['git_mode'], blob, len(data), digest])
+             count, size = count + 1, size + len(data)
+         require(count == (3 if wrapper_only else MEMBERS), 'source member count')
+@@ -806,7 +806,7 @@
+             try:
+                 if phase['settled'] and phase['build_ok']:
+                     data, _ = self.f.read(E / 'logs/prepare.log', 4 * MIB)
+-                    prefix = 'DESKTOP_INTEGRATION17_RUNTIME_CLASSPATH='
++                    prefix = 'DESKTOP_INTEGRATION18_RUNTIME_CLASSPATH='
+                     lines = [line[len(prefix):] for line in data.decode('utf-8', errors='replace').splitlines()
+                              if line.startswith(prefix)]
+                     require(len(lines) == 1 and all(len(line) <= 256 * 1024 for line in lines),
+@@ -816,7 +816,7 @@
+                                     for task in dict.fromkeys(v['task'] for v in SELECTIONS)}
+                     require(collections.Counter((v['selectedTask'], tuple(v['selectedClasses'])) for v in records)
+                             == collections.Counter(task_classes.items()),
+-                            'exact INTEGRATION17 runtime task/class selection')
++                            'exact INTEGRATION18 runtime task/class selection')
+                     for value in records:
+                         require(type(value['entries']) is int and 1 <= value['entries'] <= 512
+                                 and len(value['artifacts']) == value['entries'], 'runtime classpath count')
+@@ -1524,14 +1524,14 @@
+ 
+ 
+ def main():
+-    require(PROSPECTIVE_ADMISSION_BOUND, 'SOURCE ONLY: fresh GUI17 admission is unbound')
++    require(PROSPECTIVE_ADMISSION_BOUND, 'SOURCE ONLY: fresh GUI18 admission is unbound')
+     require(sys.platform == 'linux' and sys.argv[0] == str(SELF) and len(sys.argv) == 4
+             and sys.flags.isolated and sys.dont_write_bytecode and sys.flags.no_site
+             and os.getuid() == os.geteuid() == 0, 'fixed isolated absolute root entry')
+     require(all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{40}', value) for value in (COMMIT, TREE))
+             and type(MEMBERS) is int and MEMBERS == 5121  # Exact P23 N, not speculative headroom.
+             and all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{64}', value) for value in FROZEN.values()),
+-            'PENDING exact P23/effective INTEGRATION17 source identity/hashes: source-only, no execution admission')
++            'PENDING exact P23/effective INTEGRATION18 source identity/hashes: source-only, no execution admission')
+     require(PANEL_ROUTE_ADMITTED is True,
+             'PENDING independent panel route/instance admission; source/data grounding is not permission to run')
+     os.umask(0o077)
+@@ -1607,7 +1607,7 @@
+                   and batch.panel_configured and batch.tray_owners_captured and batch.tray_owners_settled
+                   and all(not o['record']['unexpected_exit'] for o in batch.tray_owners)
+                   and all(not h['record']['unexpected_exit'] for h in batch.helpers))
+-        result = {'format': 'passvault-linux-desktop-integration17-inner-v2', 'run_id': RUN_ID,
++        result = {'format': 'passvault-linux-desktop-integration18-inner-v2', 'run_id': RUN_ID,
+             'commit': COMMIT, 'tree': TREE, 'parent_namespaces': batch.parent,
+             'source_binding': SOURCE_BINDING, 'source_overlay': SOURCE_OVERLAY, 'resource_policy': RESOURCE_POLICY,
+             'source_before': batch.before, 'source_after': batch.after, 'all_required_stops_ok': stops,

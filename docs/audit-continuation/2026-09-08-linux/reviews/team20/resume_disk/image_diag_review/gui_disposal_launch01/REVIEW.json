@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "date_utc": "2026-09-14",
+  "author": "/root",
+  "independent_reviewer": "/root/image_diag_review",
+  "status": "ACCEPT_NARROW_GUI07_DISPOSAL_LAUNCH_V2_SOURCE",
+  "review_scope": "Read the 24-line launcher and exact v1-to-v2 delta, check fixture invocation bindings, and reuse root's accepted fixture-body review. DATA/source review only; no execution, kernel/process probing or cleanup performed.",
+  "selected_launcher": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-disposal-contract01/LAUNCH-v2.py",
+    "bytes": 1459,
+    "sha256": "df60c363e52f74883003593f5fd8dadc8574bc9c3d1afc95ef4b3ec85ebc3351"
+  },
+  "preserved_original": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-disposal-contract01/LAUNCH.py",
+    "bytes": 1435,
+    "sha256": "0972525639e5bc573b7099a359f060954a3f242bfd603d1aa4f02914a5e9e0f5",
+    "selection": "NOT_SELECTED: checked bytes were followed by a pathname reopen for execution"
+  },
+  "reused_fixture_review": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-disposal-contract01/SOURCE-REVIEW.json",
+    "bytes": 3612,
+    "sha256": "55c721148ece1f8ad1c9396d6b57c00db771908bb4c7335bc19e7676796d493b",
+    "status": "ACCEPT_NARROW_NEW_GUI07_FILE_DISPOSAL_COMPONENT_SOURCE"
+  },
+  "fixture_identity": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_disposal_contract01/fixture.py",
+    "bytes": 15855,
+    "sha256": "b103e0b726b2113caa761eedc7176e4f08c35866f0f8ce6738d6199fd396ed8b"
+  },
+  "challenge": [
+    "V2 changes only exec argv: isolated Python consumes raw.decode('utf-8') through -c after exact length/hash verification instead of reopening fixture path F. A pathname replacement after verification cannot change those consumed fixture bytes.",
+    "Fixture requires len(sys.argv)==1, does not use __file__, uses fixed absolute paths and has an ordinary __main__ guard. The new -c invocation preserves these contracts.",
+    "Parent is opened with O_DIRECTORY|O_NOFOLLOW; the anchored empty single-link regular lock is opened O_NOFOLLOW, identity-checked and exclusively flocked nonblocking. Only the original lock fd is made inheritable; checked fixture and parent fds are closed before exec. The same replaced process retains that original flock through fixture terminal exit.",
+    "The bounded one-read source check may safely refuse a short read. Decode, close, identity, flock or exec errors prevent normal launch and must not be relabelled a successful fixture run.",
+    "No subprocess, import framework, old runner execution, Gradle invocation, copied-lock identity or reconstruction of historical custody is added. Fixture body and its extraction remain unchanged."
+  ],
+  "qualifications": [
+    "The encoded parent (23,534,0,0700) and lock (24,13719326,0,0600) identities are current prospective execution inputs only. This source review does not establish their live state, scheduling admission, historical lock ownership or OLD/HOLD cleanup authority.",
+    "Root remains sole execution/build/cleanup owner and must retain the original terminal outcome. On a pre-exec exception, terminal process settlement can establish kernel fd retirement; it is not evidence of explicit successful Python close calls.",
+    "Root's accepted fixture limits apply unchanged: three prospective filesystem/self-signal cases, simulated upstream lifecycle/host/custody/disposal eligibility, no GUI/application cases, no closure credit, no historic GUI06 reinterpretation and no hard-kill cleanup guarantee.",
+    "This is source acceptance, not an actual-case result or independent proof that execution/cleanup has occurred. No new execution or retry is authorized by the review artifact itself."
+  ]
+}

@@ -1,0 +1,111 @@
+--- before/VERIFICATION_LEDGER.json
++++ after/VERIFICATION_LEDGER.json
+@@ -2097,7 +2097,7 @@
+   "continuation_application_test_cases_semantics": "227mixed application/native/regression/investigation/control events+3infrastructure+1producer=231XML;includesFAIL/partialHOLD/historycontrols,not227passes or unique behaviors. Host07adds1injectedpolicyPASS while originalouter70cleanupHOLD remains;parser8separate.",
+   "continuation_case_accounting": {
+     "current": {
+-      "aggregate_current_report_review": "GUI08 actual independentlyaccepted;editor and Android03 priorledgerdelta reviews accepted. This new GUI08+2 ledger delta/finalreportreview pending.",
++      "aggregate_current_report_review": "GUI09 actual/cleanup accepted. New additive GUI09 ledger delta and consolidated report review pending; all prior independent reviews remain scoped evidence.",
+       "editor_save_ack01_independent_addition": {
+         "bytes": 36664,
+         "path": "reviews/team20/resume_disk/remaining_report/editor_save_instance01/ACTUAL-REVIEW.json",
+@@ -2113,7 +2113,7 @@
+         "path": "reviews/team20/resume_disk/current_report_review/focused05_binding01/ACTUAL-REVIEW.json",
+         "sha256": "ba6791e32a84d141d1b0c7b5d7bf1183098ef82a0a03fdb4a68a1226a95bae3d"
+       },
+-      "formula": "235prior mixedXML+2GUI08(1FAIL+1SKIP)=237;233mixed application/native/regression/investigation/control elements+3infrastructure+1producer=237. No new passes or closures;chooser absent0.",
++      "formula": "237 prior mixed XML + 2 GUI09 (1 FAIL + 1 SKIP) = 239; 235 mixed application/native/regression/investigation/control elements + 3 infrastructure + 1 producer. Zero new passes/closures; chooser unstarted.",
+       "gui07_independent_addition": {
+         "bytes": 19936,
+         "path": "reviews/team20/resume_disk/remaining_report/gui07_actual_review01/ACTUAL-REVIEW.json",
+@@ -2143,6 +2143,12 @@
+         "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui08_actual01/ACTUAL-REVIEW.json",
+         "sha256": "313660c3857db7d000bbf28bc627dca59def34b72a9b55f469bba2b29a303dad"
+       },
++      "gui09_actual_record": "VERIFICATION_LEDGER.json#/current_gui09_actual",
++      "gui09_independent_addition": {
++        "bytes": 15023,
++        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui09_actual01/ACTUAL-REVIEW.json",
++        "sha256": "5808605807e5ae36de95a5fee1094fd4258f459fc40427473491e137a7ccf7e6"
++      },
+       "host07_independent_addition": {
+         "bytes": 9470,
+         "path": "reviews/team20/resume_disk/current_report_review/android_host07_actual_review01/ACTUAL-REVIEW.json",
+@@ -2158,8 +2164,8 @@
+         "path": "reviews/team20/resume_disk/final_integrity/new01/CURRENT-REMAINING-WORK-REVIEW.md",
+         "sha256": "74223558716157e77f2fcad71218c1438555db004dfe166f4d2d0702647ff247"
+       },
+-      "mixed_application_intended_native_regression_investigation_control_events": 233,
+-      "not": "Not237passes or233executed/unique methods;includesFAIL/SKIP/HOLD/historycontrols. No new closure. Previous Room/editor passes preserved without rerun.",
++      "mixed_application_intended_native_regression_investigation_control_events": 235,
++      "not": "Not239passes or235unique/executed methods; mixedFAIL/SKIP/HOLD/historycontrols. Zero new closure. Room/editor passes preserved.",
+       "package03_manifest_parser_separate_non_xml": {
+         "XML_cases": 0,
+         "adoption": {
+@@ -2176,7 +2182,7 @@
+       "separate_current_non_XML_controls_ref": "C20_CURRENT_SUPPLEMENT_2026-09-14.json#/current_resume_disk_slice; separate counts in C20_CURRENT_SUPPLEMENT_2026-09-14.json#/accounting",
+       "separate_fixture_producer": 1,
+       "separate_infrastructure_controls": 3,
+-      "total_XML_testcase_elements": 237
++      "total_XML_testcase_elements": 239
+     },
+     "previous_details_preserved_in": "historical_checkpoint22_before_focused05_accounting"
+   },
+@@ -2998,6 +3004,48 @@
+     "source_effective_sha256": "c0894cecd7d497f14bc37388e34496aafd28f2df8e8a437d9e9fbe701ee2b3f5",
+     "status": "INDEPENDENTLY_REVIEWED_ACTUAL_FAILURE_AND_CLEANUP_ROOT_ADOPTED"
+   },
++  "current_gui09_actual": {
++    "administrative_review": "New additive ledger delta awaiting independent review; original actual/cleanup independently accepted.",
++    "counting": {
++      "additional_XML": 2,
++      "current_mixed_XML": 239,
++      "failures": 1,
++      "new_qualified_family_closures": 0,
++      "passes": 0,
++      "prior_mixed_XML": 237,
++      "skips": 1,
++      "unstarted": 1
++    },
++    "diagnostic": "Input acknowledged; UNLOCKED; row loaded/filtered; AX_CARD=false, AX_TITLE=true, AX_TITLE_ACTION_ANCESTOR=true, AX_HOME=true, AX_UNLOCK=false. Supports title/action selector mismatch, not downstream navigation success.",
++    "independent_review": {
++      "bytes": 15023,
++      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui09_actual01/ACTUAL-REVIEW.json",
++      "sha256": "5808605807e5ae36de95a5fee1094fd4258f459fc40427473491e137a7ccf7e6"
++    },
++    "outcomes": {
++      "exit": 1,
++      "failures": 1,
++      "passes": 0,
++      "removed_original_runtime_entries": 27578,
++      "required_stop_exits": [
++        0,
++        0
++      ],
++      "skips": 1,
++      "unstarted": 1,
++      "xml_elements": 2
++    },
++    "qualification": "No Main dirty-navigation, tray or chooser pass. Child137 is failure containment, not clean app exit. Successful Room/editor unchanged and excluded; all HOLD/STOP/NO-RETRY/CLOSED preserved.",
++    "root_adoption": {
++      "bytes": 1603,
++      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui09-instance01/ACTUAL-ADOPTION.json",
++      "sha256": "b803b90a108694f984ee5cf7a7d560c2cd8941ab27d47088183a075c8648e637"
++    },
++    "run_id": "linux-desktop-integration09",
++    "schema": 1,
++    "source_effective_sha256": "a3c6e67fc8516fc6ee51e99e2090a1357a226c6c33bbab720cfe891eaa238540",
++    "status": "INDEPENDENTLY_ACCEPTED_ORIGINAL_FAILURE_AND_CLEANUP_ROOT_ADOPTED"
++  },
+   "current_reconciliation_record": "VERIFICATION_LEDGER.json#/current_gui08_actual",
+   "current_regression_scheduling": {
+     "live_record": "reviews/team20/resume_disk/root/EXECUTION_SLOT.json",
+@@ -3008,7 +3056,7 @@
+     "meaning": "Earlier frozen source/component/DATA cutoff at the linked supplement:kernel1,V4fake12,V5fake7,filesystem-selfsignal3 are separate,notXML. Its231mixedXML/GUI07unrun statements are superseded forGUI07 only by VERIFICATION_LEDGER.json#/current_gui07_actual:3new XML(1PASS/1FAIL/1SKIP),234mixed total,chooserabsent,0closures. Same13editor methods/oneamendedUNRUN unchanged.",
+     "record": "C20_CURRENT_SUPPLEMENT_2026-09-14.json#/current_resume_disk_slice"
+   },
+-  "current_supplement_precedence": "VERIFICATION_LEDGER.json#/current_gui08_actual supersedes only latest GUI08 execution/cleanup/accounting aliases:237mixed XML,not passes. Earlier GUI07/editor/current-state/supplement snapshots and source qualifications remain historical; all original failures,HOLD,STOP,CLOSED retained. Android03 and API05/06 data are zero-product-case outcomes; no new execution authority.",
++  "current_supplement_precedence": "GUI09 additive actual supersedes latest XML accounting only:239 mixed XML, not passes. Original GUI08/earlier failures and successful evidence retained; Android04 producer/metadata remain separately accepted zero-case evidence. No new family closure or execution authority.",
+   "desktop_curtain01_source": {
+     "actual_cases": 0,
+     "change": "Original helper pidfd required; original-file/parent pixel fsync/pin/close required before preservation acceptance. Fresh original Xvfb/WM/privateDBus/network domain, exact one production-curtain rendering/input case.",

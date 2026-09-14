@@ -1,0 +1,23 @@
+--- passvault-linux/app-android/src/androidTest/kotlin/com/passvault/android/audit/AndroidClipboardLocaleInstrumentationTest.kt
++++ passvault-linux/app-android/src/androidTest/kotlin/com/passvault/android/audit/AndroidClipboardLocaleInstrumentationTest.kt
+@@ -157,7 +157,10 @@
+             originalDisplayLocale = Locale.getDefault(Locale.Category.DISPLAY)
+             originalFormatLocale = Locale.getDefault(Locale.Category.FORMAT)
+             originalLocaleIndex = requireNotNull(originalLocales).indexOf(requireNotNull(originalLocale))
+-            requireEvidence(originalLocaleIndex >= 0, "Original default is absent from the process locale list")
++            // Public LocaleList.setDefault restores index zero only. Reject an unsupported original
++            // ordering before any mutation; the indexed overload is a hidden Android API.
++            requireEvidence(originalLocaleIndex == 0,
++                "Original default must lead the process locale list for public-API restoration")
+             // A process-local initial control, before the first Main/provider composition only.
+             overrideLocale = Locale.ENGLISH
+             defaultsTouched = true
+@@ -412,7 +415,7 @@
+             }
+             onMain {
+                 if (defaultsTouched) {
+-                    LocaleList.setDefault(requireNotNull(originalLocales), originalLocaleIndex)
++                    LocaleList.setDefault(requireNotNull(originalLocales))
+                     Locale.setDefault(requireNotNull(originalLocale))
+                     Locale.setDefault(Locale.Category.DISPLAY, requireNotNull(originalDisplayLocale))
+                     Locale.setDefault(Locale.Category.FORMAT, requireNotNull(originalFormatLocale))

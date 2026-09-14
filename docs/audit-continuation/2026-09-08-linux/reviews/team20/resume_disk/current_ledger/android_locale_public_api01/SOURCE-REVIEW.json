@@ -1,0 +1,49 @@
+{
+  "format": "passvault-android-locale-public-api-narrow-source-review-v1",
+  "utc": "2026-09-14T20:58:26.151984+00:00",
+  "reviewer": "/root/current_ledger",
+  "author": "/root",
+  "status": "ACCEPT_EXACT_TEST_SOURCE_CORRECTION_PENDING_COMPILATION_AND_TARGET_EVIDENCE",
+  "sources": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-locale-public-api01/PROPOSAL.json",
+      "bytes": 808,
+      "sha256": "2f4943a3dcc320e218aee8fafea6588a405a5711097079f7a9f44846f8bc390f"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-locale-public-api01/BEFORE.kt",
+      "bytes": 29184,
+      "sha256": "580c71e5fc5c917b7f62535282fa3436a3eada15e35ac7afa3bcd584f890c29d"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-locale-public-api01/AndroidClipboardLocaleInstrumentationTest.kt.txt",
+      "bytes": 29393,
+      "sha256": "21ae72a59dae1ba8dea978f56c0bf862c73b3bb91b76980f92713c57633b61fb"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-locale-public-api01/FIX.diff",
+      "bytes": 1727,
+      "sha256": "b4a2a7a0a791de8939fc74ebdd7d23119ff89508463f298035d6c2295f3fac70"
+    }
+  ],
+  "independent_original_failure": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/android_framework_package_action_actual06/ACTUAL-REVIEW.json",
+    "bytes": 8186,
+    "sha256": "065423c16c82f8640164acc271e179613f709d1ebbe3600a1d2f31598fcffc44"
+  },
+  "checks": [
+    "Independentlyreproduced entiretwo-hunkdiff. BEFORE29184B/SHA580c71e5 matches actual06compilerinput andcurrentpermanentfixture; after29393B/SHA21ae72a5. No production/dependency/manifest/changeoutside fixture.",
+    "Actual06line415 compiler rejects twoargument LocaleList.setDefault; correctionuses alreadyusedpublicsingleargumentoverload, not reflection/hiddenAPI/suppression. Real compiler result establishes reachability in fixedinstrumentationsource; runtime neverran.",
+    "Challengedoriginaldefaultatnonzeroindex: publicsetDefault(list) selectsfirst; laterLocale.setDefault(nonfirst) canchangegetDefaultordering. Newindex==0precondition onMain occursbeforeoverrideLocale/defaultsTouched/LocaleList/Locale mutationandbeforecallbacks/firstMain/testcases. Absentor nonzerodefaultfailsadmission; no silentlyreordered cleanup/pass.",
+    "Onrejectedprecondition, onStart recordsfailure; clipboardTouched/defaultsTouchedfalse,capturedempty,applicationnull. Cleanupdoesnot readpersonalclipboard or reset processdefaults. Theunchangedfailure/incompletecaseinventory prevents a pass.",
+    "Foradmittedindexzero, publicsetDefault(originalLocales) restoresoriginalorder/default; subsequentLocale.setDefault(originalLocale) is samevalue. DISPLAY/FORMATcategories restoredseparately with allfour exact assertions retained. AllcapturedActivitiesmustbedestroyedbefore processdefaultrestoration. Cleanupfailuresremainerrors, not success.",
+    "This narrows admissible synthetic-testinitialstate only, not PassVault productlocalecompatibility. ExistingAPI29+,Debugidentity/externalisolateddevice/startupguard qualificationsand2fixedcasesunchanged. No data-loss/recovery/cryptography logic changed."
+  ],
+  "validation_scope": "The next reviewedsource-bound Android compiler/carrier/package batch should compile exactafterimage; no standalonemock/JVMAndroidstubassertionsneeded. Runtimeclipboard/Activitylocale/nativeprompt and genuinehardware evidence remainseparate,not establishedbythis sourcefix. ACTION06failure preserved; noautomaticretry oroldinstanceexecution.",
+  "credit": {
+    "new_cases": 0,
+    "new_family_closures": 0,
+    "runtime_passes": 0
+  },
+  "restrictions": "Source-onlynameddata/diffreview; no build/SDK/liveprocess/network/helperexecution. AllSTOP/NO-RETRY/CLOSED/HOLD/protectedrefs/tags/mobile1017001/eightPVDseparatepreserved."
+}

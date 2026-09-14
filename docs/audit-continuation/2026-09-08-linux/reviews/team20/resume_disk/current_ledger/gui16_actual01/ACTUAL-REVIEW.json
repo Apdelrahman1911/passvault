@@ -1,0 +1,315 @@
+{
+  "accounting": {
+    "PVD_explanations_owner_decisions_separate": 8,
+    "closures_automatically_added": 0,
+    "confirmed_qualified_unchanged": "27/39 (69.2%),12open",
+    "errors": 0,
+    "failed": 2,
+    "mixed_xml_after_root_adoption": 252,
+    "mixed_xml_before": 249,
+    "mixed_xml_not_passes": true,
+    "new_actual_testcase_elements": 3,
+    "non_XML_screen_control_cases_separate": 6,
+    "original_confirmed_unchanged": "19/25 (76%),6open",
+    "original_suspicions_unchanged": "2/12 (16.7%),10unresolved",
+    "passed": 1,
+    "readiness": "NOT_READY",
+    "skipped": 0
+  },
+  "actual_xml": [
+    {
+      "bytes": 530,
+      "errors": 0,
+      "failures": 0,
+      "path": "runs/linux-desktop-integration16/xml/app-desktop--TEST-com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest.xml",
+      "sha256": "7a6b5b58eb1f989478998649f847204791939a71cb63fdc33ada508688924368",
+      "skipped": 0,
+      "testcase": {
+        "classname": "com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest",
+        "name": "actual Main guards dirty Back tab and Add without changing durable Room tuples[desktop]",
+        "time": "16.897"
+      }
+    },
+    {
+      "bytes": 5943,
+      "errors": 0,
+      "failures": 1,
+      "path": "runs/linux-desktop-integration16/xml/app-desktop--TEST-com.passvault.desktop.Pva027MainSettingsTrayPropagationIntegrationTest.xml",
+      "sha256": "653b55f3d94f70237714c59b6dab76dd2da18e61ad8f50d389c07ec1ebd41d49",
+      "skipped": 0,
+      "testcase": {
+        "classname": "com.passvault.desktop.Pva027MainSettingsTrayPropagationIntegrationTest",
+        "name": "actual Main Settings updates installed tray properties through English Arabic English[desktop]",
+        "time": "11.44"
+      }
+    },
+    {
+      "bytes": 5896,
+      "errors": 0,
+      "failures": 1,
+      "path": "runs/linux-desktop-integration16/xml/app-desktop--TEST-com.passvault.desktop.Pvu003NativeChooserAdmissionIntegrationTest.xml",
+      "sha256": "3911d00eb150107b0ab890cb1740601808126a643b00a469682563b741abd2c0",
+      "skipped": 0,
+      "testcase": {
+        "classname": "com.passvault.desktop.Pvu003NativeChooserAdmissionIntegrationTest",
+        "name": "actual Main samples Home while the export chooser is modal then cancels[desktop]",
+        "time": "11.656"
+      }
+    }
+  ],
+  "decision": "ACCEPT_ORIGINAL_GUI16_FAILED_BATCH_EVIDENCE_AND_NORMAL_SCOPED_CLEANUP_WITH_ONE_QUALIFIED_MAIN_CASE_PASS",
+  "execution": {
+    "command_index_sha256": "d59ac4f21c9983b89f5f1bf951db3ee0e02b535da0f1fccb5427c045154e4772",
+    "prepare": {
+      "exit": 0,
+      "log_summary": "BUILD SUCCESSFUL in7m23s;123tasks executed",
+      "qualification": "Preparation/compilation, not cases"
+    },
+    "reconciliation": "All4phase byte/hash images and contents match INNER,25command logs,4helper logs,3retained outer logs,21actual role files and3case-result images independently matched. Original outer Git/read-only source transport identities are retained evidence, not permission for reviewer Git access.",
+    "render": {
+      "exit": 1,
+      "log_summary": "BUILD FAILED in1m13s;3tests completed,2failed;123tasks:30executed93up-to-date",
+      "qualification": "Mixed batch; actual XML below is authoritative for cases"
+    },
+    "runtime_classpath": {
+      "artifacts": 107,
+      "entries": 107,
+      "qualification": "Resolved artifact inventory, not107tests or by itself native-loader proof",
+      "retained_receipt_equals_original_prepare_log_json": true,
+      "selected_classes": 3
+    },
+    "wrapper_stops": "Both original prepare-stop/render-stop exit0, logs say No Gradle daemons are running; flags/command records retained. No automatic stop retry."
+  },
+  "failed_cases": {
+    "PVA027": {
+      "actual_xml_failures": 1,
+      "cropped_images_retained": 0,
+      "diagnostic": "PVA027_TARGET_WITH_SCROLL_ANCESTOR; MAIN_NAV_FAILURE then DRIVER_FAILURE",
+      "main_exit": 137,
+      "no_visual_acceptance": true,
+      "phase": "Real Settings tab selected; App language actionable-node with scroll ancestor lookup failed at fixture606/738 before language update, tray Lock/Exit or any crop.",
+      "seed_exit": 0,
+      "verify_role": "Not started"
+    },
+    "PVU003": {
+      "actual_xml_failures": 1,
+      "bounded_observation_receipt": null,
+      "diagnostic": "MAIN_NAV_UNIQUE_TARGET; MAIN_NAV_FAILURE then DRIVER_FAILURE",
+      "main_exit": 137,
+      "phase": "Real Settings tab selected; click(named(Data Management)) failed at fixture465 before Export/passphrase/chooser acquisition or modalHome/cancel sampling.",
+      "seed_exit": 0,
+      "verify_role": "Not started"
+    },
+    "shared_qualification": "Failed XML, not fabricated skips or passes. Fixture force-destroys Main child on failure;137 is not evidence of OOM or clean application quit. Source failure site plus retained diagnostics do not yet establish a product defect or root cause. No automatic rerun; subsequent focused work needs reviewed source/admission."
+  },
+  "format": "passvault-independent-original-actual-review-v1",
+  "future_execution_approved": false,
+  "images": [
+    {
+      "bytes": 259,
+      "path": "reviews/team20/resume_disk/root/gui16-instance01/ORIGINAL-TOOL-RESULT.json",
+      "sha256": "209ee0f4114db0cfc1d4c47b11ead8e6527f123eca1c17be7800d44f79eeaf5c"
+    },
+    {
+      "bytes": 26062,
+      "path": "reviews/team20/resume_disk/root/gui16-instance01/REQUEST.json",
+      "sha256": "49e7ac9774233ad32ae4c32c883e08e94ec6fe291b0e1db70c672841938022ab"
+    },
+    {
+      "bytes": 1687,
+      "path": "reviews/team20/resume_disk/root/gui16-instance01/APPROVAL.json",
+      "sha256": "29946283d5fbc35514ecb9489d7be0b86cd779fc8371be1bc756602184b87798"
+    },
+    {
+      "bytes": 28587,
+      "path": "runs/linux-desktop-integration16/OUTER-RECEIPT.json",
+      "sha256": "f58276d879acd969976d6428f4b9c0c973cb0e38640f9ad97b8d00be7a505b9b"
+    },
+    {
+      "bytes": 32243,
+      "path": "runs/linux-desktop-integration16/INNER-RESULT.json",
+      "sha256": "f41afd8033cbcb67d3b8bb581948ea9f268481726321db788fccfdcaaa369d81"
+    },
+    {
+      "bytes": 3921,
+      "path": "runs/linux-desktop-integration16/SOURCE-BEFORE.json",
+      "sha256": "3b20fabe02305999b7c769ed8e4daabc86e771b2627040abc7edf7a15234c084"
+    },
+    {
+      "bytes": 3921,
+      "path": "runs/linux-desktop-integration16/SOURCE-AFTER.json",
+      "sha256": "3b20fabe02305999b7c769ed8e4daabc86e771b2627040abc7edf7a15234c084"
+    },
+    {
+      "bytes": 11173,
+      "path": "runs/linux-desktop-integration16/SOURCE-OVERLAY.json",
+      "sha256": "0a9f41c84fb4b2739a04469d5605fd6acf005486a9aa8fa4dd31083bf1736004"
+    },
+    {
+      "bytes": 2805,
+      "path": "runs/linux-desktop-integration16/GUI-CLEANUP.json",
+      "sha256": "3e97ea84117ce3b7d6e216f46bf8815232ff137839e1eb3026e3f13ac1ead6ae"
+    },
+    {
+      "bytes": 2444,
+      "path": "runs/linux-desktop-integration16/XML-RESULT.json",
+      "sha256": "0aa32b57ea022a6fa2f00c5bc60109fc19cf41b631907739609d3e50d2f4ecf6"
+    },
+    {
+      "bytes": 2952,
+      "path": "runs/linux-desktop-integration16/MAINNAV-RESULT.json",
+      "sha256": "50a8a5ded48d7194c5ecc619895749f2c2536ee80d9ecebf746e5e3ab6a5a1ec"
+    },
+    {
+      "bytes": 2244,
+      "path": "runs/linux-desktop-integration16/PVU003-RESULT.json",
+      "sha256": "3caea2f9735fe7b4d7eb5ea82a802ace9c88fb7ed32d2ad4b475e03d1e668945"
+    },
+    {
+      "bytes": 3555,
+      "path": "runs/linux-desktop-integration16/PVA027-RESULT.json",
+      "sha256": "9dd047efdfdb2a23cb15d87c8acd43028694646c87dfbdb76ffa83cdecddff7d"
+    },
+    {
+      "bytes": 18001,
+      "path": "runs/linux-desktop-integration16/GENERATED-REPORTS.json",
+      "sha256": "b1781aa45ed69b399d3b885fd85abe5c1482b500c69c1da7de28ed318ed45282"
+    },
+    {
+      "bytes": 14006,
+      "path": "runs/linux-desktop-integration16/RUNTIME-CLASSPATH.json",
+      "sha256": "76edc47701364882a92235332befef296c8155ad0981fb0d1ab5b44da25b88ad"
+    },
+    {
+      "bytes": 530,
+      "errors": 0,
+      "failures": 0,
+      "path": "runs/linux-desktop-integration16/xml/app-desktop--TEST-com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest.xml",
+      "sha256": "7a6b5b58eb1f989478998649f847204791939a71cb63fdc33ada508688924368",
+      "skipped": 0,
+      "testcase": {
+        "classname": "com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest",
+        "name": "actual Main guards dirty Back tab and Add without changing durable Room tuples[desktop]",
+        "time": "16.897"
+      }
+    },
+    {
+      "bytes": 5943,
+      "errors": 0,
+      "failures": 1,
+      "path": "runs/linux-desktop-integration16/xml/app-desktop--TEST-com.passvault.desktop.Pva027MainSettingsTrayPropagationIntegrationTest.xml",
+      "sha256": "653b55f3d94f70237714c59b6dab76dd2da18e61ad8f50d389c07ec1ebd41d49",
+      "skipped": 0,
+      "testcase": {
+        "classname": "com.passvault.desktop.Pva027MainSettingsTrayPropagationIntegrationTest",
+        "name": "actual Main Settings updates installed tray properties through English Arabic English[desktop]",
+        "time": "11.44"
+      }
+    },
+    {
+      "bytes": 5896,
+      "errors": 0,
+      "failures": 1,
+      "path": "runs/linux-desktop-integration16/xml/app-desktop--TEST-com.passvault.desktop.Pvu003NativeChooserAdmissionIntegrationTest.xml",
+      "sha256": "3911d00eb150107b0ab890cb1740601808126a643b00a469682563b741abd2c0",
+      "skipped": 0,
+      "testcase": {
+        "classname": "com.passvault.desktop.Pvu003NativeChooserAdmissionIntegrationTest",
+        "name": "actual Main samples Home while the export chooser is modal then cancels[desktop]",
+        "time": "11.656"
+      }
+    }
+  ],
+  "main_case": {
+    "decision": "ACCEPT_ONE_ACTUAL_LINUX_MAIN_NAVIGATION_ROOM_CASE_UNDER_EXACT_NONSHIPPING_OVERLAY",
+    "evidence": "Exact13ordered events, full successful XML and original role logs. Actual real Main/Window/NavHost native dirty Back/tab/Add followed by serial fresh Koin/Room reopen and assertOriginal durable tuples; database identity is checked across roles. No fake providers/direct route callbacks/lifecycle manufacture. MAIN_NAV_DETAIL_READY=true observed and original single Edit click progressed through unchanged downstream assertions.",
+    "limits": "Readiness snapshot is not an atomic at-click reservation. This success does not prove historical GUI14/15 cause, every timing/interleaving, transient-write exclusion, comprehensive cleanup/navigation, recovery, race/IME, preference persistence, packaging or other platforms/hardware/PVD. Quit receipt is issuance, not by itself physical-key or cleanup proof.",
+    "role_exit_codes": {
+      "main": 0,
+      "seed": 0,
+      "verify": 0
+    },
+    "trace_events": {
+      "main": [
+        "MAIN_NATIVE_EDIT",
+        "PENDING_NATIVE_TUPLE",
+        "TOOLBAR_STAY",
+        "ESCAPE_STAY",
+        "TAB_STAY",
+        "ADD_DISCARD_DETAIL",
+        "CLEAN_TAB_DETAIL",
+        "DRIVER_ASSERTIONS_COMPLETE",
+        "QUIT_KEY_CALLS_COMPLETE"
+      ],
+      "seed": [
+        "SEED_ORIGINAL_TUPLES",
+        "SEED_ROOM_CLOSED"
+      ],
+      "verify": [
+        "VERIFY_ORIGINAL_TUPLES",
+        "VERIFY_ROOM_CLOSED"
+      ]
+    }
+  },
+  "original_tool": {
+    "elapsed_seconds": 568.51,
+    "entry_chunk": "9ea6cb",
+    "exit_code": 1,
+    "original_only_not_retry": true,
+    "outer_status": "VALIDATION_FAILED_CLEANED",
+    "session_id": 14172,
+    "terminal_chunk": "b8d9da",
+    "terminal_output": ""
+  },
+  "restrictions": "Preserve PVU007 STOP;PVU011 NO-RETRY/no inquiry;PVA029 failure/no automatic retry;G7/G8 CLOSED;WindowsGraph03 CLOSED/remote cleanupUNKNOWN;all refused witnesses/every HOLD;protected refs/tags/mobile1017001. No shipping/signature/Store/publication authority.",
+  "reviewer": "/root/current_ledger",
+  "reviewer_data_corrections": "Three bounded reviewer DATA shape mistakes were corrected without any original-run retry: absent reports/ directory (GUI XML is under xml/); comparing unlike outer source-before/content and source-after/status maps (actual SOURCE-BEFORE/AFTER equal); assuming runtime-classpath JSON object instead of singleton list. No original build/test failure or acceptance was hidden.",
+  "scope": "Only named retained SOURCE/DATA, stdlib JSON/XML/hash comparison and own review record. No Git, live process/resource/runtime/HOLD/tool/SDK/store probe, signals, cleanup, builds/tests, controller import/execution or authoritative-ledger-validator substitution.",
+  "settlement_cleanup": {
+    "disposition": "ACCEPT_NORMAL_VALIDATION_SAFE_ORIGINAL_SCOPE_ONLY",
+    "evidence_conservation": {
+      "all_saved_hashes_and_lengths_match_original_descriptors": true,
+      "already_retained_xml": 3,
+      "cache_report_files": 0,
+      "cache_report_roots": 44,
+      "kind_bytes": {
+        "ALREADY_RETAINED_GUI_XML": 12369,
+        "FIXED_GRADLE_PROBLEMS_REPORT": 130736,
+        "SELECTED_TEST_AUXILIARY_REPORT": 57385
+      },
+      "kind_counts": {
+        "ALREADY_RETAINED_GUI_XML": 3,
+        "FIXED_GRADLE_PROBLEMS_REPORT": 1,
+        "SELECTED_TEST_AUXILIARY_REPORT": 11
+      },
+      "new_logical_bytes": 188121,
+      "new_reports": 12,
+      "saved_reverified_after_cleanup": true,
+      "source_saved_reverified_before_unlink": true,
+      "total_copies": 15,
+      "total_logical_bytes_including_xml": 200490
+    },
+    "helpers": "All4original helper descriptors captured and settled;Xvfb/dbus exits0,WM/panel exits1 after intended TERM;none reports unexpected exit or KILL.",
+    "inner_safety": "source_before/source_after,all_required_stops_ok,namespace_empty_before_exit,gui_helpers_settled,original_tray_owners_settled,cleanup_safe,validation_safe,evidence_retained are true.",
+    "native_owners": "Captured original xfconf and systray-wrapper descriptors terminal/closed;GUI-CLEANUP and INNER owner records identical;remaining_original_descendants empty.",
+    "outer_reasons": [],
+    "qualification": "Acceptance of original cooperative custody/settlement/cleanup evidence. No global-idleness, hostile-root/no-escape/hard-interruption or historical-GUI13-HOLD cleanup claim; UNKNOWN host candidates untouched. Approval consumed, not reusable.",
+    "removed_runtime_entries": 28231,
+    "runtime_status": "REMOVED_ORIGINAL_RUNTIME",
+    "snapshot_entries": 28231,
+    "source_after": "Outer CHECKED/validation_accepted refers source conservation, not batch tests; INNER SOURCE-AFTER byte-equal to BEFORE."
+  },
+  "source": {
+    "admission": "Request/approval/6source-image hashes independently match actual outer allocation and genuine previously authored exact instance approval. Source before/after and original overlay/effective-content receipts agree.",
+    "base_commit": "59bee33096f538b9444f00236448d7fc0ea740b2",
+    "base_tree": "76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6",
+    "effective_bytes": 153469661,
+    "effective_content_identity_sha256": "2ac87b54962dbd2208a3b50a029e7e51a8e00d00aabd97bdf896953cd20157e2",
+    "members": 5121,
+    "qualification": "P23 raw source plus explicitly approved desktopTest-only pinned lifecycle dependency and paired NONSHIPPING fixture/detail-adapter readiness overlay. Canonical RouteAdapterContext restored; two historical EOL qualifications remain. No whole-current-W source claim. Both readiness halves remain paired validation-only, never independent shipping fixture/product edits.",
+    "source_before_after_byte_equal": true,
+    "source_record_bytes": 3921,
+    "source_record_sha256": "3b20fabe02305999b7c769ed8e4daabc86e771b2627040abc7edf7a15234c084"
+  },
+  "utc": "2026-09-14T17:43:49.896650+00:00"
+}

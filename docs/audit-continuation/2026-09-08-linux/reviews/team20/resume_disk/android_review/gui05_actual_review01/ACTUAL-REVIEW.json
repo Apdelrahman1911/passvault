@@ -1,0 +1,342 @@
+{
+  "schema": 1,
+  "reviewer": "/root/android_review",
+  "review_role": "Independent reconciliation of original root-owned GUI05 actual; no new execution or live process/storage probes",
+  "disposition": "ACCEPT_ORIGINAL_VALIDATION_FAILED_CLEANED_AND_LOCAL_SCHEDULING_RELEASE_NOT_TEST_PASS_OR_RETRY",
+  "original_terminal": {
+    "owner": "/root",
+    "session": 39563,
+    "launch_chunk": "5e76bd",
+    "earlier_poll_chunk": "f3ff95",
+    "terminal_chunk": "1c9908",
+    "exit": 1,
+    "output": "",
+    "provenance": "Root NEW_TASK reports original write_stdin collection; reviewer did not launch/poll the session. Historical ORIGINAL-LAUNCH01 running receipt is not rewritten."
+  },
+  "request_and_admission": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui05-preparation01/ORIGINAL-LAUNCH01.json",
+      "bytes": 357,
+      "sha256": "6980222365c3e35c9b91294d82c8c5aeeae91fb699b8ddd19d479e1eeada684f"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui05-preparation01/ROOT-EXECUTION-ADMISSION01.json",
+      "bytes": 5512,
+      "sha256": "1b529ff4968408ed547eb1bd32ddd6a3492a6224c723826eb8121beea288e731"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui05-preparation01/RESERVATION01.json",
+      "bytes": 2290,
+      "sha256": "b36033a230e1f9ff7f7bf905c327c3e99cee4060ca43474e82ed43b2a8d6a230"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/android_review/gui05_source_review01/INSTANCE-REVIEW01.json",
+      "bytes": 9869,
+      "sha256": "d2cc35b29bb80d085a235bca1be5ba47bcf9df19be93147012fe9836f0bca5cf"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/android_review/gui05_source_review01/INSTANCE-ACCEPT.json",
+      "bytes": 1090,
+      "sha256": "78bf73123c73f896635113e5dad115cb2508771f69a41eba3b65dbf1f0e51b1a"
+    }
+  ],
+  "source": {
+    "commit": "59bee33096f538b9444f00236448d7fc0ea740b2",
+    "tree": "76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6",
+    "members": 5121,
+    "source_binding": {
+      "base_commit": "59bee33096f538b9444f00236448d7fc0ea740b2",
+      "base_content_identity_sha256": "19211d126337ddf19a37a6b89522642d62dcc247c199a6420cdc1e4b28abd91c",
+      "base_raw_bytes": 153458946,
+      "base_tree": "76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6",
+      "effective_bytes": 153459003,
+      "effective_content_identity_sha256": "3d9bb5162c6f4c703405e1742eae3f43a4806670644c69757379b3962c80aa14",
+      "framed_transport_bytes": 153725453,
+      "members": 5121,
+      "observed_checkout_bytes": 153460893,
+      "representation": "P23_RAW_GIT_BLOBS_PLUS_ONE_APPROVED_DESKTOPTEST_OVERLAY",
+      "source_manifest_sha256": "1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc"
+    },
+    "overlay": {
+      "after": {
+        "bytes": 63975,
+        "git_blob": "a8895db34f68cf10b7795079c433c9ef283d4cba",
+        "sha256": "d0ead442c57c9465333d036bcb4d96f1ac5b06fd8d04dfe5b45fc571100265e3"
+      },
+      "before": {
+        "bytes": 63918,
+        "git_blob": "172fd771919fbb848c7c413af97706b257a7c3d2",
+        "sha256": "9263cf5e857f55afd4669aa524eaf36f37d3b5a18f4eca293da148bd55b3e709"
+      },
+      "git_mode": "100644",
+      "path": "app-desktop/build.gradle.kts",
+      "scope": "Exactly one pinned libs.lifecycle.viewmodel implementation line in desktopTest only; no version or production-runtime change"
+    },
+    "before_after_exact_bytes": true,
+    "qualification": "Recorded raw-P23 plus approved57B desktopTest-only line; not current mutable Git tree or normalized-checkout equality. Current four accepted control/manifest bytes match allocation hashes. Existing checkout-EOL qualifications preserved."
+  },
+  "actual": {
+    "outer_status": "VALIDATION_FAILED_CLEANED",
+    "outer_reasons": [],
+    "outer_elapsed_seconds": 454.936,
+    "inner_exit": 1,
+    "inner_errors": [
+      "ValueError: filedescriptor out of range in select()"
+    ],
+    "prepare": {
+      "started": true,
+      "command": ":auditDesktopIntegration05Prepare",
+      "exit": 0,
+      "original_stop_exit": 0,
+      "stop_log": "No Gradle daemons are running.",
+      "runtime_resolved": true,
+      "compileTestKotlinDesktop_modules": [
+        ":app-desktop",
+        ":shared"
+      ],
+      "reported_build_time": "7m 8s",
+      "reported_actionable_task_executions": 130,
+      "qualification": "Compilation/runtime-classpath preparation only;130 task executions are not test cases. Test-only lifecycle-viewmodel artifact resolves and affected tests compile, but runtime integration remains unverified."
+    },
+    "isolation": {
+      "setup_ok": true,
+      "commands_completed_exit0": 3,
+      "private_network_and_64MiB_tmpfs": true
+    },
+    "gui_start": {
+      "attempted": true,
+      "commands_completed_exit0": 18,
+      "phase_settled": false,
+      "panel_configuration_verified_before_launch": true,
+      "error": "ValueError: filedescriptor out of range in select()",
+      "source_explanation": "Given completed WM readiness, four helpers, original_tray_owners=[] and render_attempted=false, the first native-owner capture select([fd],...,0) at inner line993 is the source-consistent failure point. That fd is closed by lines1000-1002 before the exception reaches main. Exact fd number/stack trace was not retained; do not invent it or classify session-manager/compositor warnings as the primary failure."
+    },
+    "render_attempted": false,
+    "test_tasks_executed": 0,
+    "planned_test_tasks": 2,
+    "executed_cases": 0,
+    "passed_cases": 0,
+    "failed_cases": 0,
+    "unstarted_cases": 4,
+    "xml_suites": 0,
+    "png_crops": 0,
+    "case_role_state_receipts": 0,
+    "selected_cases": [
+      {
+        "class": "com.passvault.shared.credential.CredentialEditorRoomIntegrationTest",
+        "method": "native capacity draft persists through page Save and a fresh Room database reopen",
+        "status": "UNSTARTED_BEFORE_RENDER"
+      },
+      {
+        "class": "com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest",
+        "method": "actual Main guards dirty Back tab and Add without changing durable Room tuples",
+        "status": "UNSTARTED_BEFORE_RENDER"
+      },
+      {
+        "class": "com.passvault.desktop.Pvu003NativeChooserAdmissionIntegrationTest",
+        "method": "actual Main samples Home while the export chooser is modal then cancels",
+        "status": "UNSTARTED_BEFORE_RENDER"
+      },
+      {
+        "class": "com.passvault.desktop.Pva027MainSettingsTrayPropagationIntegrationTest",
+        "method": "actual Main Settings updates installed tray properties through English Arabic English",
+        "status": "UNSTARTED_BEFORE_RENDER"
+      }
+    ],
+    "pva027_visual_review": "NOT_POSSIBLE_NO_CROPS_PRODUCED; all five crop.present flags false. No image opened and no PNG-header/visual pass inferred.",
+    "case_result_qualification": "MAINNAV/PVU003/PVA027 result files preserve absence: required_present=false, required_bytes=0, required_images={}, mapping_ok=false. preserved=true means result/absence bookkeeping, not genuine Room/event/exit evidence. PVU003 remains unresolved."
+  },
+  "cleanup_and_scheduling": {
+    "original_build_stop": {
+      "required": true,
+      "attempted": true,
+      "exit": 0,
+      "settled": true
+    },
+    "render_stop": "NOT_REQUIRED_RENDER_NEVER_STARTED; no new stop invocation permitted",
+    "gui_helpers": [
+      {
+        "role": "xvfb",
+        "exit": 0,
+        "pidfd_captured": true,
+        "term_sent": true,
+        "kill_sent": false,
+        "settled": true,
+        "unexpected_exit": false
+      },
+      {
+        "role": "dbus",
+        "exit": 0,
+        "pidfd_captured": true,
+        "term_sent": true,
+        "kill_sent": false,
+        "settled": true,
+        "unexpected_exit": false
+      },
+      {
+        "role": "wm",
+        "exit": 1,
+        "pidfd_captured": true,
+        "term_sent": true,
+        "kill_sent": false,
+        "settled": true,
+        "unexpected_exit": false
+      },
+      {
+        "role": "panel",
+        "exit": 1,
+        "pidfd_captured": true,
+        "term_sent": true,
+        "kill_sent": false,
+        "settled": true,
+        "unexpected_exit": false
+      }
+    ],
+    "namespace_empty_before_exit": true,
+    "remaining_original_descendants": [],
+    "native_capture": {
+      "captured": false,
+      "original_native_owners": [],
+      "original_native_owner_descriptors_settled": false,
+      "qualification": "False remains missing validation proof; do not turn it true. The rejected first capture descriptor is closed before propagating failure; no owner was appended. Complete original helper shutdown and original namespace settlement, not this false field, support cleanup."
+    },
+    "inner_cleanup_safe": true,
+    "inner_final_descriptor_close": "Inner code1 instead of70 binds successful Files.close() at lines1572-1580; any final close exception sets70.",
+    "outer_cleanup": {
+      "removed": 27943,
+      "snapshot_entries": 27943,
+      "status": "REMOVED_ORIGINAL_RUNTIME"
+    },
+    "runtime_root": "/root/projects/PassVault/audit-runtime-linux-desktop-integration05",
+    "root_removal_proof": "Accepted outer lines1030-1052 require bounded original snapshot before deletion, reports preserved/reverified, exact original identities and no mounts before unlink, then empty original root unlink/fsync, st_nlink=0 and absent original name.27943 is descendant snapshot/removal count; root is separately removed.",
+    "reports_preserved": {
+      "copied_files": 1,
+      "copied_logical_bytes": 132671,
+      "manifest": {
+        "pin": {
+          "bytes": 7578,
+          "ctime_ns": 1789360384690399235,
+          "dev": 24,
+          "ino": 14173164,
+          "mode": 33152,
+          "mtime_ns": 1789360384690399235,
+          "nlink": 1,
+          "uid": 0
+        },
+        "sha256": "6e5f653376996d237c54375c6072ef3170286f6fe222e2d251308a9ebd5881ce"
+      },
+      "previously_retained_files": 0,
+      "saved_reverified_after_cleanup": true,
+      "source_and_saved_reverified_before_unlink": true
+    },
+    "generated_report_qualification": "Only one132671B fixed Gradle problems HTML conserved as .bin; zero XML/auxiliary/cache-report files. Opaque diagnostic, not a test result.",
+    "outer_final_descriptor_close": "Root-observed terminal1 with reasons[] supports original outer final closes. Accepted outer lines1355-1362 force70 for close uncertainty or reasons; preterminal receipt alone would not establish this.",
+    "release_admissible": true,
+    "release_scope": "This consumed GUI05 logical heavy slot and original read-onlyP23 source-reader reservation only; root must adopt. Original local stop/helper/namespace/output disposal obligations are settled in admitted cooperative scope. No Vmutation/disposal, no replay, no other owner/global-idle/no-escape proof.",
+    "preserved_unknowns": "Three observed original-parent Java candidates remain UNKNOWN under accepted host policy; no ownership inferred, no signaling or inquiry. Historical WindowsGraph03 remote UNKNOWN/HOLD and other old holds unchanged."
+  },
+  "data_reconciliation": {
+    "recorded_image_comparisons": 50,
+    "all_matched": true,
+    "three_phase_values_match_inner": true,
+    "three_case_result_images_match_inner_and_outer": true,
+    "checks_digest_sha256": "a79cc67fc01789d5d544db9f7e37ef8e626fad1a3325d9d41e26e6ed5cab0e80",
+    "scope": "50 exact bytes/SHA image comparisons plus3phase+3case data equalities, not50tests. Checked original phase/child/helper logs, result receipts, source overlay, preserved diagnostic, four source images and request/approval."
+  },
+  "evidence": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration05/OUTER-RECEIPT.json",
+      "bytes": 27722,
+      "sha256": "abfec0ada1ce7fef06ebcb38fa3f3c316dbb2df6854baf676dc7b032efb76ccf"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration05/INNER-RESULT.json",
+      "bytes": 23193,
+      "sha256": "e7f1c635cae11605a4f4cd3048f9081daa3db55581b61365501e6bf3422624db"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration05/PHASE-prepare.json",
+      "bytes": 2430,
+      "sha256": "7927c487fd6ef931dfb3cf7b376ecc49e5785672ad988d3277261f447a334440"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration05/PHASE-gui-start.json",
+      "bytes": 7868,
+      "sha256": "9f4d72c017279c1b155a71f073d95b80e785524ba9e5deceead83098d75eb5cc"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration05/PHASE-isolation.json",
+      "bytes": 1376,
+      "sha256": "050c9ddab7287352b3a2244aa1267eda12d71203230d9d55880458b3c60259dd"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration05/GUI-CLEANUP.json",
+      "bytes": 2111,
+      "sha256": "1f6ada507c917a561755c09a363676488befdaf4c96fd4cc95dd527ab3fe2c22"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration05/GENERATED-REPORTS.json",
+      "bytes": 7578,
+      "sha256": "6e5f653376996d237c54375c6072ef3170286f6fe222e2d251308a9ebd5881ce"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration05/GENERATED-REPORT-0001.bin",
+      "bytes": 132671,
+      "sha256": "730c170ec8e02149a1694e1594c9549181602c3d3fa3b2c8f70a4d352b1764e4"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration05/PVA027-RESULT.json",
+      "bytes": 2194,
+      "sha256": "add646cb57697402eda39b64ed4d94bc3cc3de1e3175aa0c262bf87af1ef38a1"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration05/MAINNAV-RESULT.json",
+      "bytes": 908,
+      "sha256": "6abb47268e0e2c66215120f662b98bef0aa4d8f6d570e49a2bd243ae4c89b4a6"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration05/PVU003-RESULT.json",
+      "bytes": 883,
+      "sha256": "c9116f9f69777079b3c88eacd2ad9f95c90bcd30a2f86d8087f2fcb831dd9326"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration05/SOURCE-BEFORE.json",
+      "bytes": 2613,
+      "sha256": "2f111f16fb05c05d4b2f436fca97102973796c0874c894aa260e1a7b860d00b2"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration05/SOURCE-AFTER.json",
+      "bytes": 2613,
+      "sha256": "2f111f16fb05c05d4b2f436fca97102973796c0874c894aa260e1a7b860d00b2"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration05/SOURCE-OVERLAY.json",
+      "bytes": 3487,
+      "sha256": "b653349a7944183468b7f74e537a43168f3af15774b0a08f00f2e9f867a6442c"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration05/RUNTIME-CLASSPATH.json",
+      "bytes": 28749,
+      "sha256": "ccd548bae3d16991a06de3b2693ad9b33df25a998eee0732fc81722e4cd38108"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration05/logs/prepare.log",
+      "bytes": 52518,
+      "sha256": "3692a52f266808b3be7b37a1dc565a260ec39da1fa55d578b44c9cdd75e84b14"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration05/logs/prepare-stop.log",
+      "bytes": 458,
+      "sha256": "c16f1cb3c98540037d1901aaf62e8b4da5f1a1754e59699cb0630fdcc7fdc3d1"
+    }
+  ],
+  "next_work": "Preserve consumed GUI05 FAILURE. Any high-FD pidfd readiness amendment belongs in fresh source-reviewed successor controls, with original scope/cleanup unchanged and new root coordination/resource/instance admission; this review authorizes no retry or helper execution. Four runtime integration cases and PVA027 five decoded crops still need genuine evidence.",
+  "accounting": {
+    "original_confirmed": "19/25 (76%) unchanged",
+    "all_confirmed": "27/39 (69.2%),12 open unchanged",
+    "original_suspicions": "2/12 (16.7%),10 unresolved unchanged",
+    "PVD": "Eight design explanations/owner decisions separate",
+    "closures_added": 0
+  },
+  "restrictions": "PVU007STOP;PVU011NO-RETRY/no inquiry;PVA02949cases/44PASS/5FAIL/no automaticretry;G7/G8CLOSED;native/PVU008 refusals;protectedrefs/tags/build1017001 unchanged. No subject import/eval/AST/compilation/execution, liveU/V/SDK/cache/process inquiry, cleanup, canonical edits or run-specific disposable outputs by reviewer."
+}

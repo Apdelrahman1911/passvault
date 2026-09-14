@@ -1,0 +1,56 @@
+{
+  "utc": "2026-09-14T20:06:27.665642+00:00",
+  "status": "ONE_XML_PASS_PENDING_INDEPENDENT_ACTUAL_VISUAL_REVIEW_OUTER_HOLD",
+  "original_session": 82085,
+  "terminal_chunk": "03bf99",
+  "outer_exit": 70,
+  "outer_elapsed_seconds": 516.093,
+  "outer_status": "HOLD",
+  "outer_reasons": [
+    "RuntimeError:live original child namespace unreadable",
+    "RuntimeError:child failure/uncertain finalization"
+  ],
+  "cleanup": "NOT_ATTEMPTED",
+  "xml": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "inner": {
+    "errors": [],
+    "all_required_stops_ok": true,
+    "namespace_empty_before_exit": true,
+    "source_after": true,
+    "mainnav_mapping_ok": true
+  },
+  "observed_scope": "PVA027oneactualcase,three childroles,14filesincludingfivecrops. No GUI16Mainrepeat/noPVU003chooser. Notfamilyclosure/installedpackage/otherbackend/hardwareproof.",
+  "evidence": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration19/INNER-RESULT.json",
+      "bytes": 29676,
+      "sha256": "28396e409cf65caafdd5d4bc1ff4aa38d40b50d5d58578bd11d16435eddb2dfc"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration19/OUTER-RECEIPT.json",
+      "bytes": 33401,
+      "sha256": "a39f6cb94d69c412dbf3228cde9ce739088f413fa4f2b1d6c0c50688eacecf9e"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration19/XML-RESULT.json",
+      "bytes": 1014,
+      "sha256": "56775ae6af8467a3c7cbb5125ab87e1f255470b2e4e8b654cae48747d6332682"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration19/PVA027-RESULT.json",
+      "bytes": 5421,
+      "sha256": "d88cc02f437ef3ba08688a7ce83ad575b9de5ba03bf81fb73d948e17b4f009c3"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration19/GUI-CLEANUP.json",
+      "bytes": 2805,
+      "sha256": "1d51fecf6d8539a989cc49432a2feec951b42453bca4506f648c365241fe3e9a"
+    }
+  ],
+  "qualification": "Originalstops0x2+innernamespaceempty andouterchildrenexit0 retained separatelyfromouter livechild namespace unreadable failure. No runtimeaccess/recovery/deletion; no automaticretry."
+}

@@ -1,0 +1,225 @@
+{
+  "acceptance_basis": "Root accepted the65B identifier-only template delta; reviewer verified its exact image and full03 derivation, not rerun or causal/compilation acceptance.",
+  "action01_wire_token_counts_unchanged": {
+    "INIT.gradle": {
+      "ANDROID_RELEASE_ACTION01": 1,
+      "AndroidReleaseAction01": 2,
+      "android-release-action01": 4
+    },
+    "INNER.py": {
+      "ANDROID_RELEASE_ACTION01": 1,
+      "AndroidReleaseAction01": 6,
+      "android-release-action01": 5
+    },
+    "OUTER.py": {
+      "ANDROID_RELEASE_ACTION01": 1,
+      "AndroidReleaseAction01": 3,
+      "android-release-action01": 10
+    }
+  },
+  "all_INNER_function_source_unchanged": true,
+  "all_OUTER_function_source_unchanged_except_exact_screen_policy_epoch_literal": true,
+  "checks": {
+    "ELIGIBILITY.json": {
+      "byte_identical_to_Q2": true,
+      "eligible_membership_count_not_future_task_count": 502,
+      "forbidden_members": 5,
+      "retained_uncertain_members": 112,
+      "selectors": [
+        ":app-android:minifyReleaseWithR8",
+        ":app-android:mergeReleaseNativeLibs"
+      ],
+      "taskActionsAdmitted": false
+    },
+    "INIT.gradle": {
+      "forward_equals_candidate": true,
+      "independently_defined_exact_substitutions": [
+        {
+          "after": "/root/projects/PassVault/audit-runtime-linux-android-release-action03",
+          "before": "/root/projects/PassVault/audit-runtime-linux-android-release-action02",
+          "occurrences": 6
+        },
+        {
+          "after": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-release-action03",
+          "before": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-release-action02",
+          "occurrences": 1
+        },
+        {
+          "after": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance03",
+          "before": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance02",
+          "occurrences": 1
+        },
+        {
+          "after": "final String RUN_ID = 'linux-android-release-action03'",
+          "before": "final String RUN_ID = 'linux-android-release-action02'",
+          "occurrences": 1
+        }
+      ],
+      "physical_LF": 982,
+      "reverse_equals_baseline_or_accepted_template": true
+    },
+    "INNER.py": {
+      "forward_equals_candidate": true,
+      "independently_defined_exact_substitutions": [
+        {
+          "after": "/root/projects/PassVault/audit-runtime-linux-android-release-action03",
+          "before": "/root/projects/PassVault/audit-runtime-linux-android-release-action02",
+          "occurrences": 1
+        },
+        {
+          "after": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-release-action03",
+          "before": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-release-action02",
+          "occurrences": 1
+        },
+        {
+          "after": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance03",
+          "before": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance02",
+          "occurrences": 3
+        },
+        {
+          "after": "RUN_ID = 'linux-android-release-action03'",
+          "before": "RUN_ID = 'linux-android-release-action02'",
+          "occurrences": 1
+        },
+        {
+          "after": "fd022b911a09a18320f718be562314187324e4520287a400057d5e991b083bb3",
+          "before": "fc511af43a0a2e3056409c8d3f220a5e506bc043402924dfe1a47e006468f16f",
+          "occurrences": 1
+        }
+      ],
+      "physical_LF": 1410,
+      "reverse_equals_baseline_or_accepted_template": true
+    },
+    "OUTER.py": {
+      "forward_equals_candidate": true,
+      "independently_defined_exact_substitutions": [
+        {
+          "after": "/root/projects/PassVault/audit-runtime-linux-android-release-action03",
+          "before": "/root/projects/PassVault/audit-runtime-linux-android-release-action02",
+          "occurrences": 1
+        },
+        {
+          "after": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-release-action03",
+          "before": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-release-action02",
+          "occurrences": 1
+        },
+        {
+          "after": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance03",
+          "before": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance02",
+          "occurrences": 6
+        },
+        {
+          "after": "RUN, PURPOSE = 'linux-android-release-action03', 'ONE_LINUX_ANDROID_RELEASE_ACTION03'",
+          "before": "RUN, PURPOSE = 'linux-android-release-action02', 'ONE_LINUX_ANDROID_RELEASE_ACTION02'",
+          "occurrences": 1
+        },
+        {
+          "after": "ANDROIDRELEASEACTION03_SCHEDULING_ONLY_BOUND_NONLIVE_UNKNOWN_ERRNO_V5",
+          "before": "ANDROIDRELEASEACTION02_SCHEDULING_ONLY_BOUND_NONLIVE_UNKNOWN_ERRNO_V5",
+          "occurrences": 2
+        },
+        {
+          "after": "unconsumed_androidreleaseaction03_only_no_old_hold_or_retry_authority",
+          "before": "unconsumed_androidreleaseaction02_only_no_old_hold_or_retry_authority",
+          "occurrences": 1
+        },
+        {
+          "after": "'approvalReviewer': '/root/current_ledger'",
+          "before": "'approvalReviewer': '/root/postfix_transport'",
+          "occurrences": 1
+        },
+        {
+          "after": "fd022b911a09a18320f718be562314187324e4520287a400057d5e991b083bb3",
+          "before": "fc511af43a0a2e3056409c8d3f220a5e506bc043402924dfe1a47e006468f16f",
+          "occurrences": 1
+        },
+        {
+          "after": "6ca5082d9b817957efdaf52f2e29b3c8fd089a3abda4e1686ee0962c19be7d2b",
+          "before": "facaaf9938e505a1e9e00c220cfb2917be0dec2ce6ba810136dfbaae6e0ebd49",
+          "occurrences": 1
+        }
+      ],
+      "physical_LF": 1647,
+      "reverse_equals_baseline_or_accepted_template": true
+    }
+  },
+  "full_diff_reproduced_byte_identically": {
+    "bytes": 21296,
+    "hunks": 17,
+    "sha256": "1abdcd65a5ac18b3509dfcabdcf6a0b244e8ed84f2e0d1b6f5dccdc7b7f8e150"
+  },
+  "named_reads": [
+    {
+      "bytes": 61106,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance02/INIT.gradle",
+      "sha256": "fc511af43a0a2e3056409c8d3f220a5e506bc043402924dfe1a47e006468f16f"
+    },
+    {
+      "bytes": 94581,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance02/INNER.py",
+      "sha256": "facaaf9938e505a1e9e00c220cfb2917be0dec2ce6ba810136dfbaae6e0ebd49"
+    },
+    {
+      "bytes": 106420,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance02/OUTER.py",
+      "sha256": "5722e858052cd7f8c950d6a802c70fa98e54d012c49dba877201df675e46a420"
+    },
+    {
+      "bytes": 34438,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance02/ELIGIBILITY.json",
+      "sha256": "ab5222e5217b230c5ef4ff836553980719c89765684720771be6ca4cf741829f"
+    },
+    {
+      "bytes": 61171,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/android_action_instance03/INIT.gradle",
+      "sha256": "fd022b911a09a18320f718be562314187324e4520287a400057d5e991b083bb3"
+    },
+    {
+      "bytes": 94581,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/android_action_instance03/INNER.py",
+      "sha256": "6ca5082d9b817957efdaf52f2e29b3c8fd089a3abda4e1686ee0962c19be7d2b"
+    },
+    {
+      "bytes": 106417,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/android_action_instance03/OUTER.py",
+      "sha256": "16e3c5fbfe0444abd73910dec640deeacbf9b76bcf8e6ddb79d106c89a795a9d"
+    },
+    {
+      "bytes": 34438,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/android_action_instance03/ELIGIBILITY.json",
+      "sha256": "ab5222e5217b230c5ef4ff836553980719c89765684720771be6ca4cf741829f"
+    },
+    {
+      "bytes": 61171,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/image_diag_review/android_action02_failure01/INIT.rename-only.after.gradle.txt",
+      "sha256": "68fe2a521e6b09d78f177853fdf7ea8213a7de4156843cb04642bb131d48bad3"
+    },
+    {
+      "bytes": 3349,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-init-rename-review01/SOURCE-REVIEW.json",
+      "sha256": "31bce0ebb879c2a2b2edc941b533a65d6e63cd60c7cd2fc9367426049e475216"
+    },
+    {
+      "bytes": 12764,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/android_action_instance03/EXACT-CHANGE.json",
+      "sha256": "eed7a90417aee2ffa6f376a4131cabb63d537951099e54b5db4dbed433a396f4"
+    },
+    {
+      "bytes": 21296,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/android_action_instance03/SOURCE-DELTA.diff",
+      "sha256": "1abdcd65a5ac18b3509dfcabdcf6a0b244e8ed84f2e0d1b6f5dccdc7b7f8e150"
+    },
+    {
+      "bytes": 15435,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/android_action_instance02/ACTUAL-REVIEW.json",
+      "sha256": "dc153ec59ed5e25b3377b237001790a5e5a5a44bcfc03befc07a696236b27ba7"
+    }
+  ],
+  "new_executed_tests_or_controls": 0,
+  "reviewer": "/root/current_ledger",
+  "schema": 1,
+  "source_affinity": "Exact retainedP22; SOURCE/GRAPH/subject/eligibility hashes and two selected producer roots unchanged. No P23/Desktop overlay, test selection, dependency/ABI/identity or task-envelope change.",
+  "status": "INDEPENDENT_LITERAL_CHECKS_ONLY",
+  "subject_author": "/root/postfix_transport",
+  "subject_execution_import_AST_compilation_or_runtime_probes": false
+}

@@ -1,0 +1,216 @@
+# SOURCE ONLY: three local Git builtins; fresh <=90s phase, no writes to the retained repository.
+import fcntl, hashlib, json, os, resource, signal, stat, subprocess, sys, time
+
+REPO = "/root/projects/PassVault/passvault-publication-20260914-04"
+BASE = "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/publication04/"
+COORD_PARENT = "/root/projects/PassVault/.audit-coordination-linux-20260914-c20"
+HEAD, TREE = "832ed5f5aee56fbbf4c298ef0d2b10de154484cf", "24d4157fff0d5fcc5cb694e598f21f561d1921d4"
+CAP, RESERVE, START = 4*1024**2, 65536, time.monotonic()
+END, WORK = START+90, START+72
+CEILINGS = dict(RLIMIT_CORE=0, RLIMIT_AS=2*1024**3, RLIMIT_FSIZE=CAP, RLIMIT_CPU=90)
+CFG = ["credential.helper=", "core.askPass=", "core.hooksPath=/dev/null", "core.fsmonitor=false",
+       "gc.auto=0", "maintenance.auto=false", "commit.gpgSign=false", "tag.gpgSign=false",
+       "protocol.allow=never", "protocol.https.allow=never", "http.extraHeader=", "pack.threads=1"]
+ARGV = ["/usr/bin/git", "--no-pager", "--no-optional-locks"] + [v for c in CFG for v in ("-c", c)]
+ENV = dict(PATH="/usr/bin:/bin", LANG="C.UTF-8", LC_ALL="C.UTF-8", TZ="UTC", HOME="/dev/null",
+           XDG_CONFIG_HOME="/dev/null", TMPDIR="/dev/null", TMP="/dev/null", TEMP="/dev/null",
+           GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_SYSTEM="/dev/null", GIT_CONFIG_GLOBAL="/dev/null",
+           GIT_OPTIONAL_LOCKS="0", GIT_TERMINAL_PROMPT="0", GIT_NO_LAZY_FETCH="1",
+           GIT_NO_REPLACE_OBJECTS="1", GIT_ALLOW_PROTOCOL="", GIT_EXEC_PATH="/dev/null", GIT_DIR=REPO+"/.git")
+CANCEL, ERR, FDS, LOGS, COMMANDS, OBS = [], [], {}, {}, [], {}
+USED, DONE, READY, request = 0, False, False, None
+def need(ok, message):
+    if not ok: raise RuntimeError(message)
+def error(exc):
+    if len(ERR) < 16 and str(exc)[:240] not in ERR: ERR.append(str(exc)[:240])
+def interrupted(number, _frame):
+    if len(CANCEL) < 16: CANCEL.append(number)
+    if DONE: raise SystemExit(128+number)
+def identity(s): return [s.st_dev, s.st_ino, s.st_uid, stat.S_IMODE(s.st_mode)]
+def pin(s):
+    return dict(dev=s.st_dev, ino=s.st_ino, uid=s.st_uid, mode=s.st_mode, nlink=s.st_nlink,
+                bytes=s.st_size, mtime_ns=s.st_mtime_ns, ctime_ns=s.st_ctime_ns)
+def encoded(value): return (json.dumps(value, sort_keys=True, separators=(",", ":"))+"\n").encode()
+def object_id(kind, data): return hashlib.sha1(kind+b" "+str(len(data)).encode()+b"\0"+data).hexdigest()
+def pinned(spec):
+    with os.fdopen(os.open(spec["path"], os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK), "rb") as f:
+        s = os.fstat(f.fileno()); need(stat.S_ISREG(s.st_mode) and s.st_uid == 0 and s.st_nlink == 1 and not s.st_mode & 0o022, "unsafe input")
+        need(pin(s) == spec["pin"] and s.st_size <= 16*1024**2, "input pin/cap")
+        data = f.read(16*1024**2+1)
+        need(len(data) == s.st_size and hashlib.sha256(data).hexdigest() == spec["sha256"] and pin(os.fstat(f.fileno())) == pin(os.stat(spec["path"], follow_symlinks=False)) == spec["pin"], "input drift")
+def guard(work=True, entry=False):
+    need(time.monotonic() < (WORK if work else END) and (not work or not CANCEL), "phase deadline/cancellation")
+    with open("/proc/meminfo", "rb") as f: raw = f.read(16385)
+    need(len(raw) <= 16384, "bounded meminfo")
+    mem = {p[0]: int(p[1])*1024 for p in map(bytes.split, raw.splitlines()) if len(p) == 3 and p[0] in (b"MemAvailable:", b"MemTotal:") and p[2] == b"kB"}
+    available, total = mem[b"MemAvailable:"], mem[b"MemTotal:"]; need(0 < available <= total, "meminfo values")
+    OBS.update(current_mem_available_bytes=available, minimum_mem_available_bytes=min(OBS.get("minimum_mem_available_bytes", available), available), mem_total_bytes=total)
+    need(available >= (12 if entry else 8)*1024**3 and available*(4 if entry else 5) >= total, "RAM floor")
+    for key in ("repo", "evidence", "coordinator_parent"):
+        need(identity(os.fstat(FDS[key])) == identity(os.stat(request[key]["path"], follow_symlinks=False)) == request[key]["identity"], "original directory drift")
+        v = os.fstatvfs(FDS[key]); free = v.f_bavail*v.f_frsize
+        OBS[key+"_current_free_bytes"] = free; OBS["minimum_free_bytes"] = min(OBS.get("minimum_free_bytes", free), free)
+        need(free >= 3*1024**3, "3GiB disk floor")
+    need(pin(os.fstat(FDS["coordinator"])) == pin(os.stat(os.path.basename(request["coordinator"]["path"]), dir_fd=FDS["coordinator_parent"], follow_symlinks=False)) == request["coordinator"]["pin"], "coordinator drift")
+    for key in ("source", "python", "git"):
+        need(pin(os.stat(request[key]["path"], follow_symlinks=False)) == request[key]["pin"], "tool/source drift")
+def save(name, data, final=False):
+    global USED
+    need(USED+len(data) <= CAP-(0 if final else RESERVE), "aggregate evidence cap"); USED += len(data)
+    fd = os.open(name, os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW, 0o600, dir_fd=FDS["evidence"])
+    with os.fdopen(fd, "wb") as f:
+        need(f.write(data) == len(data), "short evidence write"); f.flush(); os.fsync(f.fileno())
+    os.fsync(FDS["evidence"]); LOGS[name] = dict(bytes=len(data), sha256=hashlib.sha256(data).hexdigest())
+def command(label, args, payload=b""):
+    p = pfd = term = None; killed = False; pipes = {}; eof = set(); buffers = [bytearray(), bytearray()]
+    row = dict(label=label, argv=ARGV+args, stdin_bytes=len(payload), stdin_sha256=hashlib.sha256(payload).hexdigest(), reaped=False, exit=None, data_complete=False)
+    COMMANDS.append(row); deadline = min(WORK, time.monotonic()+20)
+    try:
+        guard(); need(not ERR and len(payload) <= 4096, "command admission/stdin cap")
+        save(label+"-INTENT.json", encoded(dict(row, env=ENV, deadline_monotonic=deadline)))
+        p = subprocess.Popen(row["argv"], cwd=REPO, env=ENV, stdin=subprocess.PIPE if payload else subprocess.DEVNULL,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True, start_new_session=True)
+        row["pid"] = p.pid; pfd = os.pidfd_open(p.pid, 0)
+    except Exception as exc: error(exc)
+    finally:
+        if p is not None:
+            if p.stdin is not None:
+                f, p.stdin = p.stdin, None
+                try:
+                    if pfd is not None and not ERR and not CANCEL:
+                        need(time.monotonic() < deadline and len(payload) <= os.fpathconf(f.fileno(), "PC_PIPE_BUF"), "bounded stdin admission")
+                        os.set_blocking(f.fileno(), False); need(os.write(f.fileno(), payload) == len(payload), "short bounded stdin")
+                except Exception as exc: error(exc)
+                finally:
+                    try: f.close()
+                    except Exception as exc: error(exc)
+            for i, f in enumerate((p.stdout, p.stderr)):
+                try: os.set_blocking(f.fileno(), False); pipes[i] = f
+                except Exception as exc:
+                    error(exc)
+                    try: f.close()
+                    except Exception as exc: error(exc)
+            while pfd is not None and time.monotonic() < END-3:
+                now = time.monotonic()
+                if now >= deadline: error("command deadline")
+                if CANCEL or ERR:
+                    sig = None
+                    if term is None: term = now; sig = signal.SIGTERM
+                    elif now-term >= 5 and not killed: killed = True; sig = signal.SIGKILL
+                    if sig is not None:
+                        try: signal.pidfd_send_signal(pfd, sig)
+                        except ProcessLookupError: pass
+                        except Exception as exc: error(exc)
+                    if now-term >= 15: break
+                try:
+                    for i, f in list(pipes.items()):
+                        try: data = os.read(f.fileno(), 65536)
+                        except BlockingIOError: continue
+                        if not data: del pipes[i]; f.close(); eof.add(i); continue
+                        keep = data[:max(0, CAP-RESERVE-USED-sum(map(len, buffers)))]; buffers[i].extend(keep)
+                        need(len(keep) == len(data), "command aggregate output cap")
+                    dead = os.waitid(os.P_PIDFD, pfd, os.WEXITED|os.WNOHANG|os.WNOWAIT)
+                    if dead is not None and len(eof) == 2:
+                        row["exit"] = p.wait(timeout=0); row["reaped"] = True; break
+                    if not ERR and not CANCEL: guard()
+                except Exception as exc: error(exc)
+                time.sleep(0.02)
+            for f in pipes.values():
+                try: f.close()
+                except Exception as exc: error(exc)
+            if pfd is not None and not row["reaped"] and not killed:
+                killed = True
+                try: signal.pidfd_send_signal(pfd, signal.SIGKILL)
+                except ProcessLookupError: pass
+                except Exception as exc: error(exc)
+            if not row["reaped"]:
+                try: row["exit"] = p.wait(timeout=max(0, min(1, END-time.monotonic()))); row["reaped"] = True
+                except Exception as exc: error("original child settlement unknown: "+type(exc).__name__)
+            if pfd is not None:
+                try: os.close(pfd)
+                except Exception as exc: error(exc)
+        row.update(pipe_eof=len(eof), original_pidfd_captured=pfd is not None, term_attempted=term is not None, kill_attempted=killed)
+        for suffix, data in zip(("stdout.bin", "stderr.bin"), buffers):
+            try: save(label+"-"+suffix, bytes(data))
+            except Exception as exc: error(exc)
+    need(row["reaped"] and len(eof) == 2 and row["exit"] == 0 and not ERR and not CANCEL, "metadata child failed/HOLD")
+    guard(); row["data_complete"] = True; return bytes(buffers[0])
+def tree_id(node):
+    data = bytearray()
+    for name, value in sorted(node.items(), key=lambda row: row[0]+(b"/" if isinstance(row[1], dict) else b"\0")):
+        mode, oid = (b"40000", tree_id(value)) if isinstance(value, dict) else value
+        data.extend(mode+b" "+name+b"\0"+bytes.fromhex(oid))
+    return object_id(b"tree", data)
+def main():
+    global request, READY, END, WORK
+    need(len(sys.argv) == 3 and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode and not sys.flags.optimize, "fixed isolated request entry")
+    with os.fdopen(os.open(sys.argv[1], os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK), "rb") as f:
+        s = os.fstat(f.fileno()); need(stat.S_ISREG(s.st_mode) and s.st_uid == 0 and s.st_nlink == 1 and stat.S_IMODE(s.st_mode) == 0o600 and s.st_size <= 65536, "private request")
+        raw = f.read(65537); need(pin(os.fstat(f.fileno())) == pin(os.stat(sys.argv[1], follow_symlinks=False)) == pin(s), "request drift")
+    need(len(raw) <= 65536 and hashlib.sha256(raw).hexdigest() == sys.argv[2], "request hash"); request = json.loads(raw)
+    phase = request["phase"]
+    need(0 < phase["deadline_monotonic"]-phase["start_monotonic"] <= 90 and phase["start_monotonic"] <= START < phase["deadline_monotonic"], "original new phase clock")
+    END = min(END, phase["deadline_monotonic"]); WORK = END-18
+    review = request["independent_review_sha256"]
+    need(request["schema"] == 1 and request["new_90s_phase"] is True and request["exclusive_no_helper_or_reaper"] is True and len(review) == 64 and set(review) <= set("0123456789abcdef") and review != "0"*64, "fresh independent admission")
+    need(request["repo"] == dict(path=REPO, identity=[23,250699,0,0o700]) and request["git"]["path"] == "/usr/bin/git" and request["git"]["sha256"] == "2a8c18fbf43da9f692d75474c72bea9dfd796c260b0f3dfe456376abc3bbd668", "fixed retained repo/Git")
+    need(request["python"]["path"] == "/usr/bin/python3.12" and request["python"]["sha256"] == "1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118", "fixed Python")
+    for key in ("source", "python", "git", "coordinator"): pinned(request[key])
+    need(os.path.abspath(__file__) == request["source"]["path"] and pin(os.stat("/proc/self/exe")) == request["python"]["pin"], "running source/Python")
+    limits = request["inherited_limits"]
+    need(set(limits) == set(CEILINGS) and all(len(v) == 2 and all(type(n) is int for n in v) and 0 <= v[0] <= v[1] <= CEILINGS[k] and (k == "RLIMIT_CORE" or v[0] > 0) for k, v in limits.items()), "four finite admitted limit pairs")
+    need({k: list(resource.getrlimit(getattr(resource, k))) for k in CEILINGS} == limits, "inherited own-tool limits")
+    path = request["evidence"]["path"]
+    need(path.startswith(BASE) and path != BASE and path == os.path.normpath(path) == os.path.realpath(path), "canonical rooted evidence path")
+    parent = request["coordinator_parent"]; need(parent == dict(path=COORD_PARENT, identity=[23,534,0,0o700]) and parent["path"] == os.path.realpath(parent["path"]), "original coordinator parent")
+    c = request["coordinator"]; need(c["path"] == os.path.abspath(c["path"]) == os.path.realpath(c["path"]) and os.path.dirname(c["path"]) == parent["path"] and c["pin"]["mode"] == (stat.S_IFREG|0o600) and c["pin"]["bytes"] == 0, "original empty private coordinator")
+    for key in ("repo", "evidence", "coordinator_parent"):
+        FDS[key] = os.open(request[key]["path"], os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+        need(identity(os.fstat(FDS[key])) == request[key]["identity"] and request[key]["identity"][2:] == [0,0o700], "original private directory")
+    need(not os.listdir(FDS["evidence"]), "fresh empty evidence")
+    FDS["coordinator"] = os.open(os.path.basename(c["path"]), os.O_RDWR|os.O_NOFOLLOW|os.O_NONBLOCK, dir_fd=FDS["coordinator_parent"])
+    need(pin(os.fstat(FDS["coordinator"])) == c["pin"], "opened original coordinator")
+    fcntl.flock(FDS["coordinator"], fcntl.LOCK_EX|fcntl.LOCK_NB); guard(entry=True); READY = True
+    save("INTENT.json", encoded(dict(request_sha256=sys.argv[2], phase_seconds=90, expected_head=HEAD, expected_tree=TREE, read_only=True, resources=dict(OBS))))
+    commit = command("01", ["cat-file", "commit", "HEAD"]); headers = commit.split(b"\n\n", 1)[0].splitlines()
+    need(object_id(b"commit", commit) == HEAD and [h for h in headers if h.startswith(b"tree ")] == [b"tree "+TREE.encode()], "HEAD commit/tree mismatch")
+    raw_tree = command("02", ["ls-tree", "-r", "-z", "HEAD"]); need(raw_tree.endswith(b"\0"), "complete NUL tree")
+    entry_count, workflows, root = 0, [], {}
+    for item in raw_tree[:-1].split(b"\0"):
+        info, path = item.split(b"\t", 1); mode, kind, oid = info.split(b" "); parts = path.split(b"/")
+        entry_count += 1; need(entry_count <= 20000, "leaf entry count cap")
+        need(mode in (b"100644",b"100755",b"120000",b"160000") and kind == (b"commit" if mode == b"160000" else b"blob") and len(oid) == 40 and all(c in b"0123456789abcdef" for c in oid) and all(c not in (b"",b".",b"..") for c in parts), "tree record")
+        cursor = root
+        for part in parts[:-1]: cursor = cursor.setdefault(part, {}); need(isinstance(cursor, dict), "tree prefix collision")
+        need(parts[-1] not in cursor, "duplicate tree path"); cursor[parts[-1]] = (mode, oid.decode())
+        if path.startswith(b".github/workflows/"):
+            need(kind == b"blob", "nonblob workflow entry"); workflows.append(dict(mode=mode.decode(), type=kind.decode(), oid=oid.decode(), path=path.decode("utf-8")))
+    need(tree_id(root) == TREE, "complete expected tree reconstruction")
+    oids = list(dict.fromkeys(row["oid"] for row in workflows)); need(len(oids) <= 64, "workflow blob count")
+    batch = command("03", ["cat-file", "--batch"], b"".join(oid.encode()+b"\n" for oid in oids)); offset, blobs = 0, {}
+    for oid in oids:
+        end = batch.index(b"\n", offset); h = batch[offset:end].split(b" "); need(len(h) == 3 and h[:2] == [oid.encode(),b"blob"] and h[2].isdigit(), "exact batch header")
+        size = int(h[2]); start = end+1; body = batch[start:start+size]; offset = start+size+1
+        need(len(body) == size and batch[offset-1:offset] == b"\n" and object_id(b"blob", body) == oid, "batch body identity")
+        blobs[oid] = dict(bytes=size, stdout_offset=start, sha256=hashlib.sha256(body).hexdigest())
+    need(offset == len(batch), "unexpected batch tail"); guard()
+    save("METADATA.json", encoded(dict(commit=dict(oid=HEAD, tree=TREE, parents=[h[7:].decode() for h in headers if h.startswith(b"parent ")]), tree=dict(oid=TREE, leaf_count=entry_count, raw_stdout="02-stdout.bin", raw_descriptor=LOGS["02-stdout.bin"]), workflows=workflows, workflow_blobs=blobs))); guard()
+
+if __name__ == "__main__":
+    os.umask(0o077)
+    for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP): signal.signal(sig, interrupted)
+    signal.signal(signal.SIGCHLD, signal.SIG_DFL); signal.pthread_sigmask(signal.SIG_SETMASK, [])
+    try: main()
+    except Exception as exc: error(exc)
+    result = dict(status="DATA_COMPLETE" if len(COMMANDS) == 3 and not ERR and not CANCEL else "FAILED_OR_HOLD", errors=ERR, signals=CANCEL, commands=COMMANDS, outputs=dict(LOGS), resources=dict(OBS), preterminal=True, elapsed_seconds=time.monotonic()-START, product_cases=0)
+    try:
+        if READY: save("RESULT.json", encoded(result), final=True); guard(False)
+    except Exception as exc: error(exc)
+    for fd in reversed(list(FDS.values())):
+        try: os.close(fd)
+        except Exception as exc: error(exc)
+    DONE = True
+    if time.monotonic() >= END: error("terminal phase deadline")
+    ok = result["status"] == "DATA_COMPLETE" and not ERR and not CANCEL
+    print(json.dumps(dict(status="SUPERVISOR_COMPLETED" if ok else "FAILED_OR_HOLD", errors=ERR, signals=CANCEL, resources=OBS, elapsed_seconds=time.monotonic()-START)))
+    raise SystemExit(0 if ok and not CANCEL else 1)

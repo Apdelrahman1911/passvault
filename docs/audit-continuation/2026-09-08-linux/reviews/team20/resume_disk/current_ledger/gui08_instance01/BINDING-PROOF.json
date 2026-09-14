@@ -1,0 +1,177 @@
+{
+  "accepted_composition_manifest": {
+    "bytes": 3821,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui08_three_case01/MANIFEST.json",
+    "sha256": "7bfdb0c1707a33460628e8e0db0fdc34cf8ef245806eb4be9d008c02dccc7031"
+  },
+  "accepted_composition_review": {
+    "bytes": 16746,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/remaining_report/gui08_three_case01/SOURCE-REVIEW.json",
+    "sha256": "f190b21db17ad99661f89bee937e98c504e6d68f606e7732c9e6b8fd644fbda2"
+  },
+  "author": "/root/current_ledger",
+  "canonical_ledgers_modified": false,
+  "controls_installed": false,
+  "exact_literal_changes": {
+    "INNER.py": {
+      "after_bytes": 104882,
+      "after_sha256": "b0ebfd49b23b9172bf2ac0e0acb3d90f4cdb3994d5a7fac900019004d8528438",
+      "before_bytes": 104814,
+      "before_sha256": "2e7764b90b84591b7651e3a85025c4bb5805478464c3cfa43d75fbf0670a42db",
+      "forward_and_reverse_exact": true,
+      "literal_operations": [
+        {
+          "after": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui08-instance01",
+          "before": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui08_three_case01",
+          "occurrences": 3
+        },
+        {
+          "after": "PROSPECTIVE_ADMISSION_BOUND = True  # Root-selected prospective literals only; exact request review and late admission still required.",
+          "before": "PROSPECTIVE_ADMISSION_BOUND = False  # Source proposal only; root must independently bind a NEW instance.",
+          "occurrences": 1
+        },
+        {
+          "after": "PANEL_ROUTE_ADMITTED = True  # Root-selected unchanged foreground panel route; not execution authority.",
+          "before": "PANEL_ROUTE_ADMITTED = False  # No inherited route/instance election.",
+          "occurrences": 1
+        },
+        {
+          "after": "RESOURCE_POLICY = 'GUI08_12GiB_ENTRY_3GiB_RUNNING_3GiB_PRIVATE_256MiB_DISK_512MiB_RAM_V1'",
+          "before": "RESOURCE_POLICY = 'UNBOUND_GUI8_RESOURCE_POLICY'",
+          "occurrences": 1
+        }
+      ]
+    },
+    "OUTER.py": {
+      "after_bytes": 106399,
+      "after_sha256": "1d7a0341bf961d0223769629595ccf1349d5395c61b3757a67a5d26ce41ddc3b",
+      "before_bytes": 105949,
+      "before_sha256": "db190e4665535c6eefd63c4bf0b6668397c3c926a48f373aa5bcef7595b8b928",
+      "forward_and_reverse_exact": true,
+      "literal_operations": [
+        {
+          "after": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui08-instance01",
+          "before": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui08_three_case01",
+          "occurrences": 4
+        },
+        {
+          "after": "REQUEST = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui08-instance01/REQUEST.json')",
+          "before": "REQUEST = B / 'requests/LINUX-DESKTOP-INTEGRATION-08-PENDING.json'",
+          "occurrences": 1
+        },
+        {
+          "after": "APPROVAL = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui08-instance01/APPROVAL.json')",
+          "before": "APPROVAL = B / 'reviews/desktop-integration08-outer/INSTANCE-ACCEPT-PENDING.json'",
+          "occurrences": 1
+        },
+        {
+          "after": "LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260914-c20/build.lock')",
+          "before": "LOCK = Path('/root/projects/PassVault/UNBOUND_GUI8_COORDINATION/build.lock')",
+          "occurrences": 1
+        },
+        {
+          "after": "# Root selected these prospective literals; fresh facts, exact review and late admission remain required.\n# No allocation, tool capture, runtime custody or current lock/device identity is claimed here.\n# P23 content selection remains exact; root selected the original raw-OID store below.",
+          "before": "# GUI/tool/directory/lock/store identities and resource reservations are intentionally UNBOUND.\n# Candidate paths below are source placeholders only; no allocation or custody is claimed.\n# P23 content selection remains exact; root must bind a permitted original raw-OID store.",
+          "occurrences": 1
+        },
+        {
+          "after": "GITDIR = Path('/root/projects/PassVault/passvault-publication-20260913-03/.git')",
+          "before": "GITDIR = Path('/root/projects/PassVault/UNBOUND_GUI8_SOURCE_STORE/.git')",
+          "occurrences": 1
+        },
+        {
+          "after": "PROSPECTIVE_ADMISSION_BOUND = True  # Root-selected prospective literals only; exact request review and late admission still required.",
+          "before": "PROSPECTIVE_ADMISSION_BOUND = False  # Root must bind/review a NEW instance, never adopt old HOLDs.",
+          "occurrences": 1
+        },
+        {
+          "after": "CLEANUP_DISK_RESERVE_BYTES, CLEANUP_RAM_RESERVE_BYTES = 268435456, 536870912  # Root-selected prospective reserves; fresh capacity still required.",
+          "before": "CLEANUP_DISK_RESERVE_BYTES = CLEANUP_RAM_RESERVE_BYTES = None  # Fresh root reservation/election required.",
+          "occurrences": 1
+        },
+        {
+          "after": "RESOURCE_POLICY = 'GUI08_12GiB_ENTRY_3GiB_RUNNING_3GiB_PRIVATE_256MiB_DISK_512MiB_RAM_V1'",
+          "before": "RESOURCE_POLICY = 'UNBOUND_GUI8_RESOURCE_POLICY'",
+          "occurrences": 1
+        },
+        {
+          "after": "DEVICE = {'directory_device': 23, 'regular_file_device': 24}  # Selected DATA literals only; root must verify fresh facts before approval.",
+          "before": "DEVICE = None  # No historical device identity is execution authority for this proposal.",
+          "occurrences": 1
+        },
+        {
+          "after": "EXPECTED_LOCK = {'bytes': 0, 'ctime_ns': 1789367939912132665, 'dev': 24, 'ino': 13719326, 'mode': 33152, 'mtime_ns': 1789367939912132665, 'nlink': 1, 'uid': 0}  # Selected DATA literals only; no inherited lock custody.",
+          "before": "EXPECTED_LOCK = None  # Fresh original custody/pin must be supplied and independently admitted.",
+          "occurrences": 1
+        },
+        {
+          "after": "approval['reviewer'] == '/root/remaining_report'",
+          "before": "approval['reviewer'] == '/root/image_diag_review'",
+          "occurrences": 1
+        },
+        {
+          "after": "INNER: 'b0ebfd49b23b9172bf2ac0e0acb3d90f4cdb3994d5a7fac900019004d8528438'",
+          "before": "INNER: '2e7764b90b84591b7651e3a85025c4bb5805478464c3cfa43d75fbf0670a42db'",
+          "occurrences": 1
+        }
+      ]
+    }
+  },
+  "execution_or_cleanup_admission": false,
+  "fresh_facts_authored_or_observed": false,
+  "identity_qualification": "Root explicitly selected only device_model/lock DATA values from this editor request. No transferred freshness, custody, approval, admission, scheduling or cleanup authority.",
+  "new_cases_findings_fixes_closures": 0,
+  "operations": "Named retained SOURCE/DATA reads, standard-library hashes/JSON/literal substitutions and reverse comparison; own new source/doc leaves only. No Git/network/tool/runtime/HOLD/process/resource/SDK probes, allocation of execution scope, signals, deletion or publication.",
+  "request_authored": false,
+  "root_selected": {
+    "DEVICE": {
+      "directory_device": 23,
+      "regular_file_device": 24
+    },
+    "E": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration08",
+    "EXPECTED_LOCK": {
+      "bytes": 0,
+      "ctime_ns": 1789367939912132665,
+      "dev": 24,
+      "ino": 13719326,
+      "mode": 33152,
+      "mtime_ns": 1789367939912132665,
+      "nlink": 1,
+      "uid": 0
+    },
+    "G": "/tmp/passvault-desktop-integration08",
+    "GITDIR": "/root/projects/PassVault/passvault-publication-20260913-03/.git",
+    "G_scope": "PRIVATE_ORIGINAL_NAMESPACE_ONLY",
+    "LOCK": "/root/projects/PassVault/.audit-coordination-linux-20260914-c20/build.lock",
+    "PANEL_ROUTE_ADMITTED": true,
+    "PROSPECTIVE_ADMISSION_BOUND_both": true,
+    "Q": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui08-instance01",
+    "R": "/root/projects/PassVault/audit-runtime-linux-desktop-integration08",
+    "booleans_are_not_execution_authority": true,
+    "cleanup_disk_reserve_bytes": 268435456,
+    "cleanup_ram_reserve_bytes": 536870912,
+    "resource_policy": "GUI08_12GiB_ENTRY_3GiB_RUNNING_3GiB_PRIVATE_256MiB_DISK_512MiB_RAM_V1",
+    "reviewer": "/root/remaining_report"
+  },
+  "schema": "passvault.gui08-instance01-binding-source-proof.v1",
+  "selected_identity_literal_basis": {
+    "bytes": 18251,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/editor-save-instance01/REQUEST.json",
+    "sha256": "6be511c4eed9869c4b747c72614464641add5bfd5b45e2d5cbfa59461f09a952"
+  },
+  "status": "ROOT_SELECTED_SOURCE_BINDINGS_ONLY_PENDING_FRESH_FACTS_GENUINE_APPROVAL_AND_LATE_ADMISSION",
+  "unchanged_controls": [
+    {
+      "bytes": 10978,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui08_three_case01/INIT.gradle",
+      "sha256": "e380c6371878b47fb1848bf03001c1877f20a8ea8aceff981efaa121f6a7806a"
+    },
+    {
+      "bytes": 91370,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui08_three_case01/CredentialMainNavHostRoomIntegrationTest.kt",
+      "sha256": "ec28c00aa71fb7c3db26c0e2fb5c68d80b2e0f658e562164e046a1dbef44a4c5"
+    }
+  ],
+  "unchanged_source_affinity": "Both complete SOURCE_BINDING/SOURCE_OVERLAY literal spans are identical to accepted GUI08. No changes except enumerated literals/comments/crosspin; exact forward and reverse reconstruction. No AST, import, eval, syntax check, compilation or target execution.",
+  "unchanged_tests_and_runtime_contracts": "INIT/fixture byte-identical; R/E/G, three selections,25images/19inputs/five approval keys,14host assertions/five evidence groups, foreground panel route, deadlines/thresholds/stop/scanner/raw transport/native/evidence/removal contracts unchanged. Reviewer literal is the only changed function-body literal."
+}

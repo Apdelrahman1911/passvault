@@ -1,0 +1,81 @@
+{
+  "schema": "passvault-gui07-bound-instance-independent-cleanup-resource-delta-review-v1",
+  "reviewer": "/root/image_cleanup_prep",
+  "binding_author_execution_owner": "/root",
+  "genuine_full_instance_reviewer": "/root/remaining_report",
+  "status": "ACCEPT_EXACT_BINDING_CLEANUP_RESOURCE_ASPECT_ONLY_NO_EXECUTION_ADMISSION",
+  "inputs": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-instance01/OUTER.py",
+      "bytes": 101635,
+      "sha256": "43a7024ecab49bdada82cd721c6b21043e69c61f66b9f8853d85cd66b88d9046"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-instance01/INNER.py",
+      "bytes": 103599,
+      "sha256": "0421b417096ebeed075e79e9cb01f099e375c2bded88d6f8852a6e4e551d22f5"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-instance01/CONTEXT.json",
+      "bytes": 4378,
+      "sha256": "bb564fcafbcc5ed09fbae96c0ad2bd7e42151219159994d480e52fe578e7923e"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-instance01/HOST-CUSTODY.json",
+      "bytes": 2110,
+      "sha256": "7148633bbe25c5f0e513e9b9a5f2de838730bf8ca2dcfb3ee3ea6866c1994d4f"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-instance01/REQUEST.json",
+      "bytes": 20851,
+      "sha256": "adb7b27f4ea449834e13f76df074ab87124574a7fcfa038fbd0926c1c60aa709"
+    }
+  ],
+  "reused_source_baselines": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor02/OUTER.py",
+      "bytes": 101209,
+      "sha256": "f7a1e8edb3b933d3e2f831e1a59f99a35de515e8b583de61298ecdf4b60cda05"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor02/INNER.py",
+      "bytes": 103569,
+      "sha256": "08c135db5eb9d5bee3593a35b15e20c690b1eb332bdceb824be2a9ed62a223a2"
+    }
+  ],
+  "literal_delta": "Independently generated/read complete before-to-bound OUTER6877B/b8c37ab2bfb054ca69ae292c48246e990be7f63127d8e2b34b1573df5adba2bb and INNER2597B/aaaa666b7df8aed1f32b382d896192bc62aa57c922043a07f9cd887c3512b2b4 text differences. Only named controls/approval/store/lock/device,binding flags,policy/reserves,inner crosspin and genuine reviewer string change. V5screen,normal/worksignal disposal and all remaining lifecycle/resource bodies are byte-identical. No repeated broad implementation review or helper execution.",
+  "resource_review": {
+    "entry_bytes": 7918845952,
+    "running_bytes": 3221225472,
+    "runtime_sampled_cap_bytes": 3221225472,
+    "outside_budget_bytes": 268435456,
+    "slack_bytes": 1207959552,
+    "equation": "7.375GiB entry =3GiB running +3GiB sampled private-runtime cap +256MiB outside budget +1.125GiB slack; not a global threshold waiver or hard filesystem quota.",
+    "root_explicit_cleanup_disk_floor_bytes": 536870912,
+    "root_explicit_cleanup_ram_floor_bytes": 1073741824,
+    "cleanup_max_seconds": 750,
+    "recorded_point": {
+      "MemAvailable": 32363872256,
+      "MemTotal": 33666850816,
+      "available_disk_bytes": 17872453632
+    },
+    "entry_disk_margin_bytes": 9953607680,
+    "entry_ram_fraction_required": 0.25,
+    "running_ram_fraction_required": 0.2,
+    "qualification": "Point and exact numerical policy agree across context/custody/request and bound source. Fresh entry guard runs before allocation; normalwork continues3GiB/20% checks and sampled3GiB R cap. Cleanup-only floors are elected512MiB/1GiB, checked at entry and every5s while every item retains deadline/epoch/lock checks. Samples are not reservations, peak-growth/hard-stall guarantees or unrelated-process attribution. Later source-only work does not waive guards."
+  },
+  "cleanup_challenges": [
+    "OUTER1324 rejects any existing R or E before exclusive new allocations. R/E remain only new07 paths; allowed top names,workers/private subpaths and source.oids/source.blobs are unchanged. Removal opens originalR only, takes a complete bounded snapshot before deletion, requires root-owned expected device/single-link regular files or directories and no symlinks; then rechecks original descriptor/name identity deepest-first.",
+    "No-runtime-mount guard runs before inventory and immediately before first unlink. Selected generated-report/source conservation is verified before first unlink and after cleanup; retained E is never the deletion root. Original R must become empty,name absent and original descriptor nlink0. Unknown/partial failure stays HOLD without automatic retry.",
+    "Normal cleanup still requires original inner stop/child/namespace/helper settlement,evidence and source-after safety. PreGUI work-signal cleanup is separate: only original signal1/2/15,inner1,one prepare+prepare-stop phase,stop successful,unforced original child settlement,no GUI/render/helpers/tray owners,source-before plus preserved evidence and explicit original-copy disposition. It does not turn cancellation into validation success.",
+    "Cleanup intake gives no unlink authority by itself. Only after complete lifecycle/evidence/custody checks does disposal_authorized become true. Saved signal epoch/reasons,original lock fd/name and absolute deadline must remain stable. Second signal,unknown host/identity/mount/evidence failure or outer forced kill refuses; no historical namespace,terminalUNKNOWN,oldHOLD or other-runtime ownership is promoted."
+  ],
+  "coordination_qualification": "Request/context original lock fields agree (regular device24/inode13719326,parent23/534). Root separately reported same-original-lock=True in original tool72f80a; this lane made no live lock/tool/process or custody probe. Root remains sole build/test/Git/CI/cleanup owner. Source-store readonly consumer and last-operation settlement are independently handled by remaining_report; no old store cleanup/recovery permission follows.",
+  "reused_actuals_not_retested": "Root accepted GUI07V5 transplant and prior12V4fake,7V5fake,oneLinuxkernelcontract and3filesystem/self-signal component actuals remain separate. Three disposal components have simulated upstream lifecycle/custody and are not wholeGUI cancellation proof.",
+  "blocking_findings": [],
+  "remaining": "Genuine full-instance review/approval,root quiet-window/resource recheck and original eventual terminal/raw outcomes/cleanup reconciliation remain. No currentR allocation,Gradle stop,hardware result,editor amendment validation or family closure is claimed.",
+  "activities": "Named safe source/DATA reads,re-hashes,complete literal binding diffs,focused unchanged resource/removal path reading and numeric/request equality;own-report write only. No import/AST/compile/build/test,tool/process/runtime/HOLD/store/SDK probe,Git/network,signal,deletion or retry.",
+  "new_tests_or_closures": 0,
+  "owned_workers_or_cleanup_duties": [],
+  "restrictions": "AllPVU007STOP/PVU011NO-RETRY/PVA029failure-noautomaticretry/G7-G8CLOSED/oldHOLD-UNKNOWN/refusals/protectedrefs-tags-mobile1017001/ownerPVDlimits unchanged."
+}

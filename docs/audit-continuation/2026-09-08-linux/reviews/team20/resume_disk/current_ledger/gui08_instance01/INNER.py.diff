@@ -1,0 +1,34 @@
+--- accepted/INNER.py
++++ gui08-instance01/INNER.py
+@@ -30,9 +30,9 @@
+ R = Path('/root/projects/PassVault/audit-runtime-linux-desktop-integration08')
+ E = B / 'runs/linux-desktop-integration08'
+ CHECKOUT = R / 'checkout'
+-SELF, INIT = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui08_three_case01/INNER.py'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui08_three_case01/INIT.gradle')
++SELF, INIT = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui08-instance01/INNER.py'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui08-instance01/INIT.gradle')
+ SOURCE = B / 'reviews/checkpoint23/source-prepare01/SOURCE.json'
+-DIAGNOSTIC = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui08_three_case01/CredentialMainNavHostRoomIntegrationTest.kt')
++DIAGNOSTIC = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui08-instance01/CredentialMainNavHostRoomIntegrationTest.kt')
+ JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64')
+ XVFB, XAUTH, WM, DBUS = (Path('/usr/bin/' + n) for n in ('Xvfb', 'xauth', 'xfwm4', 'dbus-daemon'))
+ MOUNT, IP, XDPYINFO, XPROP = (Path('/usr/bin/' + n) for n in ('mount', 'ip', 'xdpyinfo', 'xprop'))
+@@ -57,8 +57,8 @@
+     ('/plugins/plugin-6', 'string', 'systray', False),
+     ('/plugins/plugin-6/square-icons', 'bool', 'true', False),
+ )
+-PROSPECTIVE_ADMISSION_BOUND = False  # Source proposal only; root must independently bind a NEW instance.
+-PANEL_ROUTE_ADMITTED = False  # No inherited route/instance election.
++PROSPECTIVE_ADMISSION_BOUND = True  # Root-selected prospective literals only; exact request review and late admission still required.
++PANEL_ROUTE_ADMITTED = True  # Root-selected unchanged foreground panel route; not execution authority.
+ INPUTS = (SELF, INIT, SOURCE, DIAGNOSTIC, JAVA / 'bin/java', JAVA / 'release',
+           XVFB, XAUTH, WM, DBUS, XFCONF, MOUNT, IP, XDPYINFO, XPROP, PANEL, SYSTRAY, WRAPPER, QUERY)
+ # Bind only root's independently accepted shared checkpoint23 SOURCE; do not recapture it.
+@@ -101,7 +101,7 @@
+            'git_blob': 'a8895db34f68cf10b7795079c433c9ef283d4cba'},
+  'scope': 'Exactly one pinned libs.lifecycle.viewmodel implementation line in desktopTest only; no version or '
+           'production-runtime change'}
+-RESOURCE_POLICY = 'UNBOUND_GUI8_RESOURCE_POLICY'
++RESOURCE_POLICY = 'GUI08_12GiB_ENTRY_3GiB_RUNNING_3GiB_PRIVATE_256MiB_DISK_512MiB_RAM_V1'
+ DISPOSAL_POLICY_ID = 'GUI8_ORIGINAL_PRE_GUI_CANCELLED_COPY_ONLY_V1'
+ RUN_ID = 'linux-desktop-integration08'
+ FROZEN = {

@@ -1,0 +1,342 @@
+Picked up JAVA_TOOL_OPTIONS: -XX:-UsePerfData -XX:ActiveProcessorCount=1 -Duser.home=/Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/home -Djava.io.tmpdir=/Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/tmp -Djna.tmpdir=/Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/tmp
+Fetching distribution.
+Downloading https://services.gradle.org/distributions/gradle-9.7.1-bin.zip
+..............10%..............20%...............30%..............40%...............50%..............60%...............70%..............80%..............90%...............100%
+
+Welcome to Gradle 9.7.1!
+
+Here are the highlights of this release:
+ - Isolated Projects graduates to incubating
+ - Broader Configuration Cache compatibility
+ - Resilient Sync helps you fix broken builds
+ - More source locations in problem reports
+
+For more details see https://docs.gradle.org/9.7.1/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :shared
+w: ⚠️ Native task 'iosSimulatorArm64Test' is disabled
+Task 'iosSimulatorArm64Test' for target 'ios_simulator_arm64' cannot run on the current host (macos-x86_64).
+Reason: architecture mismatch - target requires ARM64, current host is X64
+Solution: To suppress this warning, add 'kotlin.native.ignoreDisabledTargets=true' to gradle.properties.
+
+w: ⚠️ Deprecated Kotlin/Native Host
+The current host platform 'macos_x64' is deprecated and will be removed in a future Kotlin release. The Kotlin/Native compiler will no longer be distributed for this host.
+Solution: Migrate your build to a non-deprecated supported host platform for Kotlin/Native.
+Learn more about Kotlin/Native target support and migration: https://kotl.in/native-targets-tiers
+
+PVA010_JNA_GRAPH_TASKS=297
+
+> Task :app-desktop:checkDesktopMainComposeLibrariesCompatibility
+> Task :app-desktop:kmpPartiallyResolvedDependenciesChecker
+> Task :app-desktop:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app-desktop:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :app-desktop:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :app-desktop:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :app-desktop:generateResourceAccessorsForCommonMain SKIPPED
+> Task :app-desktop:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :app-desktop:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :app-desktop:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :app-desktop:generateResourceAccessorsForDesktopMain SKIPPED
+> Task :app-desktop:generateActualResourceCollectorsForDesktopMain SKIPPED
+> Task :app-desktop:generateComposeResClass SKIPPED
+> Task :app-desktop:generateExpectResourceCollectorsForCommonMain SKIPPED
+> Task :shared:checkDesktopMainComposeLibrariesCompatibility
+> Task :shared:kmpPartiallyResolvedDependenciesChecker
+> Task :shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :shared:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :shared:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :shared:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :shared:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :shared:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :shared:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :shared:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :shared:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :shared:generateActualResourceCollectorsForDesktopMain
+> Task :shared:generateComposeResClass
+> Task :shared:generateExpectResourceCollectorsForCommonMain
+> Task :core:crypto:kmpPartiallyResolvedDependenciesChecker
+> Task :core:crypto:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:crypto:compileKotlinDesktop
+> Task :core:crypto:compileDesktopMainJava NO-SOURCE
+> Task :core:crypto:desktopProcessResources NO-SOURCE
+> Task :core:crypto:processDesktopMainResources SKIPPED
+> Task :core:crypto:desktopMainClasses
+> Task :core:crypto:desktopJar
+> Task :core:database:kmpPartiallyResolvedDependenciesChecker
+> Task :core:database:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:domain:kmpPartiallyResolvedDependenciesChecker
+> Task :core:domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:domain:compileKotlinDesktop
+> Task :core:domain:compileDesktopMainJava NO-SOURCE
+> Task :core:domain:desktopProcessResources NO-SOURCE
+> Task :core:domain:processDesktopMainResources SKIPPED
+> Task :core:domain:desktopMainClasses
+> Task :core:domain:desktopJar
+> Task :core:security:kmpPartiallyResolvedDependenciesChecker
+> Task :core:security:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:security:compileKotlinDesktop
+> Task :core:security:compileDesktopMainJava NO-SOURCE
+> Task :core:security:desktopProcessResources NO-SOURCE
+> Task :core:security:processDesktopMainResources SKIPPED
+> Task :core:security:desktopMainClasses
+> Task :core:security:desktopJar
+> Task :core:database:kspKotlinDesktop
+
+> Task :core:database:compileKotlinDesktop
+w: file:///Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/checkout/core/database/build/generated/ksp/desktop/desktopMain/kotlin/com/passvault/core/database/AppDatabaseConstructor.kt:5:8 'expect'/'actual' classes (including interfaces, objects, annotations, enums, and 'actual' typealiases) are in Beta. Consider using the '-Xexpect-actual-classes' flag to suppress this warning. Also see: https://youtrack.jetbrains.com/issue/KT-61573
+
+> Task :core:database:copyRoomSchemas NO-SOURCE
+> Task :core:database:compileDesktopMainJava NO-SOURCE
+> Task :core:database:desktopProcessResources NO-SOURCE
+> Task :core:database:processDesktopMainResources SKIPPED
+> Task :core:database:desktopMainClasses
+> Task :core:database:desktopJar
+> Task :core:designsystem:checkDesktopMainComposeLibrariesCompatibility
+> Task :core:designsystem:kmpPartiallyResolvedDependenciesChecker
+> Task :core:designsystem:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:designsystem:convertXmlValueResourcesForCommonMain
+> Task :core:designsystem:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :core:designsystem:prepareComposeResourcesTaskForCommonMain
+> Task :core:designsystem:generateResourceAccessorsForCommonMain
+> Task :core:designsystem:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :core:designsystem:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :core:designsystem:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :core:designsystem:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :core:designsystem:generateActualResourceCollectorsForDesktopMain
+> Task :core:designsystem:generateComposeResClass
+> Task :core:designsystem:generateExpectResourceCollectorsForCommonMain
+> Task :core:designsystem:compileKotlinDesktop
+> Task :core:designsystem:compileDesktopMainJava NO-SOURCE
+> Task :core:designsystem:assembleDesktopMainResources
+> Task :core:designsystem:desktopProcessResources
+> Task :core:designsystem:processDesktopMainResources SKIPPED
+> Task :core:designsystem:desktopMainClasses
+> Task :core:designsystem:desktopJar
+> Task :core:navigation:kmpPartiallyResolvedDependenciesChecker
+> Task :core:navigation:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:navigation:compileKotlinJvm
+> Task :core:navigation:compileJvmMainJava NO-SOURCE
+> Task :core:navigation:jvmProcessResources NO-SOURCE
+> Task :core:navigation:processJvmMainResources SKIPPED
+> Task :core:navigation:jvmMainClasses
+> Task :core:navigation:jvmJar
+> Task :core:otp:kmpPartiallyResolvedDependenciesChecker
+> Task :core:otp:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:otp:compileKotlinDesktop
+> Task :core:otp:compileDesktopMainJava NO-SOURCE
+> Task :core:otp:desktopProcessResources NO-SOURCE
+> Task :core:otp:processDesktopMainResources SKIPPED
+> Task :core:otp:desktopMainClasses
+> Task :core:otp:desktopJar
+> Task :feature:backup:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:backup:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:backup:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:backup:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:backup:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:backup:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:backup:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:backup:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:backup:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:backup:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:backup:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:backup:generateActualResourceCollectorsForDesktopMain
+> Task :feature:backup:generateComposeResClass
+> Task :feature:backup:generateExpectResourceCollectorsForCommonMain
+> Task :feature:backup:compileKotlinDesktop
+> Task :feature:backup:compileDesktopMainJava NO-SOURCE
+> Task :feature:backup:assembleDesktopMainResources
+> Task :feature:backup:desktopProcessResources
+> Task :feature:backup:processDesktopMainResources SKIPPED
+> Task :feature:backup:desktopMainClasses
+> Task :feature:backup:desktopJar
+> Task :feature:credential:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:credential:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:credential:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:credential:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:credential:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:credential:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:credential:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:credential:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:credential:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:credential:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:credential:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:credential:generateActualResourceCollectorsForDesktopMain
+> Task :feature:credential:generateComposeResClass
+> Task :feature:credential:generateExpectResourceCollectorsForCommonMain
+> Task :feature:credential:compileKotlinDesktop
+> Task :feature:credential:compileDesktopMainJava NO-SOURCE
+> Task :feature:credential:assembleDesktopMainResources
+> Task :feature:credential:desktopProcessResources
+> Task :feature:credential:processDesktopMainResources SKIPPED
+> Task :feature:credential:desktopMainClasses
+> Task :feature:credential:desktopJar
+> Task :feature:generator:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:generator:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:generator:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:generator:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:generator:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:generator:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:generator:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:generator:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:generator:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:generator:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:generator:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:generator:generateActualResourceCollectorsForDesktopMain
+> Task :feature:generator:generateComposeResClass
+> Task :feature:generator:generateExpectResourceCollectorsForCommonMain
+> Task :feature:generator:compileKotlinDesktop
+> Task :feature:generator:compileDesktopMainJava NO-SOURCE
+> Task :feature:generator:assembleDesktopMainResources
+> Task :feature:generator:desktopProcessResources
+> Task :feature:generator:processDesktopMainResources SKIPPED
+> Task :feature:generator:desktopMainClasses
+> Task :feature:generator:desktopJar
+> Task :feature:health:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:health:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:health:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:health:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:health:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:health:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:health:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:health:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:health:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:health:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:health:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:health:generateActualResourceCollectorsForDesktopMain
+> Task :feature:health:generateComposeResClass
+> Task :feature:health:generateExpectResourceCollectorsForCommonMain
+> Task :feature:health:compileKotlinDesktop
+> Task :feature:health:compileDesktopMainJava NO-SOURCE
+> Task :feature:health:assembleDesktopMainResources
+> Task :feature:health:desktopProcessResources
+> Task :feature:health:processDesktopMainResources SKIPPED
+> Task :feature:health:desktopMainClasses
+> Task :feature:health:desktopJar
+> Task :feature:onboarding:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:onboarding:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:onboarding:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:onboarding:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:onboarding:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:onboarding:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:onboarding:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:onboarding:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:onboarding:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:onboarding:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:onboarding:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:onboarding:generateActualResourceCollectorsForDesktopMain
+> Task :feature:onboarding:generateComposeResClass
+> Task :feature:onboarding:generateExpectResourceCollectorsForCommonMain
+> Task :feature:onboarding:compileKotlinDesktop
+> Task :feature:onboarding:compileDesktopMainJava NO-SOURCE
+> Task :feature:onboarding:assembleDesktopMainResources
+> Task :feature:onboarding:desktopProcessResources
+> Task :feature:onboarding:processDesktopMainResources SKIPPED
+> Task :feature:onboarding:desktopMainClasses
+> Task :feature:onboarding:desktopJar
+> Task :feature:settings:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:settings:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:settings:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:settings:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:settings:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:settings:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:settings:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:settings:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:settings:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:settings:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:settings:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:settings:generateActualResourceCollectorsForDesktopMain
+> Task :feature:settings:generateComposeResClass
+> Task :feature:settings:generateExpectResourceCollectorsForCommonMain
+> Task :feature:settings:compileKotlinDesktop
+> Task :feature:settings:compileDesktopMainJava NO-SOURCE
+> Task :feature:settings:assembleDesktopMainResources
+> Task :feature:settings:desktopProcessResources
+> Task :feature:settings:processDesktopMainResources SKIPPED
+> Task :feature:settings:desktopMainClasses
+> Task :feature:settings:desktopJar
+> Task :feature:unlock:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:unlock:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:unlock:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:unlock:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:unlock:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:unlock:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:unlock:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:unlock:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:unlock:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:unlock:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:unlock:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:unlock:generateActualResourceCollectorsForDesktopMain
+> Task :feature:unlock:generateComposeResClass
+> Task :feature:unlock:generateExpectResourceCollectorsForCommonMain
+> Task :feature:unlock:compileKotlinDesktop
+> Task :feature:unlock:compileDesktopMainJava NO-SOURCE
+> Task :feature:unlock:assembleDesktopMainResources
+> Task :feature:unlock:desktopProcessResources
+> Task :feature:unlock:processDesktopMainResources SKIPPED
+> Task :feature:unlock:desktopMainClasses
+> Task :feature:unlock:desktopJar
+> Task :feature:vault:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:vault:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:vault:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:vault:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:vault:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:vault:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:vault:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:vault:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:vault:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:vault:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:vault:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:vault:generateActualResourceCollectorsForDesktopMain
+> Task :feature:vault:generateComposeResClass
+> Task :feature:vault:generateExpectResourceCollectorsForCommonMain
+> Task :feature:vault:compileKotlinDesktop
+> Task :feature:vault:compileDesktopMainJava NO-SOURCE
+> Task :feature:vault:assembleDesktopMainResources
+> Task :feature:vault:desktopProcessResources
+> Task :feature:vault:processDesktopMainResources SKIPPED
+> Task :feature:vault:desktopMainClasses
+> Task :feature:vault:desktopJar
+> Task :shared:compileKotlinDesktop
+> Task :shared:compileDesktopMainJava NO-SOURCE
+> Task :shared:assembleDesktopMainResources
+> Task :shared:desktopProcessResources
+> Task :shared:processDesktopMainResources SKIPPED
+> Task :shared:desktopMainClasses
+> Task :shared:desktopJar
+> Task :app-desktop:compileKotlinDesktop
+> Task :app-desktop:compileDesktopMainJava NO-SOURCE
+> Task :app-desktop:checkDesktopTestComposeLibrariesCompatibility
+> Task :app-desktop:assembleDesktopMainResources
+> Task :app-desktop:desktopProcessResources
+> Task :app-desktop:processDesktopMainResources SKIPPED
+> Task :app-desktop:desktopMainClasses
+> Task :app-desktop:desktopJar
+> Task :app-desktop:convertXmlValueResourcesForCommonTest NO-SOURCE
+> Task :app-desktop:copyNonXmlValueResourcesForCommonTest NO-SOURCE
+> Task :app-desktop:prepareComposeResourcesTaskForCommonTest NO-SOURCE
+> Task :app-desktop:generateResourceAccessorsForCommonTest SKIPPED
+> Task :app-desktop:convertXmlValueResourcesForDesktopTest NO-SOURCE
+> Task :app-desktop:copyNonXmlValueResourcesForDesktopTest NO-SOURCE
+> Task :app-desktop:prepareComposeResourcesTaskForDesktopTest NO-SOURCE
+> Task :app-desktop:generateResourceAccessorsForDesktopTest SKIPPED
+
+> Task :app-desktop:compileTestKotlinDesktop
+w: file:///Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/checkout/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt:319:60 Unnecessary safe call on a non-null receiver of type 'DesktopCurtainRenderingTest.InputObservation'.
+w: file:///Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/checkout/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt:330:59 Unnecessary safe call on a non-null receiver of type 'DesktopCurtainRenderingTest.InputObservation'.
+
+> Task :app-desktop:compileDesktopTestJava NO-SOURCE
+> Task :app-desktop:assembleDesktopTestResources
+> Task :app-desktop:desktopTestProcessResources
+> Task :app-desktop:processDesktopTestResources SKIPPED
+> Task :app-desktop:desktopTestClasses
+
+> Task :app-desktop:auditJnaLifetimeTest
+Picked up JAVA_TOOL_OPTIONS: -XX:-UsePerfData -XX:ActiveProcessorCount=1 -Duser.home=/Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/home -Djava.io.tmpdir=/Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/tmp -Djna.tmpdir=/Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/tmp
+
+[Incubating] Problems report is available at: file:///Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/checkout/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 7m
+123 actionable tasks: 123 executed

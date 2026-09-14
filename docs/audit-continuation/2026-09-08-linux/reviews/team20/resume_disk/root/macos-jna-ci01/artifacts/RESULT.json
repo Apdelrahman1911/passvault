@@ -1,0 +1,195 @@
+{
+  "status": "ONE_CASE_PASSED_PENDING_CLEANUP",
+  "commands": [
+    {
+      "label": "cmake-version",
+      "argv": [
+        "/usr/local/bin/cmake",
+        "--version"
+      ],
+      "exit": 0,
+      "pid": 2615,
+      "terminated": false,
+      "elapsed_seconds": 0.07011725000000979,
+      "log": {
+        "bytes": 90,
+        "sha256": "9e2032657b821ca15fdf749298148b08afc4d86fe8a6f709a8459318fa1c018f"
+      }
+    },
+    {
+      "label": "xcode-version",
+      "argv": [
+        "/usr/bin/xcodebuild",
+        "-version"
+      ],
+      "exit": 0,
+      "pid": 2618,
+      "terminated": false,
+      "elapsed_seconds": 0.1933817789999921,
+      "log": {
+        "bytes": 30,
+        "sha256": "a8be4f9af0a29137fe7e59b9928056d4a0df297bb46ba40f80eaa6b0ae982f12"
+      }
+    },
+    {
+      "label": "java-version",
+      "argv": [
+        "/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-101/x64/Contents/Home/bin/java",
+        "-version"
+      ],
+      "exit": 0,
+      "pid": 2624,
+      "terminated": false,
+      "elapsed_seconds": 0.30066392200001246,
+      "log": {
+        "bytes": 513,
+        "sha256": "8cd68a2c1f8f439910d39da4ea6a677646933f345c7dee282912dd85c5dc366f"
+      }
+    },
+    {
+      "label": "native-configure",
+      "argv": [
+        "/usr/local/bin/cmake",
+        "-S",
+        "/Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/checkout/app-desktop/native/biometric-bridge",
+        "-B",
+        "/Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/native-build",
+        "-DBUILD_TESTING=OFF",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_OSX_ARCHITECTURES=x86_64"
+      ],
+      "exit": 0,
+      "pid": 2627,
+      "terminated": false,
+      "elapsed_seconds": 5.829609785999992,
+      "log": {
+        "bytes": 923,
+        "sha256": "616ec4177d9cfc9cbdc06fe077f8029b8353e3928d184809118d0be6973c0a6a"
+      }
+    },
+    {
+      "label": "native-build",
+      "argv": [
+        "/usr/local/bin/cmake",
+        "--build",
+        "/Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/native-build",
+        "--target",
+        "passvault_biometric",
+        "--parallel",
+        "1"
+      ],
+      "exit": 0,
+      "pid": 2920,
+      "terminated": false,
+      "elapsed_seconds": 4.592687426999987,
+      "log": {
+        "bytes": 212,
+        "sha256": "5b9ba2180bb7ac353282b6d62059ce90531ab8fec346a6230f03e92c0d54be6c"
+      }
+    },
+    {
+      "label": "native-architecture",
+      "argv": [
+        "/usr/bin/lipo",
+        "-archs",
+        "/Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/artifact/libpassvault_biometric.dylib"
+      ],
+      "exit": 0,
+      "pid": 2971,
+      "terminated": false,
+      "elapsed_seconds": 0.7927405719999854,
+      "log": {
+        "bytes": 7,
+        "sha256": "aaf631698ae5160ceb04a97681a14887fdcab47cd6e0f163c87485b3b1340b62"
+      }
+    },
+    {
+      "label": "jna-lifetime",
+      "argv": [
+        "/Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/checkout/gradlew",
+        "--init-script",
+        "/Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/scope.gradle",
+        ":app-desktop:auditJnaLifetimeTest",
+        "--no-daemon",
+        "--max-workers=1",
+        "--no-parallel",
+        "--no-configure-on-demand",
+        "--no-configuration-cache",
+        "--no-build-cache",
+        "--console=plain",
+        "--dependency-verification=strict",
+        "-Pkotlin.compiler.execution.strategy=in-process",
+        "-Pandroid.builder.sdkDownload=false",
+        "-Dorg.gradle.java.installations.auto-download=false",
+        "-Dorg.gradle.jvmargs=-Xmx2g -XX:ActiveProcessorCount=1 -XX:-UsePerfData",
+        "-Ppassvault.audit.jnaLifetime.enabled=1",
+        "-Ppassvault.audit.jnaLifetime.target=macos-x64",
+        "-Ppassvault.audit.jnaLifetime.abi=1",
+        "-Ppassvault.audit.jnaLifetime.library=/Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/artifact/libpassvault_biometric.dylib",
+        "-Ppassvault.audit.jnaLifetime.libraryBytes=51600",
+        "-Ppassvault.audit.jnaLifetime.librarySha256=613360760ef2bbf5c1a10406af8bc2eef7c8253c78f3290aa392173db68eb7db",
+        "-Ppassvault.audit.jnaLifetime.dataDirectory=/Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/data",
+        "-Ppassvault.audit.jnaLifetime.workerHome=/Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/worker-home",
+        "-Ppassvault.audit.jnaLifetime.workerTemporaryDirectory=/Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/worker-tmp"
+      ],
+      "exit": 0,
+      "pid": 2984,
+      "terminated": false,
+      "elapsed_seconds": 421.564812567,
+      "log": {
+        "bytes": 21537,
+        "sha256": "61386882597a14aa1885bc4d836976f42e4932c56ed23419f2721a87b233264a"
+      }
+    },
+    {
+      "label": "original-gradle-stop",
+      "argv": [
+        "/Users/runner/work/_temp/passvault-macos-jna01-34885844060-runtime/checkout/gradlew",
+        "--stop",
+        "--no-daemon",
+        "--max-workers=1",
+        "--no-parallel",
+        "--no-configure-on-demand",
+        "--no-configuration-cache",
+        "--no-build-cache",
+        "--console=plain",
+        "--dependency-verification=strict",
+        "-Pkotlin.compiler.execution.strategy=in-process",
+        "-Pandroid.builder.sdkDownload=false",
+        "-Dorg.gradle.java.installations.auto-download=false",
+        "-Dorg.gradle.jvmargs=-Xmx2g -XX:ActiveProcessorCount=1 -XX:-UsePerfData"
+      ],
+      "exit": 0,
+      "pid": 11587,
+      "terminated": false,
+      "elapsed_seconds": 0.7747250160000476,
+      "log": {
+        "bytes": 360,
+        "sha256": "76776950d9f693c8a330cf89cab9878f48775fc3cd2942197887c78b7e07e29c"
+      }
+    }
+  ],
+  "cases": 1,
+  "cleanup": "ORIGINAL_PRIVATE_RUNTIME_REMOVED",
+  "last_resources": {
+    "disk_free": 115089068032,
+    "memory_total": 15032385536,
+    "free_plus_inactive": 4924485632
+  },
+  "activation": "6438f2dc69229aeb8d7cb755c630e427450b42a5",
+  "source_commit": "38b222a5219da83da7ef4c00ee9cb2ba408e717b",
+  "source_inventory_sha256": "da5bae54eec02dffc805cc132c02e2246750aab9e97f6f39ef86de65785c226f",
+  "jdk_release": {
+    "bytes": 1637,
+    "sha256": "edbe3a2e6b6a3186010a3b75257685d943a8baa013a92174c9a48b8c1a73886b"
+  },
+  "native_library": {
+    "bytes": 51600,
+    "sha256": "613360760ef2bbf5c1a10406af8bc2eef7c8253c78f3290aa392173db68eb7db"
+  },
+  "native_objects_removed": true,
+  "native_task_entered": true,
+  "stop_attempted": true,
+  "stop_ok": true,
+  "elapsed_seconds": 446.853512851
+}

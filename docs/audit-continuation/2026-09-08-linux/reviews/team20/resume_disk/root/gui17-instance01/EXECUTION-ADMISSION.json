@@ -1,0 +1,73 @@
+{
+  "utc": "2026-09-14T18:02:42.961141+00:00",
+  "owner": "/root",
+  "status": "ROOT_ADMITS_ONE_ORIGINAL_GUI17_TWO_REMAINING_CASES",
+  "request": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui17-instance01/REQUEST.json",
+    "bytes": 26572,
+    "sha256": "1f7778f47e4eac13157ec2633fc8a44d136248f6569c3a6849358beb0ab5e0a4"
+  },
+  "approval": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui17-instance01/APPROVAL.json",
+    "bytes": 1455,
+    "sha256": "e15388cec23c2a2ee620e3ed155d1c1cdf28b0c6dc34b25fb90ba787b78f0156"
+  },
+  "review": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui17_instance01/SOURCE-REVIEW.json",
+    "bytes": 8386,
+    "sha256": "beb8fa27e8e1d57f04b02a5661bb86c4dca8046e5c97aa05c919f46a7cdce5d6"
+  },
+  "source_binding": {
+    "representation": "P23_RAW_GIT_BLOBS_PLUS_DESKTOPTEST_DEPENDENCY_AND_SETTINGS_FIXTURE",
+    "base_commit": "59bee33096f538b9444f00236448d7fc0ea740b2",
+    "base_tree": "76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6",
+    "source_manifest_sha256": "1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc",
+    "members": 5121,
+    "base_raw_bytes": 153458946,
+    "observed_checkout_bytes": 153460893,
+    "framed_transport_bytes": 153725453,
+    "effective_bytes": 153469444,
+    "base_content_identity_sha256": "19211d126337ddf19a37a6b89522642d62dcc247c199a6420cdc1e4b28abd91c",
+    "effective_content_identity_sha256": "2a5e7c547c4e37d567f6dedcef216bf0d9e3342bc58927ca507db3d6e76cddab",
+    "diagnostic_overlay": {
+      "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+      "git_mode": "100644",
+      "before": {
+        "bytes": 88602,
+        "sha256": "5fe322e48fef5fe7b6d2729817ad6fdbeb6bec182bf1cde5198ffdb1bb8c01a3",
+        "git_blob": "91858bd15c2ab211bc263b881157cebd9a283154"
+      },
+      "after": {
+        "bytes": 99043,
+        "sha256": "d699a64e0c2e52070da8e1225f50df88f1017f5bb8cf26a1fcde0bbd51870515",
+        "git_blob": "40ef3af6cb86034a43e8d373d95542aae1bf2145"
+      },
+      "scope": "Two Settings row selectors for native tray/chooser only; no production readiness overlay. Successful Main case excluded."
+    }
+  },
+  "command": [
+    "/usr/bin/env",
+    "-i",
+    "PATH=/usr/bin:/bin",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TZ=UTC",
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui17-instance01/OUTER.py"
+  ],
+  "findings": [
+    "PVA-027",
+    "PVU-003"
+  ],
+  "purpose": "Two Settings-selector/native tray+chooser cases, no GUI16Main/Room rerun and no productionoverlay.",
+  "resources": {
+    "disk_available_bytes": 13310885888,
+    "MemAvailable": 31141941248
+  },
+  "cleanup": "Originalinstalledcontrolsstopwrappereachphase, settleworkers/privateGUI/namespaces, preservecompactevidence and removeonlyvalidatedoriginalruntime. UnknownsHOLD, noautomaticretry.",
+  "bounds": "JDK17/oneworker/no-daemon/strictverification/noCOD;12GiBentry/3GiBrunning/private;256MiBdisk/512MiBRAMcleanupreserve;5250swork plus boundedcleanup;Test1100s.",
+  "coordination": "Rootsolebuildowner; onereviewer; ACTION01retired; noCI/build/stopknownactive; source/store/controlfrozen."
+}

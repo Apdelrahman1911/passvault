@@ -1,0 +1,89 @@
+{
+  "format": "passvault-windows-after-flush-activation-observer-source-review-v1",
+  "utc": "2026-09-14T21:26:56.361077+00:00",
+  "reviewer": "/root/current_ledger",
+  "author": "/root",
+  "status": "ACCEPT_DISTINCT_WINDOWS_ACTIVATION_AND_OBSERVER_EXACT_SOURCE_ONLY",
+  "execution_approved": false,
+  "reused_review": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/macos_sanitizer_activation_observer01/SOURCE-REVIEW.json",
+    "bytes": 6808,
+    "sha256": "14c8f3de5685955c20d18daf726b2e00e315c4d37addbe89a00471e3dcbb447f"
+  },
+  "predecessor_original_request_and_review": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/publication04/sanitizer-activate-instance01/REQUEST.json",
+      "bytes": 1151,
+      "sha256": "20a5973bfb7c9b6ea4b6d03d1e1d23b0bc15540df50f575126bab672895e55af"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/publication04/sanitizer-activate-instance01/APPROVAL.json",
+      "bytes": 179,
+      "sha256": "bc0f22fe12fecee9190b96ed1e2004bfcac1543405c8168fe78067db154fe5ca"
+    }
+  ],
+  "images": [
+    {
+      "before_source_only": {
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/publication04/sanitizer-activate-instance01/ACTIVATE.py",
+        "bytes": 11801,
+        "sha256": "26b21aa20c9f05a00bb2404839acf923dad11f2eed5131f53a9bb280b0d10dc0"
+      },
+      "new_source": {
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/publication04/windows-activation-proposal01/ACTIVATE.py.txt",
+        "bytes": 12118,
+        "sha256": "7f40b79e9207ff4a8f1a2b3744b6b0fde9b90f5eb722ec0e6f7678db4c46191e"
+      },
+      "independently_reproduced_diff": {
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/publication04/windows-activation-proposal01/ACTIVATE.diff",
+        "bytes": 5269,
+        "sha256": "bbbfab66c23ac3e1a63ca2913bbc16b5b41a0cb641b6c947f1d5e973de9c8419"
+      }
+    },
+    {
+      "before_source_only": {
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/publication04/sanitizer-activate-instance01/OBSERVE.py",
+        "bytes": 8275,
+        "sha256": "92840fbfda514b6081a5cc836b1f8a184cdd62305fed0ce158b3251bd41e68ca"
+      },
+      "new_source": {
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/publication04/windows-activation-proposal01/OBSERVE.py.txt",
+        "bytes": 8300,
+        "sha256": "4dd53ad668d6e859be3d56192d4af5a034d7a8c4338388091e299d4a95759981"
+      },
+      "independently_reproduced_diff": {
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/publication04/windows-activation-proposal01/OBSERVE.diff",
+        "bytes": 3433,
+        "sha256": "34178750f3c6495446900cac2b4ad5f430edca083248cb8a3105c0bc6d697068"
+      }
+    }
+  ],
+  "observer_proposal": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/publication04/windows-activation-proposal01/OBSERVER-PROPOSAL.json",
+    "bytes": 365,
+    "sha256": "d929df7981c399307302cdcb177a6745cfe82fa8fc8b78e60bdfe647c247c77f"
+  },
+  "checks": [
+    "Both complete unifieddiffs independently reproduced and newASTs parsed withoutsubjectimport/execution. ACTIVATE12118B/7f40b79e differs from accepted consumed11801B/26b21aa2 solely freshWindowsnames/BASEplaceholder/status/purpose and Windowsrequestpredicate. OBSERVE8300B/4dd53ad6 differs from8275B/92840fbf solely freshA/E/status/artifactnames and extra .jsonl extension.",
+    "Activation freshwindows-activate-instance01/privateaudit-publication04-windows-activate01 only; not consumedmacOS replay. BASE remains SOURCE_COMMIT_TO_BIND_AFTER_PUBLICATION; no actualsourceparent/activationrequest/approval exists in thisreview. LOCAL_HEAD832ed5f5 retained separately.",
+    "Activation requires sourceparentBASE/schema1/WindowsSUITE/rootowner/dedicatedtarget/exacttwocases/auditcontrolsOFF/afterflushON. Removal of oldsanitizerfive-keyset is necessary for newWindowsrequest contract; exactactivationbyteshash remains independentlyapproval-bound. Finalinstance must verify ALLnonce/argv/SDK/maxseconds/nativeinputhashes/helper/workflow/scope/reviewhash/source_tree/rootattestation fields, not rely only on thissubsetpredicate.",
+    "Only A TAB exactwindows-after-flush-01.json delta permitted; allother treecontent inherits independentlyacceptedBASE. Before/prepush/after exact6refs, emptyopenPRlist, oneunsignednonforce--no-follow-tagscontinuationpush retained. No protectedbranch/tag/oldrequestmutation/signing/store/release action. Activation intentionally not skipCI; prior sourcepush separate skipCI.",
+    "Tools/self/request/approval/storeidentity/lockguards,3GiBDATAfloor,900sphase/60scommands/300spush,originalgroup settlement and originalemptyhome+tmp-onlycleanup/indexretention unchanged. Remoteunknown/failure retains noautomaticretry. Cooperativehost/custody/polling/lateallocation qualifications from acceptedalgorithm retained, not hard globalexclusivity.",
+    "Observer permits fixedreadonlyAPI discovery/status/artifacts/download only; no dispatch/rerun/cancel. Exactnew activationstatus/commit, freshEcontext, <=1hourtotal/5mindiscovery/64uniquenames. Originalrun commit/push/continuation/attempt1 must be rootnamed from originalAPI; terminal requiredbeforeartifactretrieval.",
+    "Artifact exact audit-windows-after-flush-01-{run}-1 andunexpiredheadbinding;32MiBZIP/128flatmembers/16MiBindividual/64MiBtotal, regularunencrypted/safeunique names, allheadersbeforeextraction and CRC/sizechecks. .jsonl admits requiredWindows events as DATA only, no binary/archive/native execution. Fresh extractiononly; originaltransportZIP removed onlyafterverifiedextract; uncertainpartialextraction retained.",
+    "Observer original60sprocessgroup,bounded2MiBJSON/64KiBstderr,privateemptydirectory cleanup andsecretvalueexclusion unchanged. Runtimecasecount zero for metadata/transport. No tests or previousplatformchecks needrerun justfor source-templateidentity edits."
+  ],
+  "remaining": [
+    "Complete finalcandidate/privacy/licensing/omissions/canonicalreport review and sourcepublication; obtain independentlyaccepted actualsourcecommit/tree, preserveexistingSOURCEacceptancein tree.",
+    "Install ACTIVATE by changing ONLY BASEplaceholder to actualverifiedsourcecommit, then exactinstalleddiff/hash review and genuineactivationrequest/refs/tool/lock/resource/custody/quiet/triggerreview. No concurrentaudit heavyjob; allqueued/pending/running CIcohorts andotherworkfloweffects independentlycovered.",
+    "Separate genuineOBSERVER-APPROVAL binding installedsource and freshEcontext/commit/timing needed; thisSOURCEreview does not permit observation ofoldWindowsGraph03 or unrelatedruns.",
+    "ActualWindows2XML/nativewitnesses/compiler+link/PE/source/outerJobhandles/HOLD-awarecleanup/originalCIterminal needindependentverification; no hardware/provider/Hello/PVA037/PVA036closurepromise."
+  ],
+  "credit": {
+    "cases": 0,
+    "closures": 0,
+    "Git_network_commands": 0,
+    "CI_runs": 0
+  },
+  "restrictions": "PVU007STOP/PVU011NO-RETRY/noinquiry/PVA029failure-noautomaticretry/G7G8CLOSED/WindowsGraph03CLOSEDremoteUNKNOWN/allHOLD-refusedwitnessesincludingGUI18GUI19Android07/protectedrefs-tags-mobile1017001/eightPVDseparate preserved. Reviewer only namedretainedSOURCE/DATA/hash/AST/diff/ownreviewwrite; nohelperimport/execution/Git/network/liveprobe/cleanup."
+}

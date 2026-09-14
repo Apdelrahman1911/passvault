@@ -1,0 +1,121 @@
+{
+  "schema": "pva036-after-flush-source-packet/1",
+  "status": "SOURCE_ONLY_PREPARED_FOR_INDEPENDENT_REVIEW",
+  "author": "/root/postfix_transport",
+  "scope": "Current native writer controlled after-real-flush owned-child-death witness plus normal-release control.",
+  "authority": {
+    "canonical_integration": false,
+    "build": false,
+    "test": false,
+    "probe": false,
+    "runtime_admission": null,
+    "physical_gate": null,
+    "instance_gate": null,
+    "git_publication": false,
+    "store_access": false,
+    "closure_credit": false
+  },
+  "changes": [
+    {
+      "canonical_destination": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+      "before": {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_afterflush_source01/BEFORE-passvault_biometric_windows_security_test.cpp.txt",
+        "bytes": 48464,
+        "sha256": "7042b2e340640d189ced072c75c17f7a10d0fb287d43d77b3c722279a071bb60",
+        "lines": 1109
+      },
+      "after": {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_afterflush_source01/AFTER-passvault_biometric_windows_security_test.cpp.txt",
+        "bytes": 75135,
+        "sha256": "27be38ad9ed1292b085e706f8fc4b829eb1c98dcf59e4ceb9c53957ed26c7f0c",
+        "lines": 1621
+      },
+      "delta": "Only mutual-exclusion guard, dedicated gated fragment and strict dedicated main dispatch."
+    },
+    {
+      "canonical_destination": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "before": {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_afterflush_source01/BEFORE-CMakeLists.txt",
+        "bytes": 9982,
+        "sha256": "89fa2928be4da01c17f09cc0813fbf1f284f76ecc6d05a20176389cff9903b10",
+        "lines": 242
+      },
+      "after": {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_afterflush_source01/AFTER-CMakeLists.txt",
+        "bytes": 11398,
+        "sha256": "5bd3de7d16958c466ad740b2c14800f2f8b81e115323ad486ecf5a08f02a036e",
+        "lines": 264
+      },
+      "delta": "One default-OFF current-source executable, unchanged shared security flags, exactly two serial 30-second CTests."
+    }
+  ],
+  "production_source_unchanged": {
+    "path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp",
+    "bytes": 99579,
+    "sha256": "93746b0cdb399aa17dd8c3c915e907244d4e86e5b566c51714ccc7f80310bd5d",
+    "lines": 2611
+  },
+  "supporting_files": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_afterflush_source01/AFTER-FLUSH-FRAGMENT.cpp.txt",
+      "bytes": 25185,
+      "sha256": "e7f3bd191b141d12e1a93278e1b2d7db72a2602ce9fe2459573ea64edafa24e9",
+      "lines": 478
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_afterflush_source01/SOURCE-DIFF.patch",
+      "bytes": 30587,
+      "sha256": "36cdfea5b25cd8bf9ce2f3f4f84d03841879e9ad89a89e81421fcc75a4bc68e9",
+      "lines": 571
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/pva036_afterflush_source01/NOTES.md",
+      "bytes": 8912,
+      "sha256": "788f52ce973f4838e44401e51cdba97a77b4371afd6537352a6288dec715cca6",
+      "lines": 128
+    }
+  ],
+  "source_binding": {
+    "new_option_default": "PASSVAULT_AUDIT_PVA036_AFTER_FLUSH=OFF",
+    "test_executable": "passvault_biometric_windows_after_flush_test",
+    "exclusive_macro": "PASSVAULT_BIOMETRIC_PVA036_AFTER_FLUSH_TEST",
+    "toolchain": "MSVC x64; existing security target compile/link/runtime settings",
+    "production_path": "write_secure_file_atomic_impl -> real security functions and existing FileIo seam -> FileWriterWin32Io WriteFile/FlushFileBuffers/close",
+    "expected_case_names": [
+      "passvault_biometric_windows_after_flush_continue",
+      "passvault_biometric_windows_after_flush_process_death"
+    ],
+    "parent_environment": "Separately admitted private PASSVAULT_NATIVE_TEST_PARENT == TMP == TEMP; no system-TEMP fallback."
+  },
+  "oracle_limits": [
+    "Death occurs while the original child is held after successful real FlushFileBuffers and before close/rename.",
+    "Death expects unchanged old destination/sentinel and complete same-identity owned staging residual; normal release expects completed atomic replacement.",
+    "Every decisive oracle precedes success-only identity-bound fixture deletion; failure/timeout/close/settlement ambiguity remains FAIL/HOLD with no automatic retry.",
+    "Not app cancellation, RAII crash cleanup, product orphan cleanup, device/power-loss durability, hostile-path containment, or full PVA036 closure."
+  ],
+  "retained_restrictions": [
+    "Windows05 whole-helper cleanup FAIL/filesystem HOLD retained; no historical INetCache/reparse inspection/recovery/deletion.",
+    "Historical native refusal/scope and current permitted defensive-source distinction retained.",
+    "PVU007 STOP; PVU011 NO-RETRY/no inquiry; PVA029 49/44PASS/5FAIL/no automatic retry; G7/G8 CLOSED; all native/PVU008/PVD8/FAIL/HOLD/UNKNOWN restrictions retained.",
+    "Protected refs/tags/build1017001/dependencies/versions/identities/signing/Store unchanged; no Windows publication store V access."
+  ],
+  "execution_record": {
+    "source_reads_and_text_authoring_only": true,
+    "canonical_edits": [],
+    "builds": [],
+    "tests": [],
+    "probes": [],
+    "repository_helper_imports": [],
+    "git_commands": [],
+    "store_access": [],
+    "runtime_results": [],
+    "closure_changes": []
+  },
+  "next_owner": "/root",
+  "next_gates": [
+    "Independent /root/platform_review source acceptance",
+    "Root exact-beforeimage check and separate canonical integration decision",
+    "Distinct fresh Windows build/run/private-parent/outer-process/resource/binary-binding admission",
+    "Actual source-bound results and independent process/filesystem cleanup review"
+  ]
+}

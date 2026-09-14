@@ -1,0 +1,307 @@
+{
+  "schema": "passvault-gui07-independent-original-product-evidence-and-cleanup-review-v1",
+  "reviewer": "/root/remaining_report",
+  "execution_owner": "/root",
+  "run_id": "linux-desktop-integration07",
+  "disposition": "ACCEPT_EXACT_MIXED_ACTUALS_AND_ORIGINAL_CLEANUP_NO_FAMILY_CLOSURE",
+  "blocking_evidence_or_scheduling_findings": [],
+  "overall_product_result": "VALIDATION_FAILED_CLEANED",
+  "original_terminal": {
+    "entry_session": 40814,
+    "entry_chunk": "4a8abc",
+    "terminal_chunk": "289494",
+    "outer_exit": 1,
+    "inner_exit": 1,
+    "output_bytes": 0,
+    "retained_result": {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-instance01/ORIGINAL-TOOL-RESULT.json",
+      "bytes": 608,
+      "sha256": "3013cd90c76ac56ce9e69f50de847095f019dde23667206a679dfcb129b01929"
+    },
+    "controller_elapsed_seconds": 569.87,
+    "qualification": "Retained exact original root tool-result objects independently read/hash reconciled. Reviewer did not observe a new/live process. OUTER explicitly precedes final closes/exit; retained original terminal supplies that final exit. Terminal poll wall_time is not whole-run duration."
+  },
+  "scheduling_and_cleanup_acceptance": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/remaining_report/gui07_actual_review01/SCHEDULING-DISPOSITION.json",
+    "bytes": 9787,
+    "sha256": "054d9abe6cde892314ce7dc7d92e41fbdeb223495faf041a46500292195a4828"
+  },
+  "control_inputs": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-instance01/OUTER.py",
+      "bytes": 101635,
+      "sha256": "43a7024ecab49bdada82cd721c6b21043e69c61f66b9f8853d85cd66b88d9046"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-instance01/INNER.py",
+      "bytes": 103599,
+      "sha256": "0421b417096ebeed075e79e9cb01f099e375c2bded88d6f8852a6e4e551d22f5"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-instance01/INIT.gradle",
+      "bytes": 11651,
+      "sha256": "f943b2c24f682073dd09d78eedf5605af55ef8265ffbace86a263ce845a6f53e"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-instance01/REQUEST.json",
+      "bytes": 20851,
+      "sha256": "adb7b27f4ea449834e13f76df074ab87124574a7fcfa038fbd0926c1c60aa709"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-instance01/APPROVAL.json",
+      "bytes": 1207,
+      "sha256": "e182520f4d12de0a3a7802801ade9b4c7d62530bd2551b0832f52f256723f4de"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-instance01/EXECUTION-ADMISSION.json",
+      "bytes": 4647,
+      "sha256": "3499498205d20aa613bf7f700e61c5b8d861564af5d68c1c73545ae329505982"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-instance01/ORIGINAL-TOOL-RESULT.json",
+      "bytes": 608,
+      "sha256": "3013cd90c76ac56ce9e69f50de847095f019dde23667206a679dfcb129b01929"
+    }
+  ],
+  "retained_evidence_inventory": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/remaining_report/gui07_actual_review01/EVIDENCE-MANIFEST.json",
+    "bytes": 18712,
+    "sha256": "5eed1fc436cbeadd5b87320a3d278daf2ee0290ec559f58d064f066d8b48a4d9"
+  },
+  "retained_evidence_files": 114,
+  "retained_evidence_logical_bytes": 518043,
+  "case_accounting": {
+    "selected_declarations": 4,
+    "existing_serial_test_tasks": 2,
+    "expected_xml_suites": 4,
+    "retained_xml_suites": 3,
+    "retained_testcase_elements": 3,
+    "pass": 1,
+    "fail": 1,
+    "error": 0,
+    "skipped_xml": 1,
+    "absent_unstarted": 1,
+    "qualification": "Two non-skipped testcase outcomes plus one skipped XML element and one absent selection. Three retained XML elements are not three passes, and four planned declarations are not four executed cases. Roles/events/task actions/crops are not cases."
+  },
+  "cases": [
+    {
+      "class": "com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest",
+      "method": "actual Main guards dirty Back tab and Add without changing durable Room tuples[desktop]",
+      "outcome": "FAIL",
+      "finding_ids": [
+        "PVA-007",
+        "PVA-031"
+      ],
+      "xml": {
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration07/xml/app-desktop--TEST-com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest.xml",
+        "bytes": 5740,
+        "sha256": "9fd112cb4514e21dc332facc59e7e2564ee100b48e4213110110fd7db2289d9a"
+      },
+      "suite": "CredentialMainNavHostRoomIntegrationTest[desktop]",
+      "testcase_time_seconds": "35.225",
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "failure_message": "java.lang.AssertionError: MAIN_NAV_DRIVER_FAILED",
+      "system_out": ""
+    },
+    {
+      "class": "com.passvault.desktop.Pva027MainSettingsTrayPropagationIntegrationTest",
+      "method": "actual Main Settings updates installed tray properties through English Arabic English[desktop]",
+      "outcome": "SKIPPED",
+      "finding_ids": [
+        "PVA-027"
+      ],
+      "xml": {
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration07/xml/app-desktop--TEST-com.passvault.desktop.Pva027MainSettingsTrayPropagationIntegrationTest.xml",
+        "bytes": 579,
+        "sha256": "ab5549b5fa3de9b2313f67bb84063312caa13ec885ea972325359bf6e7d77899"
+      },
+      "suite": "Pva027MainSettingsTrayPropagationIntegrationTest[desktop]",
+      "testcase_time_seconds": "0.092",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "failure_message": null,
+      "system_out": ""
+    },
+    {
+      "class": "com.passvault.shared.credential.CredentialEditorRoomIntegrationTest",
+      "method": "native capacity draft persists through page Save and a fresh Room database reopen[desktop]",
+      "outcome": "PASS",
+      "finding_ids": [
+        "PVA-007",
+        "PVA-031"
+      ],
+      "xml": {
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration07/xml/shared--TEST-com.passvault.shared.credential.CredentialEditorRoomIntegrationTest.xml",
+        "bytes": 1302,
+        "sha256": "6c183c5c36614bf1cc009d99d48c99e363684fb45e8727182bd2792495f76be3"
+      },
+      "suite": "CredentialEditorRoomIntegrationTest[desktop]",
+      "testcase_time_seconds": "23.104",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failure_message": null,
+      "system_out": "PASSVAULT_EDITOR_ROOM_HOME\t/root/projects/PassVault/audit-runtime-linux-desktop-integration07/workers/editor-room/home\t(dev=17,ino=461359)\nPASSVAULT_EDITOR_ROOM_OPEN\tgeneration=1\tseed=true\n[SKIKO] warn: Fallback to next API\norg.jetbrains.skiko.RenderException: Cannot create Linux GL context\nPASSVAULT_EDITOR_ROOM_IME_REJECTION\taccepted=50\tpersisted=49\tdraft=retained\nPASSVAULT_EDITOR_ROOM_OPEN\tgeneration=2\tseed=false\nPASSVAULT_EDITOR_ROOM_RESULT\tfields=50\tsurvivors=49\troom_generations=2\tPASS\nPASSVAULT_EDITOR_ROOM_CLEANUP\trooms=2\tclosed=2\tvm_jobs_settled=true\tinterrupted=false\terror=false\n"
+    },
+    {
+      "class": "com.passvault.desktop.Pvu003NativeChooserAdmissionIntegrationTest",
+      "method": "actual Main samples Home while the export chooser is modal then cancels[desktop]",
+      "outcome": "ABSENT_UNSTARTED",
+      "finding_ids": [
+        "PVU-003"
+      ],
+      "xml": null,
+      "qualification": "No retained testcase/suite or role receipts in the complete selected evidence. Fail-fast class order unspecified; no pass or skipped-XML credit. Unstarted/unobserved, not a separately executed failing case."
+    }
+  ],
+  "room_credit": {
+    "disposition": "ONE_BOUNDED_LINUX_EDITOR_ROOM_PASS_SHARED_CREDIT_FOR_PVA007_AND_PVA031_NOT_TWO_CASES",
+    "source_fixture_sha256": "00c4396acca707549075816da9fca43048c6c0c78f6e4f076e7f47ca39787e40",
+    "observations": [
+      "XML has one exact expected method with no failure/error/skip.",
+      "Retained output records generation1 seed=true, capacity rejection marker accepted=50/persisted=49/draft=retained, generation2 seed=false, final fields=50/survivors=49/room_generations=2/PASS.",
+      "Original fixture cleanup marker rooms=2/closed=2/vm_jobs_settled=true/interrupted=false/error=false."
+    ],
+    "bounded_inference": "Accepted actual result for the already source-reviewed native-capacity/page-Save/fresh-Room-reopen declaration on this exact Linux synthetic fixture/private virtual display. It is meaningful real-Room integration evidence, not merely source compilation or fake-only result.",
+    "limits": "Does not prove actual Main dirty navigation, every rapid/pre-frame event, delivered-key/IME/a11y/RTL/mobile/lifecycle path, arbitrary backend rejection/ack timing, transient-write exclusion, recovery/power loss or universal owner-disposal retention. It does not execute the separate Save-ack editor amendment. PVA007/PVA031 remain open; no double case credit.",
+    "render_warning": "Both Room PASS and Main log contain Skiko Cannot create Linux GL context/Fallback warning. This is retained context, not by itself the Main failure cause or a reason to discard the independently mapped Room PASS."
+  },
+  "main_failure": {
+    "xml_failure": "java.lang.AssertionError: MAIN_NAV_DRIVER_FAILED",
+    "fixture_stack_sites": [
+      "CredentialMainNavHostRoomIntegrationTest.runRole:177",
+      "runCase:125",
+      "selected Main test:97"
+    ],
+    "role_evidence": {
+      "seed_exit": 0,
+      "seed_events": [
+        "SEED_ORIGINAL_TUPLES",
+        "SEED_ROOM_CLOSED"
+      ],
+      "main_exit": 137,
+      "main_events": [
+        "DRIVER_FAILURE"
+      ],
+      "verify_role_present": false
+    },
+    "first_retained_scenario_assertion": "MAIN_NAV_NATIVE_UNLOCK",
+    "scenario_stack_sites": [
+      "NativeMainNav.await:966",
+      "NativeMainNav.scenario:766",
+      "NativeMainNav.run:371",
+      "CredentialMainNavHostRoomProbe.main$lambda$0:277"
+    ],
+    "conclusion": "The selected Main declaration executed and failed before its required dirty Back/tab/Add/final durable-Room receipt chain. Main successful unlock and final verify role are not established.",
+    "cause_limit": "Assertion labels and exit137 are observations, not an established product defect, OOM diagnosis, kernel-kill attribution, exact input/focus/timing cause or repair prescription. No unpermitted fixture/source/runtime experiment was performed. Outer/unshare forced-pidfd-kill=false concerns those controller children only; it does not prove no fixture child was ever forcibly terminated."
+  },
+  "skipped_and_absent": {
+    "pva027": "Exact testcase is XML SKIPPED (time0.092s),not another absent/unstarted XML or a pass. Two empty seed.events/seed.log artifacts are retained; they do not establish a completed seed/scenario or prove no partial startup. No seed exit/Main/verify completion,Settings→tray transition,tooltip,native Lock/Exit or crop credit.",
+    "pvu003": "No XML testcase/suite and no role evidence. Class order was unspecified with failFast; retain absent-unstarted/unobserved selection,not SKIPPED XML or executed failure. No chooser/Home/cancel observation and no suspicion resolution.",
+    "crop_files_absent": [
+      "tray-tooltip-en1.png",
+      "tray-tooltip-ar.png",
+      "tray-tooltip-en2.png",
+      "tray-lock-selection.png",
+      "tray-exit-selection.png"
+    ],
+    "independent_visual_review": "NOT_PERFORMED_NO_CROPS_EXIST; no image decode/view performed or claimed.",
+    "role_accounting": "Nine roles/27role files plus5crops were planned,not extra cases. Eight role files retained across Main6 and PVA027two empty files,total1369B; all available role pins rehashed,required mappings false. No retained JVM crash diagnostics does not establish failure cause."
+  },
+  "gradle_actions": {
+    "prepare": {
+      "exit": 0,
+      "build_log": "BUILD SUCCESSFUL in7m14s",
+      "actionable_tasks": 130,
+      "executed_tasks": 130,
+      "test_credit": 0
+    },
+    "render": {
+      "exit": 1,
+      "build_log": "BUILD FAILED in1m33s",
+      "actionable_tasks": 131,
+      "executed_tasks": 33,
+      "up_to_date_tasks": 98,
+      "app_task_summary": "2tests completed,1failed,1skipped; shared test is separately retained as1PASS"
+    },
+    "qualification": "Prepare compilation and aggregate Gradle action counts are not testcase counts. Strict one-worker/JDK17/serial two-task route and original stop after each phase preserved. Existing integration06 internal property names are accepted unchanged control literals,not reuse of oldGUI06 authority."
+  },
+  "source_provenance": {
+    "base_commit": "59bee33096f538b9444f00236448d7fc0ea740b2",
+    "base_content_identity_sha256": "19211d126337ddf19a37a6b89522642d62dcc247c199a6420cdc1e4b28abd91c",
+    "base_raw_bytes": 153458946,
+    "base_tree": "76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6",
+    "effective_bytes": 153459003,
+    "effective_content_identity_sha256": "3d9bb5162c6f4c703405e1742eae3f43a4806670644c69757379b3962c80aa14",
+    "framed_transport_bytes": 153725453,
+    "members": 5121,
+    "observed_checkout_bytes": 153460893,
+    "representation": "P23_RAW_GIT_BLOBS_PLUS_ONE_APPROVED_DESKTOPTEST_OVERLAY",
+    "source_manifest_sha256": "1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc",
+    "overlay": {
+      "after": {
+        "bytes": 63975,
+        "git_blob": "a8895db34f68cf10b7795079c433c9ef283d4cba",
+        "sha256": "d0ead442c57c9465333d036bcb4d96f1ac5b06fd8d04dfe5b45fc571100265e3"
+      },
+      "before": {
+        "bytes": 63918,
+        "git_blob": "172fd771919fbb848c7c413af97706b257a7c3d2",
+        "sha256": "9263cf5e857f55afd4669aa524eaf36f37d3b5a18f4eca293da148bd55b3e709"
+      },
+      "git_mode": "100644",
+      "path": "app-desktop/build.gradle.kts",
+      "scope": "Exactly one pinned libs.lifecycle.viewmodel implementation line in desktopTest only; no version or production-runtime change"
+    },
+    "source_before": {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration07/SOURCE-BEFORE.json",
+      "bytes": 2613,
+      "sha256": "2f111f16fb05c05d4b2f436fca97102973796c0874c894aa260e1a7b860d00b2"
+    },
+    "source_after": {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration07/SOURCE-AFTER.json",
+      "bytes": 2613,
+      "sha256": "2f111f16fb05c05d4b2f436fca97102973796c0874c894aa260e1a7b860d00b2"
+    },
+    "source_overlay_record": {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration07/SOURCE-OVERLAY.json",
+      "bytes": 3487,
+      "sha256": "88c99fc0f4e70552a8b2451895d128f7ec077aa857feab149b90bfe064dc40d1"
+    },
+    "before_after_bytes_identical": true,
+    "transport": "Original fixed raw-OID cat-file child0; two complete recorded raw-stream passes,5121members,framed153725453B; original output/source checks precede build. No new Git/source capture by reviewer.",
+    "limits": "New07 disposable source only: immutable P23raw plus approved57B desktopTest dependency overlay. Earlier observed checkout/EOL sizes are distinct representations. No new Git tree,editor amendment,whole-current-W identity or historical pass extrapolation. Manifest identity was bound in prior exact-instance review; this postrun scope reads only saved E and Q,not deleted source/store."
+  },
+  "original_lifecycle_cleanup": {
+    "normal_safe_not_product_pass": "INNER validation_safe/cleanup_safe and source-after true refer to source/settlement/evidence safety; validation_mapping_ok=false and explicit validation errors remain. OUTER reasons[] means no outer custody/control failure,not no test failures.",
+    "stops": "Prepare0 and render1 were complete; their two original --stop commands0/complete and hash-verified logs each report no Gradle daemons running. No reviewer stop/replay.",
+    "helpers": "Four original Xvfb/DBus/WM/panel helpers settled after recorded expectedTERM,no forcedKILL/unexpected exit; exits0/0/1/1. Exact xfconf and systray-wrapper pidfds terminal/descriptors closed; GUI-CLEANUP and INNER lists match.",
+    "namespace": "Original private pid/mount namespace and later private network setup correlate with original preflight. Final namespace empty/remaining_original_descendants[]; GUIstart settled=false was pre-cleanup setup state,not contradiction of final receipt.",
+    "preservation": "All22 manifest entries independently rehashed and original/saved length+hash pairs match:3already-retainedXML plus19new generated files/198922B. Source/saved checked before unlink and saved after removal by bound original controller. No deleted runtime byte was reread.",
+    "disposal": "NORMAL_VALIDATION_SAFE route,disposal_authorized=true;28528snapshot entries removed,originalR statusREMOVED_ORIGINAL_RUNTIME. Bound code requires empty original named directory,descriptor/name agreement,original rmdir,fd nlink0/absence and saved evidence reverification. Original terminal corroborates final exit. This accepts completed original runtime-only removal from retained evidence,not a live absence probe or cancellation-contract witness.",
+    "not_extended": "E not deleted; source storeV not deletion root; no GUI06/Image01/Windows or other HOLD released. No extra cleanup or retry authority."
+  },
+  "resource_qualification": {
+    "sampled_private_runtime_logical_peak_bytes": 1386483085,
+    "minimum_recorded_disk_available_bytes": 16321245184,
+    "minimum_recorded_MemAvailable_bytes": 27681062912,
+    "unclassified_host_churn": 340,
+    "qualification": "Original point samples remain above chosen floors but are not peak allocation/hard capacity/whole-host-idle or ownership proof. Removed entry counts do not independently quantify physical disk reclaim or attribute unrelated shared-host changes."
+  },
+  "ledger_effect": {
+    "new_mixed_xml_elements": 3,
+    "new_pass": 1,
+    "new_fail": 1,
+    "new_skipped": 1,
+    "new_family_closures": 0,
+    "all12_open_families_preserved": true,
+    "prior_evidence_unchanged": true,
+    "current_total_note": "If current canonical baseline231 has noGUI07 entries,append these3once to234mixed XML; preserve231 as historical cutoff,not a new all-pass total. Reconcile exact canonical aliases in a separate additive proposal before root installation."
+  },
+  "remaining_product_work": "ActualMain dirty navigation remains failed/unverified; PVA027 skipped/no crops; PVU003 absent/unstarted. PVA007/031 gain only this bounded sharedRoom case. No family closure,automatic retry,repair claim,mobile/Hello/Keystore/physical-device or legal/package/PVD proof.",
+  "restrictions": "All PVU007STOP,PVU011NO-RETRY/no inquiry,PVA02944PASS5FAIL/no automatic retry,PVU002/PVU006/native refusals,G7/G8/WindowsGraph03CLOSED,oldHOLD/UNKNOWN and protectedrefs/tags/mobile1017001 remain.",
+  "activities": "Exact retained E/Q SOURCE/DATA reads,all114saved-file hashes,XML/JSON/literal reconciliation and own review writes. No candidate import/eval/AST/compile,test,replay,privateR/process/store/cache/SDK probe,newstop,signal,deletion,Git/network or hardware access."
+}

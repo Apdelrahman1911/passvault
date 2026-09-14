@@ -1,0 +1,83 @@
+--- 04
++++ 05
+@@ -170,34 +170,49 @@
+         self.result.update(status='ALLOCATED', activation=os.environ['PV_SHA'], source_commit=request['source_commit'])
+         self.checkout = self.root / 'checkout'
+         self.checkout.mkdir()
+-        names = self.small(['/usr/bin/git', 'ls-tree', '-r', '-z', 'HEAD']).split('\0')
++        # Raw committed blobs avoid checkout-EOL transformations (.bat/.cmd/.ps1).
++        rows = self.small(['/usr/bin/git', 'ls-tree', '-r', '-l', '-z', 'HEAD']).split('\0')
++        entries = []
+         total = 0
+-        require(len(names) <= 16000, 'Finite source count')
+-        for row in names:
++        for row in rows:
+             if not row:
+                 continue
+             metadata, name = row.split('\t', 1)
+-            mode, kind, blob = metadata.split()
++            mode, kind, blob, size = metadata.split()
+             require(kind == 'blob' and mode in ('100644', '100755') and re.fullmatch(r'[0-9a-f]{40}', blob),
+                     'Only ordinary committed source blobs')
++            size = int(size)
++            require(0 <= size <= 32 * MIB, 'Source member bound')
+             require(not name.startswith('/') and '..' not in Path(name).parts and '.git' not in Path(name).parts,
+                     'Safe source relative path')
+-            origin = self.workspace / name
+-            require(origin.resolve() == origin, 'No source ancestor symlink')
+-            before = digest(origin)
+-            require(before['bytes'] <= 32 * MIB, 'Source member bound')
+-            data = origin.read_bytes()
+-            require(hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest() == blob
+-                    and len(data) == before['bytes'] and hashlib.sha256(data).hexdigest() == before['sha256'],
+-                    'Actual source bytes must match activation Git tree')
+-            total += before['bytes']
+-            require(total <= 256 * MIB, 'Source size bound')
++            total += size
++            require(total <= 256 * MIB and len(entries) < 16000, 'Finite source envelope')
++            entries.append((mode, blob, size, name))
++        # Known complete ls-tree size envelope bounds this trusted local Git response.
++        blobs = subprocess.check_output(['/usr/bin/git', '-c', 'core.hooksPath=/dev/null',
++                                         '-c', 'core.fsmonitor=false', 'cat-file', '--batch'],
++                                        input=''.join(e[1] + '\n' for e in entries).encode(),
++                                        env=self.env, cwd=self.workspace, timeout=60)
++        require(len(blobs) <= total + len(entries) * 128, 'Raw source stream bound')
++        cursor = 0
++        for mode, blob, size, name in entries:
++            newline = blobs.index(b'\n', cursor)
++            require(blobs[cursor:newline] == (blob + ' blob ' + str(size)).encode(), 'Exact Git response frame')
++            cursor = newline + 1
++            data = blobs[cursor:cursor + size]
++            require(len(data) == size and blobs[cursor + size:cursor + size + 1] == b'\n', 'Complete source body')
++            cursor += size + 1
++            require(hashlib.sha1(b'blob ' + str(size).encode() + b'\0' + data).hexdigest() == blob,
++                    'Source body equals reviewed Git object')
++            expected = {'bytes': size, 'sha256': hashlib.sha256(data).hexdigest()}
+             target = self.checkout / name
+             target.parent.mkdir(parents=True, exist_ok=True)
+             target.write_bytes(data)
+             target.chmod(0o700 if mode == '100755' else 0o600)
+-            require(digest(target) == before, 'Copied source identity')
+-            self.source[name] = before
++            require(digest(target) == expected, 'Copied raw source identity')
++            self.source[name] = expected
++        require(cursor == len(blobs), 'No trailing source bytes')
++        del blobs
+         self.result['source_inventory_sha256'] = hashlib.sha256(
+             json.dumps(self.source, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+         java = exact_directory(os.path.realpath(os.environ['PV_JAVA_HOME_17']))
+@@ -311,6 +326,14 @@
+             require(self.active is None and (not self.stop_owed or self.stop_ok), 'Original settlement/stop uncertain')
+             self.require_settled()
+             require(retention_error is None, 'Evidence retention failed; preserve private runtime')
++            jna_log = self.evidence / 'jna-lifetime.log'
++            native_evidence = jna_log.read_text(errors='replace') if jna_log.is_file() else ''
++            for xml in self.evidence.glob('TEST-*.xml'):
++                native_evidence += xml.read_text(errors='replace')
++            require('HOLD:' not in native_evidence, 'Native fixture requested HOLD; retain original runtime')
++            if '> Task :app-desktop:auditJnaLifetimeTest' in native_evidence:
++                require('PVA010_REAL_JNA_LIFETIME_CLEANUP_SETTLED' in native_evidence,
++                        'Native test may have started without settlement evidence; retain runtime')
+             for name, expected in self.source.items():
+                 require(digest(self.checkout / name) == expected, 'Source drift; preserve private runtime for review')
+             require(self.root.resolve() == self.root and (self.root.stat().st_dev, self.root.stat().st_ino) == self.root_identity,

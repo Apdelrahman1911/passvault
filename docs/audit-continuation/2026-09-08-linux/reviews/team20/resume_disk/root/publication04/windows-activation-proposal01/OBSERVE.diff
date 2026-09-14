@@ -1,0 +1,43 @@
+--- accepted-consumed-observer-source-only
++++ new-windows-observer-proposal
+@@ -1,10 +1,10 @@
+ #!/usr/bin/python3.12
+-"""Bounded original macOS sanitizer CI metadata/compact-ZIP observer; never launches/reruns CI."""
++"""Bounded original Windows after-flush CI metadata/compact-ZIP observer; never launches/reruns CI."""
+ import hashlib,json,os,signal,stat,subprocess,sys,time,zipfile
+ from pathlib import Path
+ D=Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root')
+-A=D/'publication04/sanitizer-activate-instance01'
+-E=D/'macos-sanitizers-ci01'
++A=D/'publication04/windows-activate-instance01'
++E=D/'windows-after-flush-ci01'
+ GH='/usr/bin/gh'
+ REPO='Apdelrahman1911/passvault'
+ LIMIT=32*1024**2
+@@ -26,7 +26,7 @@
+ require(approval['reviewer']=='/root/current_ledger' and approval['status']=='ACCEPT_BOUNDED_ORIGINAL_CI_OBSERVER','Independent observer approval')
+ require(digest(Path(GH).read_bytes())=='2fd925d68889746976958342fb749bf102bc7dc8bcba3abfa533a80ad7791673','Original gh image')
+ activation=json.loads((A/'RESULT.json').read_text())
+-require(activation['status']=='MACOS_ACTIVATION_PUSH_VERIFIED_RUN_MUST_BE_IDENTIFIED','Verified original activation only')
++require(activation['status']=='WINDOWS_ACTIVATION_PUSH_VERIFIED_RUN_MUST_BE_IDENTIFIED','Verified original activation only')
+ commit=activation['commit']
+ require(len(commit)==40 and all(c in '0123456789abcdef' for c in commit),'Exact original commit')
+ require(E.resolve()==E and E.is_dir() and not E.is_symlink(),'Root-admitted fresh evidence directory')
+@@ -46,7 +46,7 @@
+         if phase=='artifacts':args=['api',f'repos/{REPO}/actions/runs/{run}/artifacts']
+         else:
+             artifact=json.loads((E/'ARTIFACT.json').read_text());aid=artifact['id']
+-            require(type(aid)is int and aid>0 and artifact['name']==f'macos-sanitizers-01-{run}-1' and artifact['expired']is False and 0<artifact['size_in_bytes']<=LIMIT,'Exact bounded compact artifact')
++            require(type(aid)is int and aid>0 and artifact['name']==f'audit-windows-after-flush-01-{run}-1' and artifact['expired']is False and 0<artifact['size_in_bytes']<=LIMIT,'Exact bounded compact artifact')
+             require(artifact['workflow_run']['id']==run and artifact['workflow_run']['head_sha']==commit,'Artifact original run binding')
+             args=['api',f'repos/{REPO}/actions/artifacts/{aid}/zip']
+ root=E/('observation-'+number)
+@@ -78,7 +78,7 @@
+             require(1<=len(members)<=128,'Compact member count')
+             for member in members:
+                 name=member.filename;mode=member.external_attr>>16
+-                require(name not in names and '/' not in name and '\\' not in name and name not in ('','.','..') and '\x00' not in name and Path(name).suffix in ('.json','.log','.xml'),'Flat allowlisted evidence names')
++                require(name not in names and '/' not in name and '\\' not in name and name not in ('','.','..') and '\x00' not in name and Path(name).suffix in ('.json','.jsonl','.log','.xml'),'Flat allowlisted evidence names')
+                 require(not member.is_dir() and not stat.S_ISLNK(mode) and stat.S_IFMT(mode) in (0,stat.S_IFREG) and not member.flag_bits&1,'Ordinary unencrypted evidence member')
+                 require(0<=member.file_size<=16*1024**2,'Individual uncompressed bound')
+                 names.add(name);total+=member.file_size

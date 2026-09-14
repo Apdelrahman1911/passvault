@@ -1,0 +1,64 @@
+--- consumed05/INIT.gradle
++++ fresh06/INIT.gradle
+@@ -49,22 +49,22 @@
+ // INERT NEW SOURCE PROPOSAL. No task action, runnable helper, allocation or admission.
+ // A bound copy needs independent root review; never rename/replay Compile03.
+ final Map ADMITTED = [
+-    runtimeRoot: '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action05',
+-    evidenceRoot: '/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-framework-package-action05',
++    runtimeRoot: '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06',
++    evidenceRoot: '/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-framework-package-action06',
+     readRoots: [
+-        '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action05/checkout',
+-        '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action05/gradle-home',
+-        '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action05/tmp',
+-        '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action05/konan',
++        '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06/checkout',
++        '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06/gradle-home',
++        '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06/tmp',
++        '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06/konan',
+         '/usr/lib/jvm/java-17-openjdk-amd64',
+-        '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action05/sdk-readonly',
++        '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06/sdk-readonly',
+     ],
+     offline: false, sourceManifestSha256: '5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6',
+     subjectSha256: '580c71e5fc5c917b7f62535282fa3436a3eada15e35ac7afa3bcd584f890c29d',
+ ] // Accepted checkpoint22 SOURCE literals; fresh root facts/review/instance remain UNBOUND.
+ // Required exact keys: runtimeRoot, evidenceRoot, readRoots, offline,
+ // sourceManifestSha256, subjectSha256. Current instance/SDK/tool pins remain UNBOUND.
+-final String RUN_ID = 'linux-android-framework-package-action05'
++final String RUN_ID = 'linux-android-framework-package-action06'
+ final String TARGET = ':app-android:auditCompileDebugFrameworkInstrumentation'
+ final String PACKAGE_TARGET = ':app-android:verifyDebugComposeResources'
+ final List TARGETS = [TARGET, PACKAGE_TARGET]
+@@ -363,10 +363,10 @@
+ Set expectedPaths = [] as Set
+ def reject = { String why ->
+     control.gate = false; control.failed = true
+-    throw new GradleException('AndroidFrameworkPackageAction05: ' + why)
++    throw new GradleException('AndroidFrameworkPackageAction06: ' + why)
+ }
+ def common = {
+-    [format: 'passvault-android-framework-package-action05-v1', runId: RUN_ID,
++    [format: 'passvault-android-framework-package-action06-v1', runId: RUN_ID,
+      sourceManifestSha256: ADMITTED.sourceManifestSha256, subjectSha256: SUBJECT_SHA,
+      selector: TARGETS, graphOnly: false, observedTestCases: 0]
+ }
+@@ -374,7 +374,7 @@
+     String text = JsonOutput.toJson(common() + row)
+     int size = text.getBytes('UTF-8').length
+     if (size > 2 * 1024 * 1024 || (emittedBytes += size) > 8 * 1024 * 1024) reject('receipt size bound')
+-    println('PASSVAULT_ANDROID_FRAMEWORK_PACKAGE_ACTION05=' + text)
++    println('PASSVAULT_ANDROID_FRAMEWORK_PACKAGE_ACTION06=' + text)
+ }
+ gradle.taskGraph.beforeTask { task ->
+     beforeCount++
+@@ -905,7 +905,7 @@
+ // enable the old Host06/07 Test graph, or open control.gate from this fragment.
+ 
+ // Fresh finite action gate. Original412-node graph is data, not reusable execution admission.
+-final Path expectedGraphFile = new File('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance05/EXPECTED-GRAPH.json').toPath()
++final Path expectedGraphFile = new File('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance06/EXPECTED-GRAPH.json').toPath()
+ final String EXPECTED_GRAPH_SHA = '90d55008a8e88d83a235eccdb61c59ae3dd4a0b1c62e328dfb907337584223e3'
+ def packageInput = null
+ 

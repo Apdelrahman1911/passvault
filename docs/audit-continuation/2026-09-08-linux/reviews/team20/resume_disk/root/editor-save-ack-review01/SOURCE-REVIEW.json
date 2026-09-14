@@ -1,0 +1,51 @@
+{
+  "afterimage": {
+    "bytes": 17187,
+    "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldDraftTest.kt",
+    "sha256": "1db3bbb9edd917351093634dc92ab1b2a1d1a6a18f6ef7e675d7f54ad782334b"
+  },
+  "author": "/root/remaining_report",
+  "author_diff": {
+    "bytes": 4084,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/remaining_report/editor_save_ack01/DELTA.diff",
+    "sha256": "984976a0bdaebab2b3e01446538df1bd73c7f5d2725c89d6523ceb44576ed873"
+  },
+  "author_manifest": {
+    "bytes": 2809,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/remaining_report/editor_save_ack01/MANIFEST.json",
+    "sha256": "29d9d416380a6373894710cc877951af80c80d0b6cc5d56a474c2aaf6a4986c9"
+  },
+  "basis": [
+    {
+      "bytes": 25441,
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialViewModel.kt",
+      "sha256": "b9a9c5e6a9e9a5eee86a13a639fa32826dbfdfbd09fa81a032935a37f58f0611"
+    },
+    {
+      "bytes": 15123,
+      "path": "core/testing/src/commonMain/kotlin/com/passvault/core/testing/fakes/FakeCredentialRepository.kt",
+      "sha256": "e23527840b0c9ffa1baa99bc70550c28115ea357fe213d5f436b568dfa76686a"
+    }
+  ],
+  "independent_challenge": [
+    "Reachability: loaded real VM uses existing TestData, receives valid inline draft and OnSaveClick; canSave/commitDrafts/validation guards permit performSave. No new production seam.",
+    "Timing: Turbine subscribes before Save; runCurrent drains present virtual scheduler. Fake checkFailure consumes Result.failure before any successful-operation delay, and synchronous getAllCredentials returns copies without advancing pending save.",
+    "Counterexamples: unconditional early SaveCompleted or navigation, clearing dirty values on Result.failure, loss of adopted name/value/secret, acknowledgement before successful copy persistence, and sibling-field loss would fail newly added or retained assertions.",
+    "Success:1000ms virtual delay plus runCurrent completes fake save before completion assertion; test compares exact2field IDs/name/value/secret and same credential id. expectNoEvents rejects duplicate buffered completion.",
+    "Compatibility: existing13test methods unchanged in count, one resource import and one method altered; no dependencies/task/product/runtime source or existing teardown changed.1extra logical boundary, no duplicate Room/native-input test.",
+    "Ownership: setup and stored helpers deep-copy synthetic credentials and clear owned copies. Assertions use strings only on synthetic data. No Save-vs-disposal/lock scenario introduced."
+  ],
+  "limits": [
+    "Source review only, not compilation, executed method/pass, Room durability, native GUI/IME/a11y/RTL or platform/runtime evidence.",
+    "PVA007 family remains open; PVA031 Add acknowledgement and remaining rapid/pre-frame obligations unaffected.",
+    "No PVU002/PVU006 restricted authoring or PVA037 native caller seam; all STOP/NO-RETRY/CLOSED/HOLD restrictions unchanged."
+  ],
+  "new_executed_tests": 0,
+  "new_product_fixes_closures": 0,
+  "new_test_methods": 0,
+  "next": "If fresh resource/execution/cleanup admission allows, select only amended existing method in one smallest justified Linux batch; do not rerun successful unaffected methods.",
+  "reviewer": "/root",
+  "schema": 1,
+  "status": "ACCEPT_NARROW_SOURCE_ORACLE_DELTA_RUNTIME_UNEXECUTED",
+  "utc": "2026-09-14T08:58:16.335333+00:00"
+}

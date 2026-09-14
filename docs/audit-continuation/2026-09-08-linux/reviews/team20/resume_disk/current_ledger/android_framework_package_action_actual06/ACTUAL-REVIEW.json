@@ -1,0 +1,109 @@
+{
+  "format": "passvault-android-framework-package-action06-original-actual-review-v1",
+  "utc": "2026-09-14T20:55:44.129269+00:00",
+  "reviewer": "/root/current_ledger",
+  "author": "/root",
+  "status": "ACCEPT_ORIGINAL_FAILURE_STOP_SETTLEMENT_AND_SCOPED_CLEANUP_ONLY",
+  "reused_instance_review": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/android_framework_package_action_instance06/INSTANCE-REVIEW.json",
+    "bytes": 4385,
+    "sha256": "754ffbb4e4bca7c67c58c2a4f82f3b7c2df8664e2ed4aa0518d6526e8724523d"
+  },
+  "evidence": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance06/ORIGINAL-TOOL-RESULT.json",
+      "bytes": 276,
+      "sha256": "c59ffa7312bbd4beec476e86d8ae7bfe56d8ab1338a613b9951577b363d7f15b"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-framework-package-action06/OUTER-RECEIPT.json",
+      "bytes": 32169,
+      "sha256": "a72d1ee4cfaa18f764dc3fb5f55a44d9e00e2550e370123dfd881171b94f6ee1"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-framework-package-action06/INNER-RESULT.json",
+      "bytes": 64774,
+      "sha256": "8e35f1053e7fe0d19a9bd0521c427d7e835d681005e69b65ab7b0e8544e4112c"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-framework-package-action06/PHASE-android-framework-actions.json",
+      "bytes": 54608,
+      "sha256": "18428db7aa8c742f2ae579351c19cd51465101c8dc2bbc621162ee40e28f87e2"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-framework-package-action06/logs/framework-actions.log",
+      "bytes": 2730419,
+      "sha256": "e6acaa2a0293daf9396876c3383a92f3aeb622f9aa2705b444a640e8076e1dea"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-framework-package-action06/logs/framework-actions-stop.log",
+      "bytes": 510,
+      "sha256": "ecfb3278d510bc5e2f5a43a7171e1d1e6dbf14b717cca43ee04d822e17e36395"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-framework-package-action06/GENERATED-REPORTS.json",
+      "bytes": 7323,
+      "sha256": "6fe287645cfab7897840bfef54270ba0f57db78c9452fc799a076c13317a21f1"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-framework-package-action06/GENERATED-REPORT-0001.bin",
+      "bytes": 132070,
+      "sha256": "541fbda2dec93e750299993c0898d16aafb45eb587d7f5b60013d74c5e59a92e"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-framework-package-action06/SOURCE-BEFORE.json",
+      "bytes": 1334,
+      "sha256": "eb521a5a9002e71a7b7b7c7d178a4d7af38a3d26b0884e3dcd667ac1e481e766"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-framework-package-action06/SOURCE-AFTER.json",
+      "bytes": 1334,
+      "sha256": "eb521a5a9002e71a7b7b7c7d178a4d7af38a3d26b0884e3dcd667ac1e481e766"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-framework-package-action06/FRAMEWORK-SUBJECT.json",
+      "bytes": 571,
+      "sha256": "60d984bdce52a33c9b9770d9b087dbf6050d4fdf3389000861973f9e967606e4"
+    }
+  ],
+  "identity": {
+    "session": 79931,
+    "entry_chunk": "a39241",
+    "terminal_chunk": "2befdf",
+    "original_exit": 1,
+    "commit": "d2d79ad52ce816a36f708bd35bd736a7d8068789",
+    "tree": "2e83afec1894238f59c1e9916cbf548ad54f5da2",
+    "manifest_sha256": "5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6",
+    "members": 4548,
+    "raw_bytes": 140474293,
+    "whole_current_workspace": false
+  },
+  "failure": {
+    "command_exit": 1,
+    "task": ":app-android:compileDebugAndroidTestKotlin",
+    "diagnostic": "AndroidClipboardLocaleInstrumentationTest.kt:415:76 Too many arguments for static fun setDefault(p0: LocaleList): Unit.",
+    "reachability": "Compiler input receipt binds actual sole29184B fixture/SHA580c71e5fc5c917b7f62535282fa3436a3eada15e35ac7afa3bcd584f890c29d; original source line415 indeed invokes two arguments. Real Debug Android instrumentation compilation failure, not mock or runtime failure.",
+    "mapping": "301 exact original marker bodies independently bound including LF terminators;294task-state records,3schema-equality,1artifact-binding,1admission,1compiler-input,1finished. Finished acceptedfalse,294before/after of412tasks,packageVerifiedfalse. One unchangedargumentvector. BuildFAILED8m28s;165actionabletasks are task executions,zero testcases.",
+    "preserved": "action_mapping_ok/action_evidence_collected false; no successful fullcompiler/carrier/package evidence, no Androidruntime/native32/framework/clipboard/localesecurity closure. No automatic retry; future correction/admission separate."
+  },
+  "settlement_cleanup_checks": [
+    "All eight innercommandlogs independently byte/hash-bound: sixisolation commands0,frameworkaction1,originalwrapperstop0; allcomplete/no commandcollectionerrors. Bothphase record hashes and original intent argv/environment digests match. OriginalsameisolatedHOME/TMP wrapperstop log says noGradledaemonsrunning.",
+    "Inner namespace_empty_before_exit/all_required_stops_ok/cleanup_safe/sourcebefore/sourceafter and readonlyGitSDK/indexstable alltrue; namespacepreflight hash/self/parent match original outerunshare child. Outer Git0 andoriginalunshare1 bothreaped,no pidfdkill. Original outerterminal1 corroborates preterminalreceipt,not receiptalone.",
+    "Reviewed unchanged cleanup path is reached only after original source/safety proof/namespace settlement, two nomountchecks, completeallowlist inventory, originalidentitychecks, retainedreports pre/posthashes. Actual REMOVED_ORIGINAL_RUNTIME40037/40037 and nolaterreasons; exact132070B generatedproblemsreport independently retained/bound. No source/permanenttests/evidence/sharedSDK/cache/oldHOLD deletion authority.",
+    "SOURCE-BEFORE/AFTER exactsame1334B hash;4548rawGitmembers140474293B, twooriginalEOLqualifications retained. SourceSTOP wrapper-onlycheck deliberatelywritesnoreport; reviewer initial expectedfilename readfailedFileNotFound then confirmedacceptedsource conditional,no runtimeprobe or missingrequiredreport.",
+    "Outer18retained resource samples remainabove admitted8GiBentry/5running floor and25/20percentRAM; minimumsampleddisk8925753344B,minRAM25814962176B. Inner19privateresource samples complete. Point samples not continuouscapacity/globalidle/noescape proof."
+  ],
+  "elapsed_seconds": 541.968,
+  "cleanup": {
+    "removed": 40037,
+    "snapshot_entries": 40037,
+    "status": "REMOVED_ORIGINAL_RUNTIME"
+  },
+  "scope_qualifications": [
+    "Accept original logicalslot retirement plus scoped current06cleanup, not permission to probe/recover/removeGUI18/GUI19 or any historicalHOLD.",
+    "Retain parentUNKNOWN candidate and874unclassifiedchurn; acceptedcooperativeaudit-onlyschedulingpolicy is not other-owneridleness/globalprocessattribution. No unrelatedsignals or reviewer liveprobes.",
+    "Rootadopt before freshly admitting GUI20/nextquietjob. Sourcefix/publication/newAndroidattempt needtheir own exactsource/instance review; no06replay.",
+    "Credit0newcases/closures.27/39qualifiedconfirmed69.2percent; original19/25 andsuspicions2/12unchanged;NOTREADY."
+  ],
+  "restrictions": "PVU007STOP/PVU011NO-RETRY/PVA029FAIL-noautomaticretry/G7G8CLOSED/WindowsGraph03CLOSEDremoteUNKNOWN/allHOLD-refusedwitnesses/protectedrefs-tags-mobile1017001/eightPVDseparate preserved. SOURCE/DATA/hash comparisons only; no helper import/execution/Git/network/probes/cleanup by reviewer."
+}

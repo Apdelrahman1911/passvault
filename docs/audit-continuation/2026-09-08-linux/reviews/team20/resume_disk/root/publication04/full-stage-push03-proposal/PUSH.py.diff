@@ -1,0 +1,26 @@
+--- consumed-source-only/PUSH.py
++++ prospective03/PUSH.py
+@@ -16,11 +16,11 @@
+ P = Path('/root/projects/PassVault')
+ W = P / 'passvault-linux'
+ D = W / 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root'
+-HERE = D / 'publication04/push-instance02'
++HERE = D / 'publication04/push-instance03'
+ REPO = P / 'passvault-publication-20260914-04'
+-ROOT = P / 'audit-publication04-push02'
++ROOT = P / 'audit-publication04-push03'
+ LOCK = P / '.audit-coordination-linux-20260914-c20/build.lock'
+-BASE = '6438f2dc69229aeb8d7cb755c630e427450b42a5'
++BASE = '4675ae486a5114508ff655122cf33783305ec81e'
+ LOCAL_HEAD = '832ed5f5aee56fbbf4c298ef0d2b10de154484cf'
+ BRANCH = 'refs/heads/codex/audit-continuation-linux-20260908'
+ REMOTE = 'https://github.com/Apdelrahman1911/passvault.git'
+@@ -132,7 +132,7 @@
+     raw = read(HERE / 'REQUEST.json', 65536)
+     request = json.loads(raw)
+     approval = json.loads(read(HERE / 'APPROVAL.json', 65536))
+-    require(request['scope'] == 'C20_COMPACT_HANDOFF_PUSH02_NO_ACTIVATION' and request['base'] == BASE,
++    require(request['scope'] == 'C20_COMPACT_HANDOFF_PUSH03_NO_ACTIVATION' and request['base'] == BASE,
+             'Source-only continuation scope')
+     require(approval['reviewer'] == '/root/current_ledger' and approval['status'] == 'ACCEPT_EXACT_SOURCE_PUSH_ONLY'
+             and approval['request_sha256'] == sha(raw), 'Genuine exact independent review')

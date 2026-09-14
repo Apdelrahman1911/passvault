@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "utc": "2026-09-14T14:47:51.628357+00:00",
+  "author": "/root",
+  "status": "SOURCE_FOLLOWUP_NO_NEW_CONFIRMED_DEFECT_NO_EXECUTION",
+  "source": {
+    "path": "app-android/build.gradle.kts",
+    "bytes": 30600,
+    "sha256": "c7a382773cb11383d583b6fd1dcead85aac30ccc0a38f81995f535dc1029da42"
+  },
+  "observation": "Mergednativeproducer hasextraobsoleteJNA-onlyarmeabi/mips/mips64images. DoNOTinfer finalAPKunexpectedABIbug from intermediateoutput.",
+  "surrounding_guards": "defaultConfig.ndk.abiFilters explicitlyarm64-v8a,armeabi-v7a,x86,x86_64 at547-552;packageverifier enforces exactnativeABIset andexpectedELFtargets. Thoseguards require actualfinalartifact validation;not passed bymerge task.",
+  "next_packaging_risk": "Final archive legal-document byte/file-set correspondence and native carriers remain unverified. Existing verifyReleaseApkContents depends on assembleRelease (line756), which requires valid release signing configuration (697-717); it is NOT a usable unsigned validation command. No packaging run admitted.",
+  "signing_boundary": "Preserve unconditional verifyReleaseSigningConfiguration dependency on packageRelease, packageReleaseBundle, assembleRelease and bundleRelease. Conditional signingConfig assignment alone does not authorize unsigned packaging. No -x, skipped gate, secrets, candidate1017001 replacement or version/identity change. A separate nonpublishing validation design, if permitted, needs independent review before any implementation or execution; this note does not authorize bypassing release guards.",
+  "framework_preparation": "FrameworkGraph01 source is installedandunexecuted (512nodes cap), not a test orcompilerpass. Avoidusinggraph-onlysuccess asclipboard/localeverification; compileinstrumentation andactualtargetexecution remain distinct. A currentfreshouter/coordination admission isstillneeded; neverreplayold CLOSED orHOLD helpers.",
+  "limits": "Source-only follow-up; no product change, final APK, license-compliance, runtime or closure evidence. Corrected note awaiting independent review.",
+  "supersedes": {
+    "path": "passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android04-package-followup01/SOURCE-NOTE.json",
+    "sha256": "8fc3c24fabb91ae80d477a9c8b367fd1364ed1a7176532a3813c78a17d42b566",
+    "reason": "Independent challenge confirmed unconditional final-archive signing gate; original conditional-signing observation was incomplete."
+  }
+}

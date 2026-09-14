@@ -1,16 +1,36 @@
+# Latest continuation — 2026-09-14
+
+**INCOMPLETE / NOT READY.** Start with [the current remaining-work report](C20_REMAINING_WORK_SOLO_2026-09-14.md)
+and `ISSUE_LEDGER.json`, `VERIFICATION_LEDGER.json`, `COVERAGE_DELTA.json`.
+Their report24 review/adoption is under `reviews/team20/resume_disk/current_ledger/report24_reconciliation01/`
+and `reviews/team20/resume_disk/root/report-refresh24/`. These supersede older scheduling/counts below
+and in the preserved `C20_CURRENT_STATE.json`, `C20_CURRENT_SUPPLEMENT_2026-09-14.json`
+and `C20_OWNER_BRIEF_2026-09-14.md`; the historical restrictions and evidence remain binding.
+Root owns implementation/builds/Git/cleanup; one agent reviews only. Successful Linux GUI20 and macOS
+sanitizer evidence is retained; Android07 interruption/HOLD is not a pass. Windows after-flush source
+and policy controls are accepted, but native CI execution is still pending at this source checkpoint.
+This Git continuation is not an application release. No live execution authority is inherited from a clone.
+
+---
+
 # Current C20 continuation — 2026-09-13
 
 **NOT READY.** Start with [C20_CONSOLIDATED_REPORT.md](C20_CONSOLIDATED_REPORT.md)
-and [C20_CURRENT_STATE.json](C20_CURRENT_STATE.json), then the current three ledgers.
-Latest accepted publication d2d79ad52ce816a36f708bd35bd736a7d8068789 /
-2e83afec1894238f59c1e9916cbf548ad54f5da2; checkpoint22 SOURCE/INDEX frozen.
-Four reviewed static-only test fixes are applied, unpublished; Dependency03 actual
-three inventories/cleanup accepted; Focused05 ninePASS/wholeFAIL and Static07FAIL
-preserved. Host1 exact instance and newP23 narrowed Static08 remain unfinished.
-Counts19/25(76%),26/39(66.7%),2/12(16.7%) are separate;230mixedXML are notpasses.
-No build/test/CI active at this report cut; root sole execution owner; normal12GiB
-floor met. All prior restrictions/held evidence remain. Older entries below are
-historical where they conflict with these exact current records.
+and [C20_CURRENT_STATE.json](C20_CURRENT_STATE.json), then current ledgers.
+Latest adopted source publication IOS S289669b1749642e7b755606c9f7a4bdb47434c43 /
+01e20b720db24d58ff5f91c8ea167c2d45e3b1a8,5123members adds two dormant controls.
+P23 product/SOURCE/INDEX remain59bee33096f538b9444f00236448d7fc0ea740b2 /
+76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6,5121members; no new capture/Apple test.
+Counts19/25(76%),27/39(69.2%),2/12(16.7%) remain separate;230mixedXML are notpasses.
+Host04/05 guard failures and Bytecode06/DesktopGraph01 original cleanup adopted;
+0newproduct fixes/cases/closures. Original DesktopGraph transient freeze released,
+not V/P23 disposal or image admission. Host06/Package01/Windows controls installed
+W-only; execution remains separately gated. Apple A is BLOCKED by unchanged host/
+RAM evidence. Windows IOS-S-parent publisher rebind proceeds independently.
+GUI dependency-owner, Android32 license/target, native/hardware and final integrity
+gaps remain. Root sole launcher,6agents total,oneheavyjob,immediate cleanup; no fresh
+resource/queue claim or updated ETA. Later reports/evidence need separate publication.
+Historical paragraphs below retain their dates/scopes; live denominators unchanged.
 
 ---
 
@@ -484,13 +504,14 @@ succeeded. This is an inspection-tool failure, not an application test.
 | Measure | Qualified/conclusive | Remaining |
 | --- | ---: | ---: |
 | Original confirmed PVA-001–025 | 19/25 (76%) | 6 |
-| All confirmed PVA-001–039 | 26/39 (66.7%) | 13 |
+| All confirmed PVA-001–039 | 27/39 (69.2%) | 12 |
 | Original PVU-001–012 | 2/12 (16.7%) | 10 |
 | PVD-001–008 explanations | 8/8 documented | Owner choices separate |
 
 The continuation added source-confirmed families PVA-038 and PVA-039;
-Linux03 supplied four independently supported qualified closures. PVA-039 is
-not yet a closure. Frozen reports with22/37,22/38 or26/38 retain their historical scope, not the current
+Linux03 supplied four independently supported qualified closures; PVA-039 adds
+a fifth qualified continuation closure through real-Compose behavior/source affinity
+and affected Static08 checks. Frozen reports with22/37,22/38 or26/38 retain their historical scope, not the current
 total. These are separate denominators, not overall readiness. Historical passes,
 failures, rejected concerns, grouped variants and coverage qualifications remain
 in the handoff. Pending work is not silently dropped because Linux lacks a

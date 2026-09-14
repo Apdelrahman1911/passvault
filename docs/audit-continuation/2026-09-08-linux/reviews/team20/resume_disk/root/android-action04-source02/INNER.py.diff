@@ -1,0 +1,22 @@
+--- source01/INNER.py
++++ source02/INNER.py
+@@ -58,7 +58,7 @@
+ GIT_IMAGE = Path('/usr/bin/git')
+ RUBY_IMAGE = Path('/usr/bin/ruby3.2')
+ EXCLUDE_STATE = 'INFO_ABSENT'  # Retained checkpoint22 candidate; root must admit unchanged current U.
+-FROZEN = {SOURCE: '5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6', INIT: 'e35a58c594c604cc1a4b05df0e401471d30e907ebdb49766baef60a3b4673ead', GRAPH_DATA: '6348308a23d92a1fac1566ace2372cf16693d6766c53f2fec7f6fcd46e7a5fdf', ELIGIBILITY: 'ab5222e5217b230c5ef4ff836553980719c89765684720771be6ca4cf741829f'}  # Bound candidate hashes; physical image intake and genuine final instance approval remain required.
++FROZEN = {SOURCE: '5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6', INIT: 'bf6b9742206f44df4d74cbce86f8f2df5267fe8980524a678fcd07c87924b0cf', GRAPH_DATA: '6348308a23d92a1fac1566ace2372cf16693d6766c53f2fec7f6fcd46e7a5fdf', ELIGIBILITY: 'ab5222e5217b230c5ef4ff836553980719c89765684720771be6ca4cf741829f'}  # Bound candidate hashes; physical image intake and genuine final instance approval remain required.
+ INPUTS = (SELF, INIT, SOURCE, GRAPH_DATA, ELIGIBILITY, JAVA / 'bin/java', JAVA / 'release', MOUNT, GIT_INDEX) + SDK_METADATA
+ RUN_ID = 'linux-android-release-action04'
+ REVIEW_ASSERTIONS = (
+@@ -400,7 +400,9 @@
+             require(evidence['retainedRuleFiles'] and evidence['retainedRuleFiles']
+                         == by_group['R8_RECONCILED_CONFIGURATION_FILES_PARAMETER']['files']
+                     and evidence['detail']['ruleBasis'] == 'EXACT_R8_CALL_SITE_CHAIN_NOT_GENERATED_CONFIGURATION_OUTPUT'
+-                    and evidence['detail']['generatedConfigurationOutputIsNotInputList'] is True,
++                    and evidence['detail']['generatedConfigurationOutputIsNotInputList'] is True
++                    and evidence['detail']['ruleFileRepresentation'] ==
++                        'PUBLIC_KEEP_RULE_FILE_GETFILE_PATH_PROJECTION_NO_ORIGIN_SEMANTICS',
+                     'actual reconciled rule-file parameter cohort, not output substitution')
+             detail = evidence['detail']
+             require(type(detail['failOnMissingProguardFiles']) is bool

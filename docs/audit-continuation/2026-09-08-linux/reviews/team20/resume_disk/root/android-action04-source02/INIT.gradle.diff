@@ -1,0 +1,30 @@
+--- source01/INIT.gradle
++++ source02/INIT.gradle
+@@ -784,8 +784,25 @@
+         if (!(keep instanceof List) || keep.size() > 8192 || !(missing instanceof Boolean)) reject('R8 keep-rule helper contract')
+         def reconciled = task.'reconcileDefaultProguardFile$gradle_core'(keep, task.getExtractedDefaultProguardFile(), missing)
+         if (!(reconciled instanceof List)) reject('R8 reconciled rule-list contract')
+-        retainedRuleFiles = inventory('R8_RECONCILED_CONFIGURATION_FILES_PARAMETER', reconciled)
+-        detail = [keepRuleCandidates: keep.collect { if (!(it instanceof File)) reject('keep-rule File type'); checked(it, false).toString() },
++        // AGP9.4 passes List<KeepRuleFile>, not List<File>. Inspect only the public
++        // final getFile():Path projection; keep the original wrapper list for reconciliation.
++        Class keepRuleOwner = Class.forName('com.android.builder.dexing.KeepRuleFile', false, task.getClass().classLoader)
++        def ruleFileGetter = keepRuleOwner.getMethod('getFile', new Class[0])
++        if (ruleFileGetter.declaringClass != keepRuleOwner || ruleFileGetter.returnType != Path ||
++                !Modifier.isPublic(ruleFileGetter.modifiers) || !Modifier.isFinal(ruleFileGetter.modifiers) ||
++                Modifier.isStatic(ruleFileGetter.modifiers)) reject('public KeepRuleFile path contract')
++        def ruleFiles = { List rules ->
++            if (rules.size() > 8192) reject('finite KeepRuleFile list bound')
++            rules.collect { rule ->
++                if (!keepRuleOwner.isInstance(rule)) reject('keep-rule wrapper type')
++                def path = ruleFileGetter.invoke(rule, new Object[0])
++                if (!(path instanceof Path)) reject('keep-rule Path type')
++                checked(path.toFile(), false).toFile()
++            }
++        }
++        retainedRuleFiles = inventory('R8_RECONCILED_CONFIGURATION_FILES_PARAMETER', ruleFiles(reconciled))
++        detail = [keepRuleCandidates: ruleFiles(keep).collect { it.toString() },
++            ruleFileRepresentation: 'PUBLIC_KEEP_RULE_FILE_GETFILE_PATH_PROJECTION_NO_ORIGIN_SEMANTICS',
+             failOnMissingProguardFiles: missing, inMemoryConfigurations: strings(task.getProguardConfigurations()),
+             ruleBasis: 'EXACT_R8_CALL_SITE_CHAIN_NOT_GENERATED_CONFIGURATION_OUTPUT',
+             generatedConfigurationOutputIsNotInputList: true]

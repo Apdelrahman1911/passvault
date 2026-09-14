@@ -1,0 +1,121 @@
+{
+  "schema": "passvault-c20-packaging-owner-ask-independent-review-v1",
+  "reviewer": "/root/image_diag_review",
+  "author": "/root/image_cleanup_prep",
+  "disposition": "ACCEPT_OWNER_ASK_REFINEMENT_WITH_CURRENT_CUTOFF_QUALIFICATION",
+  "scope": "Small source/data challenge of existing license-option selections, still-missing artifact inclusion evidence and public Debian contact wording; not a full review/reopening of all inventory rows, legality, package/native behavior or actual scheduling.",
+  "inputs": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/image_cleanup_prep/packaging_remaining01/NOTE.md",
+      "bytes": 11229,
+      "sha256": "411a3ab390669077b8039c59d77d66c536030f3c31faaaa96c3f7d8eb232791e"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/image_cleanup_prep/packaging_remaining01/SOURCES.json",
+      "bytes": 6316,
+      "sha256": "adc3b4a90b1995ce97fd709a6017cec37f74b553e999d7b438b897878255bbc1"
+    },
+    {
+      "key": "sealed_supplement",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/remaining_report/canonical_afterimage01/C20_CURRENT_SUPPLEMENT_2026-09-14.json",
+      "bytes": 61271,
+      "sha256": "37fc2643f7456b8ba09a4b73c490a7b968d2d6f04476aec22f2399b35c59257e"
+    },
+    {
+      "key": "dependency03_review",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_report_review/linux_remaining_bindings/dependency03/ACTUAL-REVIEW.json",
+      "bytes": 18104,
+      "sha256": "cd6ebd967637ce6fe56aa9ffd8b7d884d6f2805652df21987a915e0ae8dce3b2"
+    },
+    {
+      "key": "package03_review",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_report_review/crypto_package03_actual_review01/ACTUAL-REVIEW.json",
+      "bytes": 7723,
+      "sha256": "0975d8295300e0a0812ae69717ac68aeec3e59e576a7b8a711e434eff3921a55"
+    },
+    {
+      "key": "notices",
+      "path": "THIRD_PARTY_NOTICES.md",
+      "bytes": 12309,
+      "sha256": "61edb1506038fb945414c8e71d38e89781f0793d7dbb074180996f85a55b359c"
+    },
+    {
+      "key": "notice",
+      "path": "NOTICE.txt",
+      "bytes": 1113,
+      "sha256": "c66732bfed1d7f5aaa78bb420fbee004f01ce16b6788d9ad120c5b434074b221"
+    },
+    {
+      "key": "dependency_lock",
+      "path": "legal/third-party-dependencies.lock",
+      "bytes": 17552,
+      "sha256": "252661ae65b520539b6d7a1e301cb1f6de505a17576301e970668b1778d150e2"
+    },
+    {
+      "key": "attribution_map",
+      "path": "legal/third-party-attribution.tsv",
+      "bytes": 11363,
+      "sha256": "46314dba4fd596bbca2903e5ba8b1fe5c4408bf8ded8c8b32f86d3d2e207e0dd"
+    },
+    {
+      "key": "root_build_source",
+      "path": "build.gradle.kts",
+      "bytes": 24486,
+      "sha256": "6c35802a0f779baa1b4d5a65396a07824653761882ddfbfaa718a46c59fa5ee0"
+    },
+    {
+      "key": "desktop_build_source",
+      "path": "app-desktop/build.gradle.kts",
+      "bytes": 63975,
+      "sha256": "d0ead442c57c9465333d036bcb4d96f1ac5b06fd8d04dfe5b45fc571100265e3"
+    },
+    {
+      "key": "legal_bundle_verifier_source",
+      "path": "scripts/verify-legal-notice-bundle.sh",
+      "bytes": 2557,
+      "sha256": "95431bba48bcd606e0a6c0bc680b1bc99fcc70269cb3e70133f57bb43ac2a779"
+    },
+    {
+      "key": "license_archive_verifier_source",
+      "path": "scripts/verify-third-party-license-archive.sh",
+      "bytes": 2863,
+      "sha256": "0576bf813157b3a4db6de557fa1660cf3dd2f5a7f908cb2158b0b2d7a27cb20e"
+    },
+    {
+      "key": "owner_design_source",
+      "path": "docs/audit-handoff/current/OWNER_DESIGN_DECISIONS.md",
+      "bytes": 43407,
+      "sha256": "bfd7a86eaae9f4412e52a7092845fca4656f6da798ef45d8aba8f0561669b55a"
+    }
+  ],
+  "accepted_claims": [
+    {
+      "claim": "JNA Apache-2.0 is an existing project selection, not a new unresolved LGPL election.",
+      "basis": "THIRD_PARTY_NOTICES.md84 explicitly says Apache-2.0 OR LGPL-2.1-or-later; PassVault selects Apache-2.0. Android5.18.1/Desktop5.19.1 are corroborated by legal/third-party-dependencies.lock135/188 and attribution.tsv33; named JNA texts plus project LICENSE remain attribution inputs. This is the existing recorded option, not a new legal/owner authorization."
+    },
+    {
+      "claim": "FreeType FTL is an existing project selection, not an unresolved FTL-versus-GPL decision.",
+      "basis": "THIRD_PARTY_NOTICES.md81 explicitly selects FTL for2.13.3; attribution.tsv51 names both LICENSE and FTL reproduced files and qualified Linux native carrier; NOTICE.txt13 retains FreeType acknowledgment. No inference that every current/future packaged native image has been verified."
+    },
+    {
+      "claim": "Source-license selection and dependency inventory do not establish shipped inclusion.",
+      "basis": "THIRD_PARTY_NOTICES14-16/114-116 requires three app-level documents plus THIRD_PARTY_LICENSES and a separate OpenJDK legal tree. Desktop build531-539/598-652 separately verifies installed file sets and bytes. Its OpenJDK check656-670 proves only nonempty nonsymlink java.base LICENSE presence within runtime/legal, not exhaustive module-license analysis. Bundle/archive scripts are source contracts, not newly executed PASS evidence."
+    },
+    {
+      "claim": "Exact remaining public Debian publisher ask is SUPPORT_EMAIL, not a generic unsettled component-license choice.",
+      "basis": "Desktop build845-856 reads configured SUPPORT_EMAIL from environment/properties, and1358-1362 assigns it to debMaintainer with the explicit verified publisher contact/public Debian release comment. Validator31-67 checks syntax/length/nonreserved domain only. Passing that validator or using a validation-only contact does not demonstrate mailbox ownership, production authorization or readiness to publish."
+    }
+  ],
+  "recommended_owner_wording": "Before a future public Debian release, provide or confirm the verified publisher-controlled public support email to use as SUPPORT_EMAIL/debMaintainer. No credentials are requested. This does not authorize publication or production metadata changes now; Desktop publication remains deferred.",
+  "kept_separate": [
+    "Already recorded JNA/FreeType choices need no invented reapproval. Any genuinely additional counsel/business question must name its concrete unresolved obligation instead of declaring all legal work blocked.",
+    "Actual resolved-carrier/native-artifact correspondence, exact packaged notice inclusion and installed runtime/native behavior remain unfinished engineering evidence. Their restricted routes/HOLDs are not silently reclassified as external legal decisions or bypassed.",
+    "Any previously specifically admitted synthetic nonpublishing contact is confined to that admission; this review establishes no new approval or authority to reuse it. The public-contact ask is a future release prerequisite, not a reason to stop ordinary compilation/tests.",
+    "Android emulator/system-image license/admission is a separate target-access question; the existing read-only SDK allowance and JNA/FreeType selections do not authorize new downloads/license acceptance."
+  ],
+  "current_cutoff_qualification": "Author NOTE explicitly consumed no AndroidAction01 result and is a historical source inventory. Its sections2/5 describing a first producer action are not current launch instructions: root has since retained original action01 outer70 pre-inner input mismatch. Final report must use root latest actual/successor disposition, not repeat that frozen scheduling prose or replay the consumed instance. This does not alter the accepted license/contact refinement.",
+  "activities": "Named retained SOURCE/DATA reads, SHA256/length comparisons and this own-directory report only. No helper import/eval/AST/compile/execution, build/test, source edits, new provider/native-root/seam inquiry, live runtime/SDK/process/cache/HOLD probes, Git/network, signal or deletion.",
+  "new_findings_fixes_cases_closures": 0,
+  "owned_live_resources": 0,
+  "execution_or_publication_admission": false
+}

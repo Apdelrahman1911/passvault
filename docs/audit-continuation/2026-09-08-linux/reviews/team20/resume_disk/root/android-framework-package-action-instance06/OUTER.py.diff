@@ -1,0 +1,146 @@
+--- consumed05/OUTER.py
++++ fresh06/OUTER.py
+@@ -20,11 +20,11 @@
+ 
+ W = Path('/root/projects/PassVault/passvault-linux')
+ B = W / 'docs/audit-continuation/2026-09-08-linux'
+-R = Path('/root/projects/PassVault/audit-runtime-linux-android-framework-package-action05')
+-E = B / 'runs/linux-android-framework-package-action05'
+-SELF = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance05/OUTER.py')
+-REQUEST = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance05/REQUEST.json')
+-APPROVAL = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance05/APPROVAL.json')  # Reviewer only.
++R = Path('/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06')
++E = B / 'runs/linux-android-framework-package-action06'
++SELF = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance06/OUTER.py')
++REQUEST = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance06/REQUEST.json')
++APPROVAL = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance06/APPROVAL.json')  # Reviewer only.
+ LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260914-c20/build.lock')
+ # Actual source/store/index/tool/exclude identities require root's fresh review.
+ # Paths or old receipts alone never admit the retired source store or an index.
+@@ -34,15 +34,15 @@
+ RUBY_IMAGE = Path('/usr/bin/ruby3.2')
+ EXCLUDE_STATE = 'INFO_ABSENT'  # Retained checkpoint22 candidate; root must admit unchanged current U.
+ GIT_METADATA, GIT_INDEX = R / 'git-metadata', R / 'git-index'
+-INNER, INIT = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance05/INNER.py'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance05/INIT.gradle')
++INNER, INIT = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance06/INNER.py'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance06/INIT.gradle')
+ EXPECTED_GRAPH = INIT.parent / 'EXPECTED-GRAPH.json'
+ 
+ SOURCE = B / 'reviews/checkpoint22/source-prepare01/SOURCE.json'  # Accepted checkpoint22 SOURCE bytes/hash; fresh cohort physical binding/review required.
+ JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64/bin/java')
+ RELEASE = JAVA.parent.parent / 'release'
+ PYTHON, INNER_PYTHON, UNSHARE = '/usr/bin/python3.12', '/usr/bin/python3', '/usr/bin/unshare'
+-RUN, PURPOSE = 'linux-android-framework-package-action05', 'ONE_LINUX_ANDROID_FRAMEWORK_PACKAGE_ACTION05'
+-HOST_POLICY_ID = 'ANDROIDFRAMEWORKPACKAGEACTION05_SCHEDULING_ONLY_BOUND_NONLIVE_UNKNOWN_ERRNO_V5'
++RUN, PURPOSE = 'linux-android-framework-package-action06', 'ONE_LINUX_ANDROID_FRAMEWORK_PACKAGE_ACTION06'
++HOST_POLICY_ID = 'ANDROIDFRAMEWORKPACKAGEACTION06_SCHEDULING_ONLY_BOUND_NONLIVE_UNKNOWN_ERRNO_V5'
+ HOST_POLICY_ASSERTIONS = (
+     'complete_prior_and_current_audit_launch_accounting',
+     'every_prior_admitted_audit_operation_has_independently_accepted_scheduling_disposition',
+@@ -54,7 +54,7 @@
+     'only_original_run_private_writable_caches_and_temporary_paths',
+     'owned_commands_do_not_escape_to_parent_namespaces_or_mutate_host_mounts',
+     'shared_host_capacity_assumptions_and_soft_limits_explicitly_admitted',
+-    'unconsumed_androidframeworkpackageaction05_only_no_old_hold_or_retry_authority',
++    'unconsumed_androidframeworkpackageaction06_only_no_old_hold_or_retry_authority',
+     'bound_terminal_unknown_is_not_owned_idle_or_cleanup_authority',
+     'proc_anchor_and_flags0_thread_group_contracts_corroborated',
+ )
+@@ -65,7 +65,7 @@
+     'platforms/android-37.0/package.xml', 'build-tools/36.0.0/source.properties',
+     'build-tools/36.0.0/package.xml', 'licenses/android-sdk-license'))
+ SDK_OPERATION = 'READ_ONLY_EXISTING_COMPILE_SDK_NO_COPY_INSTALL_LICENSE_CHANGES'
+-ACTION_BINDING = {'runtimeRoot': '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action05', 'evidenceRoot': '/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-framework-package-action05', 'readRoots': ['/root/projects/PassVault/audit-runtime-linux-android-framework-package-action05/checkout', '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action05/gradle-home', '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action05/tmp', '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action05/konan', '/usr/lib/jvm/java-17-openjdk-amd64', '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action05/sdk-readonly'], 'offline': False, 'sourceManifestSha256': '5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6', 'subjectSha256': '580c71e5fc5c917b7f62535282fa3436a3eada15e35ac7afa3bcd584f890c29d'}  # Accepted checkpoint22 SOURCE literals; fresh cohort physical binding remains root-owned.
++ACTION_BINDING = {'runtimeRoot': '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06', 'evidenceRoot': '/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-framework-package-action06', 'readRoots': ['/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06/checkout', '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06/gradle-home', '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06/tmp', '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06/konan', '/usr/lib/jvm/java-17-openjdk-amd64', '/root/projects/PassVault/audit-runtime-linux-android-framework-package-action06/sdk-readonly'], 'offline': False, 'sourceManifestSha256': '5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6', 'subjectSha256': '580c71e5fc5c917b7f62535282fa3436a3eada15e35ac7afa3bcd584f890c29d'}  # Accepted checkpoint22 SOURCE literals; fresh cohort physical binding remains root-owned.
+ READ_ROOT_ENVELOPE = (R / 'checkout', R / 'gradle-home', R / 'tmp', R / 'konan', JAVA.parent.parent, SDK_VIEW)
+ COMMIT = 'd2d79ad52ce816a36f708bd35bd736a7d8068789'  # Accepted product P supplied by root; not a SOURCE capture observation.
+ TREE = '2e83afec1894238f59c1e9916cbf548ad54f5da2'  # Accepted product P supplied by root; not a SOURCE capture observation.
+@@ -82,7 +82,7 @@
+ PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
+ DEVICE = {'directory_device': 23, 'regular_file_device': 24}  # Original root-supplied cohort; final instance review required.
+ EXPECTED_LOCK = {'bytes': 0, 'ctime_ns': 1789367939912132665, 'dev': 24, 'ino': 13719326, 'mode': 33152, 'mtime_ns': 1789367939912132665, 'nlink': 1, 'uid': 0}  # Prospective current lock; fresh request/late recheck mandatory.
+-FROZEN = {EXPECTED_GRAPH: '90d55008a8e88d83a235eccdb61c59ae3dd4a0b1c62e328dfb907337584223e3', INNER: '1669491a0ba341a810cff5401f7e0ec6dfcce8115ca90c3c33fc03091b903828', INIT: '6971be167108055cd6844f7a5aebb40978d88388b63911c47107347781c351cf', SOURCE: '5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6'}  # Accepted SOURCE/proposed NEW control hashes; fresh request/pins/review pending.
++FROZEN = {EXPECTED_GRAPH: '90d55008a8e88d83a235eccdb61c59ae3dd4a0b1c62e328dfb907337584223e3', INNER: '27eaf4b96d965469cc57e6668e319d32908567c993024580c48bc29db8974dc2', INIT: '26b1d79158e908aafd3dfbd2ed8a08cc20698ef2a4b0e3932d873ab858dde225', SOURCE: '5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6'}  # Accepted SOURCE/proposed NEW control hashes; fresh request/pins/review pending.
+ REVIEW_ASSERTIONS = (
+     'ordinary_full_stage0_index_matches_source', 'no_split_sparse_unmerged_index',
+     'standalone_store_without_redirects', 'local_config_and_excludes_reviewed',
+@@ -102,7 +102,7 @@
+ reasons, resources, churn, directories, images = [], [], 0, {}, {}
+ child, lock_fd, owned_domain, cancel_written, index_copy = None, None, None, False, None
+ host_policy_admitted = False
+-receipt = {'format': 'passvault-linux-android-framework-package-action05-outer-receipt-v5', 'run_id': RUN,
++receipt = {'format': 'passvault-linux-android-framework-package-action06-outer-receipt-v5', 'run_id': RUN,
+            'status': 'HOLD', 'inner_started': False, 'cleanup': 'NOT_ATTEMPTED', 'children': []}
+ 
+ def require(value, message):
+@@ -398,7 +398,7 @@
+ 
+ def screen():
+     global churn
+-    require(host_policy_admitted and HOST_POLICY_ID == 'ANDROIDFRAMEWORKPACKAGEACTION05_SCHEDULING_ONLY_BOUND_NONLIVE_UNKNOWN_ERRNO_V5',
++    require(host_policy_admitted and HOST_POLICY_ID == 'ANDROIDFRAMEWORKPACKAGEACTION06_SCHEDULING_ONLY_BOUND_NONLIVE_UNKNOWN_ERRNO_V5',
+             'prospective bound-terminal policy requires genuine fresh exact-instance intake')
+     import errno
+ 
+@@ -1053,7 +1053,7 @@
+                 and saved['pin']['mode'] == stat.S_IFREG | 0o600, 'exact durable report copy/readback')
+         copies.append({'relative': '/'.join(parts), 'kind': kind, 'destination': destination,
+                        'source_image': original, 'saved_image': saved})
+-    manifest = {'format': 'passvault-linux-android-framework-package-action05-retained-diagnostics-v1', 'run_id': RUN,
++    manifest = {'format': 'passvault-linux-android-framework-package-action06-retained-diagnostics-v1', 'run_id': RUN,
+         'cache_roots': {'/'.join(parts): value for parts, value in roots.items()}, 'limits': CACHE_REPORT_LIMITS,
+         'cache_file_count': cache_files, 'cache_logical_bytes': cache_bytes,
+         'problems_report_limit_bytes': MIB, 'copies': copies,
+@@ -1155,7 +1155,7 @@
+             and EXPECTED_LOCK['mode'] == stat.S_IFREG | 0o600
+             and EXPECTED_LOCK['nlink'] == 1 and EXPECTED_LOCK['bytes'] == 0
+             and all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{64}', value) for value in FROZEN.values()),
+-            'PENDING AndroidFrameworkPackageAction05 source/index/store/tool/exclude/device/lock binding: source-only, no admission')
++            'PENDING AndroidFrameworkPackageAction06 source/index/store/tool/exclude/device/lock binding: source-only, no admission')
+     require(isinstance(ACTION_BINDING, dict) and set(ACTION_BINDING) == {
+                 'runtimeRoot', 'evidenceRoot', 'readRoots', 'offline', 'sourceManifestSha256', 'subjectSha256'}
+             and ACTION_BINDING['runtimeRoot'] == str(R) and ACTION_BINDING['evidenceRoot'] == str(E)
+@@ -1178,7 +1178,7 @@
+     IMAGES = tuple(dict.fromkeys(REQUIRED + (SELF, Path(UNSHARE), Path(PYTHON), Path(INNER_PYTHON),
+         Path('/usr/bin/env'), INDEX_SOURCE, GITDIR / 'config')
+         + ((GITDIR / 'info/exclude',) if EXCLUDE_STATE == 'FILE' else ())))
+-    require(request['format'] == 'passvault-linux-android-framework-package-action05-request-v5' and request['run_id'] == RUN and
++    require(request['format'] == 'passvault-linux-android-framework-package-action06-request-v5' and request['run_id'] == RUN and
+             request['purpose'] == PURPOSE and request['commit'] == COMMIT and request['tree'] == TREE, 'request purpose/source')
+     require(request['coordination'] == {'sole_build_owner': '/root', 'agents_quiescent': True, 'no_ci': True}
+             and request['coordination']['agents_quiescent'] is True and request['coordination']['no_ci'] is True,
+@@ -1190,7 +1190,7 @@
+     receipt['parent_at_entry'] = entry_parent  # Provenance only, never signalling/adoption/deletion authority.
+     require(set(request['directories']) == {str(p) for p in PARENTS} and set(request['images']) == {str(p) for p in IMAGES}, 'fixed sets')
+     require(set(approval) == {'format', 'reviewer', 'disposition', 'purpose', 'run_id', 'request_sha256', 'sources'} and
+-            approval['format'] == 'passvault-linux-android-framework-package-action05-approval-v5' and
++            approval['format'] == 'passvault-linux-android-framework-package-action06-approval-v5' and
+             approval['reviewer'] == '/root/current_ledger' and
+             approval['disposition'] == 'ACCEPT_EXACT_NEW_INSTANCE' and approval['purpose'] == PURPOSE and approval['run_id'] == RUN and
+             approval['request_sha256'] == request_image['sha256'] and approval['sources'] ==
+@@ -1227,7 +1227,7 @@
+     directory(E, True)
+     directory(R, True)
+     receipt.update(request=request_image, approval=approval_image, parent_namespaces=parent_ns, device_model=DEVICE)
+-    allocation = {'format': 'passvault-linux-android-framework-package-action05-allocation-v1', 'run_id': RUN, 'purpose': PURPOSE,
++    allocation = {'format': 'passvault-linux-android-framework-package-action06-allocation-v1', 'run_id': RUN, 'purpose': PURPOSE,
+         'commit': COMMIT, 'tree': TREE, 'source_members': MEMBERS, 'source_representation': 'RAW_GIT_BLOBS',
+         'host_policy_id': HOST_POLICY_ID,
+         'allocated_directories': {str(p): directories[p][1] for p in (E, R)},
+@@ -1299,7 +1299,7 @@
+             inner_images[str(GIT_INDEX)] = index_copy['copy_image']
+             for relative in ('config',) + (('info/exclude',) if EXCLUDE_STATE == 'FILE' else ()):
+                 inner_images[str(GIT_METADATA / relative)] = images[str(GITDIR / relative)]
+-            output('OUTER-INTENT.json', encoded({'format': 'passvault-linux-android-framework-package-action05-outer-v1', 'run_id': RUN, 'commit': COMMIT, 'tree': TREE,
++            output('OUTER-INTENT.json', encoded({'format': 'passvault-linux-android-framework-package-action06-outer-v1', 'run_id': RUN, 'commit': COMMIT, 'tree': TREE,
+                 'source_representation': 'RAW_GIT_BLOBS', 'source_members': MEMBERS, 'source_capacity': SOURCE_CAPACITY,
+                 'parent_namespaces': parent_ns, 'host_policy_id': HOST_POLICY_ID,
+                 'directories': {str(p): v[1] for p, v in directories.items() if p == R or R in p.parents or p == E or E in p.parents},
+@@ -1313,7 +1313,7 @@
+     raw, result_image = capture(E / 'INNER-RESULT.json', MIB)
+     result = decode(raw)
+     receipt.update(inner_exit=code, inner_result=result_image)
+-    require(code in (0, 1) and result['format'] == 'passvault-linux-android-framework-package-action05-inner-v1' and result['run_id'] == RUN and
++    require(code in (0, 1) and result['format'] == 'passvault-linux-android-framework-package-action06-inner-v1' and result['run_id'] == RUN and
+             result['commit'] == COMMIT and result['tree'] == TREE and result['parent_namespaces'] == parent_ns and all(result[k] is True for k in
+             ('source_before', 'source_after', 'all_required_stops_ok', 'namespace_empty_before_exit',
+              'cleanup_safe', 'git_bindings_established', 'git_bindings_stable', 'sealed_index_unchanged',

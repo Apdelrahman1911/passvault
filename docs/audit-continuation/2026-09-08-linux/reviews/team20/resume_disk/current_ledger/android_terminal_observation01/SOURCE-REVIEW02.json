@@ -1,0 +1,51 @@
+{
+  "utc": "2026-09-14T20:21:32.503355+00:00",
+  "reviewer": "/root/current_ledger",
+  "author": "/root",
+  "status": "ACCEPT_CORRECTED_PROSPECTIVE_SOURCE_ONLY",
+  "sources": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance05/OUTER.py",
+      "bytes": 87544,
+      "sha256": "8e01b9b5d7ae31f4a81a1a76f454a85becd8ed1d3d5a869a61bd3875b1c705f1"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-terminal-observation-proposal01/OUTER.py.txt",
+      "bytes": 88442,
+      "sha256": "31cafd5bf6cd866ea68d5c376e5c4eead500b88f2a1de13162cd96fbab9f7f69"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-terminal-observation-proposal01/CONTROLS.py.txt",
+      "bytes": 6038,
+      "sha256": "b572a6a817f1f34f8894689c32f471f5b9617322b4cac4e78f57eb0a9306a8c8"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-terminal-observation-proposal01/REVIEW01-CORRECTIONS.json",
+      "bytes": 721,
+      "sha256": "f6154ab5ded1c71d48aa45184dc41f53fb1f095ed4426843abb6b87342009497"
+    }
+  ],
+  "reviewer_record_correction": {
+    "superseded": {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/android_terminal_observation01/SOURCE-REVIEW.json",
+      "bytes": 4496,
+      "sha256": "50565863b8e5a7b4d95b56d4f2d05dd480417dd694ac5cf7118a1357bae9c258"
+    },
+    "error": "Reviewer firstrecord took freshhashes afterauthoralreadycorrected but retained objections derivedfrom earlierOUTER1bd009729b3e9cb93b83500f2eabd046fe7eb116a7ada0f4e88f05c22d251732 andCONTROLS189e1e456a484f8f8017967f4d1768eac07ec32335484d72eb0e94ec849c0ad8. Thus its requestedchanges were misboundto31cafd5b/b572a6a8. Preservefirstrecord aserror, do not treat correctedsource asstilldefective. Thisrecord isbasedon capturedcorrectedbytes/fullcurrentread andsupersedes thatbinding.",
+    "impact": "Priorrecordwas SOURCE_CHANGE_REQUESTED,neverexecutionapproval. No runtime/test/cleanup authority occurred fromerror; no reason to rerun unchanged productchecks."
+  },
+  "checks": [
+    "ComparedcorrectedOUTER against installedAndroid05base8e01b9b5: ASToutsidebind_domainidentical. Newwait onlyafteroriginalimmediatepoll sayslive, previouslybounddomain, ENOENT/ESRCH. Beforewait child-ownedmonotoneflag andreceiptflagare set; secondwouldwait raiseswithout anotherwait. Originalwaittimeout100ms, anytimeout/exception remainsHOLD; onlyactualoriginalPopen terminal state can return. Existingchildexit/source/readback/disposalguardsunchanged.",
+    "Immediatepoll-terminal OSError branch remainsaccepted asbefore, regardlesserror. Correctedproposal now qualifies thatonlynewWAITiserrno/boundgated. No assertionthatGUI19causewasnamespaceexitrace.",
+    "FournewcontrolsuseactualfixedPythonPopen children/time.sleep/wait/timeout, injectingonlynamespace-error seam. Tracksandforwards originalwait ratherthanmockingreturn; still_live repeatsfunction andrequireswaitcallcountremain1. Permission/unbound0waits, terminal/livetimeout1wait.",
+    "Handlers/corelimit/address-spacecap before anychild. Fixedchildspawnsnodescendants. FinallydirectPopen.terminate/wait2s/kill/wait2s ifnecessary onlyoriginalobject; postreapkillpg0removed. Resultretainedexclusively; childoutputsDEVNULL,no temporaryfiles/cache/build. SourcehashandASTsinglefunctionextractionensure notexecuting/importingoldrunnermodulebody.",
+    "Candidate/controls not executed/imported byreviewer; ASTparsing is sourcequalification,not a testcase. Fourcontrols not native/kernel/productevidence; validpositive requires realterminalwait,negative requires still-livingoriginalobject. Scheduler delay could yielda conservativefalsefailure, never automaticretry."
+  ],
+  "execution_requirements": [
+    "Root must explicitlyrequest/bind installedcontrolhashand sourceimage, original tool/child ownership andunconsumedevidenceroot, currentresources andquietslot. Sourceacceptancealone doesnot launchcontrols orAndroid05.",
+    "Reportoriginalfouroutcomes andsettlement/cancellation/errors after actual; no helper replay/automaticretry. ForbidoldGUI19/GUI18runtimequeries/recovery/deletion/reclassification.",
+    "Android05heavyjob remains separate newsource/control installation/request/8GiBentryresource admission; thissmallcontrol has no framework/password/runtimecompatibility credit."
+  ],
+  "accounting": "0executedcases/closures fromsourcereview; future4helperpolicycontrolsnot productXMLcount.",
+  "restrictions": "AllSTOP/NO-RETRY/CLOSED/HOLD/refusedwitnesses/protectedrefs/tags/mobile1017001/eightPVDpreserved."
+}

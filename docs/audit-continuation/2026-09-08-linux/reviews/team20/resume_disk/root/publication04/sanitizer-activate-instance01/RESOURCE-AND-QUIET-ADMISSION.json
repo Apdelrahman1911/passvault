@@ -1,0 +1,36 @@
+{
+  "utc": "2026-09-14T20:25:56.489835+00:00",
+  "owner": "/root",
+  "finding_ids": [
+    "PVA-010",
+    "PVA-014"
+  ],
+  "purpose": "Five existing nativeCTestcases with newASanUBSan instrumentation: ABI,macOSsecurity,fixture_normal,early_return,cpp_exception; no unchangedJNA rerun.",
+  "source_commit": "6f1200d7737fdbc6aed54d3d0c68fc86ed2853dd",
+  "status": "ROOT_ELECTS_EXACT_REMOTE_RESOURCE_AND_QUIET_POLICY_PENDING_REVIEW_AND_PUSH_ADOPTION",
+  "quiet": "No known other audit localbuild/test/CI/originalstop in flight; rootsolelauncher,reviewerdata/sourceonly. Tiny4policycontrols may finish beforeactivation; nooverlap after dispatch. ReserveMACOS_SANITIZERS01 through originalCI/artifact/cleanup acceptance.",
+  "source_push": "Originalpush02exit0/protectedrefsconserved/emptyprivatecleanupremoved; exactindependentactualreview/rootadoption to precede activation.",
+  "local_resources": {
+    "free_bytes": 8553218048,
+    "MemTotal": 33666850816,
+    "MemAvailable": 30479376384
+  },
+  "local_policy": "DATAonly3GiBfloor; no local buildadmission; no HOLDprobing/deletion.",
+  "remote_policy": {
+    "runner": "macos-15-intel",
+    "architecture": "x86_64",
+    "toolchain": "CMake/AppleClang",
+    "entry_disk_GiB": 12,
+    "running_disk_GiB": 8,
+    "total_RAM_min_GiB": 12,
+    "entry_available_ratio": 0.25,
+    "running_available_ratio": 0.2,
+    "RAM_metric": "EXPLICIT_ELECTION: vm_stat free+inactive pages. Cooperative reclaimable estimate; not free+speculative or guaranteed memory.",
+    "workers": 1,
+    "controller_minutes": 15,
+    "workflow_minutes": 20
+  },
+  "cleanup": "Installedbeforework; RLIMIT_CORE0, originalchildgroupssettled, runtimeonlysafe removal; compactlogsXMLJSON7dayartifact; no binaries/signing/secrets/Gradle applicable.",
+  "limits": "Fiveinstrumentednativecasesonly;noTSan/leak/activeprovider/TouchID/packagedloader/JNAcombined/familyclosure. AllHOLD/CLOSED/STOP/no-retryretained.",
+  "commands": "ExactACTIVATE.py once on Linux torequest-onlydedicatedbranch; workflow exactsourcecontroller: /usr/local/bin/python3 -I -B scripts/audit/macos_sanitizers_validation01.py; originalobserverdiscover/status/artifacts/downloadonly,attempt1,noautomaticretry."
+}

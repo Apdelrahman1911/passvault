@@ -1,0 +1,207 @@
+{
+  "accounting": {
+    "PVD_explanations_owner_decisions_separate": 8,
+    "actual_crops": 0,
+    "actual_gui_roles": 0,
+    "confirmed_qualified_unchanged": "27/39 (69.2%),12open",
+    "failed_builds": 1,
+    "mixed_xml_not_passes": true,
+    "mixed_xml_unchanged": 252,
+    "new_actual_testcase_elements": 0,
+    "new_failed_cases": 0,
+    "new_passes": 0,
+    "non_XML_screen_control_cases_separate": 6,
+    "original_confirmed_unchanged": "19/25 (76%),6open",
+    "original_suspicions_unchanged": "2/12 (16.7%),10unresolved",
+    "readiness": "NOT_READY"
+  },
+  "decision": "ACCEPT_ORIGINAL_GUI17_FAILED_PREPARATION_EVIDENCE_AND_NORMAL_SCOPED_CLEANUP_NO_GUI_CASE_CREDIT",
+  "execution": {
+    "gui_attempted": false,
+    "matched_descriptor_list_sha256": "94c9fe4eef21657965ef42c679988f3d1b97ca5df158b524590c80cf6a7bf356",
+    "prepare": {
+      "actual_cases": 0,
+      "exit": 1,
+      "failure_task": ":app-desktop:compileTestKotlinDesktop",
+      "log_summary": "BUILD FAILED in 7m 35s;120 actionable tasks:120 executed"
+    },
+    "reconciliation": "20 original/request/source-image descriptors independently matched, including phase image/body, original command and outer logs, both case-result images, and saved problems diagnostic. SOURCE-BEFORE/AFTER byte-identical. No runtime filesystem inspection performed.",
+    "render_attempted": false,
+    "wrapper_stop": "One original prepare-stop exit0; No Gradle daemons are running. No render stop owed, no automatic stop retry."
+  },
+  "failure": {
+    "cause": "settingsRow val label is nullable; mutable var row inferred from it is nullable despite the outer branch. Direct row.actionCount/parent/index dereferences fail Kotlin compilation. Original log agrees with retained exact fixture source.",
+    "diagnostic": "Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'MainNavAx?'.",
+    "kind": "NONSHIPPING_FIXTURE_COMPILATION_FAILURE",
+    "locations": [
+      "1509:19",
+      "1509:43",
+      "1510:44",
+      "1511:62"
+    ],
+    "prior_review_limitation": "This reviewer previously accepted GUI17 source-only review and missed this nullability compilation defect; that acceptance did not establish compilation. Preserve failure rather than claim source review prevented all errors.",
+    "reachability": "Failure before selected Test/render, GUI helpers, native app roles, tray changes or chooser behavior. No new product defect or runtime result follows.",
+    "source": {
+      "bytes": 99043,
+      "path": "reviews/team20/resume_disk/root/gui17-instance01/CredentialMainNavHostRoomIntegrationTest.kt",
+      "sha256": "d699a64e0c2e52070da8e1225f50df88f1017f5bb8cf26a1fcde0bbd51870515"
+    }
+  },
+  "format": "passvault-independent-original-actual-review-v1",
+  "future_execution_approved": false,
+  "images": [
+    {
+      "bytes": 260,
+      "path": "reviews/team20/resume_disk/root/gui17-instance01/ORIGINAL-TOOL-RESULT.json",
+      "sha256": "009b102203c564d99c73cf98a524a8b15d04072780d1f85cfa383f256eb2a2f1"
+    },
+    {
+      "bytes": 26572,
+      "path": "reviews/team20/resume_disk/root/gui17-instance01/REQUEST.json",
+      "sha256": "1f7778f47e4eac13157ec2633fc8a44d136248f6569c3a6849358beb0ab5e0a4"
+    },
+    {
+      "bytes": 1455,
+      "path": "reviews/team20/resume_disk/root/gui17-instance01/APPROVAL.json",
+      "sha256": "e15388cec23c2a2ee620e3ed155d1c1cdf28b0c6dc34b25fb90ba787b78f0156"
+    },
+    {
+      "bytes": 28570,
+      "path": "runs/linux-desktop-integration17/OUTER-RECEIPT.json",
+      "sha256": "d65b71fc77e17f0e61fcbfc52f3e57230d1aee6597b08f969cf01d66ccc189f9"
+    },
+    {
+      "bytes": 13410,
+      "path": "runs/linux-desktop-integration17/INNER-RESULT.json",
+      "sha256": "809ac97973317bee0597336b8e7d6b16ffcc62adf8defcdda1a70acb70c7c9d8"
+    },
+    {
+      "bytes": 225,
+      "path": "runs/linux-desktop-integration17/INNER-PREFLIGHT.json",
+      "sha256": "3746965cb3f95b0c5d91cdca6bb79ba894f4bd0c519e3747c75ae8ef6d5fe3c3"
+    },
+    {
+      "bytes": 3228,
+      "path": "runs/linux-desktop-integration17/SOURCE-BEFORE.json",
+      "sha256": "8e293b1f0131969df463426174948f248eb88f1964ffad3fd9b35b4f5aed042b"
+    },
+    {
+      "bytes": 3228,
+      "path": "runs/linux-desktop-integration17/SOURCE-AFTER.json",
+      "sha256": "8e293b1f0131969df463426174948f248eb88f1964ffad3fd9b35b4f5aed042b"
+    },
+    {
+      "bytes": 6579,
+      "path": "runs/linux-desktop-integration17/SOURCE-OVERLAY.json",
+      "sha256": "0a71daa872c9c95f3f015d020ed8db71fd2345e50bbea18078ed2bbbe2f72f99"
+    },
+    {
+      "bytes": 279,
+      "path": "runs/linux-desktop-integration17/GUI-CLEANUP.json",
+      "sha256": "9bc38c797a0af526577b2a2de9b7cf0145257337432474ddff7ccc28eb4ff41f"
+    },
+    {
+      "bytes": 883,
+      "path": "runs/linux-desktop-integration17/PVU003-RESULT.json",
+      "sha256": "314d4ef60de7a2958f24d4938749894929a2ae21cf2040a038844d676cac05ef"
+    },
+    {
+      "bytes": 2194,
+      "path": "runs/linux-desktop-integration17/PVA027-RESULT.json",
+      "sha256": "ec2ba44f5e5a16a1261527bdc2fc22de26a6ec9c9ed42acc5257307043c104ee"
+    },
+    {
+      "bytes": 2345,
+      "path": "runs/linux-desktop-integration17/PHASE-prepare.json",
+      "sha256": "738bfe4407062b2db6097b802ea3eafc84213699c4e6a7ece811ce4bf5dc93d9"
+    },
+    {
+      "bytes": 7578,
+      "path": "runs/linux-desktop-integration17/GENERATED-REPORTS.json",
+      "sha256": "2697df20eb30327c7efee8f63066b09cc7e9a220832e67293b4162c28c64161e"
+    },
+    {
+      "bytes": 133993,
+      "path": "runs/linux-desktop-integration17/GENERATED-REPORT-0001.bin",
+      "sha256": "025ae225a10520a9ed5441b982ce7b1865f9ced8ce2c79b1f8bc0e76e02d1d22"
+    },
+    {
+      "bytes": 46394,
+      "path": "runs/linux-desktop-integration17/logs/prepare.log",
+      "sha256": "c04bca3e0785e1083f8a7cf566540b08ad06adc1d2a9afb8e002d0c2787f2e94"
+    },
+    {
+      "bytes": 458,
+      "path": "runs/linux-desktop-integration17/logs/prepare-stop.log",
+      "sha256": "20e2a20d2492756a24835524ca08c8723965f0d2ec48f35d5ab9899e7ca5007d"
+    },
+    {
+      "bytes": 0,
+      "path": "runs/linux-desktop-integration17/logs/outer-git.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "runs/linux-desktop-integration17/logs/outer-unshare.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "runs/linux-desktop-integration17/logs/outer-unshare.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "original_tool": {
+    "elapsed_seconds": 490.199,
+    "entry_chunk": "aee04a",
+    "exit_code": 1,
+    "original_only_not_retry": true,
+    "outer_status": "VALIDATION_FAILED_CLEANED",
+    "session_id": 12987,
+    "terminal_chunk": "da2816",
+    "terminal_output": ""
+  },
+  "restrictions": "PVU007 STOP;PVU011 NO-RETRY/no inquiry;PVA029 failure/no automatic retry;G7/G8 CLOSED;WindowsGraph03 CLOSED/remote cleanupUNKNOWN;all refused witnesses/every HOLD;protected refs/tags/mobile1017001. No shipping/signature/Store/publication authority.",
+  "reviewer": "/root/current_ledger",
+  "scope": "Named retained SOURCE/DATA reads, bounded stdlib JSON/hash/diff comparisons and own review record only. No Git/live process/resource/runtime/HOLD/tool/SDK/store probes, signals, cleanup, build/test, controller import/execution or authoritative-validator substitution.",
+  "settlement_cleanup": {
+    "disposition": "ACCEPT_NORMAL_VALIDATION_SAFE_ORIGINAL_SCOPE_ONLY",
+    "evidence_conservation": {
+      "auxiliary_files": 0,
+      "cache_report_files": 0,
+      "cache_report_roots": 44,
+      "copied_files": 1,
+      "copied_logical_bytes": 133993,
+      "original_saved_reverified_after_cleanup": true,
+      "original_source_and_saved_reverified_before_unlink": true,
+      "previously_retained_xml": 0,
+      "saved_image_matches_source_image_and_retained_bytes": true
+    },
+    "helpers_started": 0,
+    "inner_safety": "source_before/source_after,all_required_stops_ok,namespace_empty_before_exit,gui_helpers_settled,cleanup_safe,validation_safe,evidence_retained true. GUI/native-owner false/uncaptured flags reflect unstarted GUI, not failed original helper cleanup.",
+    "original_outer_children": "Original source Git0/unshare1; both captured, no pidfd kill attempt; three retained outer logs empty and hash-matched. These receipts are not reviewer Git authority.",
+    "original_resource_samples": {
+      "entry_disk_bytes": 13310406656,
+      "last_cleanup_disk_bytes": 13113180160,
+      "minimum_observed_disk_bytes": 11925110784,
+      "qualification": "Original point samples, not a new live observation. Exact accepted request entry12GiB/25percentRAM; running3GiB/private3GiB and cleanup reserves preserved."
+    },
+    "outer_reasons": [],
+    "qualification": "Original cooperative custody/settlement/disposal acceptance only. No global-idleness, adversarial no-escape, hard-interruption or historical-HOLD cleanup proof. GUI13 HOLD/candidate22326UNKNOWN remain untouched; consumed approval is not reusable.",
+    "removed_runtime_entries": 26933,
+    "runtime_status": "REMOVED_ORIGINAL_RUNTIME",
+    "snapshot_entries": 26933
+  },
+  "source": {
+    "base_commit": "59bee33096f538b9444f00236448d7fc0ea740b2",
+    "base_tree": "76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6",
+    "effective_bytes": 153469444,
+    "effective_content_identity_sha256": "2a5e7c547c4e37d567f6dedcef216bf0d9e3342bc58927ca507db3d6e76cddab",
+    "members": 5121,
+    "qualification": "P23 raw Git input plus approved57B desktopTest-only pinned lifecycle dependency and Settings fixture overlay. No production/readiness overlay. Fifteen attribute-affected raw files and two historical EOL qualifications preserved; not a whole-current-W source claim.",
+    "source_before_after_byte_equal": true,
+    "source_record_bytes": 3228,
+    "source_record_sha256": "8e293b1f0131969df463426174948f248eb88f1964ffad3fd9b35b4f5aed042b"
+  },
+  "utc": "2026-09-14T18:14:26.370812+00:00"
+}

@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-14T18:11:58.048734+00:00",
+  "owner": "/root",
+  "status": "SOURCE_FIX_PENDING_INDEPENDENT_REVIEW",
+  "cause": "Actual GUI17 compileTestKotlinDesktop reported nullable receiver row at lines1509-1511. Explicit nonnullable traversal local fixes type inference; label-null path and all selector guards unchanged.",
+  "before": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui17-instance01/CredentialMainNavHostRoomIntegrationTest.kt",
+    "bytes": 99043,
+    "sha256": "d699a64e0c2e52070da8e1225f50df88f1017f5bb8cf26a1fcde0bbd51870515"
+  },
+  "after": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui18-settings-nullability01/CredentialMainNavHostRoomIntegrationTest.kt",
+    "bytes": 99070,
+    "sha256": "791416a398e91818a72a965b1d76bb2e4517d058d3eba06f2896fedb6f2f3826"
+  },
+  "evidence": "GUI17 original failed compiler log; no testcases executed. No alternate product claim or replay.",
+  "scope": "Nonshipping two-case fixture only; no canonical production/source mutation yet."
+}

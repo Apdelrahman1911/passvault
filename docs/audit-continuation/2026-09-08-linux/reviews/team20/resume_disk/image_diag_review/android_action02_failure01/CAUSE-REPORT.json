@@ -1,0 +1,120 @@
+{
+  "schema": "passvault-c20-android-action02-init-failure-source-triage-v1",
+  "author": "/root/image_diag_review",
+  "independent_review": "REQUIRED_BEFORE_FRESH_CONTROL_ADOPTION",
+  "disposition": "INIT_COMPILATION_FAILURE_LOCALIZED_THREE_LEXICAL_COLLISIONS_FOUND_RENAME_ONLY_PROPOSAL_CAUSAL_LINK_NOT_EXECUTED",
+  "scope": "Full retained284-line Gradle log; full982-line INIT source; focused exact INIT command/hash references in retained INNER/OUTER and eligibility DATA. No imports/eval/AST/compile/execution, live or HOLD runtime/cache/SDK/process probes, Git/network, signal, cleanup or automatic retry.",
+  "inputs": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-android-release-action02/logs/release-action.log",
+      "bytes": 31794,
+      "sha256": "6322c4798d9b98ab3e2e68ad3554a2c34f4156262deaf1b6ec3bafee721e2316"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance02/INIT.gradle",
+      "bytes": 61106,
+      "sha256": "fc511af43a0a2e3056409c8d3f220a5e506bc043402924dfe1a47e006468f16f"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance02/INNER.py",
+      "bytes": 94581,
+      "sha256": "facaaf9938e505a1e9e00c220cfb2917be0dec2ce6ba810136dfbaae6e0ebd49"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance02/OUTER.py",
+      "bytes": 106420,
+      "sha256": "5722e858052cd7f8c950d6a802c70fa98e54d012c49dba877201df675e46a420"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-action-instance02/ELIGIBILITY.json",
+      "bytes": 34438,
+      "sha256": "ab5222e5217b230c5ef4ff836553980719c89765684720771be6ca4cf741829f"
+    }
+  ],
+  "observed_failure": {
+    "log_line_count": 284,
+    "leading_context": "Log35 compiles cp_init/SubSetScriptTransformer;39 enters full init BuildScriptTransformer, then43-45 semantic-analysis BUG/null SourceUnit. Stack277-280 identifies GradleResolveVisitor.visitClass1513/startResolving243. Build ends FAILED in12s; init source path is exact Q2 INIT, hash independently matched and crosspinned by both controls.",
+    "not_an_oom": "Log18 reports that the512MiB launcher does not meet the requested2GiB build heap, immediately followed by successful single-use daemon launch and JDK17.0.20 metadata. This is launcher compatibility handling, not evidence of an OOM or kernel kill.",
+    "observed_task_header_count": 0,
+    "observed_init_argument_vector_markers": 0,
+    "observed_init_producer_markers": 0,
+    "meaning": "Compilation failed before this initialization script executed its argument diagnostics, listener/graph contract or selected producer callbacks. No successful R8/native action, product compilation/fix/test or PVA001 runtime evidence follows.",
+    "original_lifecycle": "Root supplied original producer1, stop0, terminal70 and runtimeHOLD. Postfix owns independent lifecycle/scheduling reconciliation; this source report neither releases HOLD nor authorizes another stop/deletion."
+  },
+  "likely_source_cause": {
+    "claim": "Embedded declared-producer closure introduces three names already declared in its enclosing script scope. Groovy local/closure redeclaration rules prohibit these collisions; they are concrete source risks worth a rename-only correction. A Gradle resolver NPE can conceal semantic diagnostics, but this log does not name a variable or prove which error produced the NPE.",
+    "collisions": [
+      {
+        "name": "checked",
+        "enclosing_declaration_line": 440,
+        "embedded_declaration_line": 534,
+        "embedded_kind": "Closure parameter",
+        "all_embedded_identifier_occurrences": {
+          "534": 1,
+          "536": 1,
+          "554": 1,
+          "574": 1,
+          "666": 1
+        },
+        "replacement": "guardChecked"
+      },
+      {
+        "name": "checkout",
+        "enclosing_declaration_line": 135,
+        "embedded_declaration_line": 547,
+        "embedded_kind": "Path local",
+        "all_embedded_identifier_occurrences": {
+          "547": 1,
+          "551": 2,
+          "553": 1,
+          "726": 1
+        },
+        "replacement": "guardCheckout"
+      },
+      {
+        "name": "outputRows",
+        "enclosing_declaration_line": 435,
+        "embedded_declaration_line": 644,
+        "embedded_kind": "List local",
+        "all_embedded_identifier_occurrences": {
+          "644": 1,
+          "673": 1,
+          "728": 1
+        },
+        "replacement": "guardOutputRows"
+      }
+    ],
+    "full_scope_pass": "Full INIT read with explicit enclosing-script and nested-guard declaration comparison found exactly these3 collisions in guard534-732. Repeated task/name/value/result/owner/p/etc. in sibling closures are not enclosing lexical declarations and are not gratuitously renamed. This is manual source comparison, not an AST/compiler acceptance claim.",
+    "counterexamples_and_uncertainty": [
+      "The same component can compile independently when these enclosing names are absent; copying an independently accepted component into a larger script creates a new lexical interaction. Component source acceptance alone does not prove composed-script compilation.",
+      "A script with only distinct sibling-closure names need not have a shadowing error. No broad rename of shared task paths, getters, property names or data keys is justified.",
+      "Gradle/Groovy may have another compiler defect or unresolved-symbol problem. No underlying variable-specific diagnostic or exact Gradle resolver source was captured here; do not claim a uniquely observed internal NPE root cause or promise the proposed source now compiles.",
+      "No application tasks, argument-shape guard, native-root getter, input provenance checks or eligibility barrier were reached. The result is not a native-provider/JNA/R8 product defect and does not justify bypassing any later restriction."
+    ]
+  },
+  "proposal": {
+    "meaning": "Inert rename-only template and diff against retained INIT; apply only while authoring a genuinely fresh independently reviewed control instance. Q2 original bytes are unchanged. The template deliberately retains historical slots for comparison and is NOT runnable/admitted.",
+    "identifier_occurrences_changed": 13,
+    "line_count_unchanged": 982,
+    "bytes_added": 65,
+    "proof": "Replacing only the three new unique names back with their originals reproduces the complete original INIT byte-for-byte; only the embedded closure span changed. Exact literals, comments, map keys, all APIs/getters/descriptors, paths, source/provenance strings, sets, limits, flags, bindings, and guards remain unchanged.",
+    "unchanged_product_and_platform_boundaries": true,
+    "crosspins": "A fresh composition needs its new INIT hash propagated into fresh INNER and OUTER FROZEN maps and resulting fresh source hashes/request/approval/admission. No suggested edit to consumed Q2 controls, eligibility, source manifest, product code, dependencies or protected refs.",
+    "validation_next": "Independent source challenge first. Only root may admit the smallest useful new compilation/qualification scope; none is authored or executed here. Compile acceptance would address this init syntax integration risk only, not native/provenance/security requirements or a successful producer run. No automatic retry."
+  },
+  "artifacts": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/image_diag_review/android_action02_failure01/INIT.rename-only.after.gradle.txt",
+      "bytes": 61171,
+      "sha256": "68fe2a521e6b09d78f177853fdf7ea8213a7de4156843cb04642bb131d48bad3"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/image_diag_review/android_action02_failure01/INIT.rename-only.diff.txt",
+      "bytes": 5123,
+      "sha256": "f679044897ede45f3600248897e1013c5157b3da3e437c87e447c1df05720c71"
+    }
+  ],
+  "new_product_findings_fixes_cases_closures": 0,
+  "owned_live_resources": 0,
+  "restrictions": "All STOP/NO-RETRY/CLOSED/HOLD/refusal scopes, PVA029 retained failures, signing/publication/protected refs/build1017001 boundaries remain. No new provider/native-root/forbidden-seam inquiry."
+}

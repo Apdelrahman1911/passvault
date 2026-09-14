@@ -1,0 +1,1527 @@
+{
+  "accepted_source_donor": [
+    {
+      "bytes": 103569,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor02/INNER.py",
+      "sha256": "08c135db5eb9d5bee3593a35b15e20c690b1eb332bdceb824be2a9ed62a223a2"
+    },
+    {
+      "bytes": 101209,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor02/OUTER.py",
+      "sha256": "f7a1e8edb3b933d3e2f831e1a59f99a35de515e8b583de61298ecdf4b60cda05"
+    },
+    {
+      "bytes": 11651,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor02/INIT.gradle",
+      "sha256": "f943b2c24f682073dd09d78eedf5605af55ef8265ffbace86a263ce845a6f53e"
+    }
+  ],
+  "author": "/root/current_ledger",
+  "complete_diffs": [
+    {
+      "bytes": 27766,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui08_three_case01/INNER.py.diff",
+      "sha256": "7006bb83fd2c34d2e875920c6bd1707acfe1481c61e275d87b06f7d3630889f9"
+    },
+    {
+      "bytes": 30058,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui08_three_case01/OUTER.py.diff",
+      "sha256": "ceb02a64bcce8ba385a0a8238b4a746e4daaa3823f9a79f6a69f3c2f6c351104"
+    },
+    {
+      "bytes": 6446,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui08_three_case01/INIT.gradle.diff",
+      "sha256": "c5a956b4f1eca7d5f6be33598469af7ab0b6a4d2cf36230241a395276e19f28c"
+    }
+  ],
+  "dependency_overlay": {
+    "after": {
+      "bytes": 63975,
+      "git_blob": "a8895db34f68cf10b7795079c433c9ef283d4cba",
+      "sha256": "d0ead442c57c9465333d036bcb4d96f1ac5b06fd8d04dfe5b45fc571100265e3"
+    },
+    "before": {
+      "bytes": 63918,
+      "git_blob": "172fd771919fbb848c7c413af97706b257a7c3d2",
+      "sha256": "9263cf5e857f55afd4669aa524eaf36f37d3b5a18f4eca293da148bd55b3e709"
+    },
+    "git_mode": "100644",
+    "path": "app-desktop/build.gradle.kts",
+    "scope": "Exactly one pinned libs.lifecycle.viewmodel implementation line in desktopTest only; no version or production-runtime change"
+  },
+  "diff_reconstruction": [
+    {
+      "complete_afterimage_reconstruction": true,
+      "file": "INNER.py",
+      "hunks": 23
+    },
+    {
+      "complete_afterimage_reconstruction": true,
+      "file": "OUTER.py",
+      "hunks": 23
+    },
+    {
+      "complete_afterimage_reconstruction": true,
+      "file": "INIT.gradle",
+      "hunks": 7
+    }
+  ],
+  "execution_import_ast_compilation_tests_git_network_runtime_probes_allocations_or_deletion": false,
+  "fixture_exact_accepted_afterimage": true,
+  "independent_basis": [
+    {
+      "bytes": 3218,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-v5-transplant-review01/SOURCE-REVIEW.json",
+      "sha256": "66672677df81f36747eddbb1f4b47e1fc85e06069f3f312d01d04dcf794a273f"
+    },
+    {
+      "bytes": 3881,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-unlock-review01/SOURCE-REVIEW.json",
+      "sha256": "9f9aeec3fa600a322b4982661df6c2f3c456cdf5164d44dee11826bb839bc4e8"
+    },
+    {
+      "bytes": 1231,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui07-unlock-review01/INSTALL-ADOPTION.json",
+      "sha256": "db4520f2cecc98cb8c9ee60161d07013a54c7574a8ceab214b096e4d1f01f40d"
+    }
+  ],
+  "literal_function_comparison": {
+    "INNER.py": {
+      "affected": [
+        {
+          "function": "Runner.intake",
+          "new": {
+            "bytes": 5729,
+            "lines": [
+              458,
+              530
+            ],
+            "sha256": "4aad155c30ec1e3cbc0da5f2b44878858dd60fa3722c4b2587353a58d7b96742"
+          },
+          "old": {
+            "bytes": 4991,
+            "lines": [
+              455,
+              519
+            ],
+            "sha256": "7eb2d499ab69075d09a35b4bb6c11fd9f3d4c2c39229abe75cb4a307e5a59950"
+          },
+          "status": "CHANGED"
+        },
+        {
+          "function": "Runner.source_check",
+          "new": {
+            "bytes": 2616,
+            "lines": [
+              537,
+              572
+            ],
+            "sha256": "7d60b88f0085faa4f0ffd0abab21f592714a161b0b2d9dcae579355ff140ec2f"
+          },
+          "old": {
+            "bytes": 2562,
+            "lines": [
+              526,
+              560
+            ],
+            "sha256": "4eaa7e2676352ae76127ed8bc6ded79d2c3d95b872effa13b3c239ca4f2cd36c"
+          },
+          "status": "CHANGED"
+        },
+        {
+          "function": "Runner.prepare",
+          "new": {
+            "bytes": 4075,
+            "lines": [
+              799,
+              853
+            ],
+            "sha256": "a63a31bcac239753ac1c8b89dc367e2f3b979971ee56c03c9c909cd2803c7080"
+          },
+          "old": {
+            "bytes": 4071,
+            "lines": [
+              787,
+              841
+            ],
+            "sha256": "3e76eb96433b8d4771391e7609e2b62fdff5a215d13ca36d8e2ab303f847e144"
+          },
+          "status": "CHANGED"
+        },
+        {
+          "function": "Runner.render",
+          "new": {
+            "bytes": 2072,
+            "lines": [
+              1316,
+              1346
+            ],
+            "sha256": "35a475f543d66e517b94b56990fc555f1f4bcac9ce2d83ab48b0c54179b1dd15"
+          },
+          "old": {
+            "bytes": 2078,
+            "lines": [
+              1304,
+              1334
+            ],
+            "sha256": "1636d1b4c0a62af217b7bba4a1621742409d0029d3f3a5a1200d50160bfb86b9"
+          },
+          "status": "CHANGED"
+        },
+        {
+          "function": "Runner.preserve_xml",
+          "new": {
+            "bytes": 3975,
+            "lines": [
+              1348,
+              1404
+            ],
+            "sha256": "8013a4c5c301bef5beaf479984a4410c3ffcbf8f2151d8a4e76c3dfbeba17e87"
+          },
+          "old": {
+            "bytes": 3964,
+            "lines": [
+              1336,
+              1392
+            ],
+            "sha256": "92a57e89ad1ad8e02a399a104e6117831116068b440d8f6d8f1438e2b35d5caa"
+          },
+          "status": "CHANGED"
+        },
+        {
+          "function": "main",
+          "new": {
+            "bytes": 9651,
+            "lines": [
+              1530,
+              1669
+            ],
+            "sha256": "facb6e9cc8d30541d366a6c4016327096721ad8a60509a66a226b13eb245f2da"
+          },
+          "old": {
+            "bytes": 9639,
+            "lines": [
+              1518,
+              1657
+            ],
+            "sha256": "81cdfd68104a4b2d1ecb4e62315bd22669947ba51e2ec909f593c188ebc561d6"
+          },
+          "status": "CHANGED"
+        }
+      ],
+      "removed_functions": [],
+      "unchanged": [
+        {
+          "bytes": 69,
+          "function": "require",
+          "new_lines": [
+            228,
+            230
+          ],
+          "old_lines": [
+            225,
+            227
+          ],
+          "sha256": "230921c826d24479c00b8472a8de280ca351219c4302c2fbfd916173eaebe14b"
+        },
+        {
+          "bytes": 921,
+          "function": "pidfd_terminal",
+          "new_lines": [
+            233,
+            249
+          ],
+          "old_lines": [
+            230,
+            246
+          ],
+          "sha256": "8960a7843aa0d444da6cdf457a005158e575aa44c30000992a67f3f3781cbedd"
+        },
+        {
+          "bytes": 126,
+          "function": "canonical",
+          "new_lines": [
+            252,
+            253
+          ],
+          "old_lines": [
+            249,
+            250
+          ],
+          "sha256": "f0b40000ac9f84f47d64577cb4d1ff56062f2318b93b36bd217eda5aa075070f"
+        },
+        {
+          "bytes": 59,
+          "function": "sha",
+          "new_lines": [
+            256,
+            257
+          ],
+          "old_lines": [
+            253,
+            254
+          ],
+          "sha256": "4e627faf4b903521e935f7c6f3ae93545856f821d0e2565ba7ea6cf97d3d0e6c"
+        },
+        {
+          "bytes": 249,
+          "function": "pin",
+          "new_lines": [
+            260,
+            264
+          ],
+          "old_lines": [
+            257,
+            261
+          ],
+          "sha256": "a822866bf30e53865e244ec414626b22a0a8653a520bd9ef73e31f7ba11f8f3e"
+        },
+        {
+          "bytes": 95,
+          "function": "directory_identity",
+          "new_lines": [
+            267,
+            268
+          ],
+          "old_lines": [
+            264,
+            265
+          ],
+          "sha256": "5248b0a0e12bb26326191e34c70f264651a3c6f054e03d3cd9c1d719aae954c9"
+        },
+        {
+          "bytes": 266,
+          "function": "note",
+          "new_lines": [
+            271,
+            277
+          ],
+          "old_lines": [
+            268,
+            274
+          ],
+          "sha256": "68a7778e24fa9ec9aaacb96f0074ffae2d7c3704b92c28953afb9961cbba7a49"
+        },
+        {
+          "bytes": 184,
+          "function": "proc_read",
+          "new_lines": [
+            280,
+            284
+          ],
+          "old_lines": [
+            277,
+            281
+          ],
+          "sha256": "f2a95de95149bf1a97b6b40ed91dcf569b4fcc37900ef7c877f9ee983e77f95a"
+        },
+        {
+          "bytes": 154,
+          "function": "Files.__init__",
+          "new_lines": [
+            288,
+            291
+          ],
+          "old_lines": [
+            285,
+            288
+          ],
+          "sha256": "c3ce25d5899e6f1613906a30794ac1ae9c03c1b93fc692b20fa29f812ec6b878"
+        },
+        {
+          "bytes": 1038,
+          "function": "Files.directory",
+          "new_lines": [
+            293,
+            308
+          ],
+          "old_lines": [
+            290,
+            305
+          ],
+          "sha256": "81bf1c0d28869956bdb96066ab0e9bf164db2379de788cdbd93dfffb4c986d87"
+        },
+        {
+          "bytes": 951,
+          "function": "Files.read",
+          "new_lines": [
+            310,
+            322
+          ],
+          "old_lines": [
+            307,
+            319
+          ],
+          "sha256": "131509dd073c7615e69f48999902d789ca6c8f4c58b218677b9c3b2107e47276"
+        },
+        {
+          "bytes": 374,
+          "function": "Files.new",
+          "new_lines": [
+            324,
+            334
+          ],
+          "old_lines": [
+            321,
+            331
+          ],
+          "sha256": "2c93d28b08d146557f73e468df32b7fdb622e380c26cc1c53750fb8b47cbcfa7"
+        },
+        {
+          "bytes": 591,
+          "function": "Files.finish",
+          "new_lines": [
+            336,
+            346
+          ],
+          "old_lines": [
+            333,
+            343
+          ],
+          "sha256": "af9b0d72a6d38fdfe07f663f521e87b3c40175e655bde4d8e1cc20e5f66f5a28"
+        },
+        {
+          "bytes": 495,
+          "function": "Files.write",
+          "new_lines": [
+            348,
+            362
+          ],
+          "old_lines": [
+            345,
+            359
+          ],
+          "sha256": "082e334bbca03a58ef207a8ad0dddee06e902c3505d09e9863b9da66a6862336"
+        },
+        {
+          "bytes": 609,
+          "function": "Files.verify",
+          "new_lines": [
+            364,
+            372
+          ],
+          "old_lines": [
+            361,
+            369
+          ],
+          "sha256": "48892a550d9acc12d57c059486f7443a99bc28311429eead03221d3cadf05360"
+        },
+        {
+          "bytes": 271,
+          "function": "Files.close",
+          "new_lines": [
+            374,
+            382
+          ],
+          "old_lines": [
+            371,
+            379
+          ],
+          "sha256": "bbd22ba28908d681a91cc9eeaf69d738f1223e972a3c2bc5579889e7250cde16"
+        },
+        {
+          "bytes": 2112,
+          "function": "namespace_preflight",
+          "new_lines": [
+            385,
+            414
+          ],
+          "old_lines": [
+            382,
+            411
+          ],
+          "sha256": "180f4ae203768f52882dc947b1746dd2bfc6d7090cef472c353aa7d546655fa4"
+        },
+        {
+          "bytes": 1445,
+          "function": "Runner.__init__",
+          "new_lines": [
+            422,
+            445
+          ],
+          "old_lines": [
+            419,
+            442
+          ],
+          "sha256": "4b4bffe474487604d8a5f9a68656679859a316ccc3b0eddf452d43824c3003ef"
+        },
+        {
+          "bytes": 60,
+          "function": "Runner.note",
+          "new_lines": [
+            447,
+            448
+          ],
+          "old_lines": [
+            444,
+            445
+          ],
+          "sha256": "d90f1ac039eb34f7e15bfa3327ccbd3877d1414c326434e021a41d97336cb050"
+        },
+        {
+          "bytes": 235,
+          "function": "Runner.cancelled",
+          "new_lines": [
+            450,
+            456
+          ],
+          "old_lines": [
+            447,
+            453
+          ],
+          "sha256": "a47cf19031f6d11f64c2c016032fe6e93e9742e21a423ff7dea9eee30b8d7fc9"
+        },
+        {
+          "bytes": 259,
+          "function": "Runner.check_inputs",
+          "new_lines": [
+            532,
+            535
+          ],
+          "old_lines": [
+            521,
+            524
+          ],
+          "sha256": "814964468ec79282bca46cd433490513791566200e85fa3c5fd91d1f64464e77"
+        },
+        {
+          "bytes": 3194,
+          "function": "Runner.resources",
+          "new_lines": [
+            574,
+            626
+          ],
+          "old_lines": [
+            562,
+            614
+          ],
+          "sha256": "f831d9aeaf4eb6737c78ae3bbd8bda5474c78f525c95cf026d1f5f77d0639a07"
+        },
+        {
+          "bytes": 972,
+          "function": "Runner.settle",
+          "new_lines": [
+            628,
+            648
+          ],
+          "old_lines": [
+            616,
+            636
+          ],
+          "sha256": "a726e3bfbcc7b4fce731215eab18315354c5a1a44eb00c759e023c416bdacf31"
+        },
+        {
+          "bytes": 6242,
+          "function": "Runner.command",
+          "new_lines": [
+            650,
+            751
+          ],
+          "old_lines": [
+            638,
+            739
+          ],
+          "sha256": "96ef56a9aa0479e467ae409c00afdbf48bc9e9febf56c4c6af33bbaf86a7fb10"
+        },
+        {
+          "bytes": 228,
+          "function": "Runner.signal_child",
+          "new_lines": [
+            754,
+            758
+          ],
+          "old_lines": [
+            742,
+            746
+          ],
+          "sha256": "6da0e3976ea44eaf5dad9ede27c8719b8c40ea03fc69f105c9359be851de7806"
+        },
+        {
+          "bytes": 1580,
+          "function": "Runner.gui_resources",
+          "new_lines": [
+            760,
+            782
+          ],
+          "old_lines": [
+            748,
+            770
+          ],
+          "sha256": "1d5a920312de657ff8ba5508f593794a4a6d558606c74f374c8e39c47bb5a924"
+        },
+        {
+          "bytes": 251,
+          "function": "Runner.state",
+          "new_lines": [
+            784,
+            788
+          ],
+          "old_lines": [
+            772,
+            776
+          ],
+          "sha256": "facfe836d7874e45e253fccdcd473f7c88ca45b520636b34834a50a48d881c36"
+        },
+        {
+          "bytes": 428,
+          "function": "Runner.stop",
+          "new_lines": [
+            790,
+            797
+          ],
+          "old_lines": [
+            778,
+            785
+          ],
+          "sha256": "5a3f349a3414280c59b5e6601a546a782ce162e9b6800c7c5c977e35b69b57e6"
+        },
+        {
+          "bytes": 1104,
+          "function": "Runner.admit_gui_budget",
+          "new_lines": [
+            855,
+            868
+          ],
+          "old_lines": [
+            843,
+            856
+          ],
+          "sha256": "3e27619bfa80f59f9d83266a045e5dac8b1d52748810e1e02ebdfd5b70e0d16c"
+        },
+        {
+          "bytes": 4601,
+          "function": "Runner.isolation",
+          "new_lines": [
+            870,
+            932
+          ],
+          "old_lines": [
+            858,
+            920
+          ],
+          "sha256": "36b537bff82a49a0fa5612a86871fc0a85839ee30b8f599e17b1e20297db4cf1"
+        },
+        {
+          "bytes": 255,
+          "function": "Runner.helper_limits",
+          "new_lines": [
+            935,
+            938
+          ],
+          "old_lines": [
+            923,
+            926
+          ],
+          "sha256": "71fab1cf2e901eace202c0cc89a29e04ad487084bfe84653995c0d24e8dfa6fd"
+        },
+        {
+          "bytes": 1407,
+          "function": "Runner.start_helper",
+          "new_lines": [
+            940,
+            958
+          ],
+          "old_lines": [
+            928,
+            946
+          ],
+          "sha256": "e3e9c674bb26a662a3245d01f337200696d8b1e5dbbe86e2f370270d5a1816e2"
+        },
+        {
+          "bytes": 303,
+          "function": "Runner.live_helpers",
+          "new_lines": [
+            960,
+            963
+          ],
+          "old_lines": [
+            948,
+            951
+          ],
+          "sha256": "50af6049bbbfc8c78841ec9c4744ef1629b5c1881edf624b20d1838707963cc0"
+        },
+        {
+          "bytes": 646,
+          "function": "Runner.await_socket",
+          "new_lines": [
+            965,
+            978
+          ],
+          "old_lines": [
+            953,
+            966
+          ],
+          "sha256": "185330332bf514a54f65f12dc3b87fa25c22ece61c8a0eed99575620dae92a1e"
+        },
+        {
+          "bytes": 3146,
+          "function": "Runner.panel_configuration",
+          "new_lines": [
+            980,
+            1021
+          ],
+          "old_lines": [
+            968,
+            1009
+          ],
+          "sha256": "b7e11bb48d848274f75c5c159edf7f48603527ac1a6a1270370cb5de3db498e9"
+        },
+        {
+          "bytes": 2470,
+          "function": "Runner.capture_tray_owners",
+          "new_lines": [
+            1023,
+            1064
+          ],
+          "old_lines": [
+            1011,
+            1052
+          ],
+          "sha256": "eab6f73c460e0d0c2d7542475398d9c732f4def0c83c7037ca46f2ef2028f210"
+        },
+        {
+          "bytes": 5080,
+          "function": "Runner.gui_start",
+          "new_lines": [
+            1066,
+            1132
+          ],
+          "old_lines": [
+            1054,
+            1120
+          ],
+          "sha256": "969553789a69b2c6df3b1c002d205d3b717f1d5256ac700e4752e6f0eea15e84"
+        },
+        {
+          "bytes": 928,
+          "function": "Runner.namespace_row",
+          "new_lines": [
+            1134,
+            1146
+          ],
+          "old_lines": [
+            1122,
+            1134
+          ],
+          "sha256": "280a4791f2c9eb0428b4c30753d824067212e3a917a3adcd7bf2e34df8f5650d"
+        },
+        {
+          "bytes": 9629,
+          "function": "Runner.finish_gui",
+          "new_lines": [
+            1148,
+            1314
+          ],
+          "old_lines": [
+            1136,
+            1302
+          ],
+          "sha256": "ec056b77cbcf8c5b39e0e11536b5122ae0d9d21f85fd807016ce282daa9ab510"
+        },
+        {
+          "bytes": 1110,
+          "function": "Runner.preserve_mainnav",
+          "new_lines": [
+            1406,
+            1419
+          ],
+          "old_lines": [
+            1394,
+            1407
+          ],
+          "sha256": "d277a938c661eb43746f369911878e074093cb112105090530c0dc4aaad11b78"
+        },
+        {
+          "bytes": 7240,
+          "function": "Runner.preserve_mainnav_case",
+          "new_lines": [
+            1421,
+            1527
+          ],
+          "old_lines": [
+            1409,
+            1515
+          ],
+          "sha256": "2c30f8fe04c1909991505fc960d2a40ade7246e3ddab86a7ca4735ac491fa290"
+        }
+      ]
+    },
+    "OUTER.py": {
+      "affected": [
+        {
+          "function": "screen",
+          "new": {
+            "bytes": 15238,
+            "lines": [
+              313,
+              567
+            ],
+            "sha256": "0e2b93d02e7b27589cc5f4043f622767c62368feb4d589eb557a652db91e43d5"
+          },
+          "old": {
+            "bytes": 15238,
+            "lines": [
+              306,
+              560
+            ],
+            "sha256": "07af94141c1e39ef8eaccd106ed312fb5e8590d0d3cf2d660a2828e5c92051d2"
+          },
+          "status": "CHANGED"
+        },
+        {
+          "function": "watch",
+          "new": {
+            "bytes": 1030,
+            "lines": [
+              569,
+              583
+            ],
+            "sha256": "0c237a690a85d0af79f22f9361f7cd5b6373f7af189124d7fcdfdf7c576cc65c"
+          },
+          "old": {
+            "bytes": 1051,
+            "lines": [
+              562,
+              576
+            ],
+            "sha256": "b29b5a463860200b4d988aab6101c859e940b6d965db55c6379ac80d795e23d1"
+          },
+          "status": "CHANGED"
+        },
+        {
+          "function": "apply_native_unlock_diagnostic_overlay",
+          "new": {
+            "bytes": 3615,
+            "lines": [
+              911,
+              965
+            ],
+            "sha256": "8bb72d1f1e32a3654a4ce927c0ed160de67ab65be7aaf103ac78c1d03ef577b5"
+          },
+          "status": "NEW"
+        },
+        {
+          "function": "selected_report_images",
+          "new": {
+            "bytes": 3734,
+            "lines": [
+              998,
+              1049
+            ],
+            "sha256": "fb734753937d29569391f8e42347b711b096f3fd389073cc5c682a67a48b7468"
+          },
+          "old": {
+            "bytes": 3743,
+            "lines": [
+              935,
+              986
+            ],
+            "sha256": "24076d47866e04986e75c8aaf9688f0ec62b486d8dc53db496b467b6fc15e76d"
+          },
+          "status": "CHANGED"
+        },
+        {
+          "function": "preserve_generated_reports",
+          "new": {
+            "bytes": 7120,
+            "lines": [
+              1082,
+              1181
+            ],
+            "sha256": "5323922ee373e23ec6a635ed761aa9df0a5d01406ff7a095930861b1f731cf91"
+          },
+          "old": {
+            "bytes": 7120,
+            "lines": [
+              1019,
+              1118
+            ],
+            "sha256": "1ecd5507f1a4a927cd64d24c9ab9f3691e2abc05d781a599177c9f1d7016abda"
+          },
+          "status": "CHANGED"
+        },
+        {
+          "function": "main",
+          "new": {
+            "bytes": 24992,
+            "lines": [
+              1315,
+              1632
+            ],
+            "sha256": "ef5641d6b1a247e13604dc452740bbb662539b998763e8d244742300863b6939"
+          },
+          "old": {
+            "bytes": 24724,
+            "lines": [
+              1252,
+              1566
+            ],
+            "sha256": "d013efd6d3c28e31e2583bea2e97e2d55e2f4ca9268e1dea2da04eac2941ccba"
+          },
+          "status": "CHANGED"
+        }
+      ],
+      "removed_functions": [],
+      "unchanged": [
+        {
+          "bytes": 83,
+          "function": "require",
+          "new_lines": [
+            147,
+            149
+          ],
+          "old_lines": [
+            140,
+            142
+          ],
+          "sha256": "8b14f7d5eb0d9a9cafc6d1aaa990a73bad9c261d2c3c97d6713ed7fa789c829b"
+        },
+        {
+          "bytes": 241,
+          "function": "pin",
+          "new_lines": [
+            151,
+            155
+          ],
+          "old_lines": [
+            144,
+            148
+          ],
+          "sha256": "458c226eb649c9b0f866982a061ae7f0d4dca5d52c0fe4e59f76ba70c9b8af5d"
+        },
+        {
+          "bytes": 88,
+          "function": "same_dir",
+          "new_lines": [
+            157,
+            158
+          ],
+          "old_lines": [
+            150,
+            151
+          ],
+          "sha256": "ab28dab8644d74a3d7414420b15b0f001f55d48ff940e1377d2992c6d68c9d92"
+        },
+        {
+          "bytes": 146,
+          "function": "pairs",
+          "new_lines": [
+            160,
+            165
+          ],
+          "old_lines": [
+            153,
+            158
+          ],
+          "sha256": "40ebdf26fd41b6d3bd412a3af7c7dbd56a727a082366ad4a912f6c42504a66ff"
+        },
+        {
+          "bytes": 128,
+          "function": "decode",
+          "new_lines": [
+            167,
+            168
+          ],
+          "old_lines": [
+            160,
+            161
+          ],
+          "sha256": "df9588c2f3cc84de61702beb678db5bbc6ddf6011e89c329bb5f0bc3d114bbd8"
+        },
+        {
+          "bytes": 122,
+          "function": "encoded",
+          "new_lines": [
+            170,
+            171
+          ],
+          "old_lines": [
+            163,
+            164
+          ],
+          "sha256": "17a925929f626f7411bccefb957427dc602f7946f6092e137a87aa39414f79b0"
+        },
+        {
+          "bytes": 2432,
+          "function": "check_host_policy",
+          "new_lines": [
+            173,
+            206
+          ],
+          "old_lines": [
+            166,
+            199
+          ],
+          "sha256": "44d2cf41f3af99ccb6db1c4b5a898edc7e4544cdab7b66e99aa2aeadce760851"
+        },
+        {
+          "bytes": 139,
+          "function": "note",
+          "new_lines": [
+            209,
+            212
+          ],
+          "old_lines": [
+            202,
+            205
+          ],
+          "sha256": "ba27ae3a9bd97dbfdbe62b5c9bfef201437918bf88fb40ab71f90d564f70e5be"
+        },
+        {
+          "bytes": 1161,
+          "function": "directory",
+          "new_lines": [
+            214,
+            234
+          ],
+          "old_lines": [
+            207,
+            227
+          ],
+          "sha256": "06dfad164278395b5b07c50cbe467fc14b4594636cf7f3eb095f2bcf45720454"
+        },
+        {
+          "bytes": 1854,
+          "function": "capture",
+          "new_lines": [
+            236,
+            267
+          ],
+          "old_lines": [
+            229,
+            260
+          ],
+          "sha256": "d0f0ab67872d530d388b90973abfb0cf8e534c931d66caaf5981087aa848ca94"
+        },
+        {
+          "bytes": 454,
+          "function": "new",
+          "new_lines": [
+            269,
+            279
+          ],
+          "old_lines": [
+            262,
+            272
+          ],
+          "sha256": "483fd3d8214a5454c705661fba2dd89e2c31e47a101c89de23128f727bf295cd"
+        },
+        {
+          "bytes": 397,
+          "function": "output",
+          "new_lines": [
+            281,
+            293
+          ],
+          "old_lines": [
+            274,
+            286
+          ],
+          "sha256": "d4627ebaf2d0074a85d8bde406f8470bbae8778b182792203f318ec5a46b6635"
+        },
+        {
+          "bytes": 303,
+          "function": "latch",
+          "new_lines": [
+            295,
+            300
+          ],
+          "old_lines": [
+            288,
+            293
+          ],
+          "sha256": "e6ecc7b8231dd953df4a0cb21c4e77451bb5a0ce37ffd48bbe78b3f4b236b2fb"
+        },
+        {
+          "bytes": 184,
+          "function": "birth",
+          "new_lines": [
+            302,
+            305
+          ],
+          "old_lines": [
+            295,
+            298
+          ],
+          "sha256": "9269c5910e04ad31c8db13529602a54f5a470bc19f4a6586cb415356e6cbcacd"
+        },
+        {
+          "bytes": 276,
+          "function": "identity",
+          "new_lines": [
+            307,
+            311
+          ],
+          "old_lines": [
+            300,
+            304
+          ],
+          "sha256": "93843eaddf2d5a41df9986e11985338af81128e0d5bbddfd16209cbbc7e9038f"
+        },
+        {
+          "bytes": 158,
+          "function": "tick",
+          "new_lines": [
+            585,
+            588
+          ],
+          "old_lines": [
+            578,
+            581
+          ],
+          "sha256": "d5a2d93dad9ae3ca0075b7a7c70b28b47d193db07c68f133bd92a9bcdefee057"
+        },
+        {
+          "bytes": 696,
+          "function": "bind_domain",
+          "new_lines": [
+            590,
+            602
+          ],
+          "old_lines": [
+            583,
+            595
+          ],
+          "sha256": "8c6d8555862aafd1321ebd8427b6723a3a56e6b54e8be40d7f96ee416da45fab"
+        },
+        {
+          "bytes": 1939,
+          "function": "supervise",
+          "new_lines": [
+            604,
+            642
+          ],
+          "old_lines": [
+            597,
+            635
+          ],
+          "sha256": "e6332596df9d7fd4d10745a6acb02434dd896839dc8267d3fdcdafa286ade599"
+        },
+        {
+          "bytes": 1126,
+          "function": "drive",
+          "new_lines": [
+            644,
+            658
+          ],
+          "old_lines": [
+            637,
+            651
+          ],
+          "sha256": "3ef75312d1541172769eaeddcae120ff7150fbbdc110c50a9d82fdf3101cedb0"
+        },
+        {
+          "bytes": 589,
+          "function": "under",
+          "new_lines": [
+            660,
+            673
+          ],
+          "old_lines": [
+            653,
+            666
+          ],
+          "sha256": "224988ac77960fc84610f3e78edaba2d7db9d4acac61e58a85bc9d4042379ccc"
+        },
+        {
+          "bytes": 1681,
+          "function": "source_inventory",
+          "new_lines": [
+            675,
+            698
+          ],
+          "old_lines": [
+            668,
+            691
+          ],
+          "sha256": "96fa3945d98061e672f9b49224d28e8836b95585f8cabae79aeb04ab06ccd33d"
+        },
+        {
+          "bytes": 834,
+          "function": "oid_requests",
+          "new_lines": [
+            700,
+            718
+          ],
+          "old_lines": [
+            693,
+            711
+          ],
+          "sha256": "e00b10f960d45d1a2f1df2600d8c828574252304603ab258fa5bdc39c6f2b847"
+        },
+        {
+          "bytes": 897,
+          "function": "check_oid_input",
+          "new_lines": [
+            720,
+            733
+          ],
+          "old_lines": [
+            713,
+            726
+          ],
+          "sha256": "19bf84edb6d554cd1db62c9d3a392a899a0f04df31771267e26e044e4df9af75"
+        },
+        {
+          "bytes": 4253,
+          "function": "materialize",
+          "new_lines": [
+            735,
+            811
+          ],
+          "old_lines": [
+            728,
+            804
+          ],
+          "sha256": "f6dcfc5f80293367707c8343e0b1cee045a29acade67e8aeff671c47c78fa50a"
+        },
+        {
+          "bytes": 2325,
+          "function": "source_check",
+          "new_lines": [
+            813,
+            849
+          ],
+          "old_lines": [
+            806,
+            842
+          ],
+          "sha256": "fe7ae150ac890a1f6b9ddaca0233ea0a20110745d6932265996c661b2ad5dbef"
+        },
+        {
+          "bytes": 3786,
+          "function": "apply_approved_desktop_test_overlay",
+          "new_lines": [
+            852,
+            909
+          ],
+          "old_lines": [
+            845,
+            902
+          ],
+          "sha256": "a61f14caf24f91a080513dbed98dd5469a9da35cf557974ba7709f68e564d2f6"
+        },
+        {
+          "bytes": 507,
+          "function": "authority",
+          "new_lines": [
+            967,
+            974
+          ],
+          "old_lines": [
+            904,
+            911
+          ],
+          "sha256": "aaa105e01ffe73d5414319df2006ded0028af9207eceaed55f52ae02188b9c48"
+        },
+        {
+          "bytes": 1477,
+          "function": "no_runtime_mounts",
+          "new_lines": [
+            976,
+            996
+          ],
+          "old_lines": [
+            913,
+            933
+          ],
+          "sha256": "9dac376380c1b138d87e81d83411fb6a236b936234c70f99360264365c160f56"
+        },
+        {
+          "bytes": 866,
+          "function": "cache_report_root",
+          "new_lines": [
+            1052,
+            1067
+          ],
+          "old_lines": [
+            989,
+            1004
+          ],
+          "sha256": "2313f6c2564b99edc9d676525eeee330c8d807ad348e0b11b0062a0f7b34ec8e"
+        },
+        {
+          "bytes": 627,
+          "function": "capture_report_source",
+          "new_lines": [
+            1070,
+            1079
+          ],
+          "old_lines": [
+            1007,
+            1016
+          ],
+          "sha256": "fd61e32d7e3053c07488f4ad98c77e1ddd0dacf391da8cebf71f03eecc7c1ea9"
+        },
+        {
+          "bytes": 1064,
+          "function": "verify_generated_reports",
+          "new_lines": [
+            1184,
+            1197
+          ],
+          "old_lines": [
+            1121,
+            1134
+          ],
+          "sha256": "0c7280abafc4c468fcc8a049a683a72fe3ed2ddd17f38ef45dc81d28599ee021"
+        },
+        {
+          "bytes": 2738,
+          "function": "remove_runtime",
+          "new_lines": [
+            1200,
+            1243
+          ],
+          "old_lines": [
+            1137,
+            1180
+          ],
+          "sha256": "9f0dc629d3d040d5228b135e500c784a42e12dc9068d3e89434f35b406d19de0"
+        },
+        {
+          "bytes": 194,
+          "function": "signal_note",
+          "new_lines": [
+            1245,
+            1248
+          ],
+          "old_lines": [
+            1182,
+            1185
+          ],
+          "sha256": "26d9bf83c913ee79bf4a5829d69334ebf03b6423bc1758ad0e8307c023b4144a"
+        },
+        {
+          "bytes": 129,
+          "function": "only_work_signals",
+          "new_lines": [
+            1251,
+            1252
+          ],
+          "old_lines": [
+            1188,
+            1189
+          ],
+          "sha256": "4670060c55c5553aee6ae1d48cdba6e87276f52e820fcc0b4071a2589f37818a"
+        },
+        {
+          "bytes": 647,
+          "function": "disposal_policy",
+          "new_lines": [
+            1255,
+            1265
+          ],
+          "old_lines": [
+            1192,
+            1202
+          ],
+          "sha256": "deebd6b69c42b664728793ee56bbba3fe784cca2f7ac36635f5282c5d8e11980"
+        },
+        {
+          "bytes": 1112,
+          "function": "begin_cleanup",
+          "new_lines": [
+            1268,
+            1282
+          ],
+          "old_lines": [
+            1205,
+            1219
+          ],
+          "sha256": "003af530a4d9c590ec7768fe4ed14cc2bfba1fe0bc79a8da12923f24bf453ad0"
+        },
+        {
+          "bytes": 1487,
+          "function": "cleanup_tick",
+          "new_lines": [
+            1285,
+            1306
+          ],
+          "old_lines": [
+            1222,
+            1243
+          ],
+          "sha256": "aa6a69f04fc476a6ff7ebb9b6a16b3577fbc6b0c40d5bf3372f301e8e4cf49c9"
+        },
+        {
+          "bytes": 281,
+          "function": "cleanup_capture",
+          "new_lines": [
+            1309,
+            1312
+          ],
+          "old_lines": [
+            1246,
+            1249
+          ],
+          "sha256": "673190327e6294a574f5dab3922b80bd0bb3dec6cd6858099f1c54de3eb12788"
+        }
+      ]
+    }
+  },
+  "manual_risk_review": [
+    "Both source bindings include full fixed diagnostic before/after metadata; request schema already binds that object, while genuine approval adds the DIAGNOSTIC input hash as its fifth source key.25exact images/19inner-required inputs, no new executable/tool.",
+    "Diagnostic fixture is byte-identical to the other-agent source installed and independently reviewed by root; native password input, single native unlock click, final credential-card AX timeout, final durable tuple oracle and failure propagation/cleanup are not replaced.",
+    "P23 raw full-source checks require both fixed overlay afterimages and preserve every other blob/mode; accidental editor overlay or omission of diagnostic cannot satisfy effective identity.",
+    "Online prepare has no Test task and checks one app Test runtime; offline render launches only three original Main classes in one task. Successful Room test is neither selected nor required to prepare.",
+    "Three-class selection, one classpath record,three-suite XML/result counts, one-task outer acceptance and selected report roots agree. Missing/skipped/failFast-unstarted siblings stay failure evidence.",
+    "Original V5 screen/host policy obligations, raw transport, pidfd/namespace custody, GUI/private tmpfs/network/panel setup, stop/drain/removal and narrow pre-GUI cancellation controls remain unchanged except exact new scope identifiers.",
+    "Resource entry is deliberately strengthened from prior GUI07 fallback7.375GiB to normal12GiB, with3GiB running/phase floor; all reservations/current identities/route/coordination remain UNBOUND and no root election is claimed.",
+    "No native GUI success, product fix or root-cause claim is manufactured from the diagnostic source. Root-reported GUI07 Room PASS/Main FAIL/tray SKIP/chooser UNSTARTED remain independent old evidence."
+  ],
+  "method": "Standard-library JSON/hash and literal source lines/function spans/diff reconstruction only; no subject import/AST/compile/run. Function hashes strip trailing blank space after body and restore one LF. Not the unavailable authoritative ledger-validator tool.",
+  "new_executed_cases": 0,
+  "new_product_fixes_or_family_closures": 0,
+  "remaining": [
+    "Another agent independently reviews affected composition and fresh root-bound instance.",
+    "Root selects verified source store/tools/parents/lock/device/namespace/route/resources/coordination and real request+independent approval; no old identity reuse.",
+    "Root alone runs admitted prepare+offline three-case batch once and performs original stop/settlement/cleanup; independent actual XML/log/role/crop review follows.",
+    "PVA027 five crops require true independent visual interpretation; hardware/PVD/STOP/NO-RETRY/CLOSED/HOLD scopes remain separate."
+  ],
+  "schema": 1,
+  "scoped_normalizations": [
+    {
+      "file": "OUTER.py",
+      "function": "screen",
+      "normalized_sha256": "0e2b93d02e7b27589cc5f4043f622767c62368feb4d589eb557a652db91e43d5",
+      "only_literal_replacements": [
+        [
+          "GUI7_SCHEDULING_ONLY_BOUND_NONLIVE_UNKNOWN_ERRNO_V5",
+          "GUI8_SCHEDULING_ONLY_BOUND_NONLIVE_UNKNOWN_ERRNO_V5"
+        ]
+      ]
+    },
+    {
+      "file": "OUTER.py",
+      "function": "preserve_generated_reports",
+      "normalized_sha256": "5323922ee373e23ec6a635ed761aa9df0a5d01406ff7a095930861b1f731cf91",
+      "only_literal_replacements": [
+        [
+          "passvault-linux-desktop-integration07-retained-diagnostics-v1",
+          "passvault-linux-desktop-integration08-retained-diagnostics-v1"
+        ]
+      ]
+    }
+  ],
+  "selection_checks": {
+    "XML_suites": 3,
+    "class_order_unspecified_failFast_preserved": true,
+    "crop_files": 5,
+    "declared_methods": [
+      {
+        "class": "com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest",
+        "fixture": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+        "method": "actual Main guards dirty Back tab and Add without changing durable Room tuples",
+        "sha256": "ec28c00aa71fb7c3db26c0e2fb5c68d80b2e0f658e562164e046a1dbef44a4c5",
+        "suite": "CredentialMainNavHostRoomIntegrationTest[desktop]",
+        "task": ":app-desktop:desktopTest"
+      },
+      {
+        "class": "com.passvault.desktop.Pvu003NativeChooserAdmissionIntegrationTest",
+        "fixture": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+        "method": "actual Main samples Home while the export chooser is modal then cancels",
+        "sha256": "ec28c00aa71fb7c3db26c0e2fb5c68d80b2e0f658e562164e046a1dbef44a4c5",
+        "suite": "Pvu003NativeChooserAdmissionIntegrationTest[desktop]",
+        "task": ":app-desktop:desktopTest"
+      },
+      {
+        "class": "com.passvault.desktop.Pva027MainSettingsTrayPropagationIntegrationTest",
+        "fixture": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+        "method": "actual Main Settings updates installed tray properties through English Arabic English",
+        "sha256": "ec28c00aa71fb7c3db26c0e2fb5c68d80b2e0f658e562164e046a1dbef44a4c5",
+        "suite": "Pva027MainSettingsTrayPropagationIntegrationTest[desktop]",
+        "task": ":app-desktop:desktopTest"
+      }
+    ],
+    "extra_XML_retention_cap_not_declared_cases": 6,
+    "methods_in_fixture_total": 3,
+    "previous_success_Room_excluded": true,
+    "role_files": 27,
+    "roles_are_not_cases": true,
+    "runtime_classpath_records": 1,
+    "selected_Test_tasks": 1,
+    "shared_Test_worker_and_report_allowances_removed": true
+  },
+  "source_binding": {
+    "base_commit": "59bee33096f538b9444f00236448d7fc0ea740b2",
+    "base_content_identity_sha256": "19211d126337ddf19a37a6b89522642d62dcc247c199a6420cdc1e4b28abd91c",
+    "base_raw_bytes": 153458946,
+    "base_tree": "76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6",
+    "diagnostic_overlay": {
+      "after": {
+        "bytes": 91370,
+        "git_blob": "d716bd1aef1e45d76808c89ff693c07eb5ef46bd",
+        "sha256": "ec28c00aa71fb7c3db26c0e2fb5c68d80b2e0f658e562164e046a1dbef44a4c5"
+      },
+      "before": {
+        "bytes": 88602,
+        "git_blob": "91858bd15c2ab211bc263b881157cebd9a283154",
+        "sha256": "5fe322e48fef5fe7b6d2729817ad6fdbeb6bec182bf1cde5198ffdb1bb8c01a3"
+      },
+      "git_mode": "100644",
+      "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+      "scope": "Exactly the independently accepted installed native-unlock acknowledgement/diagnostic fixture afterimage; one native click/final AX and durable tuple oracles unchanged; no product/auth/dependency change"
+    },
+    "effective_bytes": 153461771,
+    "effective_content_identity_sha256": "c0894cecd7d497f14bc37388e34496aafd28f2df8e8a437d9e9fbe701ee2b3f5",
+    "framed_transport_bytes": 153725453,
+    "members": 5121,
+    "observed_checkout_bytes": 153460893,
+    "representation": "P23_RAW_GIT_BLOBS_PLUS_DESKTOPTEST_DEPENDENCY_AND_UNLOCK_DIAGNOSTIC_OVERLAYS",
+    "source_manifest_sha256": "1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc"
+  },
+  "source_data_checks": {
+    "P23_member_count": 5121,
+    "both_controller_binding_literals_equal_JSON_DATA": true,
+    "checkout_EOL_qualifications_preserved": 2,
+    "crosspins_checked": true,
+    "exact_before_and_after_fixture_hashes_distinct_and_checked": true,
+    "full_base_and_effective_identities_rederived": true,
+    "no_editor_overlay": true,
+    "only_two_changed_paths": [
+      "app-desktop/build.gradle.kts",
+      "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt"
+    ],
+    "source_manifest_not_recaptured_or_edited": true
+  },
+  "source_manifest": {
+    "bytes": 2846405,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint23/source-prepare01/SOURCE.json",
+    "sha256": "1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc"
+  },
+  "status": "COMPLETE_PROSPECTIVE_SOURCE_PENDING_INDEPENDENT_COMPOSITION_REVIEW",
+  "subjects": [
+    {
+      "bytes": 104814,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui08_three_case01/INNER.py",
+      "sha256": "2e7764b90b84591b7651e3a85025c4bb5805478464c3cfa43d75fbf0670a42db"
+    },
+    {
+      "bytes": 105949,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui08_three_case01/OUTER.py",
+      "sha256": "db190e4665535c6eefd63c4bf0b6668397c3c926a48f373aa5bcef7595b8b928"
+    },
+    {
+      "bytes": 10978,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui08_three_case01/INIT.gradle",
+      "sha256": "e380c6371878b47fb1848bf03001c1877f20a8ea8aceff981efaa121f6a7806a"
+    },
+    {
+      "bytes": 91370,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui08_three_case01/CredentialMainNavHostRoomIntegrationTest.kt",
+      "sha256": "ec28c00aa71fb7c3db26c0e2fb5c68d80b2e0f658e562164e046a1dbef44a4c5"
+    },
+    {
+      "bytes": 4584,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui08_three_case01/BINDING-DATA.json",
+      "sha256": "4e08125d37a5ec679fd0dc5ecdade70221280258ecf6bd9ea18f11fc2025b1e7"
+    }
+  ],
+  "unchanged_composition_details": {
+    "fixed_diagnostic_writer_original_descriptor_write_readback_span_sha256": "fc35c4bd0926786fbd5093f38cc93964274f2e53a67297bca6feab8681c7c806",
+    "new_generalized_patch_engine": false,
+    "old_controller_import_or_retry": false,
+    "render_body_noncomment_source_sha256": "58a6b1e8cf3d5615033ec0e5fc6ab38d463bbe7887f3bdd3c31a605b21f4906e"
+  }
+}

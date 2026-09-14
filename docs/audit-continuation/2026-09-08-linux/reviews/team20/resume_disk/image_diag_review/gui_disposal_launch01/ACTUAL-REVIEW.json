@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "date_utc": "2026-09-14",
+  "independent_reviewer": "/root/image_diag_review",
+  "fixture_author": "/root/current_ledger",
+  "execution_owner": "/root",
+  "status": "ACCEPT_THREE_GUI07_DISPOSAL_COMPONENT_CASES_AND_ORIGINAL_FIXTURE_FINALIZATION",
+  "scope": "DATA review of original admitted terminal/stdout and retained synthetic files, reusing accepted exact fixture/launcher source. No rerun, runtime/proc probe, signal, cleanup or historical custody reconstruction.",
+  "original_inputs": {
+    "root/gui07-disposal-contract01/ORIGINAL-TOOL-RESULT.json": {
+      "bytes": 2695,
+      "sha256": "564892dd49f325a124a84a9d7a6b7a13eec66efe97e0b84246eac8fe8bc5d596"
+    },
+    "root/gui07-disposal-contract01/ORIGINAL-OUTPUT.txt": {
+      "bytes": 2394,
+      "sha256": "1a8f01b6fabe4bc9a296b3068b16de2691f0da5baedbe67a284446b5fd8d7a04"
+    },
+    "root/gui07-disposal-contract01/ADMISSION.json": {
+      "bytes": 2278,
+      "sha256": "5ecad80e423011d0ea6abf3635c555ed831b2bbe23aeb3411ebaf36a42bf48b3"
+    },
+    "root/gui07-disposal-contract01/RESOURCE-AFTER.json": {
+      "bytes": 232,
+      "sha256": "e81b16027005f2e9bd871a85674048840aa1b81fe3a40e6b3021725c8105b8f6"
+    }
+  },
+  "input_path_base": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk",
+  "source_binding": "Admission selects previously independently accepted LAUNCH-v2.py1459B/df60c363e52f74883003593f5fd8dadc8574bc9c3d1afc95ef4b3ec85ebc3351. It consumes fixture.py15855B/b103e0b726b2113caa761eedc7176e4f08c35866f0f8ce6738d6199fd396ed8b as verified bytes. Fixture checks the exact NEW GUI07 subject100736B/19bccc5f4441cafe771ecac0f94f3ec81a8a8a3688346f9ac0df997e8a3d2f69 and25 selected bodies before compilation and rechecks subject after cases. Prior source review and launcher REVIEW.json remain the source acceptance chain.",
+  "original_terminal": {
+    "chunk_id": "8a8a46",
+    "exit_code": 0,
+    "fixture_elapsed_seconds": 0.086189,
+    "errors": [],
+    "unexpected_signals": [],
+    "distinct_component_cases": 3,
+    "product_cases": 0
+  },
+  "cases": [
+    {
+      "name": "cancelled",
+      "result": "PASS",
+      "evidence": "Actual original self-pidfd SIGTERM causes normal capture to refuse with capture cancelled/expired. Subject cleanup reports REMOVED_ORIGINAL_RUNTIME,6/6 snapshot entries removed; fixture also requires original R fd nlink0 and absent name. One31B generated report is conserved and reverified before unlink/after cleanup;35B source-copy bytes and original image are retained."
+    },
+    {
+      "name": "unknown",
+      "result": "PASS",
+      "evidence": "Exact unknown work/host/custody reason cannot enter cleanup refusal; empty subject receipt. Fixture requires original source/report bytes,nlink1,names and full recorded metadata unchanged before its separate finalization."
+    },
+    {
+      "name": "repeated",
+      "result": "PASS",
+      "evidence": "Second actual self-pidfd SIGTERM after cleanup intake invalidates saved epoch. Exact cleanup interrupted/expired/uncertain refusal despite simulated disposal_authorized=true; no subject cleanup receipt. Original source/report bytes,nlink1,names and metadata remain unchanged before separate finalization."
+    }
+  ],
+  "retained_evidence": {
+    "base": "docs/audit-continuation/2026-09-08-linux/runs/gui07-disposal-contract01",
+    "files": 14,
+    "logical_bytes": 1860,
+    "each_case_SOURCE-COPY.txt": "35B/10b38b17910e97238072d806396082c4a4de76a8999727f3af6077d5dcc59645",
+    "cancelled_GENERATED-REPORT-0001.bin": "31B/e8c4fe09ac6021e65b0d827e726371ebcbfbccdea0faf0bdd52e484014f7fbc8",
+    "cancelled_GENERATED-REPORTS.json": "1346B/51a4275d57333ea557366714a5be6f7acfe9fd2ae2ad57f047245bef60d88c2d",
+    "nine_synthetic_control_json_files": "Each42B/d172d98a5943ed4248d25df332e44960ebb0f555fc5aee951f677009ef768170; MAINNAV/PVU003/PVA027 names are synthetic controls, not application results.",
+    "conservation": "All retained hashes and bytes were read independently. Generated manifest hash equals original receipt; its saved/source report hashes agree with actual saved31B file. All three retained source copies are byte-identical."
+  },
+  "immediate_original_finalization": {
+    "fixture_runtime_disposed": true,
+    "basis": "Original result emitted after reverse-order journal-only finalization and original-descriptor close loop, without errors. Reviewed code requires original fd/name identity, complete immutable files, empty directories and original nlink0 after unlink, including already subject-removed allocations. Deliberately refused cases are reclaimed under fixture allocation custody only. All evidence is outside disposable R and retained.",
+    "fd_settlement": "No descriptor-close error in original result. Fixture-owned original fds/private flock/self-pidfd close explicitly. Inherited shared coordination flock is not a fixture fd-close claim: original terminal exit0 establishes kernel retirement of that original process's remaining lock fd.",
+    "gradle_stop": "NOT_APPLICABLE: no Gradle, child, daemon, helper server or cache created",
+    "post_resource_receipt": "5714780160B free disk;32119693312B available RAM. Recorded entry/post reserves satisfy this tiny fixture's admitted3GiB/percentage floors, not general Gradle admission. No new resource or runtime probe by reviewer."
+  },
+  "limits": [
+    "Three actual filesystem/self-signal component scenarios, not unit-method/XML/application/native-lifecycle/hardware counts;0 product cases and0 campaign closure credit.",
+    "Host/custody/child settlement/upstream unlink eligibility remain explicitly SIMULATED_NOT_GUI07_ADMISSION. No Gradle --stop, GUI07 controller or application lifecycle proof, and no promotion of simulated control filenames to product tests.",
+    "Only one nonempty generated-report route plus source-copy conservation exercised; not a complete report-path matrix or hard-kill guarantee. Existing successful unrelated checks not repeated.",
+    "No old HOLD, GUI06 failure, STOP/NO-RETRY/CLOSED restriction, remote cleanup, hardware requirement or historical custody status changes. Acceptance is only this original component run and its own finalization."
+  ]
+}

@@ -1,0 +1,154 @@
+Picked up JAVA_TOOL_OPTIONS: -Xmx512m -XX:-UsePerfData -Dfile.encoding=UTF-8 -Duser.home=/root/projects/PassVault/audit-runtime-linux-editor-save-ack01/home -Djava.io.tmpdir=/root/projects/PassVault/audit-runtime-linux-editor-save-ack01/tmp -Djna.tmpdir=/root/projects/PassVault/audit-runtime-linux-editor-save-ack01/jna -Dorg.sqlite.tmpdir=/root/projects/PassVault/audit-runtime-linux-editor-save-ack01/sqlite
+Fetching distribution.
+Downloading https://services.gradle.org/distributions/gradle-9.7.1-bin.zip
+..............10%..............20%...............30%..............40%...............50%..............60%...............70%..............80%..............90%...............100%
+
+Welcome to Gradle 9.7.1!
+
+Here are the highlights of this release:
+ - Isolated Projects graduates to incubating
+ - Broader Configuration Cache compatibility
+ - Resilient Sync helps you fix broken builds
+ - More source locations in problem reports
+
+For more details see https://docs.gradle.org/9.7.1/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :shared
+w: ⚠️ Native task 'iosSimulatorArm64Test' is disabled
+Task 'iosSimulatorArm64Test' for target 'ios_simulator_arm64' cannot run on the current host (linux-x86_64).
+Reason: simulator tests require macOS
+Solution: To suppress this warning, add 'kotlin.native.ignoreDisabledTargets=true' to gradle.properties.
+
+
+> Configure project :core:crypto
+w: ⚠️ Cross Compilation with Cinterop Not Supported in Project 'crypto'
+In project 'crypto', cross compilation to target 'iosArm64' has been disabled because it contains cinterops: 'rawSodium' which cannot be processed on host 'linux_x64'.
+Cinterop libraries require platform-specific native toolchains that aren't available on the current host system.
+Solutions:
+ * Remove the cinterop dependencies 'rawSodium' from target 'iosArm64'
+ * Build on a compatible host platform for this target/cinterop combination
+ * To disable klib cross compilation entirely, add 'kotlin.native.enableKlibsCrossCompilation=false' to your Gradle properties
+
+w: ⚠️ Cross Compilation with Cinterop Not Supported in Project 'crypto'
+In project 'crypto', cross compilation to target 'iosSimulatorArm64' has been disabled because it contains cinterops: 'rawSodium' which cannot be processed on host 'linux_x64'.
+Cinterop libraries require platform-specific native toolchains that aren't available on the current host system.
+Solutions:
+ * Remove the cinterop dependencies 'rawSodium' from target 'iosSimulatorArm64'
+ * Build on a compatible host platform for this target/cinterop combination
+ * To disable klib cross compilation entirely, add 'kotlin.native.enableKlibsCrossCompilation=false' to your Gradle properties
+
+w: ⚠️ Disabled Kotlin/Native Targets
+The following Kotlin/Native targets cannot be built on this machine and are disabled:
+iosArm64, iosSimulatorArm64
+Solution: To hide this message, add 'kotlin.native.ignoreDisabledTargets=true' to the Gradle properties.
+
+PASSVAULT_EDITOR_SAVE_ACK01={"kind":"graph","selectors":[":feature:credential:desktopTest"],"testTasks":[":feature:credential:desktopTest"],"tasks":[{"path":":core:crypto:checkKotlinGradlePluginConfigurationErrors","type":"org.jetbrains.kotlin.gradle.plugin.diagnostics.CheckKotlinGradlePluginConfigurationErrors_Decorated"},{"path":":core:crypto:compileDesktopMainJava","type":"org.gradle.api.tasks.compile.JavaCompile_Decorated"},{"path":":core:crypto:compileKotlinDesktop","type":"org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated"},{"path":":core:crypto:desktopJar","type":"org.gradle.api.tasks.bundling.Jar_Decorated"},{"path":":core:crypto:desktopMainClasses","type":"org.gradle.api.DefaultTask_Decorated"},{"path":":core:crypto:desktopProcessResources","type":"org.gradle.language.jvm.tasks.ProcessResources_Decorated"},{"path":":core:crypto:kmpPartiallyResolvedDependenciesChecker","type":"org.jetbrains.kotlin.gradle.plugin.diagnostics.checkers.KmpPartiallyResolvedDependenciesCheckerProjectsEvaluated_Decorated"},{"path":":core:crypto:processDesktopMainResources","type":"org.gradle.language.jvm.tasks.ProcessResources_Decorated"},{"path":":core:designsystem:assembleDesktopMainResources","type":"org.jetbrains.compose.resources.AssembleTargetResourcesTask_Decorated"},{"path":":core:designsystem:checkDesktopMainComposeLibrariesCompatibility","type":"org.jetbrains.compose.RuntimeLibrariesCompatibilityCheck_Decorated"},{"path":":core:designsystem:checkKotlinGradlePluginConfigurationErrors","type":"org.jetbrains.kotlin.gradle.plugin.diagnostics.CheckKotlinGradlePluginConfigurationErrors_Decorated"},{"path":":core:designsystem:compileDesktopMainJava","type":"org.gradle.api.tasks.compile.JavaCompile_Decorated"},{"path":":core:designsystem:compileKotlinDesktop","type":"org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated"},{"path":":core:designsystem:convertXmlValueResourcesForCommonMain","type":"org.jetbrains.compose.resources.XmlValuesConverterTask_Decorated"},{"path":":core:designsystem:convertXmlValueResourcesForDesktopMain","type":"org.jetbrains.compose.resources.XmlValuesConverterTask_Decorated"},{"path":":core:designsystem:copyNonXmlValueResourcesForCommonMain","type":"org.jetbrains.compose.resources.CopyNonXmlValueResourcesTask_Decorated"},{"path":":core:designsystem:copyNonXmlValueResourcesForDesktopMain","type":"org.jetbrains.compose.resources.CopyNonXmlValueResourcesTask_Decorated"},{"path":":core:designsystem:desktopJar","type":"org.gradle.api.tasks.bundling.Jar_Decorated"},{"path":":core:designsystem:desktopMainClasses","type":"org.gradle.api.DefaultTask_Decorated"},{"path":":core:designsystem:desktopProcessResources","type":"org.gradle.language.jvm.tasks.ProcessResources_Decorated"},{"path":":core:designsystem:generateActualResourceCollectorsForDesktopMain","type":"org.jetbrains.compose.resources.GenerateActualResourceCollectorsTask_Decorated"},{"path":":core:designsystem:generateComposeResClass","type":"org.jetbrains.compose.resources.GenerateResClassTask_Decorated"},{"path":":core:designsystem:generateExpectResourceCollectorsForCommonMain","type":"org.jetbrains.compose.resources.GenerateExpectResourceCollectorsTask_Decorated"},{"path":":core:designsystem:generateResourceAccessorsForCommonMain","type":"org.jetbrains.compose.resources.GenerateResourceAccessorsTask_Decorated"},{"path":":core:designsystem:generateResourceAccessorsForDesktopMain","type":"org.jetbrains.compose.resources.GenerateResourceAccessorsTask_Decorated"},{"path":":core:designsystem:kmpPartiallyResolvedDependenciesChecker","type":"org.jetbrains.kotlin.gradle.plugin.diagnostics.checkers.KmpPartiallyResolvedDependenciesCheckerProjectsEvaluated_Decorated"},{"path":":core:designsystem:prepareComposeResourcesTaskForCommonMain","type":"org.jetbrains.compose.resources.PrepareComposeResourcesTask_Decorated"},{"path":":core:designsystem:prepareComposeResourcesTaskForDesktopMain","type":"org.jetbrains.compose.resources.PrepareComposeResourcesTask_Decorated"},{"path":":core:designsystem:processDesktopMainResources","type":"org.gradle.language.jvm.tasks.ProcessResources_Decorated"},{"path":":core:domain:checkKotlinGradlePluginConfigurationErrors","type":"org.jetbrains.kotlin.gradle.plugin.diagnostics.CheckKotlinGradlePluginConfigurationErrors_Decorated"},{"path":":core:domain:compileDesktopMainJava","type":"org.gradle.api.tasks.compile.JavaCompile_Decorated"},{"path":":core:domain:compileKotlinDesktop","type":"org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated"},{"path":":core:domain:desktopJar","type":"org.gradle.api.tasks.bundling.Jar_Decorated"},{"path":":core:domain:desktopMainClasses","type":"org.gradle.api.DefaultTask_Decorated"},{"path":":core:domain:desktopProcessResources","type":"org.gradle.language.jvm.tasks.ProcessResources_Decorated"},{"path":":core:domain:kmpPartiallyResolvedDependenciesChecker","type":"org.jetbrains.kotlin.gradle.plugin.diagnostics.checkers.KmpPartiallyResolvedDependenciesCheckerProjectsEvaluated_Decorated"},{"path":":core:domain:processDesktopMainResources","type":"org.gradle.language.jvm.tasks.ProcessResources_Decorated"},{"path":":core:otp:checkKotlinGradlePluginConfigurationErrors","type":"org.jetbrains.kotlin.gradle.plugin.diagnostics.CheckKotlinGradlePluginConfigurationErrors_Decorated"},{"path":":core:otp:compileDesktopMainJava","type":"org.gradle.api.tasks.compile.JavaCompile_Decorated"},{"path":":core:otp:compileKotlinDesktop","type":"org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated"},{"path":":core:otp:desktopJar","type":"org.gradle.api.tasks.bundling.Jar_Decorated"},{"path":":core:otp:desktopMainClasses","type":"org.gradle.api.DefaultTask_Decorated"},{"path":":core:otp:desktopProcessResources","type":"org.gradle.language.jvm.tasks.ProcessResources_Decorated"},{"path":":core:otp:kmpPartiallyResolvedDependenciesChecker","type":"org.jetbrains.kotlin.gradle.plugin.diagnostics.checkers.KmpPartiallyResolvedDependenciesCheckerProjectsEvaluated_Decorated"},{"path":":core:otp:processDesktopMainResources","type":"org.gradle.language.jvm.tasks.ProcessResources_Decorated"},{"path":":core:security:checkKotlinGradlePluginConfigurationErrors","type":"org.jetbrains.kotlin.gradle.plugin.diagnostics.CheckKotlinGradlePluginConfigurationErrors_Decorated"},{"path":":core:security:compileDesktopMainJava","type":"org.gradle.api.tasks.compile.JavaCompile_Decorated"},{"path":":core:security:compileKotlinDesktop","type":"org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated"},{"path":":core:security:desktopJar","type":"org.gradle.api.tasks.bundling.Jar_Decorated"},{"path":":core:security:desktopMainClasses","type":"org.gradle.api.DefaultTask_Decorated"},{"path":":core:security:desktopProcessResources","type":"org.gradle.language.jvm.tasks.ProcessResources_Decorated"},{"path":":core:security:kmpPartiallyResolvedDependenciesChecker","type":"org.jetbrains.kotlin.gradle.plugin.diagnostics.checkers.KmpPartiallyResolvedDependenciesCheckerProjectsEvaluated_Decorated"},{"path":":core:security:processDesktopMainResources","type":"org.gradle.language.jvm.tasks.ProcessResources_Decorated"},{"path":":core:testing:checkKotlinGradlePluginConfigurationErrors","type":"org.jetbrains.kotlin.gradle.plugin.diagnostics.CheckKotlinGradlePluginConfigurationErrors_Decorated"},{"path":":core:testing:compileDesktopMainJava","type":"org.gradle.api.tasks.compile.JavaCompile_Decorated"},{"path":":core:testing:compileKotlinDesktop","type":"org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated"},{"path":":core:testing:desktopJar","type":"org.gradle.api.tasks.bundling.Jar_Decorated"},{"path":":core:testing:desktopMainClasses","type":"org.gradle.api.DefaultTask_Decorated"},{"path":":core:testing:desktopProcessResources","type":"org.gradle.language.jvm.tasks.ProcessResources_Decorated"},{"path":":core:testing:kmpPartiallyResolvedDependenciesChecker","type":"org.jetbrains.kotlin.gradle.plugin.diagnostics.checkers.KmpPartiallyResolvedDependenciesCheckerProjectsEvaluated_Decorated"},{"path":":core:testing:processDesktopMainResources","type":"org.gradle.language.jvm.tasks.ProcessResources_Decorated"},{"path":":feature:credential:assembleDesktopMainResources","type":"org.jetbrains.compose.resources.AssembleTargetResourcesTask_Decorated"},{"path":":feature:credential:assembleDesktopTestResources","type":"org.jetbrains.compose.resources.AssembleTargetResourcesTask_Decorated"},{"path":":feature:credential:checkDesktopMainComposeLibrariesCompatibility","type":"org.jetbrains.compose.RuntimeLibrariesCompatibilityCheck_Decorated"},{"path":":feature:credential:checkDesktopTestComposeLibrariesCompatibility","type":"org.jetbrains.compose.RuntimeLibrariesCompatibilityCheck_Decorated"},{"path":":feature:credential:checkKotlinGradlePluginConfigurationErrors","type":"org.jetbrains.kotlin.gradle.plugin.diagnostics.CheckKotlinGradlePluginConfigurationErrors_Decorated"},{"path":":feature:credential:compileDesktopMainJava","type":"org.gradle.api.tasks.compile.JavaCompile_Decorated"},{"path":":feature:credential:compileDesktopTestJava","type":"org.gradle.api.tasks.compile.JavaCompile_Decorated"},{"path":":feature:credential:compileKotlinDesktop","type":"org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated"},{"path":":feature:credential:compileTestKotlinDesktop","type":"org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated"},{"path":":feature:credential:convertXmlValueResourcesForCommonMain","type":"org.jetbrains.compose.resources.XmlValuesConverterTask_Decorated"},{"path":":feature:credential:convertXmlValueResourcesForCommonTest","type":"org.jetbrains.compose.resources.XmlValuesConverterTask_Decorated"},{"path":":feature:credential:convertXmlValueResourcesForDesktopMain","type":"org.jetbrains.compose.resources.XmlValuesConverterTask_Decorated"},{"path":":feature:credential:convertXmlValueResourcesForDesktopTest","type":"org.jetbrains.compose.resources.XmlValuesConverterTask_Decorated"},{"path":":feature:credential:copyNonXmlValueResourcesForCommonMain","type":"org.jetbrains.compose.resources.CopyNonXmlValueResourcesTask_Decorated"},{"path":":feature:credential:copyNonXmlValueResourcesForCommonTest","type":"org.jetbrains.compose.resources.CopyNonXmlValueResourcesTask_Decorated"},{"path":":feature:credential:copyNonXmlValueResourcesForDesktopMain","type":"org.jetbrains.compose.resources.CopyNonXmlValueResourcesTask_Decorated"},{"path":":feature:credential:copyNonXmlValueResourcesForDesktopTest","type":"org.jetbrains.compose.resources.CopyNonXmlValueResourcesTask_Decorated"},{"path":":feature:credential:desktopJar","type":"org.gradle.api.tasks.bundling.Jar_Decorated"},{"path":":feature:credential:desktopMainClasses","type":"org.gradle.api.DefaultTask_Decorated"},{"path":":feature:credential:desktopProcessResources","type":"org.gradle.language.jvm.tasks.ProcessResources_Decorated"},{"path":":feature:credential:desktopTest","type":"org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest_Decorated"},{"path":":feature:credential:desktopTestClasses","type":"org.gradle.api.DefaultTask_Decorated"},{"path":":feature:credential:desktopTestProcessResources","type":"org.gradle.language.jvm.tasks.ProcessResources_Decorated"},{"path":":feature:credential:generateActualResourceCollectorsForDesktopMain","type":"org.jetbrains.compose.resources.GenerateActualResourceCollectorsTask_Decorated"},{"path":":feature:credential:generateComposeResClass","type":"org.jetbrains.compose.resources.GenerateResClassTask_Decorated"},{"path":":feature:credential:generateExpectResourceCollectorsForCommonMain","type":"org.jetbrains.compose.resources.GenerateExpectResourceCollectorsTask_Decorated"},{"path":":feature:credential:generateResourceAccessorsForCommonMain","type":"org.jetbrains.compose.resources.GenerateResourceAccessorsTask_Decorated"},{"path":":feature:credential:generateResourceAccessorsForCommonTest","type":"org.jetbrains.compose.resources.GenerateResourceAccessorsTask_Decorated"},{"path":":feature:credential:generateResourceAccessorsForDesktopMain","type":"org.jetbrains.compose.resources.GenerateResourceAccessorsTask_Decorated"},{"path":":feature:credential:generateResourceAccessorsForDesktopTest","type":"org.jetbrains.compose.resources.GenerateResourceAccessorsTask_Decorated"},{"path":":feature:credential:kmpPartiallyResolvedDependenciesChecker","type":"org.jetbrains.kotlin.gradle.plugin.diagnostics.checkers.KmpPartiallyResolvedDependenciesCheckerProjectsEvaluated_Decorated"},{"path":":feature:credential:prepareComposeResourcesTaskForCommonMain","type":"org.jetbrains.compose.resources.PrepareComposeResourcesTask_Decorated"},{"path":":feature:credential:prepareComposeResourcesTaskForCommonTest","type":"org.jetbrains.compose.resources.PrepareComposeResourcesTask_Decorated"},{"path":":feature:credential:prepareComposeResourcesTaskForDesktopMain","type":"org.jetbrains.compose.resources.PrepareComposeResourcesTask_Decorated"},{"path":":feature:credential:prepareComposeResourcesTaskForDesktopTest","type":"org.jetbrains.compose.resources.PrepareComposeResourcesTask_Decorated"},{"path":":feature:credential:processDesktopMainResources","type":"org.gradle.language.jvm.tasks.ProcessResources_Decorated"},{"path":":feature:credential:processDesktopTestResources","type":"org.gradle.language.jvm.tasks.ProcessResources_Decorated"}]}
+
+> Task :core:crypto:kmpPartiallyResolvedDependenciesChecker
+> Task :core:crypto:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:crypto:compileKotlinDesktop
+> Task :core:crypto:compileDesktopMainJava NO-SOURCE
+> Task :core:crypto:desktopProcessResources NO-SOURCE
+> Task :core:crypto:processDesktopMainResources SKIPPED
+> Task :core:crypto:desktopMainClasses
+> Task :core:crypto:desktopJar
+> Task :core:designsystem:checkDesktopMainComposeLibrariesCompatibility
+> Task :core:designsystem:kmpPartiallyResolvedDependenciesChecker
+> Task :core:designsystem:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:designsystem:convertXmlValueResourcesForCommonMain
+> Task :core:designsystem:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :core:designsystem:prepareComposeResourcesTaskForCommonMain
+> Task :core:designsystem:generateResourceAccessorsForCommonMain
+> Task :core:designsystem:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :core:designsystem:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :core:designsystem:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :core:designsystem:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :core:designsystem:generateActualResourceCollectorsForDesktopMain
+> Task :core:designsystem:generateComposeResClass
+> Task :core:designsystem:generateExpectResourceCollectorsForCommonMain
+> Task :core:designsystem:compileKotlinDesktop
+> Task :core:designsystem:compileDesktopMainJava NO-SOURCE
+> Task :core:designsystem:assembleDesktopMainResources
+> Task :core:designsystem:desktopProcessResources
+> Task :core:designsystem:processDesktopMainResources SKIPPED
+> Task :core:designsystem:desktopMainClasses
+> Task :core:designsystem:desktopJar
+> Task :core:domain:kmpPartiallyResolvedDependenciesChecker
+> Task :core:domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:domain:compileKotlinDesktop
+> Task :core:domain:compileDesktopMainJava NO-SOURCE
+> Task :core:domain:desktopProcessResources NO-SOURCE
+> Task :core:domain:processDesktopMainResources SKIPPED
+> Task :core:domain:desktopMainClasses
+> Task :core:domain:desktopJar
+> Task :core:otp:kmpPartiallyResolvedDependenciesChecker
+> Task :core:otp:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:otp:compileKotlinDesktop
+> Task :core:otp:compileDesktopMainJava NO-SOURCE
+> Task :core:otp:desktopProcessResources NO-SOURCE
+> Task :core:otp:processDesktopMainResources SKIPPED
+> Task :core:otp:desktopMainClasses
+> Task :core:otp:desktopJar
+> Task :core:security:kmpPartiallyResolvedDependenciesChecker
+> Task :core:security:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:security:compileKotlinDesktop
+> Task :core:security:compileDesktopMainJava NO-SOURCE
+> Task :core:security:desktopProcessResources NO-SOURCE
+> Task :core:security:processDesktopMainResources SKIPPED
+> Task :core:security:desktopMainClasses
+> Task :core:security:desktopJar
+> Task :core:testing:kmpPartiallyResolvedDependenciesChecker
+> Task :core:testing:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:testing:compileKotlinDesktop
+> Task :core:testing:compileDesktopMainJava NO-SOURCE
+> Task :core:testing:desktopProcessResources NO-SOURCE
+> Task :core:testing:processDesktopMainResources SKIPPED
+> Task :core:testing:desktopMainClasses
+> Task :core:testing:desktopJar
+> Task :feature:credential:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:credential:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:credential:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:credential:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:credential:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:credential:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:credential:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:credential:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:credential:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:credential:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:credential:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:credential:generateActualResourceCollectorsForDesktopMain
+> Task :feature:credential:generateComposeResClass
+> Task :feature:credential:generateExpectResourceCollectorsForCommonMain
+> Task :feature:credential:compileKotlinDesktop
+> Task :feature:credential:compileDesktopMainJava NO-SOURCE
+> Task :feature:credential:checkDesktopTestComposeLibrariesCompatibility
+> Task :feature:credential:assembleDesktopMainResources
+> Task :feature:credential:desktopProcessResources
+> Task :feature:credential:processDesktopMainResources SKIPPED
+> Task :feature:credential:desktopMainClasses
+> Task :feature:credential:desktopJar
+> Task :feature:credential:convertXmlValueResourcesForCommonTest NO-SOURCE
+> Task :feature:credential:copyNonXmlValueResourcesForCommonTest NO-SOURCE
+> Task :feature:credential:prepareComposeResourcesTaskForCommonTest NO-SOURCE
+> Task :feature:credential:generateResourceAccessorsForCommonTest NO-SOURCE
+> Task :feature:credential:convertXmlValueResourcesForDesktopTest NO-SOURCE
+> Task :feature:credential:copyNonXmlValueResourcesForDesktopTest NO-SOURCE
+> Task :feature:credential:prepareComposeResourcesTaskForDesktopTest NO-SOURCE
+> Task :feature:credential:generateResourceAccessorsForDesktopTest NO-SOURCE
+> Task :feature:credential:compileTestKotlinDesktop
+> Task :feature:credential:compileDesktopTestJava NO-SOURCE
+> Task :feature:credential:assembleDesktopTestResources
+> Task :feature:credential:desktopTestProcessResources
+> Task :feature:credential:processDesktopTestResources SKIPPED
+> Task :feature:credential:desktopTestClasses
+
+> Task :feature:credential:desktopTest
+PASSVAULT_EDITOR_SAVE_ACK01={"kind":"task-state","task":":feature:credential:desktopTest","type":"org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest_Decorated","executed":true,"skipped":false,"upToDate":false,"noSource":false,"didWork":true,"skipMessage":null,"failureType":null}
+
+[Incubating] Problems report is available at: file:///root/projects/PassVault/audit-runtime-linux-editor-save-ack01/checkout/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 5m 11s
+41 actionable tasks: 41 executed

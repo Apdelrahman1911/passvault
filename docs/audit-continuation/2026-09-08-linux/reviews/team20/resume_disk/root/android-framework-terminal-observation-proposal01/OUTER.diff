@@ -1,0 +1,23 @@
+--- /root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance05/OUTER.py
++++ prospective05-terminal-observation
+@@ -680,8 +680,18 @@
+             require(owned_domain is None or owned_domain == pair, 'original namespace changed')
+             owned_domain = pair
+             child['row']['owned_namespaces'] = pair
+-    except OSError:
+-        require(p.poll() is not None, 'live original child namespace unreadable')  # Only after original pidfd.
++    except OSError as error:
++        if p.poll() is None:
++            # A previously bound original child may lose proc namespace links just
++            # before waitpid reports its exit. Never rebind or overlook a live child:
++            # only ENOENT/ESRCH may await this same child for at most 100ms.
++            require(owned_domain is not None and error.errno in (2, 3),
++                    'live original child namespace unreadable')
++            try:
++                p.wait(timeout=0.1)
++            except subprocess.TimeoutExpired:
++                raise RuntimeError('live original child namespace unreadable') from error
++            require(p.returncode is not None, 'original child terminal wait incomplete')
+ 
+ def supervise():
+     global child, owned_domain

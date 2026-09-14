@@ -1,0 +1,154 @@
+{
+  "schema": "passvault.gui-successor-independent-source-review.v1",
+  "reviewer": "/root/remaining_report",
+  "author": "/root/current_ledger",
+  "status": "ACCEPT_PROSPECTIVE_SOURCE_DELTA_PENDING_FRESH_INSTANCE_AND_FOCUSED_ACTUALS",
+  "blocking_new_source_findings": [],
+  "source_amendment_requested": false,
+  "scope": "Independent review of the exact new OUTER/INNER/three-path INIT delta, not a restarted audit of unchanged controllers and not execution/cleanup admission.",
+  "subjects": [
+    {
+      "before": {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration06-outer/LAUNCH-v5.py",
+        "bytes": 86849,
+        "sha256": "17476099e0ef0f8cf374be91d6dca54bdb49a141ea5e8c76c2e12fab493e3459"
+      },
+      "after": {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor01/OUTER.py",
+        "bytes": 100736,
+        "sha256": "19bccc5f4441cafe771ecac0f94f3ec81a8a8a3688346f9ac0df997e8a3d2f69"
+      },
+      "exact_complete_diff": {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor01/OUTER.py.diff",
+        "bytes": 56241,
+        "sha256": "8aa25c791ba8117e94aa8265a825193d56352958ce57064260502cb5c5f6f150"
+      }
+    },
+    {
+      "before": {
+        "path": "scripts/audit/linux_desktop_integration_06_v5.py",
+        "bytes": 99312,
+        "sha256": "8976c066856e60807344ec031599217aed194391788ae0a859ea1b42e018684d"
+      },
+      "after": {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor01/INNER.py",
+        "bytes": 103569,
+        "sha256": "6fa032851905700ee350f50f1d8d3031e75932420d56409ca2175263a858ae37"
+      },
+      "exact_complete_diff": {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor01/INNER.py.diff",
+        "bytes": 14967,
+        "sha256": "ff7d94145a509ddd1aea1b8f5c3af791f333a542f0d5d9731effb21958dc94a0"
+      }
+    },
+    {
+      "before": {
+        "path": "scripts/audit/desktop_integration_06.init.gradle",
+        "bytes": 11651,
+        "sha256": "da840aa9beec10e75ad2383810ccf969615f9be2240fb5a40a44deb0908297ea"
+      },
+      "after": {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor01/INIT.gradle",
+        "bytes": 11651,
+        "sha256": "f943b2c24f682073dd09d78eedf5605af55ef8265ffbace86a263ce845a6f53e"
+      },
+      "exact_complete_diff": {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor01/INIT.gradle.diff",
+        "bytes": 968,
+        "sha256": "f4e118862f50978f355b9f56d3bf0fcdf96b13c1aac815c0b69648315728f7ea"
+      }
+    }
+  ],
+  "packet": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor01/MANIFEST.json",
+      "bytes": 2838,
+      "sha256": "abea6441963a88ee668033d15ff2506985707c42b3342da475ebc9535cbaae62"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_successor01/README.md",
+      "bytes": 6890,
+      "sha256": "70327b74d84cf8ef53765125289a1253d26b7330e9eed715ffffb650ced79695"
+    }
+  ],
+  "scanner_basis": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_screen_fix01/screen_replacement.py",
+      "bytes": 15089,
+      "sha256": "12bf17068b04a6759a0f8c0b6c2ed813e9b4aeaaabdadabd20afe0bab854b16d"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/image_diag_review/gui_screen_fix01/SOURCE-REVIEW.json",
+      "bytes": 6517,
+      "sha256": "c37a2591e2c39aa03ca3f5d26a98d4a1f4d29e8ab41394905d7165310568cdaf"
+    }
+  ],
+  "literal_checks": {
+    "three_complete_diffs_match_pinned_before_and_after": true,
+    "scanner_screen_function_exact_transplant": true,
+    "init_exact_three_path_substitutions_only": true,
+    "unchanged_remover_logic_except_explicit_cleanup_plumbing_and_entry_guard": {
+      "selected_report_images": true,
+      "capture_report_source": true,
+      "preserve_generated_reports": true,
+      "verify_generated_reports": true,
+      "remove_runtime": true
+    }
+  },
+  "independent_findings": [
+    {
+      "area": "Fresh identity and scanner integration",
+      "lines": "OUTER28-70,103-111,166-199,306-552,1243-1308; INNER31-104,455-519,1518-1528",
+      "finding": "Distinct GUI07 paths/schema, false entry flags and null/UNBOUND custody/resource values do not inherit GUI06 admission. V4 requires explicit bound-terminal-UNKNOWN classification and scanner/kernel evidence in the genuinely reviewed request. Exact accepted screen() is transplanted; its imports/helpers are available. Terminal UNKNOWN still grants neither ownership, idle nor deletion permission. The historical scanner source review is not a new actual result."
+    },
+    {
+      "area": "Original cancellation cause and settlement",
+      "lines": "INNER638-739,778-841",
+      "finding": "First abort is marked cancellation-only only when cancellation is present and timeout/resource/output errors are absent at that observation. The only tolerated command error is the exact existing marker plus this recorded classification; subsequent log/descriptor/resource errors prevent disposal completeness. Direct exit+EOF, retained log and original stop0/phase settlement are required; exactly prepare+prepare-stop selects the typed pre-GUI route. Generic exceptions cannot set that route. No fresh stop or broad failure-to-safe conversion is introduced."
+    },
+    {
+      "area": "Preservation versus semantic validation",
+      "lines": "INNER1549-1657",
+      "finding": "The typed route keeps cancellation/error evidence and explicitly leaves after-source NOT_CHECKED_WORK_CANCELLED/validation false. Retained final inputs/files, namespace settlement, required stops, per-case preservation and absence of GUI/render/helpers/tray/orphans remain required. Normal safe/PASS still requires after-source/evidence validation and unchanged case mappings. Failed final write/verify/close still makes actual exit70. Source-after uncertainty is allowed only for this newly admitted disposable-copy policy, not called source acceptance."
+    },
+    {
+      "area": "Outer intake is not removal permission",
+      "lines": "OUTER588-641,1374-1447,1452-1495,1542-1556",
+      "finding": "Only original isolated child exit1 with root INT/TERM/HUP-only reasons and no forced outer pidfd kill can begin cancelled read-only intake. A generic inner70, host/resource/custody reason, wrong phase/schema/domain/deadline, failed stop or missing evidence refuses before disposal_authorized. Exact original result/preflight and retained case images are checked; original child must already be settled and descriptors finalized. An inner cleanup_safe Boolean alone is insufficient."
+    },
+    {
+      "area": "Dedicated cleanup path, bounded not a cancellation reset",
+      "lines": "OUTER229-260,895-924,1173-1241",
+      "finding": "Normal capture/tick/launch keep work cancellation checks. Cleanup capture is restricted to original control/images/E/R, retaining original fd/name/size/hash checks. Cleanup ticks retain the original lock, immutable reason snapshot, separate signal-generation counter, unchanged END cap and at most750seconds plus separately elected disk/RAM reserve. Repeated identical signals invalidate future cleanup checkpoints. Reasons are never cleared. Cooperative checkpoints/ordinary filesystem syscalls are not atomic cancellation or hard-kernel-deadline guarantees."
+    },
+    {
+      "area": "Original allowlisted remover retained",
+      "lines": "OUTER926-1171",
+      "finding": "Literal normalized comparisons establish no changed report classification, complete snapshot, type/owner/device/single-link, original name/fd/per-entry or bottom-up removal rules; only cleanup-specific reader/tick plumbing, new entry guard and GUI07 report format changed. Mount exclusion, report conservation/readback and post-removal evidence verification remain. Any first destructive failure remains partial-cleanup HOLD/no automatic retry."
+    }
+  ],
+  "minimum_next_validation": {
+    "kind": "Separately admitted small fresh synthetic disposal-contract actual, not full GUI/Gradle",
+    "positive_oracle": "A genuinely original cancelled pre-GUI disposable-copy case reaches the reviewed cleanup path only after child/log/stop settlement; original failure and source-after-unknown remain visible, disposable files are actually removed, retained evidence survives and outcome is failure/cleaned rather than PASS.",
+    "refusal_oracles": [
+      "Unknown host/custody reason or generic inner70 never grants disposal.",
+      "Incomplete original log/wait/stop or wrong phase/schema/domain/evidence binding never grants disposal.",
+      "A fresh repeated signal during cleanup invalidates the signal-generation checkpoint.",
+      "Wrong original file/directory/mount identity or evidence-conservation failure refuses rather than broadening an allowlist."
+    ],
+    "limits": "Choose a bounded representative set, not a combinatorial harness. Reuse unchanged scanner/unit/inventory evidence; do not rerun successful unchanged checks for reassurance. Pure predicate mocks are not actual file disposal, and no old controller or HOLD runtime is to be imported/executed/probed. Root must separately authorize the exact fixture/import or extraction route and its owned files/cleanup."
+  },
+  "fresh_admission_obligations": [
+    "Root alone selects current original coordination lock, raw-OID source store, unused R/E/control paths, tool/device identities and actual work/cleanup resource election; all present UNBOUND/null/false values remain nonadmission.",
+    "Reconcile the latest retained scanner unit/kernel/document evidence under exact pins. This review does not assert a new kernel actual or reopen unchanged source. The ENOENT-only ceiling/refusal boundaries remain as accepted.",
+    "Any bound successor revision changes its hash: rebind INNER/INIT in OUTER, freeze new request and obtain genuinely independent exact-instance approval; this source review is not that schema-bound approval.",
+    "GUI successor still materializes fixed P23 plus the approved desktopTest-only overlay and its four selected GUI cases. The separately authored CredentialCustomFieldDraftTest failure/ack amendment is not implicitly in this source binding or a new selected GUI case.",
+    "Existing original Image01/GUI06 HOLDs, consumed stops/runs and STOP/NO-RETRY/CLOSED/provider/tool-refusal/protected-ref/mobile1017001 scopes remain unchanged."
+  ],
+  "operations_performed": "Named SOURCE/retained-DATA reads, hashes, JSON/literal diff reconstruction and own new review write only. No subject import/eval/AST/compile/test/execute, runtime/resource/process/HOLD/network/Git probing, cleanup or source amendment.",
+  "new_product_test_executions": 0,
+  "new_kernel_test_executions": 0,
+  "new_qualified_closures": 0,
+  "old_hold_changes": 0,
+  "separation": "This independent successor review is separate from remaining_report/editor_save_ack01 author artifacts. Root separately SOURCE-accepted that editor amendment; no test actual is asserted here."
+}

@@ -1,0 +1,34 @@
+{
+  "argv": [
+    "/usr/bin/timeout",
+    "--foreground",
+    "--signal=TERM",
+    "--kill-after=2s",
+    "20s",
+    "/usr/bin/python3.12",
+    "-I",
+    "-B",
+    "-S",
+    "-c",
+    "import fcntl, hashlib, json, os, pathlib, stat, sys, types, unittest\np = pathlib.Path(sys.argv[1]); raw = p.read_bytes()\nassert hashlib.sha256(raw).hexdigest() == sys.argv[2]\na = json.loads(raw)\nparent = lock = None\ntry:\n    parent_path = os.path.dirname(a['coordination']['path'])\n    parent = os.open(parent_path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)\n    def identity(s): return [s.st_dev, s.st_ino, s.st_uid, stat.S_IMODE(s.st_mode)]\n    assert identity(os.fstat(parent)) == a['coordination']['parent_identity']\n    lock = os.open('build.lock', os.O_RDWR | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=parent)\n    s = os.fstat(lock)\n    assert stat.S_ISREG(s.st_mode) and s.st_size == 0\n    assert identity(s) + [s.st_nlink] == a['coordination']['identity']\n    assert identity(os.stat(parent_path, follow_symlinks=False)) == a['coordination']['parent_identity']\n    named = os.stat('build.lock', dir_fd=parent, follow_symlinks=False)\n    assert identity(named) + [named.st_nlink] == a['coordination']['identity'] and named.st_size == 0\n    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)\n    fs = os.statvfs(p.parent)\n    assert fs.f_bavail * fs.f_frsize >= a['resource_floor_bytes']\n    for name, descriptor in [('screen_replacement', a['source']), ('screen_replacement_tests', a['fixture'])]:\n        source = pathlib.Path(descriptor['path']).read_bytes()\n        assert len(source) == descriptor['bytes'] and hashlib.sha256(source).hexdigest() == descriptor['sha256']\n        module = types.ModuleType(name); module.__file__ = descriptor['path']; sys.modules[name] = module\n        exec(compile(source, descriptor['path'], 'exec'), module.__dict__)\n    suite = unittest.defaultTestLoader.loadTestsFromModule(module)\n    assert suite.countTestCases() == 12\n    result = unittest.TextTestRunner(verbosity=2).run(suite)\n    print(json.dumps(dict(testsRun=result.testsRun, failures=len(result.failures), errors=len(result.errors), skipped=len(result.skipped), boundary='deterministic fake proc/pidfd only; zero application cases')))\n    raise SystemExit(0 if result.wasSuccessful() and result.testsRun == 12 and not result.skipped else 1)\nfinally:\n    try:\n        if lock is not None: os.close(lock)\n    finally:\n        if parent is not None: os.close(parent)\n",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/screen-unit01/ADMISSION-v2.json",
+    "b617ac08ba18c7f01c635947417e8bc5006ac15c7156ac840999caf4e831230f"
+  ],
+  "cleanup": "Plan finally-close and foreground20s+2s timeout. No generated artifacts/caches/runtime/Gradle to remove or stop; keep compact test evidence.",
+  "independent_review": {
+    "bytes": 3634,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/image_diag_review/screen_unit01/ADMISSION-REVIEW.json",
+    "sha256": "bb6b495139f8a364b8f1060f6477ba03451206e9052e72846e97a5a371b9a311"
+  },
+  "no_other_audit_job_active": true,
+  "original_restrictions_unchanged": true,
+  "owner": "/root",
+  "plan": {
+    "bytes": 6732,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/screen-unit01/ADMISSION-v2.json",
+    "sha256": "b617ac08ba18c7f01c635947417e8bc5006ac15c7156ac840999caf4e831230f"
+  },
+  "schema": 1,
+  "status": "ADMITTED_ONE_FOCUSED_UNIT_BATCH",
+  "utc": "2026-09-14T08:39:46.304224+00:00"
+}

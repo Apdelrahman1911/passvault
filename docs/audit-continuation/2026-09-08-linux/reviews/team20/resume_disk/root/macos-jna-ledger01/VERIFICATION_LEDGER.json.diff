@@ -1,0 +1,101 @@
+--- VERIFICATION_LEDGER.json.before
++++ VERIFICATION_LEDGER.json
+@@ -3517,14 +3517,67 @@
+     "status": "TWO_ACTUAL_FAILURES_ORIGINAL_STOPS_SETTLED_RUNTIME_HOLD",
+     "xml_elements_added": 2
+   },
++  "current_macos_jna01_actual": {
++    "accounting": {
++      "added_xml": 1,
++      "application_native_regression_investigation_control": 251,
++      "current_mixed_xml": 255,
++      "family_closures_added": 0,
++      "infrastructure": 3,
++      "not_all_passes": true,
++      "previous_mixed_xml": 254,
++      "producer": 1,
++      "screen_controls_separate": 6
++    },
++    "activation": "6438f2dc69229aeb8d7cb755c630e427450b42a5",
++    "actual_review": {
++      "bytes": 12939,
++      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/macos_jna01_actual/ACTUAL-REVIEW.json",
++      "sha256": "538cc8fe1ecf6dd52ed11d5ca95b22d0b985343231798c9b4fb55f7df989aef0"
++    },
++    "attempt": 1,
++    "cleanup": "ORIGINAL_PRIVATE_RUNTIME_REMOVED",
++    "errors": 0,
++    "failures": 0,
++    "gradle_task_count": 123,
++    "native_library": {
++      "bytes": 51600,
++      "sha256": "613360760ef2bbf5c1a10406af8bc2eef7c8253c78f3290aa392173db68eb7db"
++    },
++    "native_objects_removed": true,
++    "qualification": "Pre-provider realmacOSx64JNA/contextreservation witness only;notactiveproviderlatency,physicalTouchID,sanitizer,packagedloader orPVA010familyclosure. RESULTtopstatus preserves pre-cleanup wording; finalcleanupfield recordsoriginalruntimeremoved. AllpreviousHOLDrestrictionsretained.",
++    "result": {
++      "bytes": 6602,
++      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/macos-jna-ci01/artifacts/RESULT.json",
++      "sha256": "3e0864bb6a100823fb11439f422c838184b97468dcd6f572a78f534e903f7af4"
++    },
++    "root_adoption": {
++      "bytes": 1083,
++      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/macos-jna-ci01/ACTUAL-ADOPTION.json",
++      "sha256": "4090eaf3d2cfc4fc4ab3cd51d97228cc6149065c6293219fa46915cfb5c0b0e7"
++    },
++    "run_id": 34885844060,
++    "runtime_seconds": 446.853512851,
++    "skipped": 0,
++    "source_commit": "38b222a5219da83da7ef4c00ee9cb2ba408e717b",
++    "status": "INDEPENDENTLY_ACCEPTED_ROOT_ADOPTED_ONE_REAL_JNA_PREPROVIDER_PASS",
++    "stop_ok": true,
++    "test_cases": 1,
++    "utc": "2026-09-14T19:26:19.793111+00:00",
++    "xml": {
++      "bytes": 752,
++      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/macos-jna-ci01/artifacts/TEST-com.passvault.desktop.security.biometric.JnaDesktopBiometricNativeLifetimeIntegrationTest.xml",
++      "sha256": "26730fdcf793fa7a1ae1dcc87f48e2f8da66c17bb99233af034542cc12544e73"
++    }
++  },
+   "current_reconciliation_record": {
+     "record": {
+-      "bytes": 1051,
+-      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance03/ACTUAL-ADOPTION.json",
+-      "sha256": "79c58188175a1cc1a4c955a0cdbb257ed938f0bf6e154cd32ea54447eb17fbee"
+-    },
+-    "scope": "Incremental ACTION03 originalfailure/cleanup; earlier accepted GUI18 and sourcepush/javap preserved separately; NOT FINAL",
+-    "utc": "2026-09-14T19:13:45.540505+00:00"
++      "bytes": 1083,
++      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/macos-jna-ci01/ACTUAL-ADOPTION.json",
++      "sha256": "4090eaf3d2cfc4fc4ab3cd51d97228cc6149065c6293219fa46915cfb5c0b0e7"
++    },
++    "scope": "Incremental macOS1case actual/cleanup; priorAndroid03failure andGUI18HOLDpreserved; NOTFINAL",
++    "utc": "2026-09-14T19:31:01.608210+00:00"
+   },
+   "current_regression_scheduling": {
+     "live_record": "reviews/team20/resume_disk/root/EXECUTION_SLOT.json",
+@@ -5918,6 +5971,15 @@
+     "regression_methods": 4,
+     "status": "INTEGRATION02_FOUR_DECLARATIONS_SOURCE_ACCEPTED_UNBOUND_UNEXECUTED; DETEKT_PREFLIGHT_HOLD"
+   },
++  "historical_reconciliation_before_macos_jna01": {
++    "record": {
++      "bytes": 1051,
++      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/android-framework-package-action-instance03/ACTUAL-ADOPTION.json",
++      "sha256": "79c58188175a1cc1a4c955a0cdbb257ed938f0bf6e154cd32ea54447eb17fbee"
++    },
++    "scope": "Incremental ACTION03 originalfailure/cleanup; earlier accepted GUI18 and sourcepush/javap preserved separately; NOT FINAL",
++    "utc": "2026-09-14T19:13:45.540505+00:00"
++  },
+   "historical_resumed_current_phase_before_C20": {
+     "existing_team_plan": 20,
+     "freeze": "Root explicitly adopted narrow C18-cohort-only prospective W/T-current-index publication release; separate exact C19 publication admission pending. Original C18 objects/config/index/SOURCE/HOST02/control/actuals and every held R remain protected. W product source unchanged/frozen; no new build or cleanup authority.",
+@@ -6637,7 +6699,7 @@
+       "status": "OPERATIONAL_FAIL_ALL_SEVEN_NODES_UNSTARTED"
+     }
+   ],
+-  "updated_utc": "2026-09-14T18:30:47.647033+00:00",
++  "updated_utc": "2026-09-14T19:31:01.608425+00:00",
+   "windows_cohort02_execution": {
+     "activation_commit": "7b716ce8c693fa480bfb99d518acd9d4c8f9cfab",
+     "activation_tree": "22fc4394711f7a7265ddf0d0ced965aade9112fb",

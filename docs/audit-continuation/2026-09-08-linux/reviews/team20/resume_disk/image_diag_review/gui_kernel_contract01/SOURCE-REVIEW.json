@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "reviewer": "/root/image_diag_review",
+  "author": "/root/current_ledger",
+  "execution_owner": "/root",
+  "status": "ACCEPT_EXACT_TINY_KERNEL_FIXTURE_SOURCE_PENDING_FRESH_OUTER_ADMISSION_AND_ACTUALS",
+  "subjects": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_kernel_contract01/leader_exit_child.c",
+      "bytes": 2049,
+      "sha256": "35ea9e52bb561dab693bd610cf22390933d8ac12a310e387200bf94bfa592c32"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_kernel_contract01/probe.py",
+      "bytes": 11794,
+      "sha256": "de433946a52c8551644b3905431dca0cac7ff3ddfd110b9180a6d79d2aabb5b4"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui_kernel_contract01/README.md",
+      "bytes": 5355,
+      "sha256": "a4a1a6fcd05c5ea00fbe76cd2602c128d38ec6312de208e70097d9d3c98eb2ef"
+    }
+  ],
+  "independent_challenges": [
+    "The Linux/glibc initial thread is joinable. Its pthread_self value is initialized before pthread_create, and the pthread_exit result points to static storage, not its departed stack. The worker joins that exact original leader before LEADER_JOINED and cannot emit WORKER_ALIVE until the parent subsequently sends P. Original anchored Z stat and unchanged PID/PPID/starttime further distinguish leader exit from group exit.",
+    "Fixed L/P/X gating prevents the three expected line markers from coalescing ahead of their corresponding requests. Reads are bounded and nonblocking, marker selection is exact, and a missing/wrong marker, unexpected exit, or live-worker namespace/readiness mismatch fails rather than silently skipping the case.",
+    "INT/TERM/HUP latching handlers and SIGCHLD default are established inside the cleanup try before Popen. This standalone Python process has no other reaper/thread. It captures the direct child's flags0 pidfd without first waiting it, anchors that child's proc directory once, checks nonterminal state before positive reads, and never reopens a numeric proc path.",
+    "All later stat/namespace reads use that one original directory descriptor. Stat validates direct parent and birth fields; namespace syntax is constrained. Stat-leaf close failures become RuntimeError rather than being mistaken for a missing-task errno.",
+    "Six-second observation and one-second lost-mount-namespace bounds are explicit. No busy full-proc scan, forced PID reuse, high-FD repetition, network, application data or archived runner is involved. Pidfd remains required nonterminal after the leader has exited and the worker replies, then readable after releasing the last thread.",
+    "Only exact original-child waitpid(WNOHANG) can mark reaped, with real exited/signaled status checked. ECHILD does not become successful exit. The result overwrites Popen.returncode from that original wait result; no Popen poll/wait fallback or numeric-PID signal is used.",
+    "Finally closes child stdin before failure cleanup. With original pidfd acquired, only it can receive SIGKILL. Without it, EOF plus the child's independently installed default/unblocked ten-second SIGALRM is the fallback; there is no numeric kill. Cleanup allows twelve seconds to reap and independently attempts stream/anchor/pidfd closure. Recorded cancellation, reap/close/signal errors prevent PASS."
+  ],
+  "required_outer_admission": [
+    "Root must freeze fresh exact source/binary/runtime/evidence paths, coordination and source/hash guards before launching the compiler or probe, and install compiler/probe interruption and allowlisted cleanup handling before launch. This is source acceptance, not permission to reuse an old runtime or runner.",
+    "Use one root-owned quiet compiler-plus-probe batch with no retry. Retain original compiler/probe terminal results, compact JSON/stderr, hashes and toolchain/kernel identity. Do not cut off the fixture's six-second observation plus twelve-second cleanup window with a shorter blind timeout.",
+    "Delete only the admitted fresh binary/runtime after original compiler and child settlement is proved and compact evidence preserved. Python SIGKILL, OOM, host failure, unexpected Popen/loader interruption or kernel stall are not repaired by source review; unknown settlement requires HOLD, not inferred cleanup.",
+    "No Gradle was invoked and no wrapper --stop duty is created. No protected refs, build1017001, GUI06/HOLD, STOP/NO-RETRY/CLOSED scope or old process identity is authorized by this review."
+  ],
+  "evidence_interpretation": [
+    "Exactly one synthetic real-Linux kernel-contract case is proposed; zero application, GUI or hardware cases have run. Fake scanner tests and this fixture protect different risks and must not be merged into an application-test count.",
+    "Reaped-anchor reads accept and record ENOENT or ESRCH, while the accepted scanner currently permits MissingTask only for ENOENT. A fixture PASS with ESRCH is not evidence of scanner support for ESRCH; retain exact per-operation errno and narrowly revise/review only if the intended scanner contract requires it.",
+    "After-reap pidfd mask is sampled/validated for unexpected bits, but the source does not separately assert a nonzero or HUP mask there. Its required terminal-readability assertion occurs after last-thread exit and before reap. Do not report a stronger post-reap mask assertion than actually executed.",
+    "The fixture does not force numeric PID reuse or prove all kernels empirically. Retained docs.kernel.org proc.html lines240-246 explicitly supply the non-retargeting contract, with usually ESRCH rather than an exclusive errno rule; retained pidfd_open(2) lines174-190 explicitly supply flags0 last-thread readiness. Reviewed fixed retained excerpts and current_ledger/kernel_docs02/REVIEW.md; no new fetch needed.",
+    "Successful actuals could corroborate the current host contract, not retroactively prove historical PID13733 natural exit, source-after or GUI06 cleanup. Campaign product closure denominators remain unchanged."
+  ],
+  "reviewer_operations": "DATA-only source/document reads and exact subject hashes, then this review write. No compilation, execution/import of fixture or runner, live proc/kernel/process access, owned child creation, signals or deletion performed by reviewer."
+}

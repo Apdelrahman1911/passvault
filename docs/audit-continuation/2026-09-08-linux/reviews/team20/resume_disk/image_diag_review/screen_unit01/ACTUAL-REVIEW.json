@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "reviewer": "/root/image_diag_review",
+  "execution_owner": "/root",
+  "status": "ACCEPT_12_FAKE_COMPONENT_METHODS_AND_ORIGINAL_UNIT_SLOT_SETTLEMENT",
+  "evidence": [
+    {"path": "root/screen-unit01/RESULT.json", "bytes": 937, "sha256": "b23deb05b16dd2fb9d1b776337e57a664b16fa8bafcb48a1708c03db952bc80c"},
+    {"path": "root/screen-unit01/ORIGINAL-TERMINAL.json", "bytes": 545, "sha256": "3c70a1244c335a7c0bc0bc0a562e410db10819a1428ec59272b758140a1fee4c"},
+    {"path": "root/screen-unit01/ROOT-EXECUTION-ADMISSION.json", "bytes": 3686, "sha256": "2ba94f2f8bb622077003091449be549ddd90a68ecb9377e23380ff4314e31408"},
+    {"path": "root/screen-unit01/stdout.txt", "bytes": 133, "sha256": "9f71276a550692e7b552202db14034fc82ea70ce2858cbf35be932942faaf3dc"},
+    {"path": "root/screen-unit01/stderr.txt", "bytes": 2269, "sha256": "ae61d88beba2dc6be11fd38f3a8da7e41aaa4a4e14e0acb9e7affc78693f8d4b"}
+  ],
+  "evidence_base": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk",
+  "reconciliation": [
+    "Retained exact argv matches accepted ADMISSION-v2 command prefix, admission pathname and b617ac08ba18c7f01c635947417e8bc5006ac15c7156ac840999caf4e831230f pin. Root explicitly adopted sole-owner quiet-slot execution; original admission/source/fixture identities are unchanged.",
+    "All five evidence files were independently read and size/SHA-256 checked. Stdout reports 12 testsRun, zero failures/errors/skips. Stderr names the same twelve admitted ScreenRegression methods, each ok, then Ran 12 tests in 0.004s and OK. No application/GUI/kernel cases or XML are claimed.",
+    "Original terminal chunk4aaf56 records exit0 with no yielded session; root RESULT records original direct child10201 reaped, exit0, no error/cancellation. Normal foreground timeout exit0 entails successful child-command completion. The reviewed bootstrap would surface an unhandled final descriptor-close error as nonzero; no such error is retained.",
+    "Recorded scopes differ: unittest body0.004s, original tool wall0.076862027s, root RESULT elapsed0.16840879199980918s. They are not interchangeable whole-campaign timing or extra test cases.",
+    "No fixture subprocess, temporary runtime, build output/cache, server or Gradle was created. No deletion or wrapper --stop is due. Keep compact source/test evidence. Actual process termination retires kernel descriptors; this is not a separate per-fd close trace.",
+    "Root's resource-after sample6425427968B exceeds the admitted3GiB floor; it is a historical sample, not current disk capacity. No live process/storage probe or cleanup was performed by reviewer."
+  ],
+  "recommendation": "Root may retire this original unit logical scheduling slot and proceed with the next separately admitted task. No rerun is needed for unchanged scanner/fixture bytes. This does not admit the real-kernel probe or a GUI execution.",
+  "limitations": "Deterministic fake proc/pidfd component methods with subcases are not real-kernel or product behavior. No product-family closure is added. GUI06 HOLD, historical source-after/cleanup uncertainty, all STOP/NO-RETRY/CLOSED restrictions and protected publication boundaries remain unchanged."
+}

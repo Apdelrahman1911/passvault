@@ -1,0 +1,62 @@
+{
+  "schema": "passvault.c20.editor-save-ack-source-delta.v1",
+  "status": "SOURCE_ONLY_PENDING_INDEPENDENT_REVIEW_AND_EXECUTION",
+  "source": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldDraftTest.kt",
+  "before": {
+    "bytes": 15170,
+    "sha256": "b45ded2bb7e092e73975f7b7d4e77c8e649ae72f1b7f07db9445b47559c176c2"
+  },
+  "after": {
+    "bytes": 17187,
+    "sha256": "1db3bbb9edd917351093634dc92ab1b2a1d1a6a18f6ef7e675d7f54ad782334b"
+  },
+  "delta": {
+    "added_lines": 49,
+    "removed_lines": 10,
+    "new_test_methods": 0,
+    "existing_test_methods": 13,
+    "changed_method": "failed page Save keeps adopted values dirty and retry persists them",
+    "scope": "One existing method plus one generated-resource import only; other test code byte-identical."
+  },
+  "read_only_basis": [
+    {
+      "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialViewModelTest.kt",
+      "bytes": 30812,
+      "sha256": "23cd0f013ee9fa7f00378d59d6f2df47ea4fc81ed7ca758e8ca5910788c62435"
+    },
+    {
+      "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldCapacityTest.kt",
+      "bytes": 9075,
+      "sha256": "5bd1b2316812977c733f74b8ee15929907cb47c040cfe3577f0062152e9acff4"
+    },
+    {
+      "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldSaveFreshnessTest.kt",
+      "bytes": 26264,
+      "sha256": "68eb476cd47b9cda26c86b1ecb2ce9e64f167770291a818beb41400e96953819"
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialViewModel.kt",
+      "bytes": 25441,
+      "sha256": "b9a9c5e6a9e9a5eee86a13a639fa32826dbfdfbd09fa81a032935a37f58f0611"
+    },
+    {
+      "path": "core/testing/src/commonMain/kotlin/com/passvault/core/testing/fakes/FakeCredentialRepository.kt",
+      "bytes": 15123,
+      "sha256": "e23527840b0c9ffa1baa99bc70550c28115ea357fe213d5f436b568dfa76686a"
+    }
+  ],
+  "execution": {
+    "compile": false,
+    "test": false,
+    "product_cases": 0,
+    "authority": "Root alone; later exact method execution needs separate admission."
+  },
+  "limits": [
+    "No production/dependency/runner/init/sourcecontrol/canonical edit.",
+    "No new UI harness, wrapper repository, seam, or external operation.",
+    "Copied fake persistence and virtual scheduler, not Room or native input.",
+    "PVA007 failure-to-SaveCompleted boundary only; no PVA031 Add acknowledgement resolution.",
+    "No owner-disposal or refused PVU002/006 behavior introduced or investigated.",
+    "No closure/count change; historical prior source/execution evidence retains its own identity."
+  ]
+}

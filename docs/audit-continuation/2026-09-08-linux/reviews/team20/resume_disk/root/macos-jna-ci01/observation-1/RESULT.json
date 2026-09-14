@@ -1,0 +1,30 @@
+{
+  "status": "FAILED_NO_AUTOMATIC_RETRY",
+  "cases": 0,
+  "phase": "discover",
+  "argv": [
+    "/usr/bin/gh",
+    "run",
+    "list",
+    "--repo",
+    "Apdelrahman1911/passvault",
+    "--commit",
+    "6438f2dc69229aeb8d7cb755c630e427450b42a5",
+    "--workflow",
+    "audit-macos-jna-lifetime01.yml",
+    "--limit",
+    "5",
+    "--json",
+    "databaseId,headSha,event,status,conclusion,attempt,url,workflowName,headBranch"
+  ],
+  "commit": "6438f2dc69229aeb8d7cb755c630e427450b42a5",
+  "pid": 21717,
+  "error": "RuntimeError: Original gh failed; no automatic retry",
+  "exit": 1,
+  "original_group_settled": true,
+  "stderr": {
+    "bytes": 223,
+    "sha256": "52c0399e1c03a0007c0452293319bea0efc6b2398d9a727c38e6933a32e9c1f3"
+  },
+  "private_cleanup": "EMPTY_PRIVATE_HOME_TMP_REMOVED"
+}
