@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "utc": "2026-09-14T22:27:57.651490+00:00",
+  "reviewer": "/root/current_ledger",
+  "author": "/root",
+  "status": "ACCEPT_REVISION02_FIXTURE_SOURCE_FOR_FRESH_DISCRIMINATING_INSTANCE_NOT_CAUSAL_FIX_OR_EXECUTION",
+  "proposal": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-after-flush-root-sharing03-revision02/PROPOSAL.json",
+    "bytes": 1053,
+    "sha256": "d5eda9e71a99aa84fa54daa66c8999bb9aa8dd0d58ed60526fcb68812ccbe730"
+  },
+  "before": {
+    "path": "/root/projects/PassVault/passvault-linux/app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+    "bytes": 78056,
+    "sha256": "3357b87a1896f007c7bbfdf6086b42a7c4c01eaa632f0f5943bef287ab4b1fc0"
+  },
+  "after": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-after-flush-root-sharing03-revision02/passvault_biometric_windows_security_test.cpp.txt",
+    "bytes": 79012,
+    "sha256": "8ce855ecd8cf1ac542529753ae000e0d3acdc4f487a88026d2ab709c63460b81"
+  },
+  "diff": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-after-flush-root-sharing03-revision02/SOURCE.diff",
+    "bytes": 3049,
+    "sha256": "05ce5d34f0694f1c51efedfbb54b5a332351f1e785df8823f9dcd247b47662f7"
+  },
+  "production_unchanged": {
+    "path": "/root/projects/PassVault/passvault-linux/app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp",
+    "bytes": 99579,
+    "sha256": "93746b0cdb399aa17dd8c3c915e907244d4e86e5b566c51714ccc7f80310bd5d"
+  },
+  "superseded_proposal": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-after-flush-root-sharing03-proposal/PROPOSAL.json",
+    "bytes": 1287,
+    "sha256": "7c33d299abfaafb337333ce605dd1c58bddc784c320e0d45dceeb5b54a628059"
+  },
+  "preceding_failed_actual": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/windows_after_flush02_actual/ACTUAL-REVIEW.json",
+    "bytes": 8916,
+    "sha256": "ee2d508139ff4c032d06cce7f616af4be219754e6c7780eae7f26e11da752399"
+  },
+  "checks": [
+    "Complete3049Brawdiffindependentlyreproduced. Allchanges confinedto test_after_flush_process inside dedicatedafterflushcompileguard. Childdriver/realwriter/seedforwarder/phase/secret/allocation/native14/history/DLL/production unchanged.",
+    "Windows02trace narrowsordinaryfalse toMoveFileEx; final32maybeDeleteFile. Neitherrootparentopen norwhichdesired/share direction is observed. Share-onlyfirstproposal didnotaddressbidirectionalsharing. Revision02 removes longliveddesiredDELETE and allowsRWD, an explicitfixturecandidate; runtimepasswouldestablishnewcasebehaviornotretroactive exactoriginalWin32cause.",
+    "Originaldirectoryhandle remainsopen andoriginalFILEID retained throughoutcase, desiredFILE_READ_ATTRIBUTES|READ_CONTROL only, RWDsharing. ThisdoesNOTdenyadversarialsame-userrootrename/deletion; approvalconditionalontheexistingcooperativeexclusive-ownedruntimeboundary. No claimofunchangednamespaceexclusion orsecurityagainst arbitrarysameUID mutation.",
+    "No childorfilesystemoracle relaxed: sourceparent/rootid binding; suspendedexactselfchild/handlelist/oneprocessJob; readyphase1234/onewrite/oneflush/no close; temporarysharezeroopenmustfailwithsharingviolation; destination/sentinelidentities+bytes beforeaction; releaseorcontrolleddeath, exactexit/creation/Jobzero; expectedresidual orreplacementfileIDs/contents remain. Allchecks precede originalfixturedeletion.",
+    "LateDELETEhandle openedonlyafterall originaldecisiveassertions/childJobsettlement/IPCclose andexisting checkedfile removals. OPEN_REPARSE_POINT+BACKUP_SEMANTICS retained. Emptydirectory/safeoriginalhandle/originalFILEID and valid/safenewhandle/newFILEIDmatch precedeSetFileInformationByHandle onnewhandle. Originalhandle remainsopenwhilenewdeletehandleacquired; no soleidentitycustodygap.",
+    "Both originalandnewhandles explicitlyclosedin separate statements before booleancheck; firstclosefailure cannotshortcircuitsecondclose. Rootabsencecheckedonlyafterbothclose; terminalcleanupPASS remainsafterallcheckedoperations. EarlierPV_TEST_CHECKfailure still retainsfailedfixtureHOLD, not successcleanup. No whole-rootgenericdisposal oroldHOLDrepair.",
+    "Becauseproductsourcehasnotchanged, no productioncompatibility/version/dependency/identitychange. Expectednewnativevalidationmust usefresh03helper/workflow/request/nonce/sourcehashes, two selectors inoneshortdirectCMakebuild andretainoriginal01/02failures. Reuseexistingunchangedcoordinator/disposalpolicyreviews, notunchanged expensivetests."
+  ],
+  "qualifications": [
+    "C++sourceinspectiononly,nocompiler orruntimeverification. Newhandlecanstillfailornewfixturecanstillreproduceseedfailure; no causalcompletionpromise.",
+    "A laterpasswithtwosimultaneoushandlemodechanges cannotidentifywhichoriginalsharecheckfailed; reportcompatiblefixtureconfiguration andsupportedafterflushcaseevidence only.",
+    "New03nativeinstance,tools/resources/one-heavy-slot/activation/cleanup andactualresults needgenuineseparateadmission. GUI22orotheractivejobpreventsparallelCI. No newcaller-allocation seam,providerexperiment,old02retryoroldruntimeinspection authorized."
+  ],
+  "credit": {
+    "new_cases": 0,
+    "production_fixes": 0,
+    "family_closures": 0
+  },
+  "restrictions": "PVU007STOP/PVU011NO-RETRY/PVA029recordedfailure/G7G8WindowsGraph03CLOSED/allHOLDincludingWindows01+02/GUI18+19+21/Android07/protectedrefs-tags-mobile1017001/PVDseparate; reviewerSOURCE/DATA/ownrecordsonly."
+}

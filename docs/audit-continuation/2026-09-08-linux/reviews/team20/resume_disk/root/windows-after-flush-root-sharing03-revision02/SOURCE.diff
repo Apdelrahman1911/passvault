@@ -1,0 +1,44 @@
+--- 
++++ 
+@@ -1069,8 +1069,12 @@
+   // Failure retains this exclusively created fixture; no destructor/remove_all
+   // can erase a failed oracle or a root with uncertain child settlement.
+   PV_TEST_CHECK(ensure_safe_directory(root));
+-  WindowsHandle root_handle(CreateFileW(root.c_str(), FILE_READ_ATTRIBUTES | READ_CONTROL | DELETE,
+-      FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING,
++  // Bind identity throughout the synthetic case without requesting DELETE
++  // while the writer performs rename operations. This is not an adversarial
++  // same-user namespace lock; cleanup acquires a separately identity-checked
++  // delete handle only after all child/file assertions and settlement.
++  WindowsHandle root_handle(CreateFileW(root.c_str(), FILE_READ_ATTRIBUTES | READ_CONTROL,
++      FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING,
+       FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, nullptr));
+   BY_HANDLE_FILE_INFORMATION root_identity{};
+   PV_TEST_CHECK(root_handle.valid() && safe_handle(root_handle.get()) &&
+@@ -1240,14 +1244,22 @@
+     PV_TEST_CHECK(after_flush_remove_file(temporary, retained_temporary, replacement));
+   PV_TEST_CHECK(after_flush_remove_file(destination, final_destination, kill_child ? original : replacement));
+   PV_TEST_CHECK(after_flush_remove_file(sentinel, final_sentinel, sentinel_bytes));
+-  BY_HANDLE_FILE_INFORMATION final_root{};
++  BY_HANDLE_FILE_INFORMATION final_root{}, cleanup_root{};
++  WindowsHandle delete_handle(CreateFileW(root.c_str(), FILE_READ_ATTRIBUTES | READ_CONTROL | DELETE,
++      FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING,
++      FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, nullptr));
+   FILE_DISPOSITION_INFO delete_root{TRUE};
+   PV_TEST_CHECK(directory_has_only(root, {}) && safe_handle(root_handle.get()) &&
+                 GetFileInformationByHandle(root_handle.get(), &final_root) &&
+-                same_writer_file(root_identity, final_root) &&
+-                SetFileInformationByHandle(root_handle.get(), FileDispositionInfo, &delete_root,
++                same_writer_file(root_identity, final_root) && delete_handle.valid() &&
++                safe_handle(delete_handle.get()) &&
++                GetFileInformationByHandle(delete_handle.get(), &cleanup_root) &&
++                same_writer_file(root_identity, cleanup_root) &&
++                SetFileInformationByHandle(delete_handle.get(), FileDispositionInfo, &delete_root,
+                                           static_cast<DWORD>(sizeof(delete_root))));
+-  PV_TEST_CHECK(root_handle.close() && after_flush_absent(root));
++  const bool delete_handle_closed = delete_handle.close();
++  const bool root_handle_closed = root_handle.close();
++  PV_TEST_CHECK(delete_handle_closed && root_handle_closed && after_flush_absent(root));
+   PV_TEST_CHECK(std::printf(
+       "PVA036_AFTER_FLUSH case=%s process=%lu creation=%lu:%lu exit=%lu "
+       "stage_id=%lu:%lu:%lu destination_id=%lu:%lu:%lu "

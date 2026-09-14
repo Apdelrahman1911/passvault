@@ -1,9 +1,3 @@
-## Update27 — Windows diagnostic result adopted
-
-Windows02 run34903676569: MSVCx64 configure/build succeeded; first case **FAIL**, second **UNSTARTED**, before the after-flush boundary. The forwarding diagnostic establishes real MoveFileExW returned false, not its exact error/cause. Original Job and observer settlement independently accepted; whole remote runtime remains HOLD. No automatic retry. A revised, independently source-reviewed test-only root-handle fixture now permits a fresh discriminating two-case batch; fresh helper/instance admission remains pending.
-
-Current accounting: **264 mixed XML elements, not passes** (260 application/native/regression/investigation/control +3 infrastructure +1 producer). No new family closure:27/39 confirmed,19/25 original,2/12 suspicions. Prior numbered updates below are historical at their stated cutoff. Use EXECUTION_SLOT for live status.
-
 > **Update26:** GUI21 stopped before Gradle at a validation input-map KeyError.
 > Zero test cases or XML; no Gradle stop was owed. Independent review accepted
 > only the original pre-build failure and logical-slot retirement. Its runtime
@@ -40,7 +34,7 @@ This document replaces stale scheduling prose; previous exact report is retained
 - **27/39 confirmed families have qualified closures (69.2%); 12 open.** Original families: **19/25 (76%)**.
   Original suspicions: **2/12 conclusively resolved (16.7%)**, ten unresolved.
   Eight PVD explanations are documented; owner decisions are separate. These are not overall readiness percentages.
-- **264 mixed XML elements, not 264 passes**; six screen-control, four terminal-observation and eight Windows disposal-policy controls remain separate (all nonXML). The five new sanitizer XML cases are two native and three filesystem-fixture cases.
+- **263 mixed XML elements, not 263 passes**; six screen-control, four terminal-observation and eight Windows disposal-policy controls remain separate (all nonXML). The five new sanitizer XML cases are two native and three filesystem-fixture cases.
 - GUI16: three actual cases, **one Main/native dirty-editor + durable Room reopen PASS; two Settings-lookup FAILs**.
   Main uses paired nonshipping readiness instrumentation. This is not full editor/mobile/installed-image closure.
   Both original wrapper stops succeeded; 28,231/28,231 runtime entries removed.
@@ -82,7 +76,7 @@ exact-source/cleanup reconciliation.
 | **PVA-029 — attestation identity** | Preserve **44 PASS / 5 FAIL** out of 49 checks. Establish a permissible bounded diagnosis of the five failures, make any required repairs, then obtain discriminating verification under fresh authority. No automatic retry or replay of the failed helper. The five failures were narrowed at checkpoint7 to capture-cleanup fixtures, not five candidate/invocation-policy failures; exact signal/wait causes remain unknown. |
 | **PVA-030 — Android SYSTEM locale refresh** | Exercise actual system-locale change and application lifecycle refresh. Can share a suitable target/build cohort with PVA-009; static checks and graph nodes are not framework execution. |
 | **PVA-031 — capacity rejection loses Add draft** | Preserve new Room and editor acknowledgement evidence. Finish real Main/input, rapid/pre-frame, rejection, accessibility/RTL and mobile contracts shared with PVA-007. Do not claim retention after legitimate owner disposal. |
-| **PVA-036 — Windows temporary-file lifetime/ownership** | Windows01 and diagnostic02 each failed first seed before the boundary (one FAIL each, second UNSTARTED, runtimes HOLD). Execute the separately admitted revised-fixture normal-release/controlled-child-death batch; finish applicable owned TMP/TEMP crash/cancellation cleanup evidence. Not a universal power-loss or orphan-recovery claim. |
+| **PVA-036 — Windows temporary-file lifetime/ownership** | Execute prepared after-FlushFileBuffers normal-release and controlled-child-death cases; finish applicable owned TMP/TEMP crash/cancellation cleanup evidence. Not a universal power-loss or orphan-recovery claim. |
 | **PVA-037 — Windows allocation failure bypasses erasure** | Obtain a permitted whole-create/retrieve-caller allocation-cut mechanism after PRF/AAD and KDF/AES/later allocations. Preserve existing guard4/actual-PRK2/KDF1 evidence; it does not cover all callers. Current scope does not authorize a new provider/refactoring/instrumentation seam. |
 
 ## Other unfinished work — separate categories
@@ -92,7 +86,7 @@ exact-source/cleanup reconciliation.
 - **PVU-001:** real production caller/provider lock/lease schedule and settlement.
 - **PVU-002:** post-lock delete admission with real durable DAO effect. Prior
   authoring refusal remains; no alternate-agent or rephrasing bypass.
-- **PVU-003:** actual chooser/Home/cancel behavior; GUI18 reached the real export chooser but its focused-modal guard and cleanup focus wait failed. Native Home/cancel evidence remains missing; an AWT/native-focus assumption needs investigation. The read-only native probe/test adapter is independently source-reviewed and installed in the GUI22 fixture. GUI21 failed before Gradle due to input transport (zero cases, runtime HOLD). Corrected GUI22 controls are reviewed; its fresh exact request is awaiting instance acceptance, not yet executed.
+- **PVU-003:** actual chooser/Home/cancel behavior; GUI18 reached the real export chooser but its focused-modal guard and cleanup focus wait failed. Native Home/cancel evidence remains missing; an AWT/native-focus assumption needs investigation. A new isolated read-only native probe and test-adapter integration are prepared as unreviewed source only, not installed or executed.
 - **PVU-004:** iOS interactive gesture/Back/scene timing and keyboard LTR/RTL.
 - **PVU-005:** remaining platform/backend lock-curtain behavior. Existing Linux
   SOFTWARE_FAST nonreproduction is not a universal disproof.
