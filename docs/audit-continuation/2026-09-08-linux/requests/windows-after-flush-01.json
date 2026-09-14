@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "suite": "windows-after-flush-01",
+  "nonce": "387fd36902d1a78c09f284d8d257897b",
+  "case_names": [
+    "passvault_biometric_windows_after_flush_continue",
+    "passvault_biometric_windows_after_flush_process_death"
+  ],
+  "case_argv": {
+    "passvault_biometric_windows_after_flush_continue": [
+      "--after-flush-case",
+      "continue"
+    ],
+    "passvault_biometric_windows_after_flush_process_death": [
+      "--after-flush-case",
+      "process_death"
+    ]
+  },
+  "target": "passvault_biometric_windows_after_flush_test",
+  "audit_controls": false,
+  "after_flush_controls": true,
+  "sdk": "10.0.26100.0",
+  "max_seconds": 480,
+  "helper_sha256": "4d39b8c7e2294386bcb8d9c40c82a3464cd685dd33b753a7c2a200addebe6de4",
+  "workflow_sha256": "daecc3db9b987b52ed9dc24c29622dc22360297d7527933967a6596301cba202",
+  "scope_sha256": "c7331543d91d516088eeb55aa14fbc17ccb26da9507e5517fbce0e332ac93014",
+  "source_commit": "b88856529bb276fab7db988410658c32185b8de8",
+  "source_tree": "597ace3ecb5c2fc744b3d62d13703cc24c14beaa",
+  "independent_review_path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/windows_after_flush01_instance/INSTANCE-ACCEPT.json",
+  "independent_review_sha256": "fdc5da8bdff9ce90486a64d9e0b7b2aacbe7502c3ec8b88d285d9489933fdb49",
+  "exclusive_build_slot": true,
+  "source_push_excludes_queued_pending_running_local_ci": true,
+  "activation_push_excludes_queued_pending_running_local_ci": true,
+  "source_push_other_workflow_triggers_reviewed": true,
+  "activation_push_other_workflow_triggers_reviewed": true,
+  "generated_cleanup_admitted": true
+}
