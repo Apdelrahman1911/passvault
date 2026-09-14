@@ -1,8 +1,9 @@
 // Each target includes exactly one implementation; the opt-in historical target
 // uses the separately hash-bound full source image, never a reconstructed body.
-#if defined(PASSVAULT_BIOMETRIC_PVA036_HISTORICAL_TEST) && \
-    defined(PASSVAULT_BIOMETRIC_PRK_ALLOCATION_TEST)
-#error Historical writer and current PRK instrumentation are separate targets.
+#if (defined(PASSVAULT_BIOMETRIC_PVA036_HISTORICAL_TEST) + \
+     defined(PASSVAULT_BIOMETRIC_PRK_ALLOCATION_TEST) + \
+     defined(PASSVAULT_BIOMETRIC_PVA036_AFTER_FLUSH_TEST)) > 1
+#error Historical writer, PRK, and after-flush instrumentation are separate targets.
 #endif
 #if defined(PASSVAULT_BIOMETRIC_PVA036_HISTORICAL_TEST)
 #include PASSVAULT_BIOMETRIC_PVA036_SOURCE
@@ -711,6 +712,485 @@ int test_atomic_writer_io_fault(FileWriterIoFault fault, const char *case_name) 
   return 0;
 }
 
+#if defined(PASSVAULT_BIOMETRIC_PVA036_AFTER_FLUSH_TEST)
+#if !defined(_MSC_VER) || !defined(_M_X64)
+#error The after-flush witness requires admitted MSVC x64.
+#endif
+// Test-only process-death witness. The existing FileIo seam holds the original
+// writer handle after real FlushFileBuffers, before close/rename. No production
+// hook, app cancellation, power-loss durability, or automatic orphan cleanup.
+constexpr DWORD kAfterFlushWaitMs = 5'000;
+constexpr DWORD kAfterFlushGateMs = 15'000;
+constexpr DWORD kAfterFlushKilled = 0x036af053;
+constexpr DWORD kAfterFlushMagic = 0x036af001;
+constexpr wchar_t kAfterFlushSuffix[] = L"0362000000000001";
+constexpr wchar_t kAfterFlushSentinel[] = L"unrelated-sentinel.dat";
+constexpr LONG kAfterFlushReady = 1;
+constexpr LONG kAfterFlushComplete = 2;
+constexpr LONG kAfterFlushFailed = 3;
+
+struct AfterFlushShared {
+  DWORD magic;
+  DWORD expected_process;
+  DWORD root_chars;
+  wchar_t root[1024];
+  BY_HANDLE_FILE_INFORMATION root_identity;
+  BY_HANDLE_FILE_INFORMATION created;
+  BY_HANDLE_FILE_INFORMATION flushed;
+  DWORD order;
+  DWORD writes;
+  DWORD flushes;
+  DWORD closes;
+  DWORD written;
+  DWORD returned;
+  volatile LONG phase;
+};
+static_assert(std::is_trivial_v<AfterFlushShared> &&
+              std::is_standard_layout_v<AfterFlushShared> &&
+              sizeof(AfterFlushShared) <= 4096);
+
+LONG after_flush_phase(AfterFlushShared &shared) {
+  // The event and this acquire/full-barrier read publish the fixed POD receipt;
+  // no std::string, allocator, pointer, or C++ synchronization object is shared.
+  return InterlockedCompareExchange(&shared.phase, 0, 0);
+}
+
+struct AfterFlushView final {
+  AfterFlushShared *value = nullptr;
+  ~AfterFlushView() { static_cast<void>(close()); }
+  bool open(HANDLE mapping) {
+    value = static_cast<AfterFlushShared *>(MapViewOfFile(
+        mapping, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, sizeof(AfterFlushShared)));
+    return value != nullptr;
+  }
+  bool close() {
+    if (value == nullptr)
+      return true;
+    auto *original = value;
+    value = nullptr; // No repeat after a reported close failure.
+    return UnmapViewOfFile(original) != FALSE;
+  }
+};
+
+struct AfterFlushChild final {
+  PROCESS_INFORMATION info{};
+  bool created = false;
+  bool settled = false;
+  bool termination_requested = false;
+
+  bool wait(DWORD timeout) {
+    if (!created || WaitForSingleObject(info.hProcess, timeout) != WAIT_OBJECT_0)
+      return false;
+    settled = true;
+    return true;
+  }
+  bool terminate() {
+    if (!created || settled || termination_requested)
+      return false;
+    termination_requested = true;
+    return TerminateProcess(info.hProcess, kAfterFlushKilled) != FALSE;
+  }
+  bool close() {
+    if (!created || !settled)
+      return false;
+    const bool thread_closed = info.hThread == nullptr || CloseHandle(info.hThread);
+    info.hThread = nullptr;
+    const bool process_closed = info.hProcess == nullptr || CloseHandle(info.hProcess);
+    info.hProcess = nullptr;
+    return thread_closed && process_closed;
+  }
+  ~AfterFlushChild() {
+    if (!created)
+      return;
+    if (!settled && !wait(0)) {
+      if (!termination_requested)
+        static_cast<void>(terminate()); // Only the original CreateProcess handle.
+      if (!wait(kAfterFlushWaitMs))
+        static_cast<void>(std::fputs("PVA036_AFTER_FLUSH child-settlement=HOLD\n", stderr));
+    }
+    if (settled)
+      static_cast<void>(close());
+    else {
+      // The separate noninherited kill-on-close Job remains the fail-safe.
+      if (info.hThread != nullptr)
+        static_cast<void>(CloseHandle(info.hThread));
+      if (info.hProcess != nullptr)
+        static_cast<void>(CloseHandle(info.hProcess));
+    }
+  }
+};
+
+bool after_flush_private_parent(std::filesystem::path *parent) {
+  std::array<wchar_t, 1024> selected{}, tmp{}, temp{};
+  const DWORD selected_length = GetEnvironmentVariableW(
+      L"PASSVAULT_NATIVE_TEST_PARENT", selected.data(), static_cast<DWORD>(selected.size()));
+  const DWORD tmp_length = GetEnvironmentVariableW(
+      L"TMP", tmp.data(), static_cast<DWORD>(tmp.size()));
+  const DWORD temp_length = GetEnvironmentVariableW(
+      L"TEMP", temp.data(), static_cast<DWORD>(temp.size()));
+  if (selected_length == 0 || selected_length >= selected.size() ||
+      tmp_length == 0 || tmp_length >= tmp.size() ||
+      temp_length == 0 || temp_length >= temp.size())
+    return false;
+  *parent = std::filesystem::path(selected.data());
+  const auto drive = parent->root_name().native();
+  return parent->is_absolute() && drive.size() == 2 && drive[1] == L':' &&
+         parent->has_relative_path() && !parent->filename().empty() &&
+         *parent == parent->lexically_normal() &&
+         *parent == std::filesystem::path(tmp.data()) &&
+         *parent == std::filesystem::path(temp.data()) && safe_directory(*parent);
+}
+
+bool after_flush_absent(const std::filesystem::path &path) {
+  if (GetFileAttributesW(path.c_str()) != INVALID_FILE_ATTRIBUTES)
+    return false;
+  return GetLastError() == ERROR_FILE_NOT_FOUND;
+}
+
+bool after_flush_regular(const BY_HANDLE_FILE_INFORMATION &info, DWORD size) {
+  return (info.dwFileAttributes & (FILE_ATTRIBUTE_DIRECTORY | FILE_ATTRIBUTE_REPARSE_POINT)) == 0 &&
+         info.nNumberOfLinks == 1 && info.nFileSizeHigh == 0 && info.nFileSizeLow == size;
+}
+
+bool after_flush_same_file_id(const BY_HANDLE_FILE_INFORMATION &left,
+                              const BY_HANDLE_FILE_INFORMATION &right) {
+  // Rename preserves the volume/file ID. NTFS may tunnel a replaced name's
+  // creation time; do not mistake that legitimate metadata change for a new ID.
+  return left.dwVolumeSerialNumber == right.dwVolumeSerialNumber &&
+         left.nFileIndexHigh == right.nFileIndexHigh &&
+         left.nFileIndexLow == right.nFileIndexLow;
+}
+
+// Cleanup never walks a tree. Mark only the exact observed single-link file for
+// deletion through the original no-follow/read+DELETE handle, then close once.
+bool after_flush_remove_file(const std::filesystem::path &path,
+                             const BY_HANDLE_FILE_INFORMATION &expected,
+                             const std::vector<uint8_t> &bytes) {
+  if (bytes.empty() || bytes.size() > 5)
+    return false;
+  WindowsHandle file(CreateFileW(path.c_str(), GENERIC_READ | READ_CONTROL | DELETE,
+      FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT, nullptr));
+  BY_HANDLE_FILE_INFORMATION actual{};
+  std::array<uint8_t, 5> read_bytes{};
+  DWORD read = 0;
+  FILE_DISPOSITION_INFO disposition{TRUE};
+  const bool removed = file.valid() && safe_handle(file.get()) &&
+      GetFileInformationByHandle(file.get(), &actual) &&
+      same_writer_file(actual, expected) &&
+      after_flush_regular(actual, static_cast<DWORD>(bytes.size())) &&
+      ReadFile(file.get(), read_bytes.data(), static_cast<DWORD>(bytes.size()), &read, nullptr) &&
+      read == bytes.size() && std::equal(bytes.begin(), bytes.end(), read_bytes.begin()) &&
+      SetFileInformationByHandle(file.get(), FileDispositionInfo, &disposition,
+                                static_cast<DWORD>(sizeof(disposition)));
+  const bool closed = file.close();
+  return removed && closed && after_flush_absent(path);
+}
+
+bool after_flush_handle_arg(const char *argument, HANDLE *handle) {
+  if (argument == nullptr || *argument == '\0')
+    return false;
+  uintptr_t value = 0;
+  size_t length = 0;
+  for (const char *next = argument; *next != '\0'; ++next) {
+    if (++length > 20 || *next < '0' || *next > '9')
+      return false;
+    const auto digit = static_cast<uintptr_t>(*next - '0');
+    if (value > (std::numeric_limits<uintptr_t>::max() - digit) / 10)
+      return false;
+    value = value * 10 + digit;
+  }
+  if (value == 0 || value == std::numeric_limits<uintptr_t>::max())
+    return false;
+  *handle = reinterpret_cast<HANDLE>(value);
+  DWORD flags = 0;
+  return GetHandleInformation(*handle, &flags) && (flags & HANDLE_FLAG_INHERIT) != 0;
+}
+
+struct AfterFlushWriterIo final {
+  AfterFlushShared &shared;
+  HANDLE ready;
+  HANDLE release;
+
+  bool write(HANDLE file, const uint8_t *bytes, DWORD requested, DWORD *written) const {
+    shared.order = shared.order * 10 + 3;
+    ++shared.writes;
+    const bool result = FileWriterWin32Io{}.write(file, bytes, requested, written);
+    shared.written = *written;
+    return result && shared.writes == 1 && requested == 5 && *written == requested;
+  }
+  bool flush(HANDLE file) const {
+    shared.order = shared.order * 10 + 4;
+    ++shared.flushes;
+    if (!FileWriterWin32Io{}.flush(file) || shared.flushes != 1 ||
+        shared.order != 1234 || shared.closes != 0 || shared.written != 5 ||
+        !safe_handle(file) || !GetFileInformationByHandle(file, &shared.flushed) ||
+        !after_flush_regular(shared.flushed, 5) ||
+        !same_writer_file(shared.created, shared.flushed))
+      return false;
+    InterlockedExchange(&shared.phase, kAfterFlushReady);
+    if (!SetEvent(ready) || WaitForSingleObject(release, kAfterFlushGateMs) != WAIT_OBJECT_0) {
+      InterlockedExchange(&shared.phase, kAfterFlushFailed);
+      return false;
+    }
+    return true; // Normal-release control preserves the real successful flush.
+  }
+  bool close(WindowsHandle &file) const {
+    shared.order = shared.order * 10 + 5;
+    ++shared.closes;
+    return FileWriterWin32Io{}.close(file);
+  }
+};
+
+int after_flush_child(HANDLE mapping_value, HANDLE ready_value, HANDLE release_value) {
+  WindowsHandle mapping(mapping_value), ready(ready_value), release(release_value);
+  AfterFlushView view;
+  PV_TEST_CHECK(view.open(mapping.get()));
+  auto &shared = *view.value;
+  PV_TEST_CHECK(after_flush_phase(shared) == 0 && shared.magic == kAfterFlushMagic &&
+                shared.expected_process == GetCurrentProcessId() &&
+                shared.root_chars > 0 && shared.root_chars < 1024 &&
+                shared.root[shared.root_chars] == L'\0');
+  const std::filesystem::path root(std::wstring(shared.root, shared.root_chars));
+  std::filesystem::path parent;
+  PV_TEST_CHECK(after_flush_private_parent(&parent) && root.parent_path() == parent &&
+                root == root.lexically_normal());
+  WindowsHandle directory(CreateFileW(root.c_str(), FILE_READ_ATTRIBUTES | READ_CONTROL,
+      FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING,
+      FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, nullptr));
+  BY_HANDLE_FILE_INFORMATION root_identity{};
+  PV_TEST_CHECK(directory.valid() && safe_handle(directory.get()) &&
+                GetFileInformationByHandle(directory.get(), &root_identity) &&
+                (root_identity.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0 &&
+                same_writer_file(root_identity, shared.root_identity));
+  PV_TEST_CHECK(directory.close());
+  const std::vector<uint8_t> replacement{0x02, 0xff, 0x00, 0x80, 0x03};
+  const bool result = write_secure_file_atomic_impl(
+      root, root / kMetadataFileName, replacement, [] { return std::wstring(kAfterFlushSuffix); },
+      [&](HANDLE handle) {
+        shared.order = shared.order * 10 + 1;
+        return safe_handle(handle) && GetFileInformationByHandle(handle, &shared.created) &&
+               after_flush_regular(shared.created, 0);
+      },
+      [&](HANDLE handle, DWORD inheritance) {
+        shared.order = shared.order * 10 + 2;
+        return inheritance == NO_INHERITANCE && apply_current_user_only_dacl(handle, inheritance);
+      }, AfterFlushWriterIo{shared, ready.get(), release.get()});
+  shared.returned = result ? 1 : 2;
+  const bool success = result && shared.order == 12345 && shared.closes == 1;
+  InterlockedExchange(&shared.phase, success ? kAfterFlushComplete : kAfterFlushFailed);
+  const bool unmapped = view.close();
+  const bool mapping_closed = mapping.close();
+  const bool ready_closed = ready.close();
+  const bool release_closed = release.close();
+  PV_TEST_CHECK(success && unmapped && mapping_closed && ready_closed && release_closed);
+  return 0;
+}
+
+int test_after_flush_process(bool kill_child) {
+  std::filesystem::path parent;
+  PV_TEST_CHECK(after_flush_private_parent(&parent)); // No system-TEMP fallback.
+  const std::wstring suffix = random_suffix();
+  PV_TEST_CHECK(!suffix.empty());
+  const std::filesystem::path root = parent / (L"passvault-after-flush-" + suffix);
+  PV_TEST_CHECK(root.native().size() < 1024 && CreateDirectoryW(root.c_str(), nullptr));
+  // Failure retains this exclusively created fixture; no destructor/remove_all
+  // can erase a failed oracle or a root with uncertain child settlement.
+  PV_TEST_CHECK(ensure_safe_directory(root));
+  WindowsHandle root_handle(CreateFileW(root.c_str(), FILE_READ_ATTRIBUTES | READ_CONTROL | DELETE,
+      FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING,
+      FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, nullptr));
+  BY_HANDLE_FILE_INFORMATION root_identity{};
+  PV_TEST_CHECK(root_handle.valid() && safe_handle(root_handle.get()) &&
+                GetFileInformationByHandle(root_handle.get(), &root_identity) &&
+                (root_identity.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0);
+  PV_TEST_CHECK(std::printf(
+      "PVA036_AFTER_FLUSH case=%s fixture=%ls root_id=%lu:%lu:%lu setup=OWNED\n",
+      kill_child ? "process_death" : "continue", root.filename().c_str(),
+      static_cast<unsigned long>(root_identity.dwVolumeSerialNumber),
+      static_cast<unsigned long>(root_identity.nFileIndexHigh),
+      static_cast<unsigned long>(root_identity.nFileIndexLow)) > 0);
+  PV_TEST_CHECK(std::fflush(stdout) == 0);
+  const auto destination = root / kMetadataFileName;
+  const auto sentinel = root / kAfterFlushSentinel;
+  const std::filesystem::path temporary = destination.wstring() + L".tmp." + kAfterFlushSuffix;
+  const std::vector<uint8_t> original{0x01, 0x00, 0x7f, 0xff};
+  const std::vector<uint8_t> replacement{0x02, 0xff, 0x00, 0x80, 0x03};
+  const std::vector<uint8_t> sentinel_bytes{0x53, 0x00, 0x45, 0xff};
+  PV_TEST_CHECK(write_secure_file_atomic(root, destination, original));
+  PV_TEST_CHECK(write_secure_file_atomic(root, sentinel, sentinel_bytes));
+  BY_HANDLE_FILE_INFORMATION original_identity{}, sentinel_identity{};
+  PV_TEST_CHECK(snapshot_writer_file(destination, original, &original_identity) &&
+                snapshot_writer_file(sentinel, sentinel_bytes, &sentinel_identity) &&
+                directory_has_only(root, {destination, sentinel}) && after_flush_absent(temporary));
+
+  WindowsHandle job(CreateJobObjectW(nullptr, nullptr));
+  JOBOBJECT_EXTENDED_LIMIT_INFORMATION limits{};
+  limits.BasicLimitInformation.LimitFlags =
+      JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE | JOB_OBJECT_LIMIT_ACTIVE_PROCESS;
+  limits.BasicLimitInformation.ActiveProcessLimit = 1;
+  PV_TEST_CHECK(job.valid() && SetInformationJobObject(job.get(), JobObjectExtendedLimitInformation,
+      &limits, static_cast<DWORD>(sizeof(limits))));
+  SECURITY_ATTRIBUTES inheritable{static_cast<DWORD>(sizeof(SECURITY_ATTRIBUTES)), nullptr, TRUE};
+  WindowsHandle mapping(CreateFileMappingW(INVALID_HANDLE_VALUE, &inheritable, PAGE_READWRITE,
+      0, static_cast<DWORD>(sizeof(AfterFlushShared)), nullptr));
+  WindowsHandle ready(CreateEventW(&inheritable, TRUE, FALSE, nullptr));
+  WindowsHandle release(CreateEventW(&inheritable, TRUE, FALSE, nullptr));
+  PV_TEST_CHECK(mapping.valid() && ready.valid() && release.valid());
+  AfterFlushView view;
+  PV_TEST_CHECK(view.open(mapping.get()));
+  new (view.value) AfterFlushShared{};
+  auto &shared = *view.value;
+  shared.magic = kAfterFlushMagic;
+  shared.root_chars = static_cast<DWORD>(root.native().size());
+  std::wmemcpy(shared.root, root.c_str(), root.native().size() + 1);
+  shared.root_identity = root_identity;
+
+  std::array<wchar_t, 2048> image_buffer{};
+  const DWORD image_length = GetModuleFileNameW(nullptr, image_buffer.data(),
+                                               static_cast<DWORD>(image_buffer.size()));
+  PV_TEST_CHECK(image_length > 0 && image_length < image_buffer.size());
+  const std::wstring image(image_buffer.data(), image_length);
+  PV_TEST_CHECK(image.find(L'"') == std::wstring::npos);
+  std::wstring command = L"\"" + image + L"\" --after-flush-child " +
+      std::to_wstring(reinterpret_cast<uintptr_t>(mapping.get())) + L" " +
+      std::to_wstring(reinterpret_cast<uintptr_t>(ready.get())) + L" " +
+      std::to_wstring(reinterpret_cast<uintptr_t>(release.get()));
+  std::array<HANDLE, 3> inherited{mapping.get(), ready.get(), release.get()};
+  SIZE_T attribute_bytes = 0;
+  PV_TEST_CHECK(!InitializeProcThreadAttributeList(nullptr, 1, 0, &attribute_bytes) &&
+                GetLastError() == ERROR_INSUFFICIENT_BUFFER);
+  alignas(std::max_align_t) std::array<uint8_t, 4096> attribute_buffer{};
+  PV_TEST_CHECK(attribute_bytes > 0 && attribute_bytes <= attribute_buffer.size());
+  auto *attributes = reinterpret_cast<LPPROC_THREAD_ATTRIBUTE_LIST>(attribute_buffer.data());
+  PV_TEST_CHECK(InitializeProcThreadAttributeList(attributes, 1, 0, &attribute_bytes));
+  struct AttributeCloser final {
+    LPPROC_THREAD_ATTRIBUTE_LIST value;
+    ~AttributeCloser() { DeleteProcThreadAttributeList(value); }
+  } attribute_closer{attributes};
+  PV_TEST_CHECK(UpdateProcThreadAttribute(attributes, 0, PROC_THREAD_ATTRIBUTE_HANDLE_LIST,
+      inherited.data(), inherited.size() * sizeof(HANDLE), nullptr, nullptr));
+  STARTUPINFOEXW startup{};
+  startup.StartupInfo.cb = static_cast<DWORD>(sizeof(startup));
+  startup.lpAttributeList = attributes;
+  AfterFlushChild child; // Destroyed before the Job, IPC, and directory handles.
+  child.created = CreateProcessW(image.c_str(), command.data(), nullptr, nullptr, TRUE,
+      CREATE_SUSPENDED | CREATE_NO_WINDOW | EXTENDED_STARTUPINFO_PRESENT, nullptr,
+      parent.c_str(), &startup.StartupInfo, &child.info) != FALSE;
+  PV_TEST_CHECK(child.created);
+  PV_TEST_CHECK(AssignProcessToJobObject(job.get(), child.info.hProcess));
+  BOOL in_job = FALSE;
+  FILETIME creation{}, exit_time{}, kernel{}, user{};
+  PV_TEST_CHECK(IsProcessInJob(child.info.hProcess, job.get(), &in_job) && in_job &&
+                GetProcessId(child.info.hProcess) == child.info.dwProcessId &&
+                GetProcessIdOfThread(child.info.hThread) == child.info.dwProcessId &&
+                GetProcessTimes(child.info.hProcess, &creation, &exit_time, &kernel, &user));
+  shared.expected_process = child.info.dwProcessId;
+  MemoryBarrier(); // Publish the parent's fixed mapping before the child runs.
+  PV_TEST_CHECK(ResumeThread(child.info.hThread) == 1);
+  std::array<HANDLE, 2> ready_or_exit{ready.get(), child.info.hProcess};
+  PV_TEST_CHECK(WaitForMultipleObjects(static_cast<DWORD>(ready_or_exit.size()),
+      ready_or_exit.data(), FALSE, kAfterFlushWaitMs) == WAIT_OBJECT_0);
+  PV_TEST_CHECK(WaitForSingleObject(child.info.hProcess, 0) == WAIT_TIMEOUT &&
+                after_flush_phase(shared) == kAfterFlushReady && shared.order == 1234 &&
+                shared.writes == 1 && shared.flushes == 1 && shared.closes == 0 &&
+                shared.returned == 0 && after_flush_regular(shared.created, 0) &&
+                after_flush_regular(shared.flushed, 5) &&
+                same_writer_file(shared.created, shared.flushed) &&
+                !after_flush_same_file_id(shared.created, original_identity) &&
+                !after_flush_same_file_id(shared.created, sentinel_identity));
+  // The writer still owns its share-zero handle: a pathname reader must fail
+  // specifically with sharing violation, not missing/permission/setup failure.
+  WindowsHandle blocked(CreateFileW(temporary.c_str(), GENERIC_READ | READ_CONTROL,
+      FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT, nullptr));
+  const DWORD blocked_error = GetLastError();
+  PV_TEST_CHECK(!blocked.valid() && blocked_error == ERROR_SHARING_VIOLATION);
+  BY_HANDLE_FILE_INFORMATION before_destination{}, before_sentinel{};
+  PV_TEST_CHECK(snapshot_writer_file(destination, original, &before_destination) &&
+                same_writer_file(original_identity, before_destination) &&
+                snapshot_writer_file(sentinel, sentinel_bytes, &before_sentinel) &&
+                same_writer_file(sentinel_identity, before_sentinel) &&
+                directory_has_only(root, {destination, sentinel, temporary}));
+  if (kill_child)
+    PV_TEST_CHECK(child.terminate());
+  else
+    PV_TEST_CHECK(SetEvent(release.get()));
+  PV_TEST_CHECK(child.wait(kAfterFlushWaitMs));
+  DWORD exit_code = STILL_ACTIVE;
+  FILETIME after_creation{};
+  PV_TEST_CHECK(GetExitCodeProcess(child.info.hProcess, &exit_code) &&
+                exit_code == (kill_child ? kAfterFlushKilled : DWORD{0}) &&
+                GetProcessTimes(child.info.hProcess, &after_creation, &exit_time, &kernel, &user) &&
+                CompareFileTime(&creation, &after_creation) == 0);
+  JOBOBJECT_BASIC_ACCOUNTING_INFORMATION accounting{};
+  const ULONGLONG settle_end = GetTickCount64() + kAfterFlushWaitMs;
+  do {
+    PV_TEST_CHECK(QueryInformationJobObject(job.get(), JobObjectBasicAccountingInformation,
+        &accounting, static_cast<DWORD>(sizeof(accounting)), nullptr));
+    if (accounting.ActiveProcesses == 0)
+      break;
+    PV_TEST_CHECK(GetTickCount64() < settle_end);
+    Sleep(1);
+  } while (true);
+  PV_TEST_CHECK(accounting.TotalProcesses == 1);
+
+  BY_HANDLE_FILE_INFORMATION final_destination{}, final_sentinel{}, retained_temporary{};
+  PV_TEST_CHECK(snapshot_writer_file(sentinel, sentinel_bytes, &final_sentinel) &&
+                same_writer_file(sentinel_identity, final_sentinel));
+  if (kill_child) {
+    PV_TEST_CHECK(after_flush_phase(shared) == kAfterFlushReady && shared.order == 1234 &&
+                  shared.closes == 0 && shared.returned == 0);
+    PV_TEST_CHECK(snapshot_writer_file(destination, original, &final_destination) &&
+                  same_writer_file(original_identity, final_destination));
+    // Expected crash residual, not a product cleanup success. OS process death
+    // releases the handle; the still-owned flushed staging file survives.
+    PV_TEST_CHECK(snapshot_writer_file(temporary, replacement, &retained_temporary) &&
+                  same_writer_file(shared.created, retained_temporary) &&
+                  directory_has_only(root, {destination, sentinel, temporary}));
+  } else {
+    PV_TEST_CHECK(after_flush_phase(shared) == kAfterFlushComplete && shared.order == 12345 &&
+                  shared.closes == 1 && shared.returned == 1 && !child.termination_requested);
+    PV_TEST_CHECK(snapshot_writer_file(destination, replacement, &final_destination) &&
+                  after_flush_same_file_id(shared.created, final_destination) && after_flush_absent(temporary) &&
+                  directory_has_only(root, {destination, sentinel}));
+  }
+  const auto created_identity = shared.created;
+  PV_TEST_CHECK(child.close());
+  const bool unmapped = view.close();
+  const bool mapping_closed = mapping.close();
+  const bool ready_closed = ready.close();
+  const bool release_closed = release.close();
+  const bool job_closed = job.close();
+  PV_TEST_CHECK(unmapped && mapping_closed && ready_closed && release_closed && job_closed);
+
+  // Every decisive filesystem/phase/identity assertion above precedes deletion.
+  if (kill_child)
+    PV_TEST_CHECK(after_flush_remove_file(temporary, retained_temporary, replacement));
+  PV_TEST_CHECK(after_flush_remove_file(destination, final_destination, kill_child ? original : replacement));
+  PV_TEST_CHECK(after_flush_remove_file(sentinel, final_sentinel, sentinel_bytes));
+  BY_HANDLE_FILE_INFORMATION final_root{};
+  FILE_DISPOSITION_INFO delete_root{TRUE};
+  PV_TEST_CHECK(directory_has_only(root, {}) && safe_handle(root_handle.get()) &&
+                GetFileInformationByHandle(root_handle.get(), &final_root) &&
+                same_writer_file(root_identity, final_root) &&
+                SetFileInformationByHandle(root_handle.get(), FileDispositionInfo, &delete_root,
+                                          static_cast<DWORD>(sizeof(delete_root))));
+  PV_TEST_CHECK(root_handle.close() && after_flush_absent(root));
+  PV_TEST_CHECK(std::printf(
+      "PVA036_AFTER_FLUSH case=%s process=%lu creation=%lu:%lu exit=%lu "
+      "stage_id=%lu:%lu:%lu destination_id=%lu:%lu:%lu "
+      "real_flush=PASS held_before_close=PASS action=%s residual=%s pre_teardown=PASS cleanup=PASS\n",
+      kill_child ? "process_death" : "continue", static_cast<unsigned long>(child.info.dwProcessId),
+      static_cast<unsigned long>(creation.dwHighDateTime), static_cast<unsigned long>(creation.dwLowDateTime),
+      static_cast<unsigned long>(exit_code), static_cast<unsigned long>(created_identity.dwVolumeSerialNumber),
+      static_cast<unsigned long>(created_identity.nFileIndexHigh), static_cast<unsigned long>(created_identity.nFileIndexLow),
+      static_cast<unsigned long>(final_destination.dwVolumeSerialNumber),
+      static_cast<unsigned long>(final_destination.nFileIndexHigh), static_cast<unsigned long>(final_destination.nFileIndexLow),
+      kill_child ? "TERMINATED" : "RELEASED", kill_child ? "OWNED_FLUSHED_STAGING" : "NONE") > 0);
+  PV_TEST_CHECK(std::fflush(stdout) == 0);
+  return 0;
+}
+#endif // Dedicated after-flush target only; not the DLL/native14/PRK/history.
+
 // These synthetic cases exercise the production guard with live caller-owned
 // arrays. Explicit bad_alloc is an unwind test, not real allocation exhaustion,
 // WebAuthn/CNG fault injection, or a probe of freed memory.
@@ -856,6 +1336,38 @@ int main(int argc, char *argv[]) {
   if (std::string_view(argv[2]) == "allocation_cut")
     return test_prk_allocation(true);
   return __LINE__; // No no-argument, filesystem, guard-unit or provider route.
+#elif defined(PASSVAULT_BIOMETRIC_PVA036_AFTER_FLUSH_TEST)
+  if (argc == 3 && std::string_view(argv[1]) == "--after-flush-case") {
+    const std::string_view selected(argv[2]);
+    PV_TEST_CHECK(selected == "continue" || selected == "process_death");
+    int result = 0;
+    try {
+      result = test_after_flush_process(selected == "process_death");
+    } catch (...) {
+      // Unwind original owners before reporting HOLD; never erase a failed fixture.
+      result = __LINE__;
+    }
+    if (result != 0) {
+      static_cast<void>(std::fprintf(stderr,
+          "PVA036_AFTER_FLUSH case=%s result=FAIL line=%d cleanup=HOLD retry=NO\n",
+          argv[2], result));
+      static_cast<void>(std::fflush(stderr));
+    }
+    return result;
+  }
+  if (argc == 5 && std::string_view(argv[1]) == "--after-flush-child") {
+    HANDLE mapping = nullptr, ready = nullptr, release = nullptr;
+    PV_TEST_CHECK(after_flush_handle_arg(argv[2], &mapping) &&
+                  after_flush_handle_arg(argv[3], &ready) &&
+                  after_flush_handle_arg(argv[4], &release) &&
+                  mapping != ready && mapping != release && ready != release);
+    try {
+      return after_flush_child(mapping, ready, release);
+    } catch (...) {
+      return __LINE__; // Parent observes premature/nonzero exit, never PASS.
+    }
+  }
+  return __LINE__; // No default/old-case/context/provider or arbitrary PID/path route.
 #else
   if (argc == 3 && std::string_view(argv[1]) == "--file-case") {
     const auto test_case = parse_file_writer_case(argv[2]);

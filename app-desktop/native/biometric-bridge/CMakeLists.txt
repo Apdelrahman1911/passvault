@@ -150,6 +150,28 @@ elseif(WIN32)
                     COMMAND passvault_biometric_windows_prk_allocation_test --prk-case ${prk_case})
             endforeach()
         endif()
+        option(PASSVAULT_AUDIT_PVA036_AFTER_FLUSH
+            "Build isolated current-writer after-flush process-death witnesses" OFF)
+        if(PASSVAULT_AUDIT_PVA036_AFTER_FLUSH)
+            if(NOT MSVC OR NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+                message(FATAL_ERROR "The after-flush witnesses require MSVC x64")
+            endif()
+            add_executable(passvault_biometric_windows_after_flush_test
+                tests/windows/passvault_biometric_windows_security_test.cpp)
+            list(APPEND windows_security_targets passvault_biometric_windows_after_flush_test)
+            target_compile_definitions(passvault_biometric_windows_after_flush_test PRIVATE
+                PASSVAULT_BIOMETRIC_PVA036_AFTER_FLUSH_TEST=1)
+            # Admission must supply a private PASSVAULT_NATIVE_TEST_PARENT and
+            # identical TMP/TEMP; these cases never choose a system-TEMP root.
+            foreach(after_flush_case IN ITEMS continue process_death)
+                add_test(
+                    NAME passvault_biometric_windows_after_flush_${after_flush_case}
+                    COMMAND passvault_biometric_windows_after_flush_test
+                        --after-flush-case ${after_flush_case})
+                set_tests_properties(passvault_biometric_windows_after_flush_${after_flush_case}
+                    PROPERTIES TIMEOUT 30 RUN_SERIAL TRUE)
+            endforeach()
+        endif()
         # All isolated test images retain the current security target's flags;
         # no observer or replacement allocator is linked into the normal DLL.
         foreach(security_target IN LISTS windows_security_targets)

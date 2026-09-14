@@ -1,0 +1,52 @@
+name: Audit macOS native ASan UBSan 01 (non-publishing)
+on:
+  push:
+    branches: [codex/audit-continuation-linux-20260908]
+    paths: [docs/audit-continuation/2026-09-08-linux/requests/macos-sanitizers-01.json]
+permissions:
+  contents: read
+concurrency:
+  group: passvault-audit-validation-20260908
+  cancel-in-progress: false
+jobs:
+  native-sanitizers:
+    if: >-
+      github.repository == 'Apdelrahman1911/passvault' &&
+      github.ref == 'refs/heads/codex/audit-continuation-linux-20260908' &&
+      github.event_name == 'push' && github.event.deleted == false && github.run_attempt == 1
+    runs-on: macos-15-intel
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+          clean: false
+          lfs: false
+          submodules: false
+      - name: Exact non-publishing instrumented native batch
+        id: validation
+        shell: bash --noprofile --norc -euo pipefail {0}
+        env:
+          PV_SHA: ${{ github.sha }}
+          PV_REF: ${{ github.ref }}
+          PV_RUN_ID: ${{ github.run_id }}
+          PV_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          exec /usr/bin/env -i PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 TZ=UTC \
+            PV_SHA="$PV_SHA" PV_REF="$PV_REF" PV_RUN_ID="$PV_RUN_ID" PV_ATTEMPT="$PV_ATTEMPT" \
+            PV_WORKSPACE="$GITHUB_WORKSPACE" PV_RUNNER_TEMP="$RUNNER_TEMP" PV_OUTPUT="$GITHUB_OUTPUT" \
+            /usr/local/bin/python3 -I -B scripts/audit/macos_sanitizers_validation01.py
+      - name: Compact evidence only
+        if: ${{ always() && steps.validation.outputs.evidence_path != '' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: macos-sanitizers-01-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ steps.validation.outputs.evidence_path }}/*.json
+            ${{ steps.validation.outputs.evidence_path }}/*.log
+            ${{ steps.validation.outputs.evidence_path }}/*.xml
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 6
