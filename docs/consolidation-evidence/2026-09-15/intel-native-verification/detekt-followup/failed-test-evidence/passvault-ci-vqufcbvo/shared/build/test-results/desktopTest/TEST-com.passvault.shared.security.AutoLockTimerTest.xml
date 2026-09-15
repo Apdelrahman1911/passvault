@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="AutoLockTimerTest[desktop]" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-09-15T18:41:17.618Z" hostname="runnervmlun5p" time="0.134">
+  <properties/>
+  <testcase name="activity before the boundary grants a full new interval[desktop]" classname="com.passvault.shared.security.AutoLockTimerTest" time="0.005"/>
+  <testcase name="activity timestamp at the boundary cannot postpone locking[desktop]" classname="com.passvault.shared.security.AutoLockTimerTest" time="0.002"/>
+  <testcase name="cancellation releases the timer and closed signals do not leak waiters[desktop]" classname="com.passvault.shared.security.AutoLockTimerTest" time="0.006"/>
+  <testcase name="activity arriving during a failed lock attempt rearms from its timestamp[desktop]" classname="com.passvault.shared.security.AutoLockTimerTest" time="0.005"/>
+  <testcase name="high volume activity is conflated to one latest timestamp[desktop]" classname="com.passvault.shared.security.AutoLockTimerTest" time="0.1"/>
+  <testcase name="inactivity locks exactly at the configured deadline[desktop]" classname="com.passvault.shared.security.AutoLockTimerTest" time="0.003"/>
+  <testcase name="stale activity from a prior session is discarded[desktop]" classname="com.passvault.shared.security.AutoLockTimerTest" time="0.003"/>
+  <testcase name="lock failure retries without new activity[desktop]" classname="com.passvault.shared.security.AutoLockTimerTest" time="0.003"/>
+  <testcase name="repeated lock failures remain timer driven while unattended[desktop]" classname="com.passvault.shared.security.AutoLockTimerTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

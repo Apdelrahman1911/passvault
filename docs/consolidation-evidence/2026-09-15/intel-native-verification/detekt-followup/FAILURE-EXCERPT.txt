@@ -1,0 +1,22 @@
+2026-09-15T18:34:57.3644420Z 
+2026-09-15T18:34:57.3645547Z HEAD is now at e87c6eb Merge 0f38e9dedcba7e1154145e5f62cca7924566487f into da91a20103ed138df5a5d22d71b5467f17c07406
+2026-09-15T18:34:57.3647885Z ##[endgroup]
+2026-09-15T18:34:57.3696257Z [command]/usr/bin/git log -1 --format=%H
+2026-09-15T18:35:13.6969690Z Reviewed 5 file-specific Kotlin parser limitations against pinned file hashes.
+2026-09-15T18:35:15.2864632Z ##[group]Run ./gradlew test detekt verifyDependencies --continue --stacktrace
+2026-09-15T18:35:15.2865222Z [36;1m./gradlew test detekt verifyDependencies --continue --stacktrace[0m
+2026-09-15T18:35:15.2901023Z shell: /usr/bin/bash --noprofile --norc scripts/ci-python.sh scripts/ci-run.py {0}
+2026-09-15T18:44:02.0157183Z Successfully generated checkstyle at file:///home/runner/work/passvault/passvault/build/reports/detekt/detekt.xml
+2026-09-15T18:44:02.0182734Z e: /home/runner/work/passvault/passvault/build.gradle.kts:168:9 The function verifyMetadata is too long (66). The maximum length is 60. [LongMethod]
+2026-09-15T18:44:02.0187604Z e: /home/runner/work/passvault/passvault/build.gradle.kts:210:1 Line detected, which is longer than the defined maximum line length in the code style. [MaxLineLength]
+2026-09-15T18:44:02.0212946Z 
+2026-09-15T18:44:02.1144498Z 
+2026-09-15T18:44:02.1163555Z > Task :detekt FAILED
+2026-09-15T18:44:02.1173522Z > Task :app-android:generateAndroidThirdPartyDependencyInventory
+2026-09-15T18:44:02.1174452Z > Task :app-desktop:generateDesktopThirdPartyDependencyInventory
+2026-09-15T18:44:05.8481873Z 
+2026-09-15T18:44:05.8481961Z BUILD FAILED in 8m 49s
+2026-09-15T18:44:06.7127952Z Picked up JAVA_TOOL_OPTIONS: -Duser.home="/home/runner/work/_temp/passvault-ci-vqufcbvo/home" -Djava.io.tmpdir="/home/runner/work/_temp/passvault-ci-vqufcbvo/tmp"
+2026-09-15T18:44:07.2734815Z No Gradle daemons are running.
+2026-09-15T18:44:11.8019666Z ##[error]Process completed with exit code 1.
+2026-09-15T18:44:11.8108867Z ##[group]Run actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
