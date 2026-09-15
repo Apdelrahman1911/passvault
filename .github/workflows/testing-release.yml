@@ -27,7 +27,7 @@ concurrency:
 
 env:
   JAVA_VERSION: '17'
-  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2 -Xmx4096m'
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false'
 
 jobs:
   prepare:
@@ -37,6 +37,7 @@ jobs:
     # require an explicit repository policy opt-in.
     if: github.event_name == 'workflow_dispatch' || (github.event.created == false && vars.LEGACY_TESTING_RELEASE_ON_PUSH == 'true')
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     env:
       PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
       COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
@@ -62,7 +63,7 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
         with:
-          cache-cleanup: always
+          cache-disabled: true
 
       - name: Validate candidate provenance
         id: release
@@ -121,10 +122,28 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Test release automation
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/release-build.py plain {0}
         run: ./scripts/test-release-automation.sh
 
       - name: Verify the exact candidate source
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/release-build.py plain {0}
         run: ./gradlew test detekt verifyDependencies checkThirdPartyAttribution --continue --stacktrace
+
+      - name: Remove retained local release outputs
+        if: always()
+        env:
+          PASSVAULT_RELEASE_ARTIFACTS_RETAINED: ${{ job.status == 'success' }}
+        shell: bash --noprofile --norc {0}
+        run: bash scripts/ci-python.sh scripts/release-build.py dispose
+
+      - name: Retain compact release resource evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: release-resource-${{ github.job }}-${{ runner.os }}-${{ runner.arch }}
+          path: .release-evidence/
+          include-hidden-files: true
+          retention-days: 3
 
   mobile-internal:
     if: needs.prepare.outputs.resume_existing_internal_uploads != 'true'
@@ -150,6 +169,7 @@ jobs:
     if: needs.prepare.outputs.resume_existing_internal_uploads == 'true'
     needs: prepare
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     permissions:
       actions: read
       artifact-metadata: write
@@ -231,6 +251,7 @@ jobs:
   desktop-linux:
     needs: prepare
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     env:
       PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
       COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
@@ -242,24 +263,48 @@ jobs:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
       - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
-      - run: >
+        with:
+          cache-disabled: true
+      - name: Build unsigned Linux candidate
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/release-build.py desktop {0}
+        run: >
           ./gradlew :app-desktop:createReleaseDistributable
           :app-desktop:packageReleaseDeb :app-desktop:packageReleaseRpm
           -Ppassvault.versionName=${{ needs.prepare.outputs.version }}
       - name: Smoke test unsigned Linux candidate runtime
-        run: ./scripts/smoke-test-desktop-release.sh 30
+        shell: bash --noprofile --norc {0}
+        run: bash scripts/ci-python.sh scripts/release-build.py smoke
+
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: candidate-desktop-linux
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
           path: |
-            app-desktop/build/compose/binaries/main-release/deb/*.deb
-            app-desktop/build/compose/binaries/main-release/rpm/*.rpm
+            ${{ env.PASSVAULT_RELEASE_OUTPUT }}/deb/*.deb
+            ${{ env.PASSVAULT_RELEASE_OUTPUT }}/rpm/*.rpm
+
+      - name: Remove retained local release outputs
+        if: always()
+        env:
+          PASSVAULT_RELEASE_ARTIFACTS_RETAINED: ${{ job.status == 'success' }}
+        shell: bash --noprofile --norc {0}
+        run: bash scripts/ci-python.sh scripts/release-build.py dispose
+
+      - name: Retain compact release resource evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: release-resource-${{ github.job }}-${{ runner.os }}-${{ runner.arch }}
+          path: .release-evidence/
+          include-hidden-files: true
+          retention-days: 3
 
   desktop-windows:
     needs: prepare
     runs-on: windows-latest
+    timeout-minutes: 90
     env:
       PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
       COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
@@ -271,23 +316,27 @@ jobs:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
       - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+        with:
+          cache-disabled: true
       - name: Build unsigned Windows candidate
-        shell: pwsh
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/release-build.py desktop {0}
         run: >
-          ./gradlew :app-desktop:createReleaseDistributable
+          ./gradlew.bat :app-desktop:createReleaseDistributable
           :app-desktop:packageReleaseMsi :app-desktop:packageReleaseExe
           "-Ppassvault.versionName=${{ needs.prepare.outputs.version }}"
       - name: Freeze the Windows candidate app image for production signing
-        shell: pwsh
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/release-build.py plain {0}
         run: |
+          pwsh -NoProfile -NonInteractive -Command - <<'PASSVAULT_POWERSHELL'
+          $ErrorActionPreference = 'Stop'
           $appImage = Get-Item `
-              -LiteralPath app-desktop/build/compose/binaries/main-release/app/PassVault `
+              -LiteralPath "$env:PASSVAULT_RELEASE_OUTPUT/app/PassVault" `
               -ErrorAction Stop
           if (-not $appImage.PSIsContainer -or
               ($appImage.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
               throw "The tested Windows app image is missing or unsafe."
           }
-          $archive = "PassVault-${{ needs.prepare.outputs.version }}-windows-x64-app-image.zip"
+          $archive = "$env:PASSVAULT_RELEASE_OUTPUT/PassVault-${{ needs.prepare.outputs.version }}-windows-x64-app-image.zip"
           Compress-Archive -LiteralPath $appImage.FullName -DestinationPath $archive
           if (-not (Test-Path -LiteralPath $archive -PathType Leaf) -or
               (Get-Item -LiteralPath $archive).Length -le 0) {
@@ -296,19 +345,39 @@ jobs:
           Remove-Item -LiteralPath $appImage.FullName -Recurse -Force
           ./scripts/restore-promoted-windows-app-image.ps1 `
               -ArchivePath $archive `
-              -OutputRoot app-desktop/build/compose/binaries/main-release/app
+              -OutputRoot "$env:PASSVAULT_RELEASE_OUTPUT/app"
+          PASSVAULT_POWERSHELL
+
       - name: Smoke test the frozen Windows candidate app image
-        shell: pwsh
-        run: ./scripts/smoke-test-desktop-release.ps1 -TimeoutSeconds 30
+        shell: bash --noprofile --norc {0}
+        run: bash scripts/ci-python.sh scripts/release-build.py smoke
+
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: candidate-desktop-windows-x64
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
           path: |
-            app-desktop/build/compose/binaries/main-release/msi/*.msi
-            app-desktop/build/compose/binaries/main-release/exe/*.exe
-            PassVault-${{ needs.prepare.outputs.version }}-windows-x64-app-image.zip
+            ${{ env.PASSVAULT_RELEASE_OUTPUT }}/msi/*.msi
+            ${{ env.PASSVAULT_RELEASE_OUTPUT }}/exe/*.exe
+            ${{ env.PASSVAULT_RELEASE_OUTPUT }}/PassVault-${{ needs.prepare.outputs.version }}-windows-x64-app-image.zip
+
+      - name: Remove retained local release outputs
+        if: always()
+        env:
+          PASSVAULT_RELEASE_ARTIFACTS_RETAINED: ${{ job.status == 'success' }}
+        shell: bash --noprofile --norc {0}
+        run: bash scripts/ci-python.sh scripts/release-build.py dispose
+
+      - name: Retain compact release resource evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: release-resource-${{ github.job }}-${{ runner.os }}-${{ runner.arch }}
+          path: .release-evidence/
+          include-hidden-files: true
+          retention-days: 3
 
   desktop-macos:
     needs: prepare
@@ -321,6 +390,7 @@ jobs:
           - runner: macos-15-intel
             architecture: x64
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 90
     env:
       PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
       COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
@@ -332,49 +402,73 @@ jobs:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
       - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+        with:
+          cache-disabled: true
       - name: Build unsigned macOS candidate
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/release-build.py desktop {0}
         run: >
           ./gradlew :app-desktop:createReleaseDistributable
           :app-desktop:packageReleaseDmg
           -Ppassvault.versionName=${{ needs.prepare.outputs.version }}
       - name: Give the architecture an unambiguous asset name
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/release-build.py plain {0}
         run: |
-          dmg_count="$(find app-desktop/build/compose/binaries/main-release/dmg \
+          dmg_count="$(find "$PASSVAULT_RELEASE_OUTPUT/dmg" \
             -type f -name '*.dmg' | wc -l | tr -d ' ')"
           if [[ "$dmg_count" != 1 ]]; then
             echo "The candidate build must produce exactly one DMG; found $dmg_count." >&2
             exit 1
           fi
-          dmg="$(find app-desktop/build/compose/binaries/main-release/dmg \
+          dmg="$(find "$PASSVAULT_RELEASE_OUTPUT/dmg" \
             -type f -name '*.dmg' -print)"
-          cp "$dmg" "PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}.dmg"
+          cp "$dmg" "$PASSVAULT_RELEASE_OUTPUT/PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}.dmg"
       - name: Freeze the macOS candidate app image for production signing
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/release-build.py plain {0}
         run: |
-          app_path="app-desktop/build/compose/binaries/main-release/app/PassVault.app"
+          app_path="$PASSVAULT_RELEASE_OUTPUT/app/PassVault.app"
           if [[ ! -d "$app_path" || -L "$app_path" ]]; then
             echo "The tested macOS app image is missing or unsafe." >&2
             exit 1
           fi
           ditto -c -k --sequesterRsrc --keepParent "$app_path" \
-            "PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}-app-image.zip"
+            "$PASSVAULT_RELEASE_OUTPUT/PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}-app-image.zip"
           rm -rf -- "$app_path"
           ditto -x -k \
-            "PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}-app-image.zip" \
+            "$PASSVAULT_RELEASE_OUTPUT/PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}-app-image.zip" \
             "$(dirname "$app_path")"
           if [[ ! -d "$app_path" || -L "$app_path" ]]; then
             echo "The frozen macOS candidate app image could not be restored safely." >&2
             exit 1
           fi
       - name: Smoke test the frozen macOS candidate app image
-        run: ./scripts/smoke-test-desktop-release.sh 30
+        shell: bash --noprofile --norc {0}
+        run: bash scripts/ci-python.sh scripts/release-build.py smoke
+
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: candidate-desktop-macos-${{ matrix.architecture }}
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
           path: |
-            PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}.dmg
-            PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}-app-image.zip
+            ${{ env.PASSVAULT_RELEASE_OUTPUT }}/PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}.dmg
+            ${{ env.PASSVAULT_RELEASE_OUTPUT }}/PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}-app-image.zip
+
+      - name: Remove retained local release outputs
+        if: always()
+        env:
+          PASSVAULT_RELEASE_ARTIFACTS_RETAINED: ${{ job.status == 'success' }}
+        shell: bash --noprofile --norc {0}
+        run: bash scripts/ci-python.sh scripts/release-build.py dispose
+
+      - name: Retain compact release resource evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: release-resource-${{ github.job }}-${{ runner.os }}-${{ runner.arch }}
+          path: .release-evidence/
+          include-hidden-files: true
+          retention-days: 3
 
   publish-candidate:
     needs:
@@ -397,6 +491,7 @@ jobs:
       (needs.mobile-internal.result == 'skipped' ||
         needs.resume-internal-receipts.result == 'skipped')
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     permissions:
       artifact-metadata: write
       attestations: write

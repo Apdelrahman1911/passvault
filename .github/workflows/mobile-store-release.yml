@@ -121,7 +121,7 @@ env:
   JAVA_VERSION: '17'
   RUBY_VERSION: '3.3'
   FASTLANE_OPT_OUT_USAGE: '1'
-  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2 -Xmx4096m'
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false'
   REQUEST_PLATFORM: ${{ inputs.platform }}
   REQUEST_CHANNEL: ${{ inputs.channel }}
   REQUEST_OPERATION: ${{ inputs.operation }}
@@ -137,6 +137,7 @@ jobs:
   validate:
     name: Validate release request
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     permissions:
       actions: read
       attestations: read
@@ -165,9 +166,10 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
         with:
-          cache-cleanup: always
+          cache-disabled: true
 
       - name: Verify third-party attribution
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/release-build.py plain {0}
         run: ./gradlew checkThirdPartyAttribution --stacktrace
 
       - name: Require the correct protected branch and confirmations
@@ -335,7 +337,24 @@ jobs:
           echo "name=$environment" >> "$GITHUB_OUTPUT"
 
       - name: Validate repository release automation
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/release-build.py plain {0}
         run: ./scripts/test-release-automation.sh
+
+      - name: Remove retained local release outputs
+        if: always()
+        env:
+          PASSVAULT_RELEASE_ARTIFACTS_RETAINED: ${{ job.status == 'success' }}
+        shell: bash --noprofile --norc {0}
+        run: bash scripts/ci-python.sh scripts/release-build.py dispose
+
+      - name: Retain compact release resource evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: mobile-resource-${{ inputs.channel }}-${{ inputs.operation }}-${{ github.job }}-${{ runner.os }}-${{ runner.arch }}
+          path: .release-evidence/
+          include-hidden-files: true
+          retention-days: 3
 
   android:
     name: Android ${{ inputs.channel }}
@@ -345,6 +364,7 @@ jobs:
       RELEASE_VERSION: ${{ needs.validate.outputs.version }}
       RELEASE_BUILD_NUMBER: ${{ needs.validate.outputs.version_code }}
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     environment: ${{ needs.validate.outputs.environment }}
     permissions:
       artifact-metadata: write
@@ -364,7 +384,7 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
         with:
-          cache-cleanup: always
+          cache-disabled: true
 
       - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1
         with:
@@ -403,6 +423,7 @@ jobs:
             -alias "$KEY_ALIAS" >/dev/null
 
       - name: Build signed Android release
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/release-build.py android {0}
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
@@ -429,6 +450,7 @@ jobs:
           echo "ANDROID_MAPPING_PATH=$mapping" >> "$GITHUB_ENV"
 
       - name: Bind exact signed Android artifacts to candidate provenance
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/release-build.py plain {0}
         env:
           ANDROID_PACKAGE_NAME: ${{ vars.ANDROID_PACKAGE_NAME }}
           ANDROID_SIGNING_SHA256: ${{ vars.ANDROID_UPLOAD_CERTIFICATE_SHA256 }}
@@ -437,7 +459,7 @@ jobs:
         run: |
           provenance_root="$RUNNER_TEMP/passvault-android-provenance"
           install -d -m 700 "$provenance_root"
-          apk_source="$GITHUB_WORKSPACE/app-android/build/outputs/apk/release/app-android-release.apk"
+          apk_source="${ANDROID_APK_PATH:?}"
           install -m 600 "$ANDROID_AAB_PATH" \
             "$provenance_root/PassVault-$RECEIPT_VERSION-$RECEIPT_BUILD_NUMBER.aab"
           install -m 600 "$apk_source" \
@@ -506,11 +528,31 @@ jobs:
       - name: Remove private runtime inputs
         if: always()
         run: |
-          if [[ -n "${PRIVATE_RUNTIME:-}" && -d "$PRIVATE_RUNTIME" ]]; then
-            find "$PRIVATE_RUNTIME" -type f -exec chmod 600 {} + 2>/dev/null || true
-            find "$PRIVATE_RUNTIME" -type f -exec rm -f -- {} + 2>/dev/null || true
-            find "$PRIVATE_RUNTIME" -depth -type d -exec rmdir {} + 2>/dev/null || true
+          bash scripts/ci-python.sh scripts/release-build.py ready
+          if [[ -d "${PRIVATE_RUNTIME:-}" ]]; then
+            if [[ "$PRIVATE_RUNTIME" != "$RUNNER_TEMP/passvault-release" || -L "$PRIVATE_RUNTIME" ]]; then
+              echo "HOLD: unsafe private release cleanup path." >&2; exit 1
+            fi
+            rm -rf -- "$PRIVATE_RUNTIME" || {
+              echo "HOLD: private release cleanup failed." >&2; exit 1;
+            }
           fi
+
+      - name: Remove retained local release outputs
+        if: always()
+        env:
+          PASSVAULT_RELEASE_ARTIFACTS_RETAINED: ${{ job.status == 'success' }}
+        shell: bash --noprofile --norc {0}
+        run: bash scripts/ci-python.sh scripts/release-build.py dispose
+
+      - name: Retain compact release resource evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: mobile-resource-${{ inputs.channel }}-${{ inputs.operation }}-${{ github.job }}-${{ runner.os }}-${{ runner.arch }}
+          path: .release-evidence/
+          include-hidden-files: true
+          retention-days: 3
 
   ios:
     name: iOS ${{ inputs.channel }}
@@ -522,6 +564,7 @@ jobs:
     # Compose Multiplatform 1.11 links UIKit symbols introduced with the
     # Xcode 26 SDK. Keep the store archive on the matching hosted image.
     runs-on: macos-26
+    timeout-minutes: 90
     environment: ${{ needs.validate.outputs.environment }}
     permissions:
       artifact-metadata: write
@@ -552,6 +595,8 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
 
       - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+        with:
+          cache-disabled: true
 
       - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1
         with:
@@ -685,6 +730,7 @@ jobs:
           ruby scripts/validate-app-store-connect.rb
 
       - name: Archive and export signed IPA
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/release-build.py ios {0}
         env:
           TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
           BUNDLE_ID: ${{ vars.IOS_BUNDLE_ID }}
@@ -698,7 +744,8 @@ jobs:
             *) echo "Approved export compliance is required." >&2; exit 1 ;;
           esac
           ARCHIVE_PATH="$PRIVATE_RUNTIME/PassVault.xcarchive"
-          xcodebuild archive \
+          xcodebuild archive -jobs 1 \
+            -derivedDataPath "${PASSVAULT_RELEASE_DERIVED_DATA:?}" \
             -project iosApp/iosApp.xcodeproj \
             -scheme PassVault \
             -configuration Release \
@@ -728,7 +775,7 @@ jobs:
           /usr/libexec/PlistBuddy -c 'Add :provisioningProfiles dict' "$PRIVATE_RUNTIME/ExportOptions.plist"
           /usr/libexec/PlistBuddy -c "Add :provisioningProfiles:$BUNDLE_ID string $PROFILE_NAME" \
             "$PRIVATE_RUNTIME/ExportOptions.plist"
-          xcodebuild -exportArchive \
+          xcodebuild -exportArchive -jobs 1 \
             -archivePath "$ARCHIVE_PATH" \
             -exportPath "$PRIVATE_RUNTIME/export" \
             -exportOptionsPlist "$PRIVATE_RUNTIME/ExportOptions.plist"
@@ -745,6 +792,7 @@ jobs:
           echo "IOS_IPA_PATH=$IPA_PATH" >> "$GITHUB_ENV"
 
       - name: Bind exact signed iOS artifacts to candidate provenance
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/release-build.py plain {0}
         env:
           IOS_BUNDLE_ID: ${{ vars.IOS_BUNDLE_ID }}
           IOS_SIGNING_SHA1: ${{ vars.IOS_DISTRIBUTION_CERTIFICATE_SHA1 }}
@@ -755,10 +803,10 @@ jobs:
           install -d -m 700 "$provenance_root"
           install -m 600 "$IOS_IPA_PATH" \
             "$provenance_root/PassVault-$RECEIPT_VERSION-$RECEIPT_BUILD_NUMBER.ipa"
-          install -m 600 "$PRIVATE_RUNTIME/PassVault-LinkMap.txt" \
+          install -m 600 "${IOS_LINK_MAP_PATH:?}" \
             "$provenance_root/PassVault-LinkMap.txt"
           /usr/bin/ditto -c -k --sequesterRsrc --keepParent \
-            "$PRIVATE_RUNTIME/PassVault.xcarchive" \
+            "${IOS_ARCHIVE_PATH:?}" \
             "$provenance_root/PassVault-$RECEIPT_VERSION-$RECEIPT_BUILD_NUMBER.xcarchive.zip"
           chmod 600 "$provenance_root/PassVault-$RECEIPT_VERSION-$RECEIPT_BUILD_NUMBER.xcarchive.zip"
           source_tree="$(git rev-parse "$GITHUB_SHA^{tree}")"
@@ -834,6 +882,8 @@ jobs:
         run: |
           set -euo pipefail
           source scripts/lib/macos-keychain.sh
+          # An interrupted archive/HOLD cannot authorize deleting its keychain or DerivedData.
+          bash scripts/ci-python.sh scripts/release-build.py ready
           profile_uuid="${PROFILE_UUID:-}"
           if [[ -z "$profile_uuid" && -f "$PRIVATE_RUNTIME/profile.plist" ]]; then
             profile_uuid="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$PRIVATE_RUNTIME/profile.plist" 2>/dev/null || true)"
@@ -842,14 +892,40 @@ jobs:
             profile="$HOME/Library/MobileDevice/Provisioning Profiles/$profile_uuid.mobileprovision"
             test ! -f "$profile" || rm -f -- "$profile"
           fi
-          passvault_restore_user_keychains \
-            "$PRIVATE_RUNTIME/original-user-keychains.txt" 2>/dev/null || true
-          security delete-keychain "$KEYCHAIN_PATH" 2>/dev/null || true
-          if [[ -n "${PRIVATE_RUNTIME:-}" && -d "$PRIVATE_RUNTIME" ]]; then
-            find "$PRIVATE_RUNTIME" -type f -exec chmod 600 {} + 2>/dev/null || true
-            find "$PRIVATE_RUNTIME" -type f -exec rm -f -- {} + 2>/dev/null || true
-            find "$PRIVATE_RUNTIME" -depth -type d -exec rmdir {} + 2>/dev/null || true
+          if [[ -f "$PRIVATE_RUNTIME/original-user-keychains.txt" ]]; then
+            passvault_restore_user_keychains "$PRIVATE_RUNTIME/original-user-keychains.txt" || {
+              echo "HOLD: failed to restore the original keychain list." >&2; exit 1;
+            }
           fi
+          if [[ -f "$KEYCHAIN_PATH" ]]; then
+            security delete-keychain "$KEYCHAIN_PATH" || {
+              echo "HOLD: failed to delete the owned signing keychain." >&2; exit 1;
+            }
+          fi
+          if [[ -d "${PRIVATE_RUNTIME:-}" ]]; then
+            if [[ "$PRIVATE_RUNTIME" != "$RUNNER_TEMP/passvault-release" || -L "$PRIVATE_RUNTIME" ]]; then
+              echo "HOLD: unsafe private release cleanup path." >&2; exit 1
+            fi
+            rm -rf -- "$PRIVATE_RUNTIME" || {
+              echo "HOLD: private release cleanup failed." >&2; exit 1;
+            }
+          fi
+
+      - name: Remove retained local release outputs
+        if: always()
+        env:
+          PASSVAULT_RELEASE_ARTIFACTS_RETAINED: ${{ job.status == 'success' }}
+        shell: bash --noprofile --norc {0}
+        run: bash scripts/ci-python.sh scripts/release-build.py dispose
+
+      - name: Retain compact release resource evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: mobile-resource-${{ inputs.channel }}-${{ inputs.operation }}-${{ github.job }}-${{ runner.os }}-${{ runner.arch }}
+          path: .release-evidence/
+          include-hidden-files: true
+          retention-days: 3
 
   promote-android:
     name: Promote Android ${{ inputs.channel }}
@@ -859,6 +935,7 @@ jobs:
       RELEASE_VERSION: ${{ needs.validate.outputs.version }}
       RELEASE_BUILD_NUMBER: ${{ needs.validate.outputs.version_code }}
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     environment: ${{ needs.validate.outputs.environment }}
     permissions:
       contents: read
@@ -962,6 +1039,7 @@ jobs:
       RELEASE_VERSION: ${{ needs.validate.outputs.version }}
       RELEASE_BUILD_NUMBER: ${{ needs.validate.outputs.version_code }}
     runs-on: macos-26
+    timeout-minutes: 90
     environment: ${{ needs.validate.outputs.environment }}
     permissions:
       contents: read
