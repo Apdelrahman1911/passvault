@@ -1,0 +1,49 @@
+from pathlib import Path
+import datetime,hashlib,json
+D=Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root');B=D.parents[3];R=D.parent/'current_ledger';H=D/'report-refresh28'
+def desc(p):
+ b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+assert not (H/'FROZEN.json').exists()
+count='264 prior mixed XML +1 Windows03 FAIL +1 GUI23 FAIL =266 mixed XML elements, NOT266 passes;262 application/native/regression/investigation/control +3 infrastructure +1 producer. Separate nonXML:6 screen +4 terminal-policy +8 Windows disposal-policy controls +4 Image02 projection/callback control groups. Qualified closures27/39, original19/25, suspicions2/12 unchanged; eight PVD choices separate.'
+phase='Live status via EXECUTION_SLOT only. GUI23 oneXMLFAIL independentlyadopted/bothstops0/GUI+NSsettled/27558entriesremoved; observerfailurecauseunknown, Home/Cancelunreached. Windows03 firstcaseFAIL at TotalProcesses==1/secondUNSTARTED/runtimeHOLD. FourImage02purecontrolgroupsPASS/settled; freshinstalled-imagebatch admission pending. Windows04 diagnostic source installed/accepted, sourcepublication andfreshCIactivation pending. No oldruntime replay or newfamilyclosure.'
+actuals={}
+for name,p,review,qual in [
+ ('current_gui22_actual',D/'gui22-instance01/ACTUAL-ADOPTION.json',R/'gui22_actual/ACTUAL-REVIEW.json','Compilationfailure/zeroXML/stop0/26932entriesremoved; unavailableJSON replaced in laterGUI23 withoutdependency.'),
+ ('current_gui23_actual',D/'gui23-instance01/ACTUAL-ADOPTION.json',R/'gui23_actual/ACTUAL-REVIEW.json','Exactly1XMLFAIL/verifyunstarted; genericobserverfailed/oversized causeunknown. HomeandEscapeunreached;bothstops0/ownedGUI+NSsettled/27558entriesremoved. No applicationfinding/PVU003closure.'),
+ ('current_windows_after_flush03_actual',D/'windows-after-flush-ci03/ACTUAL-ADOPTION.json',R/'windows_after_flush03_actual/ACTUAL-REVIEW.json','MSVCbuildpassed;1XMLFAIL TotalProcesses==1/secondUNSTARTED. Realafterflush guardcrossed;actualcounter/causeunknown, no finalcontent/crashcase credit. OriginalJobzero/observerssettled;whole remoteruntimeHOLD.'),
+ ('current_image02_control04_actual',D/'desktop-image02-failure-projection01/ACTUAL-ADOPTION04.json',R/'desktop_image02_four_controls/ACTUAL-REVIEW.json','Fourpurecontrolgroups/nonXML, noapp/native/imageevidence. Reproducesunexecuted03callbackcleanupbugandrejectsit in04; valid/unattempted compatibility. No newappfamily.')]:
+ actuals[name]={'adoption':desc(p),'review':desc(review),'qualification':qual}
+for name in ['ISSUE_LEDGER.json','VERIFICATION_LEDGER.json','COVERAGE_DELTA.json']:
+ p=B/name;assert p.read_bytes()==(H/('PREVIOUS-'+name)).read_bytes()
+ d=json.loads(p.read_text());keys=['counting','current_reconciliation_record','current_supplement_precedence','resumed_current_phase','new_xml_testcase_elements','new_application_test_executions'];d['historical_report27_aliases_before_report28']={k:d[k] for k in keys if k in d}
+ d.update(actuals);d['counting']=count;d['current_supplement_precedence']=count+' Report28 supersedes stale current aliases only; historical results preserved.';d['resumed_current_phase']=phase;d['updated_utc']=datetime.datetime.now(datetime.timezone.utc).isoformat();d['current_reconciliation_record']={'source':'reviews/team20/resume_disk/root/report-refresh28/','scope':count+' Aggregate independent review pending; NOT FINAL readiness.'}
+ d['current_windows04_preparation']={'status':'DIAGNOSTIC_SOURCE_REVIEWED_INSTALLED_NOT_CI_ACTIVATED','review':desc(R/'windows_after_flush04_instance/INSTANCE-ACCEPT.json'),'qualification':'SameJob read-only counters; originalTotalProcesses==1assertionretained. Not a productfix or actualcauseproof.'}
+ d['current_image02_preparation']={'status':'FOUR_CONTROL_GROUPS_PASSED_FRESH_IMAGE_INSTANCE_PENDING','source_review':desc(R/'desktop_image02_proposal04_source/SOURCE-REVIEW.json'),'qualification':'Threeinstalledtargets shareonecreateReleaseDistributable. Publicsyntheticcontact, not productioncontact/installedlaunch/hardware. OldImage01HOLD untouched.'}
+ if name=='COVERAGE_DELTA.json':d['new_xml_testcase_elements']=266;d['new_application_test_executions']=262
+ p.write_text(json.dumps(d,indent=2)+'\n')
+p=B/'C20_REMAINING_WORK_SOLO_2026-09-14.md';assert p.read_bytes()==(H/('PREVIOUS-'+p.name)).read_bytes()
+old=p.read_text();new='''## Update28 — 2026-09-15: current software gaps and next batch
+
+**Still INCOMPLETE / NOT READY.** No additional confirmed-family closure.
+
+- GUI23 compiled but its one actual case **FAILED** in the native observer before Home/Cancel. The exact guard/cause is unknown; this is not evidence of an application regression. Both Gradle stops and original GUI/namespace settlement passed; **27,558/27,558** disposable runtime entries were removed. Independent review adopted the failure and cleanup. A bounded, fixed-code diagnostic is prepared, not yet reviewed/run; there is no automatic replay.
+- Windows03 MSVC build passed and reached the after-flush boundary. Its first case **FAILED** at `TotalProcesses == 1`; the second never started. The actual counter/cause remains unknown. Original Job/observer settlement was independently accepted; its entire remote runtime remains **HOLD**. Windows04 read-only same-Job counters are independently source-reviewed, with the original assertion intact; source publication and fresh CI activation remain.
+- Image02's **four non-XML infrastructure control groups passed** and original child settled; no temporary files or Gradle process was created. They cover bounded failure projection and the callback-required cleanup guard, not installed-app behavior. The three installed-image/legal/runtime/native-layout checks are prepared as **one shared build batch**, pending exact instance admission. Image01 HOLD remains untouched.
+- Current accounting: **266 mixed XML elements =262 application/native/regression/investigation/control +3 infrastructure +1 producer**, not passes. Non-XML groups remain separate. Closures **27/39**, original **19/25**, original suspicions **2/12**; eight PVD decisions are separate.
+- This environment is **Linux**, not Mac. Current free disk is approximately **8.7 GiB**. One-heavy-job and the stricter Image02 **8 GiB entry /5 GiB running /3 GiB private-output** limits remain. Old held artifacts and required caches are not safe cleanup targets.
+
+### What remains beyond this batch
+
+Android32 ABI/native-runtime and legacy-password compatibility; actual Android clipboard/locale/lifecycle and interrupted package preparation; iOS's ten prepared software methods on an eligible provisioned runner; editor rapid/input/accessibility/RTL/mobile contracts; Desktop chooser, installed launch/native lifetime and package/legal correspondence; Windows after-flush/crash and permitted allocation-cut evidence; active-native cancellation/concurrency/provider checks; bounded permitted PVA029 diagnosis; remaining permitted PVU investigations; final exact-source/variant/coverage reconciliation and continuation publication.
+
+**Physical targets still needed:** supported ARM32 Android coverage (emulation can cover ABI only when genuinely supported); physical Android Keystore/biometrics; iPhone/iPad protection/provider/biometric/scene/input checks; interactive Windows Hello/provider validation. Hardware keyboards are needed for applicable input claims. Simulator/hosted CI cannot substitute for these claims. Eight owner design decisions and restricted evidence mechanisms remain separate. Actual publishing and Store approval are unauthorized and excluded.
+
+The per-issue table and external-resource list below remain applicable, except older Windows/GUI scheduling descriptions superseded here. Use `EXECUTION_SLOT.json` for live scheduling, not historical numbered updates. No reliable whole-project ETA exists while software checks are failing and target availability is unknown; the old1–3hour figure was never a whole-project estimate.
+
+---
+
+'''+old
+p.write_text(new)
+files=[B/n for n in ['C20_REMAINING_WORK_SOLO_2026-09-14.md','ISSUE_LEDGER.json','VERIFICATION_LEDGER.json','COVERAGE_DELTA.json']]
+(H/'FROZEN.json').write_text(json.dumps({'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'files':[desc(p) for p in files],'scope':'Incrementalreport28sourceboundactuals andcounts, notfinalreadiness.'},indent=2)+'\n')
+print(count)

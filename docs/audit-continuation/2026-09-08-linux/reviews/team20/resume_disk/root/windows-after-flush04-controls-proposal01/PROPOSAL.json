@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "suite": "windows-after-flush-04",
+  "nonce": "2edcd8daf4f1285090273f9a924cc2d2",
+  "case_names": [
+    "passvault_biometric_windows_after_flush_continue",
+    "passvault_biometric_windows_after_flush_process_death"
+  ],
+  "case_argv": {
+    "passvault_biometric_windows_after_flush_continue": [
+      "--after-flush-case",
+      "continue"
+    ],
+    "passvault_biometric_windows_after_flush_process_death": [
+      "--after-flush-case",
+      "process_death"
+    ]
+  },
+  "target": "passvault_biometric_windows_after_flush_test",
+  "audit_controls": false,
+  "after_flush_controls": true,
+  "sdk": "10.0.26100.0",
+  "max_seconds": 480,
+  "helper_sha256": "fd97a5dff9ff54bb274e57134d1b5ac69afad0c769651453110269df3a47241f",
+  "workflow_sha256": "c732b77da1f98bc2e57300a50faef4e84b26fb3b08f6c69fb7064b7b15e861d0",
+  "scope_sha256": "a3c0f9e40bd1a183579b4c2cd0014710e2062c1637281133387eb7866c50e138",
+  "input_sha256": {
+    ".gitattributes": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5",
+    "app-desktop/native/biometric-bridge/CMakeLists.txt": "5bd3de7d16958c466ad740b2c14800f2f8b81e115323ad486ecf5a08f02a036e",
+    "app-desktop/native/biometric-bridge/include/passvault_biometric.h": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+    "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp": "93746b0cdb399aa17dd8c3c915e907244d4e86e5b566c51714ccc7f80310bd5d",
+    "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.rc": "13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c",
+    "app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+    "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp": "38b41ccf932e16683419fd8f18f84b769148016266befe2d1e6d29cc0cc535b8",
+    "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/platform_review/new80/PVA036-AFTER-FLUSH-SOURCE-REVIEW.json": "742c0c820bdbfe1c31d3dc96ed1a04cfd8a5449285651ea05bb773456c59c9d2"
+  },
+  "status": "SOURCE_INSTANCE_PROPOSAL_NOT_EXECUTION_ADMISSION",
+  "remaining": "INERT_UNREVIEWED_SOURCE_ONLY: no installedcanonicalcontroller/workflow/test, sourcepublication, exactinstance/activation/observation admission or execution. Counterdiagnostic notassertionfix; reusesunchangeddisposalcontrols."
+}

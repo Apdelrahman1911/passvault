@@ -1,0 +1,9 @@
+# GUI23 focused Linux chooser investigation
+
+PVU-003 only: one actual native chooser/Home/cancel case with three isolated roles, seven expected events and nine evidence files; no crops. Reuse successful GUI16 Main/Room and GUI20 tray results; neither rerun. GUI22 failed compilation because JSON classes were unavailable to desktopTest. Reviewed correction replaces only that test probe transport with bounded canonical ASCII integers; no dependency or production change.
+
+Exact effective application source: SHA256687ec398f2434a07d7c9de556ddd881d8130a705a7fb7affced222a2e3b14ebf,153486734bytes,5121members; preserved P23 source59bee33096f538b9444f00236448d7fc0ea740b2/tree76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6 plus declared desktopTest-only dependency and integration fixture overlays. Request binds26fixedinputs and exact OUTER/INNER/INIT/fixture images. Not the whole current Git tree.
+
+Root alone runs reviewed OUTER.py with env-i PATH=/usr/bin:/bin LANG=C.UTF-8 LC_ALL=C.UTF-8 TZ=UTC and /usr/bin/python3.12 -I -S -B. Inner owns exact checked-in Gradle wrapper prepare/render commands, JDK17, one worker, no daemon/parallel/configure-on-demand, strict dependency verification. Exact command vectors and total deadlines are in immutable admitted controls; maximum outer6000seconds including cleanup. No release packaging, signing or external CI job in parallel.
+
+Fresh8GiB entry/3GiB running/3GiB private-output cap and25%/20% RAM floors,256MiB disk/512MiB RAM cleanup reserves; normal12GiB unmet. Cleanup handlers installed before original workload; preserve compact results/diagnostics/XML, run both applicable original wrapper stops, settle GUI/private namespace, validate exact source-after and remove only descriptor-bound original disposable runtime entries. Any unproven safety stays HOLD, no broad cache/old-runtime cleanup. No retry or hardware claim follows from a result.

@@ -1,0 +1,69 @@
+--- GUI23 admitted source
++++ Source-only observer diagnostic proposal
+@@ -1854,7 +1854,7 @@
+ /** Test-only, one original read-only probe; never starts or focuses a window. */
+ private object OwnedChooserProbe {
+     private const val RUNTIME = "/root/projects/PassVault/audit-runtime-linux-desktop-integration23"
+-    private const val PROBE_HASH = "960153b244bc12f27e2410f55d187c95375cc6aeeb45a06746a8d0b2a3462ec9"
++    private const val PROBE_HASH = "5021c6ff7a2694867b91ddc5883e6b53ef483af96a2867ae72382279161a9cb2"
+     private const val probeSource =
+         "#!/usr/bin/python3.12\n" +
+         "\"\"\"SOURCE PROPOSAL ONLY: isolated read-only X11 chooser observation, not execution admission.\n" +
+@@ -1866,6 +1866,10 @@
+         "import ctypes as C\n" +
+         "import os\n" +
+         "import sys\n" +
++        "\n" +
++        "# Fixed public guard IDs only; never emit a traceback, observed property or path.\n" +
++        "LAST_PROPERTY = 'NONE'\n" +
++        "GUARD_CODES = {'Linux x64 ABI only': 'G01', 'active native window changed': 'G02', 'cannot establish focus ancestry': 'G03', 'cannot open original private display': 'G04', 'cannot translate native client geometry': 'G05', 'chooser PID mismatch': 'G06', 'chooser owner mismatch': 'G07', 'fixed integer observation': 'G08', 'focus ancestry bound': 'G09', 'focus moved during observation': 'G10', 'fresh unconsumed runtime only': 'G11', 'invalid caller/window identity': 'G12', 'isolated interpreter required': 'G13', 'keyboard focus is not owned by chooser': 'G14', 'main PID mismatch': 'G15', 'missing/ambiguous/oversized native ownership property': 'G16', 'native geometry unavailable': 'G17', 'no separate active native chooser': 'G18', 'original private authority required': 'G19', 'owned runtime, original caller PID, main client XID required': 'G20', 'private display required': 'G21', 'required ownership atom missing': 'G22', 'unexpected native title': 'G23', 'unsupported native frame extents': 'G24', 'unsupported native geometry': 'G25', 'unsupported property width': 'G26'}\n" +
+         "from pathlib import Path\n" +
+         "\n" +
+         "\n" +
+@@ -1908,6 +1912,12 @@
+         "    try:\n" +
+         "        root = root_window(d)\n" +
+         "        def property_value(window, name, kind, fmt, count):\n" +
++        "            global LAST_PROPERTY\n" +
++        "            LAST_PROPERTY = {\n" +
++        "                '_NET_ACTIVE_WINDOW': 'ACTIVE',\n" +
++        "                '_NET_WM_PID': 'MAIN_PID' if window == main_xid else 'CHOOSER_PID',\n" +
++        "                'WM_TRANSIENT_FOR': 'OWNER', '_NET_WM_NAME': 'TITLE', '_NET_FRAME_EXTENTS': 'FRAME',\n" +
++        "            }.get(name, 'UNCLASSIFIED')\n" +
+         "            name_atom, kind_atom = atom(d, name.encode('ascii'), 1), atom(d, kind.encode('ascii'), 1)\n" +
+         "            require(name_atom and kind_atom, 'required ownership atom missing')\n" +
+         "            actual, width, n, remaining, data = U(), I(), U(), U(), P()\n" +
+@@ -1972,7 +1982,12 @@
+         "\n" +
+         "\n" +
+         "if __name__ == '__main__':\n" +
+-        "    value = main()\n" +
++        "    try:\n" +
++        "        value = main()\n" +
++        "    except Exception as failure:\n" +
++        "        code = GUARD_CODES.get(str(failure), 'UNCLASSIFIED') if type(failure) is RuntimeError else 'UNCLASSIFIED'\n" +
++        "        print('PVU003_NATIVE_FAILURE_V1\\t' + code + '\\t' + LAST_PROPERTY)\n" +
++        "        raise SystemExit(1)\n" +
+         "    fields = [value['caller_pid'], value['main_xid'], value['chooser_xid'], value['focus_xid'],\n" +
+         "              *value['client'], *value['frame_extents']]\n" +
+         "    require(len(fields) == 12 and all(type(v) is int for v in fields), 'fixed integer observation')\n" +
+@@ -2009,7 +2024,18 @@
+             val remaining = minOf(TimeUnit.SECONDS.toNanos(3), deadlineNanos - System.nanoTime())
+             check(remaining > 0 && process.waitFor(remaining, TimeUnit.NANOSECONDS)) { "Observer deadline" }
+             val output = process.inputStream.readNBytes(4097)
+-            check(output.size <= 4096 && process.exitValue() == 0) { "Observer failed/oversized" }
++            check(output.size <= 4096) { "Observer output exceeded bound" }
++            if (process.exitValue() != 0) {
++                // Whitelist diagnostics; never forward raw Xlib stderr, properties or paths.
++                val diagnostic = output.toString(Charsets.US_ASCII)
++                val fields = Regex(
++                    "PVU003_NATIVE_FAILURE_V1\\t(G[0-9]{2}|UNCLASSIFIED)" +
++                        "\\t(NONE|ACTIVE|MAIN_PID|CHOOSER_PID|OWNER|TITLE|FRAME|UNCLASSIFIED)\\n",
++                ).matchEntire(diagnostic)?.groupValues
++                val guard = fields?.get(1) ?: "UNCLASSIFIED"
++                val lastProperty = fields?.get(2) ?: "UNCLASSIFIED"
++                error("Observer nonzero exit=${process.exitValue()} guard=$guard lastProperty=$lastProperty")
++            }
+             // Fixed ASCII wire format avoids introducing a JSON dependency into desktopTest.
+             // Exact field count/canonical decimal grammar rejects extra lines, keys and ambiguity.
+             check(output.all { it.toInt() in 0..127 }) { "Non-ASCII observer response" }

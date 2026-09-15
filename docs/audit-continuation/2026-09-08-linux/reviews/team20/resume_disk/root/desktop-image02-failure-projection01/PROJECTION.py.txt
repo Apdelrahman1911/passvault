@@ -1,0 +1,68 @@
+"""Prospective pure bounded projection, not a runner or old-output reader.
+Never output input text, exception text, paths, hashes, or lengths. Only fixed
+public status identifiers and caller-supplied, source-reviewed task IDs. This
+class cannot establish task success, clean up files, or admit any execution.
+"""
+class ImageFailureProjection:
+    LIMIT = 4096
+    MARKERS = {
+        b"Could not compile initialization script": "INIT_COMPILATION_REPORTED",
+        b"Could not compile build file": "BUILD_SCRIPT_COMPILATION_REPORTED",
+        b"Dependency verification failed": "DEPENDENCY_VERIFICATION_REPORTED",
+        b"Could not resolve all files": "DEPENDENCY_RESOLUTION_REPORTED",
+        b"BUILD FAILED": "BUILD_FAILURE_REPORTED",
+        b"OutOfMemoryError": "JVM_OOM_REPORTED",
+    }
+
+    def __init__(self, admitted_tasks):
+        if (type(admitted_tasks) is not tuple or not 0 < len(admitted_tasks) <= 292
+                or len(set(admitted_tasks)) != len(admitted_tasks)
+                or any(type(t) is not str or not t.startswith(":")
+                       or len(t) > 256 or not t.isascii()
+                       or any(c not in ":-_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" for c in t)
+                       for t in admitted_tasks)):
+            raise ValueError("INVALID_PUBLIC_TASK_SET")
+        self.tasks = admitted_tasks
+        self.failure_lines = {b"> Task " + t.encode("ascii") + b" FAILED": t for t in admitted_tasks}
+        self.pending = bytearray()
+        self.discard_line = False
+        self.flags = set()
+        self.failed_tasks = set()
+        self.finished = False
+
+    def feed(self, data):
+        if self.finished or type(data) is not bytes:
+            raise ValueError("INVALID_PROJECTION_FEED")
+        # Per-byte bounded state, including lines split across arbitrary pipe reads.
+        for byte in data:
+            if byte == 10:
+                if not self.discard_line:
+                    self._line(bytes(self.pending).removesuffix(b"\r"))
+                self.pending.clear()
+                self.discard_line = False
+            elif not self.discard_line:
+                if len(self.pending) == self.LIMIT:
+                    self.pending.clear()
+                    self.discard_line = True
+                else:
+                    self.pending.append(byte)
+
+    def _line(self, line):
+        for marker, flag in self.MARKERS.items():
+            if marker in line:
+                self.flags.add(flag)
+        task = self.failure_lines.get(line)
+        if task is not None:
+            self.failed_tasks.add(task)
+
+    def finish(self):
+        if not self.finished:
+            if not self.discard_line:
+                self._line(bytes(self.pending).removesuffix(b"\r"))
+            self.pending.clear()
+            self.discard_line = False
+            self.finished = True
+        return {"format": "passvault-image-failure-projection-v1",
+                "reported_flags": sorted(self.flags),
+                "reported_failed_tasks": [t for t in self.tasks if t in self.failed_tasks],
+                "classification_only_not_causal_or_task_success_evidence": True}

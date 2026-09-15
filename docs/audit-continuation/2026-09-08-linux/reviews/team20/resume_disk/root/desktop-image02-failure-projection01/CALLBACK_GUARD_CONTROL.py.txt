@@ -1,0 +1,44 @@
+"""Pure regression of exact proposed cleanup predicates; no runner import/execution.
+This is control-source behavior, NOT an application/native/runtime test.
+"""
+import ast, hashlib
+from pathlib import Path
+from types import SimpleNamespace
+D = Path(__file__).parent.parent
+SOURCES = {
+    'desktop-image02-controls-proposal03/INNER.txt': 'e86138c8ae2bf21fe429a2380dfa14aab9c73c897f94064c8f5c0b1dc668dffa',
+    'desktop-image02-controls-proposal04/INNER.txt': '7f1409d0556523a7580868532da0b58883c731b7d8ebcc7f06fd287f718e47c6',
+}
+def predicate(relative):
+    data = (D / relative).read_bytes()
+    assert hashlib.sha256(data).hexdigest() == SOURCES[relative]
+    tree = ast.parse(data)
+    main = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'main')
+    candidates = [n.value for n in ast.walk(main) if isinstance(n, ast.Assign)
+                  and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name)
+                  and n.targets[0].id == 'safe']
+    assert len(candidates) == 1
+    expr = ast.Expression(candidates[0])
+    allowed = (ast.Expression, ast.BoolOp, ast.And, ast.Or, ast.UnaryOp, ast.Not,
+               ast.Name, ast.Load, ast.Attribute)
+    assert all(isinstance(n, allowed) for n in ast.walk(expr))
+    attrs = {n.attr for n in ast.walk(expr) if isinstance(n, ast.Attribute)}
+    assert all(isinstance(n.value, ast.Name) and n.value.id == 'batch'
+               for n in ast.walk(expr) if isinstance(n, ast.Attribute))
+    names = {n.id for n in ast.walk(expr) if isinstance(n, ast.Name)}
+    assert names <= {'batch','stops','settled','complete','phase_contract','CANCEL','private_phase','attempted'}
+    return compile(expr, '<exact-prospective-main.safe>', 'eval'), attrs
+old, oldattrs = predicate('desktop-image02-controls-proposal03/INNER.txt')
+new, newattrs = predicate('desktop-image02-controls-proposal04/INNER.txt')
+def check(code, attrs, attempted, validated, stops=True):
+    batch = SimpleNamespace(**{k: True for k in attrs})
+    batch.image_callback_validated = validated
+    environment = dict(batch=batch, stops=stops, settled=True, complete=True,
+                       phase_contract=True, CANCEL=set(), private_phase=True, attempted=attempted)
+    return eval(code, {'__builtins__': {}}, environment)
+assert check(old, oldattrs, True, False) is True  # Reproduce rejected proposal's actual boolean bug.
+assert check(new, newattrs, True, False) is False  # Missing/invalid callback must retain HOLD.
+assert check(new, newattrs, True, True) is True  # Preserve validated-callback failure cleanup eligibility.
+assert check(new, newattrs, False, False) is True  # Preserve original safe unattempted cleanup eligibility.
+assert check(new, newattrs, True, True, stops=False) is False  # No wrapper-stop bypass.
+print('callback-control attempted-unvalidated-hold-and-compatibility PASS')

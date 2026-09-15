@@ -1,0 +1,93 @@
+{
+  "schema": 1,
+  "suite": "windows-after-flush-04",
+  "nonce": "2edcd8daf4f1285090273f9a924cc2d2",
+  "case_names": [
+    "passvault_biometric_windows_after_flush_continue",
+    "passvault_biometric_windows_after_flush_process_death"
+  ],
+  "case_argv": {
+    "passvault_biometric_windows_after_flush_continue": [
+      "--after-flush-case",
+      "continue"
+    ],
+    "passvault_biometric_windows_after_flush_process_death": [
+      "--after-flush-case",
+      "process_death"
+    ]
+  },
+  "target": "passvault_biometric_windows_after_flush_test",
+  "audit_controls": false,
+  "after_flush_controls": true,
+  "sdk": "10.0.26100.0",
+  "max_seconds": 480,
+  "helper_sha256": "fd97a5dff9ff54bb274e57134d1b5ac69afad0c769651453110269df3a47241f",
+  "workflow_sha256": "c732b77da1f98bc2e57300a50faef4e84b26fb3b08f6c69fb7064b7b15e861d0",
+  "scope_sha256": "a3c0f9e40bd1a183579b4c2cd0014710e2062c1637281133387eb7866c50e138",
+  "input_sha256": {
+    ".gitattributes": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5",
+    "app-desktop/native/biometric-bridge/CMakeLists.txt": "5bd3de7d16958c466ad740b2c14800f2f8b81e115323ad486ecf5a08f02a036e",
+    "app-desktop/native/biometric-bridge/include/passvault_biometric.h": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+    "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp": "93746b0cdb399aa17dd8c3c915e907244d4e86e5b566c51714ccc7f80310bd5d",
+    "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.rc": "13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c",
+    "app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+    "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp": "38b41ccf932e16683419fd8f18f84b769148016266befe2d1e6d29cc0cc535b8",
+    "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/platform_review/new80/PVA036-AFTER-FLUSH-SOURCE-REVIEW.json": "742c0c820bdbfe1c31d3dc96ed1a04cfd8a5449285651ea05bb773456c59c9d2"
+  },
+  "utc": "2026-09-14T23:10:47.722725+00:00",
+  "reviewer": "/root/current_ledger",
+  "author": "/root",
+  "disposition": "ACCEPT_WINDOWS_AFTER_FLUSH_04_INSTANCE",
+  "authority_scope": "EXACT_NONCE_AND_SOURCE_CONTENT_CONTRACT_ONLY_NOT_PUBLICATION_ACTIVATION_OR_CI_EXECUTION",
+  "proposal": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-after-flush04-controls-proposal01/PROPOSAL.json",
+    "bytes": 2461,
+    "sha256": "06e3b864bb34308ef014997c617c932de60e2720a580621adc7cd0cedc54c922"
+  },
+  "source_review": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/windows_after_flush04_controls_source/SOURCE-REVIEW.json",
+    "bytes": 5449,
+    "sha256": "d84605a99e20ea1399797c76fffe3e324fce097b58aec3ce185475f0c9c5c844"
+  },
+  "accepted_cpp_review": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/windows_after_flush04_accounting_source/SOURCE-REVIEW.json",
+    "bytes": 6137,
+    "sha256": "4e108a93205d3fee13d7b0fbaff5573785048502581d7c85094f8e84eb115992"
+  },
+  "installation": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-after-flush-accounting04-proposal01/INSTALL.json",
+      "bytes": 653,
+      "sha256": "d3d34262ae9e8103d57b2669651cc5090ed6e344f0b00f0a169ef519a8eb0f74"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-after-flush04-controls-proposal01/INSTALL.json",
+      "bytes": 781,
+      "sha256": "832536c5278bdd36c97238e3d28bc172ebff89337e109fe66aae2e4e0504eafc"
+    }
+  ],
+  "unchanged_disposal_function": {
+    "function": "native_case_disposal_admission",
+    "extraction": "ast.get_source_segment, excluding trailing newline",
+    "bytes": 3096,
+    "sha256": "2f9f2642492056cc6f3f59118572ad50cc2a30927b3c4ff7f0070f1041e8d1b6",
+    "identical_to_accepted03_and_original_eight_control_subject": true
+  },
+  "checks": [
+    "Exactinstalledhelper/workflow/newCPP hashes matchacceptedSOURCEandinstallrecords; all8nativeinputhashes andSCOPEhash independentlymatched. Correct04contentreviewdisposition/suite/freshnonce; no current sourcecommit/tree assumed.",
+    "Reusesunchanged8nonXMLdisposalpolicycontrols; no unnecessaryrerun. TwooriginalJobcounterobservations adddiagnosis, notanassertionfix; lateTotalProcesses==1 andallnative/disposal/HOLDgates preserved. Original03failure/countersUNKNOWN/wholeHOLDunmodified.",
+    "GUI23 original34020currentlyownssoleheavyjobslotaccordingtoroot. Thiscontentacceptancedoesnotadmitpublication/activation/CI orconcurrentjob. SourceonlypreparationoutsidefixedGUI23inputs maycontinue."
+  ],
+  "remaining_before_any_ci_execution": [
+    "Source-onlystagedtree/path/blob/privacy/licensing/otherworkflow-trigger andsourcepushadmission ondedicatedcontinuation, includethisacceptancewithoutcanonical04request. RootscheduleafterGUI23originalindependentreview/adoption/retirement.",
+    "Bindexactpublishedsourcecommit/tree+thisreviewhash infreshrequestonlydirect-childactivation. Independentlyreviewactivation/observer/execution/coordination/cleanup/freshresourcesandqueued/pending/runningCIquietfacts.",
+    "OneWindows2022/MSVC2022x64/SDK10.0.26100.0job, oneworker, boundedselectorsandcompactretention; no automaticretry orassertionrelaxation.",
+    "Independentlyrevieworiginalterminal/counters/exactselectorXML/Job/handles/logretention/cleanup. Countervaluesarepartialdiagnosticsnotcausality; failedorunstartednativecaseoruncertaindisposal remainswholeHOLD."
+  ],
+  "credit": {
+    "new_xml_cases": 0,
+    "new_native_cases": 0,
+    "family_closures": 0
+  },
+  "restrictions": "PVU007STOP;PVU011NO-RETRY/noinquiry;PVA029failure/noautomaticretry;G7/G8/WindowsGraph03CLOSED/remotecleanupUNKNOWN;allHOLD/refusedwitnessesincludingGUI18/19/21 Android07 Windows01/02/03 Image01; protectedrefs/tags/mobile1017001/eightPVDpreserved. ReviewerSOURCE/DATA/hash/ownrecordsonly, noGit/network/helperexecution/liveprobes/cleanup."
+}

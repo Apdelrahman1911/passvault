@@ -1,0 +1,36 @@
+--- reviewed03fixture
++++ prospective04diagnostic
+@@ -1161,6 +1161,19 @@
+                 GetProcessId(child.info.hProcess) == child.info.dwProcessId &&
+                 GetProcessIdOfThread(child.info.hThread) == child.info.dwProcessId &&
+                 GetProcessTimes(child.info.hProcess, &creation, &exit_time, &kernel, &user));
++  // Read-only diagnostic of this original unnamed Job while its only admitted
++  // child is still suspended. Do not turn a nested-Job counter into a relaxed
++  // ownership oracle; the existing late TotalProcesses == 1 check is retained.
++  JOBOBJECT_BASIC_ACCOUNTING_INFORMATION initial_accounting{};
++  PV_TEST_CHECK(QueryInformationJobObject(job.get(), JobObjectBasicAccountingInformation,
++      &initial_accounting, static_cast<DWORD>(sizeof(initial_accounting)), nullptr));
++  PV_TEST_CHECK(std::printf(
++      "PVA036_JOB phase=suspended case=%s total=%lu active=%lu terminated=%lu\n",
++      kill_child ? "process_death" : "continue",
++      static_cast<unsigned long>(initial_accounting.TotalProcesses),
++      static_cast<unsigned long>(initial_accounting.ActiveProcesses),
++      static_cast<unsigned long>(initial_accounting.TotalTerminatedProcesses)) > 0);
++  PV_TEST_CHECK(std::fflush(stdout) == 0);
+   shared.expected_process = child.info.dwProcessId;
+   MemoryBarrier(); // Publish the parent's fixed mapping before the child runs.
+   PV_TEST_CHECK(ResumeThread(child.info.hThread) == 1);
+@@ -1208,6 +1221,13 @@
+     PV_TEST_CHECK(GetTickCount64() < settle_end);
+     Sleep(1);
+   } while (true);
++  PV_TEST_CHECK(std::printf(
++      "PVA036_JOB phase=settled case=%s total=%lu active=%lu terminated=%lu\n",
++      kill_child ? "process_death" : "continue",
++      static_cast<unsigned long>(accounting.TotalProcesses),
++      static_cast<unsigned long>(accounting.ActiveProcesses),
++      static_cast<unsigned long>(accounting.TotalTerminatedProcesses)) > 0);
++  PV_TEST_CHECK(std::fflush(stdout) == 0);
+   PV_TEST_CHECK(accounting.TotalProcesses == 1);
+ 
+   BY_HANDLE_FILE_INFORMATION final_destination{}, final_sentinel{}, retained_temporary{};

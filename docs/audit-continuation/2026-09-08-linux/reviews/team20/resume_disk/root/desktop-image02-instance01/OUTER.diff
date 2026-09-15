@@ -1,0 +1,20 @@
+--- /root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image02-controls-proposal04/OUTER.txt
++++ /root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image02-instance01/OUTER.py
+@@ -44,7 +44,7 @@
+ JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64/bin/java')
+ RELEASE = JAVA.parent.parent / 'release'
+ PYTHON, INNER_PYTHON, UNSHARE = '/usr/bin/python3.12', '/usr/bin/python3', '/usr/bin/unshare'
+-RUN, PURPOSE = 'linux-desktop-installed-image02', 'ONE_LINUX_DESKTOP_INSTALLED_IMAGE01'
++RUN, PURPOSE = 'linux-desktop-installed-image02', 'ONE_LINUX_DESKTOP_INSTALLED_IMAGE02'
+ IMAGE_TARGETS = [
+     ':app-desktop:verifyDesktopInstalledLegalNotices',
+     ':app-desktop:verifyDesktopInstalledRuntime',
+@@ -1404,7 +1404,7 @@
+     require(set(request['directories']) == {str(p) for p in PARENTS} and set(request['images']) == {str(p) for p in IMAGES}, 'fixed sets')
+     require(set(approval) == {'format', 'reviewer', 'disposition', 'purpose', 'run_id', 'request_sha256', 'sources'} and
+             approval['format'] == 'passvault-linux-desktop-installed-image02-approval-v3' and
+-            approval['reviewer'] == '/root/current_report_review' and
++            approval['reviewer'] == '/root/current_ledger' and
+             approval['disposition'] == 'ACCEPT_EXACT_NEW_INSTANCE' and approval['purpose'] == PURPOSE and approval['run_id'] == RUN and
+             approval['request_sha256'] == request_image['sha256'] and approval['sources'] ==
+             {str(p): request['images'][str(p)]['sha256'] for p in (SELF, INNER, INIT, SOURCE)}, 'missing/stale/nonaccepting genuine review')

@@ -1,0 +1,36 @@
+--- rejectedProposal03
++++ proposal04_callbackdisposalguard
+@@ -680,6 +680,7 @@
+         self.before = self.after = self.namespace_ok = self.evidence_ok = False
+         self.git_bound = self.git_stable = self.index_unchanged = False
+         self.image_preserved = self.image_succeeded = False
++        self.image_callback_validated = False
+         self.auth_token, self.private_started = None, False
+         self.private_io_ok = True  # Monotone failure latch, not a product-outcome gate.
+         self.last_resource = self.last_inventory = 0.0
+@@ -1202,6 +1203,7 @@
+             outcome = {'format': 'passvault-desktop-installed-image-not-started-v1',
+                        'selectors': [{'path': p, 'outcome': 'UNSTARTED'} for p in IMAGE_TARGETS],
+                        'observedApplicationTestCases': 0}
++        self.image_callback_validated = callback_status == 'VALIDATED'
+         self.image_succeeded = bool(attempted and callback_status == 'VALIDATED' and state['image_zero_exit'] and outcome.get('graphAccepted')
+             and not outcome.get('buildFailed') and not outcome.get('nativeDenied')
+             and outcome.get('readyCallbacks') == 1 and outcome.get('finishCallbacks') == 1
+@@ -1351,7 +1353,8 @@
+         safe = (batch.namespace_ok and batch.before and batch.after and stops and settled and batch.evidence_ok
+                 and batch.private_io_ok
+                 and complete and phase_contract and batch.git_bound and batch.git_stable
+-                and batch.index_unchanged and not CANCEL and (not private_phase or batch.image_preserved))
++                and batch.index_unchanged and not CANCEL and (not private_phase or batch.image_preserved)
++                and (not attempted or batch.image_callback_validated))
+         collected = bool(safe and attempted and batch.image_succeeded and not batch.errors
+                          and phase_names == ['git-sdk-isolation', 'desktop-installed-image'])
+         result = {'format': 'passvault-linux-desktop-installed-image02-inner-v1', 'run_id': RUN_ID,
+@@ -1361,6 +1364,7 @@
+             'private_io_lifecycle_ok': batch.private_io_ok,
+             'git_bindings_established': batch.git_bound, 'git_bindings_stable': batch.git_stable,
+             'sealed_index_unchanged': batch.index_unchanged, 'image_evidence_preserved': batch.image_preserved,
++            'image_callback_validated': batch.image_callback_validated,
+             'image_succeeded': collected, 'image_attempted': attempted, 'private_phase_attempted': private_phase,
+             'gradle_image_selectors': IMAGE_TARGETS, 'image_binding': IMAGE_BINDING,
+             'sdk_readonly_view_established': batch.git_bound, 'sdk_readonly_view_stable': batch.git_stable,

@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "utc": "2026-09-14T23:14:25.788941+00:00",
+  "reviewer": "/root/current_ledger",
+  "author": "/root",
+  "disposition": "REJECT_PROPOSAL03_CALLBACK_UNCERTAINTY_DISPOSAL_REGRESSION_SOURCE_ONLY",
+  "inner": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image02-controls-proposal03/INNER.txt",
+    "bytes": 91205,
+    "sha256": "e86138c8ae2bf21fe429a2380dfa14aab9c73c897f94064c8f5c0b1dc668dffa"
+  },
+  "outer": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image02-controls-proposal03/OUTER.txt",
+    "bytes": 108545,
+    "sha256": "835508e78b343f65dd75966f7721500a46ec9b5cf2ab7595cc86145d238ec713"
+  },
+  "proposal": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image02-controls-proposal03/PROPOSAL.json",
+    "bytes": 1094,
+    "sha256": "4f623564c56f4d0043bf66302abc91d7e492eba59196b9d143a91b6f70684b7b"
+  },
+  "scope": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image02-failure-projection01/SCOPE.md",
+    "bytes": 1578,
+    "sha256": "66035dfab0af2afa73fd9ae1e577d3038d44508a0e3bfb4983d925808ffbb666"
+  },
+  "finding": "Attempted image with unavailable/invalid callback can be considered cleanup-safe and reach original private runtime deletion, contrary to explicit missing-callback HOLD contract. This is an unexecuted audit-controller proposal defect, not a new confirmed product family.",
+  "source_counterexample": [
+    "Image Gradlecommand exits1normally withcompletepipe/record.errors[]; command1024returnsFalse withoutmarkingprivate_iofailure. Originalwrapperstop0, ownednamespace settles, originalsourceandGitinputs remainexact, boundednormalgeneratedfiles only.",
+    "Callback read absent: Files.read_private raisesbeforetrackinganevidencefile andhasnofailurelatch. preserve_desktop_installed_image1194catches, selectsUNAVAILABLE_OR_INVALID + UNKNOWNselectors, retainsIMAGE-EVIDENCE andsetsimage_preservedTrueat1224. image_succeededFalse.",
+    "state.image_okFalse causesrequire1289failure; maincatchrecordsPRIVATE_CONTROLLER_HOLD:RuntimeError inbatch.errors. cancelled691..697 dependsCANCELonly, notbatch.errors. Finalsource/input/evidencechecks canstillallpass.",
+    "main.safe1351..1354requiresimage_preservedbutneithercallbackvalidatednorimage_succeedednorbatch.errorsempty. Thuscleanup_safeTrue, collectedFalseandexit1at1382.",
+    "OUTER1542..1547acceptsinnercode1withsafetyflags; onlycode0branch1580requiresimage_success/noerrors. Missingcallbackdoesnotblockouter1592remove_runtime. preserve_generated_reportsmerelychecksallowedprivatefiletypesandretainedIMAGE-EVIDENCEhash; callbackfilepresence/validitynotrequired. Nootherguardrefutesthiscounterexample.",
+    "Allactualdestructiveoperationsstillneedmount/custody/snapshot/sourceguards, butthesecanlegitimatelypassforthisfailedcompilation. Thedefectisnotungovernedpaths; itisnewremovaleligibilityaftercallbackuncertainty."
+  ],
+  "required_change": "Retain compact diagnostic projection while explicitly latching attempted-unvalidated callback as cleanup-ineligible. Include this gate in inner cleanup_safe (and exact public receipt/outer admission as appropriate). Do not require all valid-callback product failures to retain runtime if existing approved policy permits their disposal; preserve that compatibility distinction.",
+  "other_review": "Pure bounded projection source is not rejected by this finding. Source03 scanner/bind_domain reuse review and three pure control groups can continue independently. No execution/install/admission credited.",
+  "credit": {
+    "executed_cases": 0,
+    "product_family_findings": 0,
+    "family_closures": 0
+  },
+  "restrictions": "AllSTOP/NO-RETRY/CLOSED/HOLD and oldImage01noinquiry/replay/recovery/deletion preserved. RetainedSOURCE/DATAreads only; nosubjectexecution, tests, Git/network, liveprobesorcleanup."
+}

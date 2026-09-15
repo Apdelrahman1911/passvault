@@ -1,0 +1,6 @@
+"""One pure four-group batch; both source programs are hash-bound by original launcher."""
+from pathlib import Path
+import runpy
+H = Path(__file__).parent
+for name in ('CONTROLS.py.txt', 'CALLBACK_GUARD_CONTROL.py.txt'):
+    runpy.run_path(str(H / name), run_name='__main__')

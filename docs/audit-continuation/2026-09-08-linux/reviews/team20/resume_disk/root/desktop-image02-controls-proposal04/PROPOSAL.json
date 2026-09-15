@@ -1,0 +1,11 @@
+{
+  "scope": "SOURCE_ONLY_NOT_INSTALLED_OR_ADMITTED",
+  "finding": "Reviewer correctly disproved03 HOLDclaim: image_preserved alone allowedmissingcallbackdisposal. Neverexecuted03.",
+  "correction": "Explicit callbackvalidated state initializedfalse, setonlyafter validatedresult; attempted+invalid forces cleanup_safefalse. Receipt carriesflag and independentouterguard refusesdisposal. Validatedcallback andunattempted priorbehaviorretained. No batch.errors blanketgate or othercleanuprelaxation.",
+  "files": {
+    "OUTER": "c7acf6153a3619d070c083fe9f8acc2f8709e2fc4f94a51edf31b41e24473c91",
+    "INNER": "7f1409d0556523a7580868532da0b58883c731b7d8ebcc7f06fd287f718e47c6",
+    "INIT": "77a13e5d8933976315db0bebcd82d237d1c80e80dd3c0fdd1a1e2870184c16d8"
+  },
+  "regression": "Prepare pureevaluation ofexactold/newmain.safe AST underallotherguards true; nohelperimport/runnerexecution/privatefiles/cleanup."
+}

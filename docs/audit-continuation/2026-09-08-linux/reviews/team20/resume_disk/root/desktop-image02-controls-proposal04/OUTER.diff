@@ -1,0 +1,29 @@
+--- rejectedProposal03
++++ proposal04_callbackdisposalguard
+@@ -91,7 +91,7 @@
+ PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
+ DEVICE = {'directory_device': 23, 'regular_file_device': 24}  # Fresh image-instance device binding required.
+ EXPECTED_LOCK = {'bytes': 0, 'ctime_ns': 1789367939912132665, 'dev': 24, 'ino': 13719326, 'mode': 33152, 'mtime_ns': 1789367939912132665, 'nlink': 1, 'uid': 0}
+-FROZEN = {INNER: 'e86138c8ae2bf21fe429a2380dfa14aab9c73c897f94064c8f5c0b1dc668dffa', INIT: '77a13e5d8933976315db0bebcd82d237d1c80e80dd3c0fdd1a1e2870184c16d8', SOURCE: '1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc'}  # Partial source cascade; root-only physical/approval slots remain unbound.
++FROZEN = {INNER: '7f1409d0556523a7580868532da0b58883c731b7d8ebcc7f06fd287f718e47c6', INIT: '77a13e5d8933976315db0bebcd82d237d1c80e80dd3c0fdd1a1e2870184c16d8', SOURCE: '1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc'}  # Partial source cascade; root-only physical/approval slots remain unbound.
+ REVIEW_ASSERTIONS = (
+     'ordinary_full_stage0_index_matches_source', 'no_split_sparse_unmerged_index',
+     'standalone_store_without_redirects', 'local_config_and_excludes_reviewed',
+@@ -1566,7 +1566,7 @@
+             and sdk['metadata'] == {str(p): images[str(p)] for p in SDK_METADATA}, 'original private readonly SDK receipt')
+     receipt['sdk_preflight'] = sdk_preflight
+     require(all(type(result[k]) is bool for k in ('image_evidence_preserved', 'image_succeeded',
+-                'image_attempted', 'private_phase_attempted')) and result['gradle_image_selectors'] == IMAGE_TARGETS
++                'image_attempted', 'private_phase_attempted', 'image_callback_validated')) and result['gradle_image_selectors'] == IMAGE_TARGETS
+             and result['image_binding'] == IMAGE_BINDING and result['source_capacity'] == SOURCE_CAPACITY
+             and type(result['declared_test_cases']) is int and result['declared_test_cases'] == 0
+             and result['independent_semantic_acceptance'] is False and result['raw_private_output_exported'] is False,
+@@ -1576,6 +1576,8 @@
+             (['git-sdk-isolation'], ['git-sdk-isolation', 'desktop-installed-image'])
+             and all(type(p['stop_required']) is bool for p in phases), 'IMAGE_PHASE_CONTRACT')
+     require(not result['private_phase_attempted'] or result['image_evidence_preserved'], 'IMAGE_SAFE_EVIDENCE_REQUIRED')
++    require(not result['image_attempted'] or result['image_callback_validated'],
++            'IMAGE_VALIDATED_CALLBACK_REQUIRED_FOR_DISPOSAL')
+     if code == 0:
+         require(result['image_attempted'] and result['image_succeeded'] and result['image_evidence_preserved']
+                 and not result['errors'] and [p['phase'] for p in phases] == ['git-sdk-isolation', 'desktop-installed-image'],

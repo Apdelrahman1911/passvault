@@ -1,0 +1,22 @@
+Sep 14, 2026 11:16:28 PM java.util.prefs.FileSystemPreferences$1 run
+INFO: Created user preferences directory.
+[SKIKO] warn: Fallback to next API
+org.jetbrains.skiko.RenderException: Cannot create Linux GL context
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#noProviders for further details.
+MAIN_NAV_FAILURE
+java.lang.IllegalStateException: Observer failed/oversized
+	at com.passvault.desktop.OwnedChooserProbe.observe(CredentialMainNavHostRoomIntegrationTest.kt:2012)
+	at com.passvault.desktop.NativeMainNav.pvu003NativeChooserBounds(CredentialMainNavHostRoomIntegrationTest.kt:543)
+	at com.passvault.desktop.NativeMainNav.pvu003ChooserHomeThenCancel(CredentialMainNavHostRoomIntegrationTest.kt:441)
+	at com.passvault.desktop.NativeMainNav.run(CredentialMainNavHostRoomIntegrationTest.kt:364)
+	at com.passvault.desktop.CredentialMainNavHostRoomProbe.main$lambda$0(CredentialMainNavHostRoomIntegrationTest.kt:280)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+	Suppressed: java.lang.IllegalStateException: Observer failed/oversized
+		at com.passvault.desktop.OwnedChooserProbe.observe(CredentialMainNavHostRoomIntegrationTest.kt:2012)
+		at com.passvault.desktop.NativeMainNav.pvu003NativeChooserBounds(CredentialMainNavHostRoomIntegrationTest.kt:543)
+		at com.passvault.desktop.NativeMainNav.pvu003ChooserHomeThenCancel$lambda$13(CredentialMainNavHostRoomIntegrationTest.kt:493)
+		at com.passvault.desktop.MainNavFailures.release(CredentialMainNavHostRoomIntegrationTest.kt:1678)
+		at com.passvault.desktop.NativeMainNav.pvu003ChooserHomeThenCancel(CredentialMainNavHostRoomIntegrationTest.kt:488)
+		... 3 more

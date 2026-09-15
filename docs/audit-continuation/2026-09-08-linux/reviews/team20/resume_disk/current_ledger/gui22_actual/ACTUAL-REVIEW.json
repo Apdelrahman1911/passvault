@@ -1,0 +1,252 @@
+{
+  "schema": 1,
+  "utc": "2026-09-14T22:43:49.951919+00:00",
+  "reviewer": "/root/current_ledger",
+  "author": "/root",
+  "disposition": "ACCEPT_GUI22_ORIGINAL_PRE_GUI_COMPILATION_FAILURE_AND_ORIGINAL_CLEANUP_NOT_PVU003_RUNTIME_VERIFICATION",
+  "original": {
+    "session_id": 49827,
+    "entry_chunk": "c69154",
+    "terminal_chunk": "ba3b6d",
+    "outer_exit": 1,
+    "inner_exit": 1,
+    "entry": {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui22-instance01/ORIGINAL-TOOL-ENTRY.json",
+      "bytes": 131,
+      "sha256": "80b2a25c1d38b4fdc48c0f8128d6f993481b669e6fdc22e494e214dc57bcc8fd"
+    },
+    "terminal": {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui22-instance01/ORIGINAL-TOOL-RESULT.json",
+      "bytes": 124,
+      "sha256": "ee272abc6241ec9ff7fe45c967b4150b912a697ad3d3053d04c4dd3a3f3b5da0"
+    },
+    "execution_admission": {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui22-instance01/EXECUTION-ADMISSION.json",
+      "bytes": 1917,
+      "sha256": "c90ed5716cf36cf3021341ee542ef6d609c74aabb2ee1e4fa8b5a07d1739b549"
+    },
+    "instance_review": {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/gui22_instance/INSTANCE-REVIEW.json",
+      "bytes": 7652,
+      "sha256": "240c9ff92a929684cbc63322013370e683ce695a1934fda7ce8df674b0ee1715"
+    }
+  },
+  "source_identity": {
+    "base_commit": "59bee33096f538b9444f00236448d7fc0ea740b2",
+    "base_content_identity_sha256": "19211d126337ddf19a37a6b89522642d62dcc247c199a6420cdc1e4b28abd91c",
+    "base_raw_bytes": 153458946,
+    "base_tree": "76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6",
+    "diagnostic_overlay": {
+      "after": {
+        "bytes": 115940,
+        "git_blob": "d3460eb4fdefb0dec70d8103133d33890fda3953",
+        "sha256": "7d3f183a6c4cc014026c7dd4589dff9a732d164718a143abce78e792d181a4c2"
+      },
+      "before": {
+        "bytes": 88602,
+        "git_blob": "91858bd15c2ab211bc263b881157cebd9a283154",
+        "sha256": "5fe322e48fef5fe7b6d2729817ad6fdbeb6bec182bf1cde5198ffdb1bb8c01a3"
+      },
+      "git_mode": "100644",
+      "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+      "scope": "PVU003-only real native chooser ownership/focus via exact inline read-only isolated Python/libX11; successful Main and PVA027 not executed. No production overlay."
+    },
+    "effective_bytes": 153486341,
+    "effective_content_identity_sha256": "c0ab8f258993c7a5258a51efdac0dfba97b01e95c4390924ab7d4b8d3bd43fe2",
+    "framed_transport_bytes": 153725453,
+    "members": 5121,
+    "observed_checkout_bytes": 153460893,
+    "representation": "P23_RAW_GIT_BLOBS_PLUS_DESKTOPTEST_DEPENDENCY_AND_CHOOSER_FIXTURE",
+    "source_manifest_sha256": "1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc"
+  },
+  "source_overlay": {
+    "after": {
+      "bytes": 63975,
+      "git_blob": "a8895db34f68cf10b7795079c433c9ef283d4cba",
+      "sha256": "d0ead442c57c9465333d036bcb4d96f1ac5b06fd8d04dfe5b45fc571100265e3"
+    },
+    "before": {
+      "bytes": 63918,
+      "git_blob": "172fd771919fbb848c7c413af97706b257a7c3d2",
+      "sha256": "9263cf5e857f55afd4669aa524eaf36f37d3b5a18f4eca293da148bd55b3e709"
+    },
+    "git_mode": "100644",
+    "path": "app-desktop/build.gradle.kts",
+    "scope": "Exactly one pinned libs.lifecycle.viewmodel implementation line in desktopTest only; no version or production-runtime change"
+  },
+  "admitted_sources": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui22-instance01/OUTER.py",
+      "bytes": 107207,
+      "sha256": "475e362f1a98f14728ab8687d43f71dcf3e1deebd540f279c32b42909b61d3d9"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui22-instance01/INNER.py",
+      "bytes": 103447,
+      "sha256": "73fc26853f136ffafc101b3c1538d857adfa382fc4a4e470d69ec4037ff01482"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui22-instance01/INIT.gradle",
+      "bytes": 10270,
+      "sha256": "6eb9e0455cb304d203e13f132d0b6f00c79ea7757702a6b7002e0ade5b22cfba"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui22-instance01/CredentialMainNavHostRoomIntegrationTest.kt",
+      "bytes": 115940,
+      "sha256": "7d3f183a6c4cc014026c7dd4589dff9a732d164718a143abce78e792d181a4c2"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui22-instance01/REQUEST.json",
+      "bytes": 36266,
+      "sha256": "4c872edfb5f7108f8782bb24dda12de56678a3eefb51a1ddcf6bbb95079fff9d"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/gui22-instance01/APPROVAL.json",
+      "bytes": 1455,
+      "sha256": "c96a9a6f7382cb0e5e1b5bd49a35ace8abbe6802fb07e85c4379e9c19a4b250b"
+    }
+  ],
+  "retained_evidence": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration22/INNER-RESULT.json",
+      "bytes": 12829,
+      "sha256": "50fbf49a1f9a06586c1d5fb6c3c48d93da0d878f543a0167a065ce4cb3076b7e"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration22/OUTER-RECEIPT.json",
+      "bytes": 36345,
+      "sha256": "51498dcd8518091e1966002212d2961da54fafd30d293085bb05985260913d3c"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration22/INNER-PREFLIGHT.json",
+      "bytes": 225,
+      "sha256": "3746965cb3f95b0c5d91cdca6bb79ba894f4bd0c519e3747c75ae8ef6d5fe3c3"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration22/PHASE-prepare.json",
+      "bytes": 2345,
+      "sha256": "88d299f364627b13e3530c38baa16696dafae868083218ee02c7d26a356bcfb4"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration22/prepare-INTENT.json",
+      "bytes": 1085,
+      "sha256": "cf198b941aa6d8833c8cfc5b172906cb94abfeccdcb19ea58c802837895d7f31"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration22/prepare-stop-INTENT.json",
+      "bytes": 843,
+      "sha256": "fa774f0c1166d08150a36af3d8f3e38ecfb9250c262f0bd96954de29f1d7930c"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration22/PVU003-RESULT.json",
+      "bytes": 883,
+      "sha256": "a1c3b7ffbefafffe3c050029aee7e19afc057509dc4f6dbf70c35e644d2ee815"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration22/SOURCE-BEFORE.json",
+      "bytes": 3269,
+      "sha256": "aadc2c620251c0cdfadd070b54d9f648079805e040ad400a3db15212205cb605"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration22/SOURCE-AFTER.json",
+      "bytes": 3269,
+      "sha256": "aadc2c620251c0cdfadd070b54d9f648079805e040ad400a3db15212205cb605"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration22/SOURCE-OVERLAY.json",
+      "bytes": 6706,
+      "sha256": "92c9728c8761f0cb03067611cba584881fb65895e006235d1a8f31bdbdb8c6b5"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration22/GENERATED-REPORTS.json",
+      "bytes": 7578,
+      "sha256": "117e25a37958efb07de13b8d6e4c0459939488eea403977ab491bf457ccd043a"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration22/GENERATED-REPORT-0001.bin",
+      "bytes": 140497,
+      "sha256": "987f25eaa56178345d306d425daa65c5fddd0e0eb09f3dbb3c3b92932a39be08"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration22/logs/prepare.log",
+      "bytes": 53396,
+      "sha256": "f9592345caf41180ac11a0650611bdc7472f3a0530709beebd1b287e4abd26ba"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration22/logs/prepare-stop.log",
+      "bytes": 458,
+      "sha256": "317219b5a6add181ae7dc5a5f5957aa3c1ff7e3ab98ef6543dd414b35183f3c2"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration22/logs/outer-git.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration22/logs/outer-unshare.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration22/logs/outer-unshare.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "actual": {
+    "prepare_exit": 1,
+    "prepare_seconds_from_gradle": 429,
+    "executed_task_actions": 120,
+    "task_actions_are_not_test_cases": true,
+    "prepare_stop_exit": 0,
+    "required_stop_invocations": 1,
+    "render_stop_not_owed": true,
+    "gui_attempted": false,
+    "render_attempted": false,
+    "xml_cases": 0,
+    "gui_cases": 0,
+    "native_probe_cases": 0,
+    "role_files_present": 0,
+    "crop_files": 0,
+    "source_before_after_exact": true,
+    "owned_namespace_empty_before_inner_exit": true,
+    "original_outer_children": [
+      {
+        "role": "raw_git_transport",
+        "exit": 0,
+        "pidfd_kill_attempted": false
+      },
+      {
+        "role": "unshare_inner",
+        "exit": 1,
+        "pidfd_kill_attempted": false
+      }
+    ],
+    "cleanup": "REMOVED_ORIGINAL_RUNTIME",
+    "runtime_entries_snapshot": 26932,
+    "runtime_entries_removed": 26932,
+    "retained_generated_report_files": 1,
+    "retained_generated_report_bytes": 140497,
+    "outer_elapsed_seconds": 468.901,
+    "new_family_closures": 0,
+    "new_suspicion_resolutions": 0
+  },
+  "checks": [
+    "Originalentry49827/c69154 andterminalba3b6d/exit1 are retainedandmatched. Rootexecution uses exactenv-i Python3.12 -I -S -B OUTER.py withacceptedrequest/approval andquietreservation. Allsix admittedsource/request/approval hashes match originaladmission; no oldcontroller replay ornewruntime inquiry.",
+    "Originalprepare53396B/SHAf9592345 andstop458B/SHA317219b5 match commandrecords. Exactprepare target:auditDesktopIntegration13Prepare underJDK17 checked-inwrapper,1worker,nodaemon/noparallel/configure-on-demandOFF/strictdependencyverification/inprocessKotlin/SDKautodownloadOFF. prepare/stopINTENT environmenthashes6900a44a equal, preserving sameisolatedHOME/TMP/Gradleconfiguration.",
+    "ActualcompileTestKotlinDesktop failure atfixture imports4-9 andparser2016-2031: unresolved kotlinx.serialization.json/Json/jsonPrimitive/jsonArray, withcascadedtypeerrors. GradleBUILD FAILED7m9s,120executedtaskactions. TestcompilefailedbeforeGUI/read-onlynativeprobe/realchooser/Testlaunch; declared1case/3roles/7events/9files doesnotcountasexecutedXML. Noapplicationdefect ornativeprobeoutcome established.",
+    "Previoussourceadmission didnotprovide compilerproof andmissed fixtureJSONclasspathcompatibility. Thisreview preservesthatshortcoming andactualfailure; currentnativeprobeadapterremainsunverified. Rootproposesdependency-free fixedfieldcorrection separately, notapprovedorinstalledbythisactualreview; no unauthorizeddependency addition orautomaticretry.",
+    "prepare-stop calledonceoriginalwrapper andexited0; rawlogreportsNoGradledaemonsrunning. Both commandrecordscomplete/settledwithnoerrors. NoGUIhelpers/trayownerswerecreated, no renderstopowed. Inneroriginalmount/pidnamespace4026532115/4026532116 matches outerunsharebinding; finalnamespace-emptytrue. OriginalrawGitchildexit0/unshareexit1 withnosignalattempt recorded.",
+    "SOURCE-BEFORE andSOURCE-AFTER byte-identical3269B/SHAaadc2c62; complete5121member effective153486341B/SHA c0ab8f258993c7a5258a51efdac0dfba97b01e95c4390924ab7d4b8d3bd43fe2. P23base59bee330/tree76a7dd46 withonlyapproved57BdesktopTestviewmodel and115940Bchooserfixtureoverlay. RawGit/checkoutEOL distinctionretained; notfreshrawcoverage ornewGit tree.",
+    "Outer normaldisposal guardrequiresoriginalsource/stop/namespace/evidence flags andsourceafter; actualnormalvalidation-safe true is not testcasePASS. Completeoriginalsnapshot/type/owner/device/top-level/mount/descriptor-bound checks precede removal. Receipt records26932snapshot/26932removedandoriginalrootabsencecheck; no reasons. Originalterminal1,not70, followsfinaldescriptorcloseguards and corroboratescleanupcompletion. No live reviewerpath/processprobe or broadcleanupperformed.",
+    "OneGradleproblemsreport conserved asopaque140497B/SHA987f25ea. Generatedmanifest7578B/SHA117e25a3 matchesreceipt; sourceandretainedhashesequal. Originalguardreverifiedbothbeforeunlinkandsavedaftercleanup. Independentlyrehashedretainedfileandallfivepubliccommandlogs; reportbytesnotexecuted/renderedandnotsemantic/legaltestcredit.",
+    "Outerpointresourceminimums8,101,670,912Bdisk/25,858,367,488BMemAvailable remainaboveadmitted3GiBrunning and20percentRAMfloors; normal12GiBlaunchunmetunderexplicit8GiBentryfallback. Maximumsampleprivateusage1,289,312,272B is onlysoftpointmeasurement,notpeak/hardcap. 744unclassifiedhostchurn remainsunderacceptedcooperativescheduler policy,notglobalidle/noescapeproof.",
+    "OriginalGUI22 buildslot may nowberetiredbyrootadoption. Thisdoesnot authorizeWindows03CI oranotherbuild/stage beforetheirfreshadmission. GUI18/19/21/Android07/Windows01/02HOLDs unchanged; no oldruntime interrogation,deletion orfailureerasure."
+  ],
+  "qualifications": [
+    "One attempted lower-case SOURCE-before.json retained-DATA read returnedFileNotFound; exactadmittedsource wasthenreadandidentifieduppercaseSOURCE-BEFORE.json/SOURCE-AFTER.json. No runtimeprobe/retry or missingactualsourceproof; both exactrecords subsequentlyverified.",
+    "Cleanupacceptance is originalsource/receipt/terminal-bound, notfreshfilesystemsurvey orclaimofnetdiskreclaim. Originalsnapshotentries notretainedasindividualdeletionledger; reviewer doesnotclaimindependentre-enumeration.",
+    "MixedXML remains264 andqualifiedclosures27/39; original19/25 andsuspicions2/12 unchanged. Failurebelongsuncompletedtestfixture/preparation; actualHome/cancelquestionstillopen."
+  ],
+  "restrictions": "PVU007STOP;PVU011NO-RETRY/noinquiry;PVA029recordedfailure/noautomaticretry;G7/G8/WindowsGraph03CLOSED/remote cleanupUNKNOWN;allHOLD/refusedwitnesses/protectedrefs/tags/mobile1017001/PVDseparate;reviewerSOURCE/DATA/AST/hash/ownrecordsonly."
+}

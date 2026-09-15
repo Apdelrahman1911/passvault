@@ -1,0 +1,64 @@
+"""Inert three in-memory control groups for the prospective projection only.
+Not an application test or old-output reader. Root must separately admit this
+fixed source and original stdout result; no subprocess/temp/cache is required.
+"""
+from pathlib import Path
+import hashlib
+SOURCE = Path(__file__).with_name("PROJECTION.py.txt")
+EXPECTED = "a55cc3f50b8a369ef524746bb36175cfee2c8cc1a5c918fb8c51759b7137eb79"
+def main():
+    source = SOURCE.read_bytes()
+    assert hashlib.sha256(source).hexdigest() == EXPECTED
+    scope = {"__builtins__": __builtins__}
+    exec(compile(source, str(SOURCE), "exec"), scope)
+    Projection = scope["ImageFailureProjection"]
+    tasks = (":app-desktop:compileKotlinDesktop", ":app-desktop:verifyDesktopInstalledRuntime")
+
+    # Each possible two-chunk partition of a complete CRLF+EOF stream agrees.
+    wire = b"> Task :app-desktop:compileKotlinDesktop FAILED\r\nBUILD FAILED"
+    for cut in range(len(wire) + 1):
+        p = Projection(tasks)
+        p.feed(wire[:cut]);p.feed(wire[cut:])
+        result = p.finish()
+        assert result["reported_failed_tasks"] == [tasks[0]]
+        assert result["reported_flags"] == ["BUILD_FAILURE_REPORTED"]
+        assert result["classification_only_not_causal_or_task_success_evidence"] is True
+        assert p.finish() == result
+    print("projection-control chunk-boundary-crlf-eof PASS")
+
+    # Secret-like arbitrary text and unknown/overlong task lines cannot escape.
+    p = Projection(tasks)
+    p.feed(b"synthetic-private-do-not-export\n> Task :private:secret FAILED\n")
+    p.feed(b"x" * (Projection.LIMIT + 1))
+    p.feed(b"BUILD FAILED\n> Task :app-desktop:verifyDesktopInstalledRuntime FAILED\n")
+    result = p.finish()
+    assert result["reported_flags"] == []
+    assert result["reported_failed_tasks"] == [tasks[1]]
+    assert "synthetic-private" not in str(result) and "secret" not in str(result)
+    assert len(p.pending) == 0
+    print("projection-control bounded-private-vocabulary PASS")
+
+    # Printed markers are only reported categories, never success or cleanup authority.
+    p = Projection(tasks)
+    p.feed(b"echo: OutOfMemoryError; unknown user text\n")
+    result = p.finish()
+    assert result["reported_flags"] == ["JVM_OOM_REPORTED"]
+    assert set(result) == {"format", "reported_flags", "reported_failed_tasks",
+                           "classification_only_not_causal_or_task_success_evidence"}
+    try:
+        p.feed(b"late")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("late feed accepted")
+    for invalid in [(":secret\nvalue",), (":same", ":same"), [":not-tuple"]]:
+        try:
+            Projection(invalid)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("invalid public vocabulary accepted")
+    print("projection-control nonauthority-and-admission PASS")
+
+if __name__ == "__main__":
+    main()

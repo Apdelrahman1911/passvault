@@ -1,3 +1,23 @@
+## Update28 — 2026-09-15: current software gaps and next batch
+
+**Still INCOMPLETE / NOT READY.** No additional confirmed-family closure.
+
+- GUI23 compiled but its one actual case **FAILED** in the native observer before Home/Cancel. The exact guard/cause is unknown; this is not evidence of an application regression. Both Gradle stops and original GUI/namespace settlement passed; **27,558/27,558** disposable runtime entries were removed. Independent review adopted the failure and cleanup. A bounded, fixed-code diagnostic is prepared, not yet reviewed/run; there is no automatic replay.
+- Windows03 MSVC build passed and reached the after-flush boundary. Its first case **FAILED** at `TotalProcesses == 1`; the second never started. The actual counter/cause remains unknown. Original Job/observer settlement was independently accepted; its entire remote runtime remains **HOLD**. Windows04 read-only same-Job counters are independently source-reviewed, with the original assertion intact; source publication and fresh CI activation remain.
+- Image02's **four non-XML infrastructure control groups passed** and original child settled; no temporary files or Gradle process was created. They cover bounded failure projection and the callback-required cleanup guard, not installed-app behavior. The three installed-image/legal/runtime/native-layout checks are prepared as **one shared build batch**, pending exact instance admission. Image01 HOLD remains untouched.
+- Current accounting: **266 mixed XML elements =262 application/native/regression/investigation/control +3 infrastructure +1 producer**, not passes. Non-XML groups remain separate. Closures **27/39**, original **19/25**, original suspicions **2/12**; eight PVD decisions are separate.
+- This environment is **Linux**, not Mac. Current free disk is approximately **8.7 GiB**. One-heavy-job and the stricter Image02 **8 GiB entry /5 GiB running /3 GiB private-output** limits remain. Old held artifacts and required caches are not safe cleanup targets.
+
+### What remains beyond this batch
+
+Android32 ABI/native-runtime and legacy-password compatibility; actual Android clipboard/locale/lifecycle and interrupted package preparation; iOS's ten prepared software methods on an eligible provisioned runner; editor rapid/input/accessibility/RTL/mobile contracts; Desktop chooser, installed launch/native lifetime and package/legal correspondence; Windows after-flush/crash and permitted allocation-cut evidence; active-native cancellation/concurrency/provider checks; bounded permitted PVA029 diagnosis; remaining permitted PVU investigations; final exact-source/variant/coverage reconciliation and continuation publication.
+
+**Physical targets still needed:** supported ARM32 Android coverage (emulation can cover ABI only when genuinely supported); physical Android Keystore/biometrics; iPhone/iPad protection/provider/biometric/scene/input checks; interactive Windows Hello/provider validation. Hardware keyboards are needed for applicable input claims. Simulator/hosted CI cannot substitute for these claims. Eight owner design decisions and restricted evidence mechanisms remain separate. Actual publishing and Store approval are unauthorized and excluded.
+
+The per-issue table and external-resource list below remain applicable, except older Windows/GUI scheduling descriptions superseded here. Use `EXECUTION_SLOT.json` for live scheduling, not historical numbered updates. No reliable whole-project ETA exists while software checks are failing and target availability is unknown; the old1–3hour figure was never a whole-project estimate.
+
+---
+
 ## Update27 — Windows diagnostic result adopted
 
 Windows02 run34903676569: MSVCx64 configure/build succeeded; first case **FAIL**, second **UNSTARTED**, before the after-flush boundary. The forwarding diagnostic establishes real MoveFileExW returned false, not its exact error/cause. Original Job and observer settlement independently accepted; whole remote runtime remains HOLD. No automatic retry. A revised, independently source-reviewed test-only root-handle fixture now permits a fresh discriminating two-case batch; fresh helper/instance admission remains pending.
