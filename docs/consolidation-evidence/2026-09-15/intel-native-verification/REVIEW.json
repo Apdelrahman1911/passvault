@@ -1,0 +1,34 @@
+{
+  "reviewer": "/root/current_ledger",
+  "date_utc": "2026-09-15",
+  "mode": "Independent source/Git-object, retained evidence and hash review only; no reviewer build/test/helper execution, network or live resource/process probes",
+  "source": {
+    "commit": "7f3a27a7ee4a4c7d307ea094b191a368207c510f",
+    "tree": "a79813935a30996bcc4d8c2d650d7dfce2516eb3",
+    "base": "da91a20103ed138df5a5d22d71b5467f17c07406",
+    "branch": "codex/fix-intel-native-verification-20260915"
+  },
+  "implementation": "APPROVED: one missing Kotlin2.4.10 Intel host SHA256 pin, catalog-bound two-Apple-host guard in existing verifyDependencies, and replacement of the existing iOS CI job with Intel simulator compilation plus unsigned optimized iosArm64 link.4GiB opt-in requires explicit macOS and>=12GiB before private output creation; defaults stay2048MiB. Existing strict checksum/trust, resource-floor and owned-cleanup guards remain. No dependency/version/identity/signing change or extra matrix.",
+  "provenance": {
+    "pin": "7bfda60c2a4ce859fc85011ea2c3229961b1eb40e9cc0b6b85fee885f23973cb",
+    "bytes": 259701296,
+    "official_jetbrains_asset": 476576010,
+    "checksum_receipt_sha256": "69cad0b9508ab58dd97486d2f55eb5ade77eb64e39f6c34d59935e1407e81721",
+    "publisher_record_sha256": "bc85a48f85fecd8639059ed526b4bf629476651629ed358483f333283db0a30a",
+    "review": "Exact committed XML contains one new Intel artifact pin; its digest equals both retained Maven-stream SHA256 and official JetBrains asset digest, with matching size/assetID. Reviewer reconciled retained records, did not re-download or rehash discarded archive bytes. Published MavenSHA1 is corroboration only; MavenSHA256/SHA512404s retained, no SHA1 trust relaxation."
+  },
+  "local_verification": {
+    "controller_sha256": "6096b8f7a6f131c6fa0ab538a24a52c2980cd67c431fdf7afc49383e727feee6",
+    "result_sha256": "cedc421de4888668cfc1f5e8a99cfe1535ffe806c462960bc0516f87b2c53131",
+    "actual_result": "PASS: one mocked heap-contract unittest method,0.004s; AST2/YAML/current CI-security policy/XML-pin/diff checks. CleanupPASS, wrapper not started. All six tested file hashes match the final commit.",
+    "qualification": "No real sysctl, Gradle metadata task, native compiler or signing execution locally. XML/source checks and mocks do not prove actual optimized link, archive or Store behavior."
+  },
+  "ci_admission": {
+    "controller_sha256": "db8b816736e70d677656c436b658a722a952162ab79ebfc9565803fe7251470a",
+    "decision": "ADMITTED one normal dedicated-branch push/new main PR and its existing non-publishing CI, subject to fresh controller guards",
+    "conditions": "Exact clean commit/branch, unchanged main, no existing remote branch, release35003648380 terminalcancelled on exactb0d2cd4, complete active inventory with no competing owned workflow, complete case-insensitive legacyOFF inventory, current exclusive Linux lock, exclusive push/PR attempt markers and remote readback. No automatic retry/cancellation/merge/release.",
+    "bounds": "One owned workflow, isolated hosted jobs may parallel; no local heavy job. Existing JDK17/wrapper/worker1/strict verification. Native job45min/current guard35min;4GiB only on macOS>=12GiB. Observer90min/API90s/poll45s. Preserve compact evidence and owned cleanup; native results and receipt heap must be reconciled afterward."
+  },
+  "preserved_failure": "35003648380 failed iOS before compilation on missing verification checksum, not another observed heapOOM. iOS wrapperstop0/4096MiB but Xcode settlementHOLD remains. Overall release was externally cancelled during GooglePlay upload:1017003 occupancyUNKNOWN/non-reusable. Desktop job successes do not establish candidate publication.",
+  "remaining": "Actual Intel host dependency resolution and optimized unsigned link are pending this CI. A successful link still is not signed archive/Store/physical-device proof. Any later release needs separately authorized version/source-bound admission; no retry/reuse1017001/1017002/1017003. Every historic HOLD/PVU007STOP/PVU011NO-RETRY/PVA029 retained failure/G7/G8/WindowsGraph03CLOSED remains binding; no production or audit closure."
+}
