@@ -1,0 +1,78 @@
+{
+  "reviewer": "/root/current_ledger",
+  "decision": "APPROVED \u2014 exact snapshot and normal nonpublishing ready-for-review testing PR CI only.",
+  "scope": "Named source/receipt reads and stdlib diff/hash analysis; no builds/tests, monitor execution, network, new agents or live coordination probes by reviewer.",
+  "snapshot": {
+    "source": "686f021e3e4ff45a16a532f63cea0f8851aa06b4",
+    "tree": "9c221eaa84de5dff6d2a3bc1c737253f4fb74b05",
+    "parent": "ecc961a3d97a947a2be283c2799fed0723bac08a",
+    "verified_main": "6eef7fcb4efc6d43a61219f87c847874223a7e71",
+    "verified_main_tree": "9c221eaa84de5dff6d2a3bc1c737253f4fb74b05",
+    "changes": [
+      ".github/workflows/ci.yml",
+      ".github/workflows/mobile-store-release.yml",
+      ".github/workflows/testing-release.yml",
+      ".gitignore",
+      "docs/review/TESTING_RELEASE.md",
+      "scripts/release-build.py",
+      "scripts/test-release-build.py"
+    ],
+    "source_clean": true,
+    "version": "1.0.8",
+    "build": 1017002
+  },
+  "identity_qualification": "Lead retained Git identity DATA independently read; exact full tree equals already-reviewed PR186 source. No unnecessary product or platform revalidation added by reviewer.",
+  "inputs": {
+    "SOURCE-IDENTITY.json": {
+      "bytes": 911,
+      "sha256": "21b417dcf327286e944c5bb4bc6108c01992908d0cf0c2d4a1b886a19897e423"
+    },
+    "PROMOTION-DIFF.stat": {
+      "bytes": 491,
+      "sha256": "c185a099994bb3901dc0f71e45b0dd90aae6f669e84d66df91a9d853ac4072a2"
+    },
+    "PR-CI-PLAN.md": {
+      "bytes": 1128,
+      "sha256": "d0cd137afab60e4dce3a2f83c3f76199ce2479f1459cead311d7e85e45d215eb"
+    },
+    "PR-CI-MONITOR.py": {
+      "bytes": 4529,
+      "sha256": "528149aaef9fe8c94db8822dc59cc74427aa112c42ae23a0a7f60a16c9906925"
+    },
+    "PR-BODY.md": {
+      "bytes": 1031,
+      "sha256": "fc1be5d557f5d4b9cadd7d9287fabbb2384f6e4311de4d4d15de02e6306ec05f"
+    }
+  },
+  "monitor_review": {
+    "prior_admitted_monitor_sha256": "ed6eddb8561c2f86b254993a7faa30dd8f75227d7bfc1b2d4ea393075e26c601",
+    "bounded_changes": [
+      "new exact head/branch",
+      "testing PR base and ready rather than draft",
+      "fresh main/testing ancestry anchors",
+      "legacy OFF gate",
+      "record/exempt unrelated dependabot-prefixed active branches; other active workflows abort"
+    ],
+    "review_correction": "Variable OFF assertion now casefolds the value to match GitHub case-insensitive expression equality and rejects an incomplete variable inventory.",
+    "correction_only_delta_verified": true,
+    "limits": "Existing lock/monitor/cleanup machinery unchanged; source monitor inspected, not executed by reviewer. Lead must retain actual fresh coordination results."
+  },
+  "ci_admission": {
+    "owned_workflows_at_once": 1,
+    "hosted_parallel_jobs_max": 9,
+    "independent_hosted_vms": true,
+    "gradle_workers_per_job": 1,
+    "jdk": 17,
+    "local_heavy_job": false,
+    "bounds": "Existing35minbatch/45minjob/3hobserver; checked-in wrapper, strict dependency verification, serial Detekt; compact evidence3days; wrapper stop and positive owned settlement before allowlisted cleanup.",
+    "unrelated_runs": "Leave unrelated Dependabot hosted jobs untouched; no cancellation or adoption.",
+    "requirements": "Fresh source/remote refs/legacy OFF/lock checks must pass; preserve all old STOP/NO-RETRY/CLOSED/HOLD restrictions. Observer interruption does not establish remote settlement."
+  },
+  "release_scheduling_advice": [
+    "Keep legacy auto-publication OFF through this PR CI, protected approval/merge and the resulting testing-push CI completion.",
+    "Once owned validation workflows settle, separately admit one fresh Testing Candidate dispatch with resume=false bound to the ACTUAL post-merge testing commit C/tree, not preview snapshot686f021e.",
+    "Do not add a duplicate native/signing rehearsal; the separately admitted real release must supply and reconcile its own evidence.",
+    "No automatic release queue or retry; no resume, Candidate Readiness, stable or production workflow. Existing audit/hardware issues remain open."
+  ],
+  "release_admission": false
+}

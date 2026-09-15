@@ -1,0 +1,68 @@
+{
+  "reviewer": "/root/current_ledger",
+  "scope": "Requested receipt-only stdlib JSON/count/hash review. No builds/tests, helper execution, new agents, network, process/resource probes or release admission.",
+  "input": {
+    "path": "testing-release-guards-20260915/ci-evidence/RESULT.json",
+    "bytes": 81832,
+    "sha256": "e451582147b53db3505555a545e9b02537895e069a69533fdf789a0562d9bfc9"
+  },
+  "verdict": "PASS \u2014 receipt internal consistency and qualification; no new execution authority.",
+  "source": {
+    "executed_commit": "1e5ebfe3042143faaa86456d936dfa8bfeb63ef9",
+    "executed_tree": "9c221eaa84de5dff6d2a3bc1c737253f4fb74b05",
+    "reviewed_pr_head": "1e66eb545a8658273d499ffb079b4cd1eb760824",
+    "binding": "Receipt records the same full tree as the previously reviewed PR186 guard source; no new Git queries performed."
+  },
+  "checks": {
+    "run_matches": true,
+    "source_matches": true,
+    "tree_matches_reviewed_guard_tree": true,
+    "all15_cleanup_pass_exit0": true,
+    "15_named_cleanup_files": true,
+    "xml_manifest_counts_match_aggregates": true,
+    "no_aggregate_test_failures_or_errors": true,
+    "observer_lock_released_recorded": true
+  },
+  "qualified_counts": {
+    "build-desktop-ubuntu-latest-evidence": {
+      "passed": 90,
+      "skipped": 1,
+      "xml_files": 18
+    },
+    "build-desktop-windows-latest-evidence": {
+      "passed": 90,
+      "skipped": 1,
+      "xml_files": 18
+    },
+    "build-desktop-macos-latest-evidence": {
+      "passed": 90,
+      "skipped": 1,
+      "xml_files": 18
+    },
+    "test-reports": {
+      "passed": 1604,
+      "skipped": 5,
+      "xml_files": 198
+    }
+  },
+  "cleanup": {
+    "passed_receipts": 15,
+    "wrapper_stop_exit0": 10,
+    "wrapper_stop_not_started": 5,
+    "qualification": "Do not report15 wrapper stops. Observer lock release is a recorded lead observation, not independently live-probed here."
+  },
+  "qualification": [
+    "1604 PASS/5 SKIP in198XML for test-reports; each Desktop platform90 PASS/1 SKIP in18XML. Platform executions overlap and must not be summed as unique tests or issue closures.",
+    "Twelve hosted jobs PASS is lead-reported. This receipt has10artifact entries, not a12-job status list; job counts are not test counts.",
+    "This review checks the supplied summary and manifest consistency, not a second download/reparse of every raw XML/archive or per-method guard log.",
+    "No physical Android32/iPhone/interactive Windows Hello, production signing, Store processing or actual release proof is established by this nonpublishing CI receipt.",
+    "Previous failed/HOLD executions and PVA029 failure remain preserved; later success does not erase them."
+  ],
+  "context_from_lead": {
+    "PR186": "OPEN / REVIEW_REQUIRED; external protected approval and merge still required.",
+    "PR185": "Externally merged instead into testing ecc961a3; CI34968292077PASS is not testing-branch integration of the unmerged PR186 guard.",
+    "TestingCandidate34968292434": "SKIPPED; legacy publication flag absent/off, not a release success.",
+    "next_required_boundary": "After proper protected PR186 integration, reconcile/promotion-bind guarded main into testing before any separately admitted fresh release."
+  },
+  "release_admission": false
+}

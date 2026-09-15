@@ -1,0 +1,31 @@
+{
+  "kind": "Official CLI preparation, not attestation verification",
+  "cleanup": "PASS; no tool process/download/temp/config remains; binary/LICENSE/owner retained only for upcoming verification",
+  "release": "cli/cli v2.100.0",
+  "checks": [
+    {
+      "name": "version",
+      "exit": 0,
+      "settled": true
+    },
+    {
+      "name": "attestation-help",
+      "exit": 0,
+      "settled": true
+    }
+  ],
+  "archive_sha256": "e4d4bb4498e8d007abe545b6568926793ace1b6447da598294a610018cb164be",
+  "download_bytes": 15154224,
+  "extracted": {
+    "gh_2.100.0_linux_amd64/bin/gh": {
+      "bytes": 42188962,
+      "sha256": "553949e2efa12842771efe6012aa4de21f1d591530ec17fc435f610f10e017ee"
+    },
+    "gh_2.100.0_linux_amd64/LICENSE": {
+      "bytes": 1068,
+      "sha256": "6da4adc42392c8485e40b4251c7e332fc3352df1947c9ffade71dd60b14a7a4f"
+    }
+  },
+  "ready": true,
+  "utc": "2026-09-15T14:10:29.860774+00:00"
+}

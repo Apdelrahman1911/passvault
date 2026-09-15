@@ -1,0 +1,59 @@
+{
+  "reviewer": "/root/current_ledger",
+  "decision": "ADMITTED \u2014 ONE fresh owner-authorized1.0.8/1017002 testing release invocation, subject to the reviewed controller fresh prelaunch checks.",
+  "scope": "Final exact-source/monitor/coordination/cleanup admission only; named files read as SOURCE/DATA, stdlib hash/diff analysis. No product re-audit, extra rehearsal, builds/tests, networking, signals, resource probes or historical helper execution by reviewer.",
+  "inputs": {
+    "PLAN.md": {
+      "bytes": 4511,
+      "sha256": "39c9068c3523e93e07799f1e76a9f5f3028e6befb8a0c3d298bd55fc2527b3b0"
+    },
+    "SOURCE.json": {
+      "bytes": 1920,
+      "sha256": "c2614aabe3ab4250d1529ec319e84acf7d455d721d8133d5ea050936840ecd13"
+    },
+    "RELEASE-MONITOR.py": {
+      "bytes": 8194,
+      "sha256": "d653081be86e3ef245a814a46c303c92bc3c7342e786fc815979655f81fc403a"
+    }
+  },
+  "source": {
+    "testing_commit": "a929fd97ce9f103c1097027d3065758b9dd7774b",
+    "tree": "9c221eaa84de5dff6d2a3bc1c737253f4fb74b05",
+    "main": "6eef7fcb4efc6d43a61219f87c847874223a7e71",
+    "version": "1.0.8",
+    "build": 1017002,
+    "tag": "v1.0.8-rc.1017002"
+  },
+  "checks": {
+    "actual_testing_commit": true,
+    "exact_reviewed_tree": true,
+    "settled_testing_ci_recorded": true,
+    "version_build_tag": true,
+    "workflow_hashes_unchanged": true,
+    "guard_hash_unchanged": true,
+    "requested_monitor_correction_only": true,
+    "no_automatic_run_cancellation": true
+  },
+  "exact_dispatch": "gh workflow run testing-release.yml --ref testing -f resume_existing_internal_uploads=false",
+  "execution_limits": [
+    "Keep LEGACY_TESTING_RELEASE_ON_PUSH OFF. No resume confirmation, readiness, stable, production or occupied1017001 operation.",
+    "One exclusive attempt marker BEFORE dispatch; fresh lock, final refs/tree/PR merge, successful testing CI, complete active-run/variable inventories, unoccupied tag and resource checks must pass.",
+    "One owned workflow; isolated hosted jobs may run in parallel under existing JDK17/worker1/strict-verification guards. No local heavy job; unrelated Dependabot jobs untouched.",
+    "Guarded batches50min/jobs90min; observer6h/API90s/poll45s. Original wrapper stop and positive owned settlement precede allowlisted deletion. Preserve required artifacts and compact receipts.",
+    "Wrong-source/ambiguous discovery, API/observer interruption, raw Fastlane transfer uncertainty, Xcode/nestedHOLD or unknown settlement must retain UNKNOWN/HOLD. No automatic cancellation, redispatch, upload retry or recovery."
+  ],
+  "reviewer_challenge_resolved": {
+    "risk": "New-run/same-actor filtering alone does not prove ownership for cancellation when concurrent same-actor dispatch is possible.",
+    "resolution": "Author removed automatic cancellation entirely; wrong-source discovery now stops in UNKNOWN/HOLD for immediate attribution/settlement review.",
+    "final_monitor_sha256": "d653081be86e3ef245a814a46c303c92bc3c7342e786fc815979655f81fc403a",
+    "independently_checked": "Exact requested correction reconstructs the previously reviewed monitor hash; no other monitor changes."
+  },
+  "post_run_requirements": [
+    "Independently reconcile actual source/run/version, native smoke, signed Android and iOS artifact identity, receipt hashes and candidate/Desktop correspondence.",
+    "Strict actual attestation verification must retain source-digest C and approved repository/workflow/ref. Same-SHA invocation is the PVA029 countercontrol, not issue closure.",
+    "Reconcile every relevant cleanup receipt and actual Store upload/processing/external promotion/tester availability. A green workflow or accepted dispatch is not completion proof.",
+    "External environment approvals and Apple beta review remain owner/provider actions; do not bypass them. Any partial upload can occupy1017002 and prohibits automatic retry.",
+    "Preserve all deferred audit issues, PVA02944PASS/5FAIL, PVU007STOP, PVU011NO-RETRY, G7/G8 and WindowsGraph03CLOSED, and priorHOLDs. No physical Android32/iPhone/interactive Hello proof is created by this admission."
+  ],
+  "qualification": "Fresh live facts in SOURCE.json are lead-retained observations and are rechecked by the admitted controller; reviewer did not independently query external state. This is testing-only execution admission, not production authority, release success or overall readiness."
+}
