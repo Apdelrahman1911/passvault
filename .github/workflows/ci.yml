@@ -349,8 +349,10 @@ jobs:
           retention-days: 3
 
   ios-simulator-compile:
-    name: iOS Simulator Compile
-    runs-on: macos-15
+    name: iOS Compile and Unsigned Release Link
+    # Exercise the actual release host/compiler and optimized device framework
+    # before signing or uploading. This replaces, rather than adds, a CI job.
+    runs-on: macos-26-intel
     timeout-minutes: 45
     needs: dependency-verification
     defaults:
@@ -370,8 +372,10 @@ jobs:
         with:
           cache-disabled: true
 
-      - name: Compile iOS simulator framework sources
-        run: ./gradlew :shared:compileKotlinIosSimulatorArm64 --stacktrace
+      - name: Compile simulator sources and link unsigned iOS release framework
+        env:
+          PASSVAULT_CI_IOS_RELEASE_LINK: 'true'
+        run: ./gradlew :shared:compileKotlinIosSimulatorArm64 :shared:linkReleaseFrameworkIosArm64 --stacktrace
 
       - name: Verify iOS Development and Store identities
         run: ./scripts/validate-ios-build-identities.sh
