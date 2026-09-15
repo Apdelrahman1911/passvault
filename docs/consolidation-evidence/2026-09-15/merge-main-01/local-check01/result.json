@@ -1,0 +1,45 @@
+{
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "scripts/test-ci-run.py"
+      ],
+      "exit": 0,
+      "seconds": 1.82,
+      "group_settled": true
+    },
+    {
+      "command": [
+        "ruby",
+        "scripts/validate-ci-workflow-security.rb"
+      ],
+      "exit": 0,
+      "seconds": 0.17,
+      "group_settled": true
+    },
+    {
+      "command": [
+        "bash",
+        "-n",
+        "scripts/test-apple-signing-secret-handling.sh"
+      ],
+      "exit": 0,
+      "seconds": 0.01,
+      "group_settled": true
+    },
+    {
+      "command": [
+        "bash",
+        "-n",
+        "scripts/test-release-automation.sh"
+      ],
+      "exit": 0,
+      "seconds": 0.01,
+      "group_settled": true
+    }
+  ],
+  "residual": [],
+  "private_removed": true,
+  "gradle": "not invoked"
+}

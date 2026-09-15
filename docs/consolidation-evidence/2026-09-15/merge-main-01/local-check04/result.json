@@ -1,0 +1,28 @@
+{
+  "checks": [
+    {
+      "command": [
+        "bash",
+        "scripts/ci-python.sh",
+        "scripts/test-ci-run.py"
+      ],
+      "pid_pgid": 15238,
+      "exit": 0,
+      "seconds": 1.82,
+      "group_settled": true
+    },
+    {
+      "command": [
+        "bash",
+        "scripts/test-release-automation.sh"
+      ],
+      "pid_pgid": 15264,
+      "exit": 1,
+      "seconds": 54.56,
+      "group_settled": true
+    }
+  ],
+  "residual": [],
+  "private_removed": true,
+  "gradle": "not invoked"
+}

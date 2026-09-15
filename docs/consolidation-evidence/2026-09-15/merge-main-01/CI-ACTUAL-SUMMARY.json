@@ -1,0 +1,25 @@
+{
+  "run": 34941908484,
+  "attempt": 1,
+  "conclusion": "FAILURE",
+  "passed_jobs": [
+    "Validate Gradle Wrapper",
+    "Dependency Verification"
+  ],
+  "failed_step": "Run Tests / Run KMP and native security analysis",
+  "cause": "Existing partial-parser allowlist correctly rejected changed VaultBackupV2Service.kt source hash. Five parser-limited file paths unchanged, four hashes unchanged. One hash requires renewed independent source review. No findings reported across553files/11rules, not full parsed-source clearance.",
+  "skipped": [
+    "Gradle unit tests",
+    "Android",
+    "Desktop",
+    "macOS packaging",
+    "shared compile",
+    "iOS simulator compile"
+  ],
+  "executed_sha": "53acb726339c57eca6abe66be914374fb5de063b",
+  "executed_tree": "312791149ba33ebd9d67aaf67819ab075e1f0b84",
+  "initial_merge_sha": "bc9ff6fca92023129bfe16590d388ed0cbc592e0",
+  "merge_qualification": "GitHub regenerated synthetic merge commit; executed commit verified via API to have the exact reviewed tree and same main/head parents. Initial merge SHA was not actual checkout identity.",
+  "cleanup": "Downloaded both cleanup records: dependency batch exit0/wrapper_stop0/cleanupPASS; security step exit1/noGradlewrapperstarted/cleanupPASS. Artifacts retained compactly; hosted workers settled per accepted supervisor.",
+  "merge": "BLOCKED by required checks and independent GitHub approval. No branch deleted; no testing/release/tag/Store mutations."
+}

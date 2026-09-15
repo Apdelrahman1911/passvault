@@ -1,0 +1,92 @@
+{
+  "ci01": {
+    "failure_log_sha256": "472b1517a2aa00db8e630593f6e8d6830cead83b13738b10fb101e78cc3c839a",
+    "final_record_sha256": "b959c8a1a65c250e9f6bc1b42dcd14a25d10dffa2743d09763df50470c80d558",
+    "pending_data_review": "Root reports cleanupPASS and actual executed synthetic merge53acb726339c57eca6abe66be914374fb5de063b with same reviewedtree; raw named cleanup/merge readback records still requested for separate CI02 admission.",
+    "result": "FAILED",
+    "run": 34941908484,
+    "scope": "Wrapper/dependency verification PASS. OpenGrep11rules/553files/0findings,5partial/11ignored; stale hash failed closed before application Gradle tests. Downstream jobs skipped; no complete-parser or whole-CI claim."
+  },
+  "decision": "ACCEPT_EXACT_PIN_AND_TRUTHFUL_VERIFICATION_DOC_NOT_CI_PASS_OR_NEW_RUN_ADMISSION",
+  "doc_review": "Accurately separates source changes/task counts/actual cases, failures/partial results/parser limitations, retained versus new/hardware evidence, UNKNOWN local03 scope, unchanged policy/owner gates. Cleanup and actual merge paragraph subject to requested DATA review, not live recovery.",
+  "independence": "Did not author backup implementation/tests or pin change. Read all912backup lines/all11security rules and coverage verifier; stdlib source/hash/XML review only. No scanner/test/build/helper execution, Git/network, live resource/process/HOLD inquiry or cleanup.",
+  "next_run_conditions": [
+    "PR183 open: push automatically triggers CI. Review fresh exact commit/tree/ref execution/coordination/cleanup admission before push, including one audit-owned job and current root lock/active-run observations.",
+    "Preserve first failure and examine actual cleanup evidence before new admission. Do not use terminal completed status alone as cleanup proof.",
+    "No unchanged local backup test/scanner rerun is warranted for pin/doc-only change. Normal protected CI and CI Gate still must pass; independent GitHub approval is separate and no protection bypass is authorized."
+  ],
+  "pin_change": {
+    "after": "aee2b621484150fe3807cec66d0a3ecd5eeff3eaf907099b839b084520a86bf4",
+    "before": "a9e9ad731cb7a285fe32c84e961ca21f416c4b6b85657c9bb6035c32d4e1451f",
+    "other4pins_unchanged": {
+      "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricNativeLoader.kt": "d5874bcb858caed3da8a12018299a3a5f799ab3664110f497939e58802c7381d",
+      "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/tray/DesktopSystemTray.kt": "8df57de16495c20b7df682368819aeee7cd889be3b4919f6d373f911f95da1ca",
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/entity/MigrationStateEntity.kt": "afd890fe44c4ab8fe4357e2d84144e3a350737c620b2deaaff25fd73148494fb",
+      "shared/src/commonMain/kotlin/com/passvault/shared/platform/PlatformNavigationTransitions.kt": "129cc88e64d376b3a48136d0beb23d253901f65ef9e1b974e6ac3591b9b6b1a8"
+    },
+    "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/VaultBackupV2Service.kt",
+    "policy": "Five paths, all coverage floors, rule severity/patterns, verifier/version and exclusions unchanged; no parser bypass.",
+    "reverse_one_value_before_sha256": "4870aa1eb0ef7fb49169399018abc1cc26a29e4d5c9fc50ec3b56cd6940c432f"
+  },
+  "proposed_files": {
+    ".github/security-analysis/coverage-baseline.json": "b28e7b10f794a884906767367e3ce1e47ad65d46be31d682718fb32c370cafe7",
+    "docs/review/VERIFICATION.md": "9eb4e1fedc0739b3f74a88a3755a35d68380de528d92018f0db37b1931bc9646"
+  },
+  "restrictions": "19/25,27/39,2/12 unchanged;eightPVD separate;STOP/NO-RETRY/CLOSED/HOLD and1017001/tags retained. No merge/publication/branch deletion authority.",
+  "retained_evidence": {
+    "important_actual_oracles": "Real Room/BundledSQLite/DesktopCryptoEngine and encrypted disk/attachment paths: all8generated DAO page queries across UTF8/UTF16LE/UTF16BE; cross-encoding backups; exact IDs/ciphertext/nonces; schema1->5 and fresh reopen; tamper/truncation, two-pass switch rollback, staged/post-commit cancellation, source ownership/capacity.",
+    "limits": "39streaming+7Unicode cases mix real integration and synthetic injected boundaries;13pager cases are pure logic.59 is reused actual cases, not hardware proofs/new closures. Original Gradle aggregate FAILED separate Desktop Detekt; mechanical correction independently reviewed separately.",
+    "new_runs": 0,
+    "rehashed_cases": 59,
+    "selected_source_affinity": {
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupDatabaseTextOrder.kt": "d14d739d1793f859bc42426c41ac708bb81a5689661929eda3576ec6eae08029",
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupPagination.kt": "c551d04efdcbdcd53a132731bc1fd6cd0ab85b18495a79383a54f7b8326b18c8",
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/VaultBackupV2Service.kt": "aee2b621484150fe3807cec66d0a3ecd5eeff3eaf907099b839b084520a86bf4",
+      "core/database/src/commonTest/kotlin/com/passvault/core/database/backup/BackupPaginationTest.kt": "4291201c78f510e359c5e63c266c8374ec60821cd50f8a904dbd4363ca2d9765",
+      "core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupStreamingTest.kt": "ebf9675ec7c551c291848dc24a72a6056098d31e75d67ee31510112608dfc2d2",
+      "core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt": "6e5422a065440d94514ade48cfe11a89453c46f0ceceecceb74a91133bc01294"
+    },
+    "xml": [
+      {
+        "cases": 13,
+        "failed_error_skipped": 0,
+        "path": "gradle-evidence/xml/core/database/build/test-results/desktopTest/TEST-com.passvault.core.database.backup.BackupPaginationTest.xml",
+        "sha256": "0d36a1a5615a2873c0c6d823cc7aba3db25915e5ae712e5e3ac25099d9e651fb"
+      },
+      {
+        "cases": 39,
+        "failed_error_skipped": 0,
+        "path": "gradle-evidence/xml/core/database/build/test-results/desktopTest/TEST-com.passvault.core.database.backup.VaultBackupStreamingTest.xml",
+        "sha256": "bcd46d66d9bf4209697cdfe806f1e4dacc4d9c4661b9b84037b8c2c0e0b4dce7"
+      },
+      {
+        "cases": 7,
+        "failed_error_skipped": 0,
+        "path": "gradle-evidence/xml/core/database/build/test-results/desktopTest/TEST-com.passvault.core.database.backup.VaultBackupUnicodePaginationTest.xml",
+        "sha256": "cfdf07056969168d2c723bc68107f1c7aee6b7edd848a49d36192c17e2a7e572"
+      }
+    ]
+  },
+  "reviewer": "/root/current_ledger",
+  "security_challenge": [
+    "Five Kotlin rules: no insecure cipher transformation, java.util/kotlin.random weak RNG call, production sensitive logging, interpolated raw SQL or trust-all TLS. Uuid.random only names object paths; keys/records remain in existing CryptoEngine/BackupV2Reader/Writer/AttachmentContainerCodec boundaries.",
+    "Applicable generic rules: no weakened Apple protection constant, provider-shaped token, private-key material or bidi control. Swift logging/native-only unsafe-call scopes do not apply to this database Kotlin file.",
+    "Fixed read-only PRAGMA encoding inside snapshot transaction selects only explicit supported SQLite encodings. Both pagers validate identifier syntax/length, bounded pages and monotonic database-native BINARY advancement before emitting. No ID normalization or wire/schema/crypto-parameter redesign.",
+    "Creation retains password/unlocked-session/stable-attachment guards, ordered authenticated records/final counts, verified attachment fingerprints and wiping/abort paths.",
+    "Restore authenticates/exhausts pass1 before replacement, verifies replay manifest and constant-time transcript within immediate Room transaction, uses noncancellable committed handoff and DAO-positive-proof-only compensation. Missing reference proof never authorizes deletion.",
+    "Declared object/record budgets, total consistency, repeated capacity checks, source-reader ownership through failed construction/rewind/cancellation, temporary wiping and noncancellable compensation preserved."
+  ],
+  "source_base": {
+    "head": "f8f3c9c0bd61af79e41a7a8e5efe6c0a3167ff15",
+    "qualification": "Two proposed files are reviewed by exact bytes; next commit/tree binding belongs to separate CI02 admission.",
+    "tree": "312791149ba33ebd9d67aaf67819ab075e1f0b84"
+  },
+  "supporting_records": {
+    "INTEGRATION-FILES.json": "8749e8cac7f79dbe581acf6759e3f9c022c756a8e4e4108a0fb84fbcd7cf4f9b",
+    "review/GRADLE-ACTUAL-REVIEW.json": "220ce20c0c5f70303a145a28f7e8791d0510caf87b609eeb3f29eae292ad502d",
+    "review/SELECTED-FIXES-REVIEW.json": "e304f077b18d09f6d4260be09803fa9af28ee1f3e37c4f352a2f5135161c8be7",
+    "source/.github/security-analysis/opengrep.yml": "3abeb994121c284535d6d69fcae5db4118c249f832a108d17cb985263374c783",
+    "source/scripts/verify-static-analysis-coverage.rb": "7bc2995f85a77cbe45621592a2584908b8802e412a4f90c15130eb65a7960945"
+  },
+  "utc": "2026-09-15T07:41:05.824842+00:00"
+}
