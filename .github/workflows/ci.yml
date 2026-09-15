@@ -94,6 +94,7 @@ jobs:
         with:
           cache-disabled: true
 
+      # Sentinel versionCode1 is validation-only: never rebuild occupied Store1017001.
       - name: Build Android Debug and Release with ephemeral validation signing
         run: |
           set -euo pipefail
@@ -130,6 +131,7 @@ jobs:
             :app-android:bundleRelease \
             :app-android:lintRelease \
             :app-android:verifyReleasePackageContents \
+            -Ppassvault.versionCode=1 \
             -Ppassvault.requireReleaseSigning=true \
             --no-configuration-cache \
             --stacktrace

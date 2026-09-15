@@ -97,3 +97,25 @@ its process group settled and private directories were removed. Its inherited
 not a fresh full-suite pass. Source-affinity review verified the already-executed
 prefix was unchanged apart from a line-number-only failure diagnostic. Do not
 repeat that prefix locally for reassurance; the normal CI runs the whole suite.
+
+## First protected CI result and reviewed parser pin
+
+Run34941908484 passed wrapper/dependency verification, then correctly failed the
+security-analysis gate because the changed `VaultBackupV2Service.kt` no longer
+matched its previously reviewed partial-parser hash. It reported0 findings over
+553files/11rules, with the same five existing partial-parser limitations; this is
+not complete parsed-source clearance. No Gradle unit/platform batch followed.
+Both executed batches reported cleanupPASS; dependency wrapper stop returned0.
+
+The full912-line backup service and all11security rules received independent
+review against the selected source and retained real backup/Unicode/pagination
+regressions. Only that existing file pin is refreshed to
+`aee2b621484150fe3807cec66d0a3ecd5eeff3eaf907099b839b084520a86bf4`.
+No rule, exclusion, parser-limited file list, other hash or coverage floor changes.
+The service itself is unchanged by this pin refresh. The corrected source still
+requires normal CI; the failed run is not relabelled successful.
+
+Actual first-run checkout was GitHub-generated merge
+`53acb726339c57eca6abe66be914374fb5de063b`, not its earlier preliminary merge SHA.
+The executed commit was read back and has the reviewed tree
+`312791149ba33ebd9d67aaf67819ab075e1f0b84` and exact main/integration parents.

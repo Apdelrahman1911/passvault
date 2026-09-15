@@ -2395,6 +2395,7 @@ for ci_release_signing_control in \
     '-storepass:env KEYSTORE_PASSWORD' \
     'trap cleanup EXIT' \
     ':app-android:verifyReleaseSigningConfiguration' \
+    '-Ppassvault.versionCode=1' \
     '-Ppassvault.requireReleaseSigning=true'; do
     grep -Fq -- "$ci_release_signing_control" .github/workflows/ci.yml || {
         echo "Android CI release validation lacks: $ci_release_signing_control" >&2

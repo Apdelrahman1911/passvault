@@ -33,6 +33,10 @@ Batch timeout35minutes, job timeout45minutes; wrapper stop60seconds, settlement1
 RAM launch/running floors25%/20%; owner-authorized fallback disk floor3GiB is checked
 before/during work. Root coordinates one audit-owned build/test job at a time.
 
+Android CI uses the existing `passvault.versionCode=1` override solely as a
+non-publishing validation sentinel, never occupied Store build1017001. It is not
+a Store allocation, replacement candidate, installable upgrade or tester artifact;
+tracked Store version configuration stays unchanged.
 The Android validation certificate and Apple importer fixture are synthetic and
 private to the batch; no signing/Store secrets are requested. A hosted native test
 or simulator compile is not physical-device security evidence. No stopped audit
