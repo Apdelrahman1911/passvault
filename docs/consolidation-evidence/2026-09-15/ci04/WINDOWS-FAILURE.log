@@ -1,0 +1,241 @@
+﻿2026-09-15T08:51:46.4912584Z Current runner version: '2.337.0'
+2026-09-15T08:51:46.4939261Z ##[group]Runner Image Provisioner
+2026-09-15T08:51:46.4940522Z Hosted Compute Agent
+2026-09-15T08:51:46.4941196Z Version: 20260828.587
+2026-09-15T08:51:46.4941869Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+2026-09-15T08:51:46.4942684Z Build Date: 2026-08-28T16:44:25Z
+2026-09-15T08:51:46.4943400Z Worker ID: {3cf4333b-94cc-48ed-8fce-28b53c1ad974}
+2026-09-15T08:51:46.4944126Z Azure Region: centralus
+2026-09-15T08:51:46.4944717Z ##[endgroup]
+2026-09-15T08:51:46.4946145Z ##[group]Operating System
+2026-09-15T08:51:46.4946782Z Microsoft Windows Server 2025
+2026-09-15T08:51:46.4947354Z 10.0.26100
+2026-09-15T08:51:46.4947918Z Datacenter
+2026-09-15T08:51:46.4948425Z ##[endgroup]
+2026-09-15T08:51:46.4948945Z ##[group]Runner Image
+2026-09-15T08:51:46.4949559Z Image: windows-2025-vs2026
+2026-09-15T08:51:46.4950137Z Version: 20260907.229.1
+2026-09-15T08:51:46.4951714Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20260907.229/images/windows/Windows2025-VS2026-Readme.md
+2026-09-15T08:51:46.4953385Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20260907.229
+2026-09-15T08:51:46.4954455Z ##[endgroup]
+2026-09-15T08:51:46.4955489Z ##[group]GITHUB_TOKEN Permissions
+2026-09-15T08:51:46.4957417Z Contents: read
+2026-09-15T08:51:46.4958000Z Metadata: read
+2026-09-15T08:51:46.4958559Z ##[endgroup]
+2026-09-15T08:51:46.4961957Z Secret source: Actions
+2026-09-15T08:51:46.4963252Z Cache mode: write
+2026-09-15T08:51:46.4964227Z Prepare workflow directory
+2026-09-15T08:51:46.5531835Z Prepare all required actions
+2026-09-15T08:51:46.5602752Z Getting action download info
+2026-09-15T08:51:46.7957374Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-09-15T08:51:46.9163630Z Download action repository 'actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961' (SHA:b6effb05e454b25005698d916606bdc6ffcbf961)
+2026-09-15T08:51:47.4737004Z Download action repository 'gradle/actions@9c971963bec38e04b3d30dcc455b5382be2fdbfb' (SHA:9c971963bec38e04b3d30dcc455b5382be2fdbfb)
+2026-09-15T08:51:48.3613345Z Download action repository 'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a' (SHA:043fb46d1a93c77aae656e7c1c64a875d1fc6a0a)
+2026-09-15T08:51:48.5828461Z Complete job name: Build Desktop (windows-latest)
+2026-09-15T08:51:48.7425998Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-09-15T08:51:48.7427124Z with:
+2026-09-15T08:51:48.7427470Z   persist-credentials: false
+2026-09-15T08:51:48.7427862Z   repository: Apdelrahman1911/passvault
+2026-09-15T08:51:48.7430973Z   token: ***
+2026-09-15T08:51:48.7431527Z   ssh-strict: true
+2026-09-15T08:51:48.7431838Z   ssh-user: git
+2026-09-15T08:51:48.7432134Z   clean: true
+2026-09-15T08:51:48.7432478Z   sparse-checkout-cone-mode: true
+2026-09-15T08:51:48.7432845Z   fetch-depth: 1
+2026-09-15T08:51:48.7433149Z   fetch-tags: false
+2026-09-15T08:51:48.7433512Z   show-progress: true
+2026-09-15T08:51:48.7433838Z   lfs: false
+2026-09-15T08:51:48.7434136Z   submodules: false
+2026-09-15T08:51:48.7434448Z   set-safe-directory: true
+2026-09-15T08:51:48.7434815Z   allow-unsafe-pr-checkout: false
+2026-09-15T08:51:48.7435395Z env:
+2026-09-15T08:51:48.7435681Z   JAVA_VERSION: 17
+2026-09-15T08:51:48.7436456Z   GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false
+2026-09-15T08:51:48.7437367Z ##[endgroup]
+2026-09-15T08:51:48.8939703Z Syncing repository: Apdelrahman1911/passvault
+2026-09-15T08:51:48.8941808Z ##[group]Getting Git version info
+2026-09-15T08:51:48.8942277Z Working directory is 'D:\a\passvault\passvault'
+2026-09-15T08:51:48.9623334Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-09-15T08:51:49.2661432Z git version 2.55.0.windows.5
+2026-09-15T08:51:49.2719726Z ##[endgroup]
+2026-09-15T08:51:49.2737703Z Temporarily overriding HOME='D:\a\_temp\dd0306aa-e407-46fe-8aa8-eccabec4147b' before making global git config changes
+2026-09-15T08:51:49.2741501Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-15T08:51:49.2751346Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\passvault\passvault
+2026-09-15T08:51:49.3381402Z Deleting the contents of 'D:\a\passvault\passvault'
+2026-09-15T08:51:49.3387251Z ##[group]Determining repository object format
+2026-09-15T08:51:49.3389094Z ##[endgroup]
+2026-09-15T08:51:49.3390154Z ##[group]Initializing the repository
+2026-09-15T08:51:49.3398127Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\passvault\passvault
+2026-09-15T08:51:49.4151581Z Initialized empty Git repository in D:/a/passvault/passvault/.git/
+2026-09-15T08:51:49.4202723Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/Apdelrahman1911/passvault
+2026-09-15T08:51:49.4834621Z ##[endgroup]
+2026-09-15T08:51:49.4839533Z ##[group]Disabling automatic garbage collection
+2026-09-15T08:51:49.4863736Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-09-15T08:51:49.5171050Z ##[endgroup]
+2026-09-15T08:51:49.5171642Z ##[group]Setting up auth
+2026-09-15T08:51:49.5172870Z Removing SSH command configuration
+2026-09-15T08:51:49.5187994Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-15T08:51:49.5519196Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-15T08:51:50.9630924Z Removing HTTP extra header
+2026-09-15T08:51:50.9645108Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-15T08:51:50.9956596Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-15T08:51:51.5406807Z Removing includeIf entries pointing to credentials config files
+2026-09-15T08:51:51.5418202Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-15T08:51:51.5741432Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-15T08:51:52.1102240Z [command]"C:\Program Files\Git\bin\git.exe" config --file D:\a\_temp\git-credentials-7b8007e6-1e5c-44e7-a1e0-af4d29aeaa09.config http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-09-15T08:51:52.1439408Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/passvault/passvault/.git.path D:\a\_temp\git-credentials-7b8007e6-1e5c-44e7-a1e0-af4d29aeaa09.config
+2026-09-15T08:51:52.1761239Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/passvault/passvault/.git/worktrees/*.path D:\a\_temp\git-credentials-7b8007e6-1e5c-44e7-a1e0-af4d29aeaa09.config
+2026-09-15T08:51:52.2164056Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-7b8007e6-1e5c-44e7-a1e0-af4d29aeaa09.config
+2026-09-15T08:51:52.2515235Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-7b8007e6-1e5c-44e7-a1e0-af4d29aeaa09.config
+2026-09-15T08:51:52.2842246Z ##[endgroup]
+2026-09-15T08:51:52.2842884Z ##[group]Fetching the repository
+2026-09-15T08:51:52.2855826Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +8e4f7cdc84b31f57779a58682afee95d9bcd856c:refs/remotes/pull/183/merge
+2026-09-15T08:51:53.6079360Z From https://github.com/Apdelrahman1911/passvault
+2026-09-15T08:51:53.6082328Z  * [new ref]         8e4f7cdc84b31f57779a58682afee95d9bcd856c -> pull/183/merge
+2026-09-15T08:51:53.6130504Z ##[endgroup]
+2026-09-15T08:51:53.6131207Z ##[group]Determining the checkout info
+2026-09-15T08:51:53.6131868Z ##[endgroup]
+2026-09-15T08:51:53.6142347Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-09-15T08:51:53.6656811Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-09-15T08:51:53.7028888Z ##[group]Checking out the ref
+2026-09-15T08:51:53.7030152Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force refs/remotes/pull/183/merge
+2026-09-15T08:51:54.0501731Z Note: switching to 'refs/remotes/pull/183/merge'.
+2026-09-15T08:51:54.0502174Z 
+2026-09-15T08:51:54.0502453Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-09-15T08:51:54.0503130Z changes and commit them, and you can discard any commits you make in this
+2026-09-15T08:51:54.0503855Z state without impacting any branches by switching back to a branch.
+2026-09-15T08:51:54.0504242Z 
+2026-09-15T08:51:54.0504552Z If you want to create a new branch to retain commits you create, you may
+2026-09-15T08:51:54.0505221Z do so (now or later) by using -c with the switch command. Example:
+2026-09-15T08:51:54.0505613Z 
+2026-09-15T08:51:54.0505801Z   git switch -c <new-branch-name>
+2026-09-15T08:51:54.0506163Z 
+2026-09-15T08:51:54.0506320Z Or undo this operation with:
+2026-09-15T08:51:54.0506569Z 
+2026-09-15T08:51:54.0506688Z   git switch -
+2026-09-15T08:51:54.0506875Z 
+2026-09-15T08:51:54.0507201Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-09-15T08:51:54.0507698Z 
+2026-09-15T08:51:54.0508281Z HEAD is now at 8e4f7cd Merge a3132bbe7a4e4c4f204461a08ce850e7bac9a132 into 0dbc12c7f1b7770e75963c751c8c67af6e8b057a
+2026-09-15T08:51:54.0626065Z ##[endgroup]
+2026-09-15T08:51:54.1006604Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-09-15T08:51:54.1292892Z 8e4f7cdc84b31f57779a58682afee95d9bcd856c
+2026-09-15T08:51:54.1341757Z ##[group]Removing auth
+2026-09-15T08:51:54.1342072Z Removing SSH command configuration
+2026-09-15T08:51:54.1356096Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-15T08:51:54.1684957Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-15T08:51:54.7270981Z Removing HTTP extra header
+2026-09-15T08:51:54.7280646Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-15T08:51:54.7637142Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-15T08:51:55.3371350Z Removing includeIf entries pointing to credentials config files
+2026-09-15T08:51:55.3381505Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-15T08:51:55.3664872Z includeif.gitdir:D:/a/passvault/passvault/.git.path
+2026-09-15T08:51:55.3665644Z includeif.gitdir:D:/a/passvault/passvault/.git/worktrees/*.path
+2026-09-15T08:51:55.3666225Z includeif.gitdir:/github/workspace/.git.path
+2026-09-15T08:51:55.3666741Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-09-15T08:51:55.3717847Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/passvault/passvault/.git.path
+2026-09-15T08:51:55.3996880Z D:\a\_temp\git-credentials-7b8007e6-1e5c-44e7-a1e0-af4d29aeaa09.config
+2026-09-15T08:51:55.4047434Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/passvault/passvault/.git.path D\:\\a\\_temp\\git\-credentials\-7b8007e6\-1e5c\-44e7\-a1e0\-af4d29aeaa09\.config
+2026-09-15T08:51:55.4385454Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/passvault/passvault/.git/worktrees/*.path
+2026-09-15T08:51:55.4661252Z D:\a\_temp\git-credentials-7b8007e6-1e5c-44e7-a1e0-af4d29aeaa09.config
+2026-09-15T08:51:55.4709684Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/passvault/passvault/.git/worktrees/*.path D\:\\a\\_temp\\git\-credentials\-7b8007e6\-1e5c\-44e7\-a1e0\-af4d29aeaa09\.config
+2026-09-15T08:51:55.5032179Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-09-15T08:51:55.5294239Z /github/runner_temp/git-credentials-7b8007e6-1e5c-44e7-a1e0-af4d29aeaa09.config
+2026-09-15T08:51:55.5341551Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-7b8007e6\-1e5c\-44e7\-a1e0\-af4d29aeaa09\.config
+2026-09-15T08:51:55.5660932Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-09-15T08:51:55.5946195Z /github/runner_temp/git-credentials-7b8007e6-1e5c-44e7-a1e0-af4d29aeaa09.config
+2026-09-15T08:51:55.6002228Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-7b8007e6\-1e5c\-44e7\-a1e0\-af4d29aeaa09\.config
+2026-09-15T08:51:55.6355818Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-15T08:51:56.1845999Z Removing credentials config 'D:\a\_temp\git-credentials-7b8007e6-1e5c-44e7-a1e0-af4d29aeaa09.config'
+2026-09-15T08:51:56.1861011Z ##[endgroup]
+2026-09-15T08:51:56.2260357Z ##[group]Run bash scripts/ci-python.sh scripts/test-ci-run.py
+2026-09-15T08:51:56.2260938Z [36;1mbash scripts/ci-python.sh scripts/test-ci-run.py[0m
+2026-09-15T08:51:56.2280136Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-09-15T08:51:56.2280535Z env:
+2026-09-15T08:51:56.2280717Z   JAVA_VERSION: 17
+2026-09-15T08:51:56.2281242Z   GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false
+2026-09-15T08:51:56.2281801Z ##[endgroup]
+2026-09-15T08:51:58.3171670Z W i n d o w s   S u b s y s t e m   f o r   L i n u x   h a s   n o   i n s t a l l e d   d i s t r i b u t i o n s . 
+2026-09-15T08:51:58.3173097Z  
+2026-09-15T08:51:58.3173973Z  Y o u   c a n   r e s o l v e   t h i s   b y   i n s t a l l i n g   a   d i s t r i b u t i o n   w i t h   t h e   i n s t r u c t i o n s   b e l o w : 
+2026-09-15T08:51:58.3174601Z  
+2026-09-15T08:51:58.3174777Z  
+2026-09-15T08:51:58.3175042Z  
+2026-09-15T08:51:58.3175438Z  U s e   ' w s l . e x e   - - l i s t   - - o n l i n e '   t o   l i s t   a v a i l a b l e   d i s t r i b u t i o n s 
+2026-09-15T08:51:58.3175853Z  
+2026-09-15T08:51:58.3176156Z  a n d   ' w s l . e x e   - - i n s t a l l   < D i s t r o > '   t o   i n s t a l l . 
+2026-09-15T08:51:58.3176500Z  
+2026-09-15T08:51:58.4309768Z  W i n d o w s   S u b s y s t e m   f o r   L i n u x   h a s   n o   i n s t a l l e d   d i s t r i b u t i o n s . 
+2026-09-15T08:51:58.4310528Z  
+2026-09-15T08:51:58.4311250Z  Y o u   c a n   r e s o l v e   t h i s   b y   i n s t a l l i n g   a   d i s t r i b u t i o n   w i t h   t h e   i n s t r u c t i o n s   b e l o w : 
+2026-09-15T08:51:58.4311958Z  
+2026-09-15T08:51:58.4312846Z  
+2026-09-15T08:51:58.4313437Z  
+2026-09-15T08:51:58.4314055Z  U s e   ' w s l . e x e   - - l i s t   - - o n l i n e '   t o   l i s t   a v a i l a b l e   d i s t r i b u t i o n s 
+2026-09-15T08:51:58.4314687Z  
+2026-09-15T08:51:58.4315188Z  a n d   ' w s l . e x e   - - i n s t a l l   < D i s t r o > '   t o   i n s t a l l . 
+2026-09-15T08:51:58.4316122Z  
+2026-09-15T08:51:58.5413841Z  W i n d o w s   S u b s y s t e m   f o r   L i n u x   h a s   n o   i n s t a l l e d   d i s t r i b u t i o n s . 
+2026-09-15T08:51:58.5414338Z  
+2026-09-15T08:51:58.5414820Z  Y o u   c a n   r e s o l v e   t h i s   b y   i n s t a l l i n g   a   d i s t r i b u t i o n   w i t h   t h e   i n s t r u c t i o n s   b e l o w : 
+2026-09-15T08:51:58.5415289Z  
+2026-09-15T08:51:58.5415464Z  
+2026-09-15T08:51:58.5415634Z  
+2026-09-15T08:51:58.5416019Z  U s e   ' w s l . e x e   - - l i s t   - - o n l i n e '   t o   l i s t   a v a i l a b l e   d i s t r i b u t i o n s 
+2026-09-15T08:51:58.5416407Z  
+2026-09-15T08:51:58.5416724Z  a n d   ' w s l . e x e   - - i n s t a l l   < D i s t r o > '   t o   i n s t a l l . 
+2026-09-15T08:51:58.5417057Z  
+2026-09-15T08:51:58.6544952Z ..FF..
+2026-09-15T08:51:58.6545373Z ======================================================================
+2026-09-15T08:51:58.6546381Z FAIL: test_owned_descendant_settles_before_cleanup (__main__.ResourceGuardTest.test_owned_descendant_settles_before_cleanup)
+2026-09-15T08:51:58.6547015Z ----------------------------------------------------------------------
+2026-09-15T08:51:58.6547358Z Traceback (most recent call last):
+2026-09-15T08:51:58.6547864Z   File "D:\a\passvault\passvault\scripts\test-ci-run.py", line 61, in test_owned_descendant_settles_before_cleanup
+2026-09-15T08:51:58.6548416Z     self.assertEqual(scope.process.wait(timeout=10), 0)
+2026-09-15T08:51:58.6548723Z AssertionError: 1 != 0
+2026-09-15T08:51:58.6548860Z 
+2026-09-15T08:51:58.6548984Z ======================================================================
+2026-09-15T08:51:58.6549517Z FAIL: test_success_and_failure_status_preserved (__main__.ResourceGuardTest.test_success_and_failure_status_preserved)
+2026-09-15T08:51:58.6552216Z ----------------------------------------------------------------------
+2026-09-15T08:51:58.6552679Z Traceback (most recent call last):
+2026-09-15T08:51:58.6553190Z   File "D:\a\passvault\passvault\scripts\test-ci-run.py", line 55, in test_success_and_failure_status_preserved
+2026-09-15T08:51:58.6553721Z     self.assertEqual(scope.process.wait(timeout=10), code)
+2026-09-15T08:51:58.6554026Z AssertionError: 1 != 0
+2026-09-15T08:51:58.6554165Z 
+2026-09-15T08:51:58.6554310Z ----------------------------------------------------------------------
+2026-09-15T08:51:58.6554620Z Ran 6 tests in 0.492s
+2026-09-15T08:51:58.6554743Z 
+2026-09-15T08:51:58.6554822Z FAILED (failures=2)
+2026-09-15T08:51:58.6867605Z  
+2026-09-15T08:51:58.6887687Z ##[error]Process completed with exit code 1.
+2026-09-15T08:51:58.7122899Z ##[group]Run actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+2026-09-15T08:51:58.7123384Z with:
+2026-09-15T08:51:58.7123638Z   name: build-desktop-windows-latest-evidence
+2026-09-15T08:51:58.7123928Z   path: .ci-evidence/
+2026-09-15T08:51:58.7124145Z   include-hidden-files: true
+2026-09-15T08:51:58.7124372Z   retention-days: 3
+2026-09-15T08:51:58.7124595Z   if-no-files-found: warn
+2026-09-15T08:51:58.7124816Z   compression-level: 6
+2026-09-15T08:51:58.7125018Z   overwrite: false
+2026-09-15T08:51:58.7125206Z   archive: true
+2026-09-15T08:51:58.7125383Z env:
+2026-09-15T08:51:58.7125545Z   JAVA_VERSION: 17
+2026-09-15T08:51:58.7126076Z   GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false
+2026-09-15T08:51:58.7126689Z ##[endgroup]
+2026-09-15T08:51:58.8879026Z ##[warning]No files were found with the provided path: .ci-evidence/. No artifacts will be uploaded.
+2026-09-15T08:51:58.9249899Z Post job cleanup.
+2026-09-15T08:51:59.0990074Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-09-15T08:51:59.1298493Z git version 2.55.0.windows.5
+2026-09-15T08:51:59.1365978Z Temporarily overriding HOME='D:\a\_temp\c8683fb4-7f80-4ce0-9a67-c48549a1cf88' before making global git config changes
+2026-09-15T08:51:59.1366910Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-15T08:51:59.1377538Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\passvault\passvault
+2026-09-15T08:51:59.1724674Z Removing SSH command configuration
+2026-09-15T08:51:59.1738169Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-15T08:51:59.2058530Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-15T08:51:59.7900270Z Removing HTTP extra header
+2026-09-15T08:51:59.7911495Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-15T08:51:59.8240173Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-15T08:52:00.3492280Z Removing includeIf entries pointing to credentials config files
+2026-09-15T08:52:00.3504464Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-15T08:52:00.3818902Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-15T08:52:01.0019759Z Cleaning up orphan processes

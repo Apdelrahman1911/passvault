@@ -1,0 +1,73 @@
+{
+  "decision": "APPROVE_SOURCE_AND_CONDITIONAL_FRESH_NARROW_LOCAL_ADMISSION",
+  "failure": {
+    "executed_source": "8e4f7cdc84b31f57779a58682afee95d9bcd856c",
+    "finding": "Outer Actions Git Bash was explicit, but native Python child resolved unqualified bash to unrelated WSL. Two of six synthetic guard cases failed before Windows Gradle. No product defect, Windows build success or synthetic cleanup receipt inferred.",
+    "job": 104314756122,
+    "path": "merge-main-01/ci04/WINDOWS-FAILURE.log",
+    "run": 34946387329,
+    "sha256": "2643b56a92124c39f057fa621440574683ebc936c534fb0073c023a359cef1ba"
+  },
+  "future_hosted_admission": "After accepted local result, root seals exact corrected commit/tree and changed paths and rechecks old run settlement before dedicated-branch PR synchronization. Existing CI bounds/cleanup and failclosed all-job gate remain; current owner explicitly permits independent hosted jobs in parallel.",
+  "independent_challenges": [
+    "Launcher captures actual BASH rather than guessed installation or Windows PATH; standalone cygpath assignment preserves errexit on conversion failure; case-insensitive .exe suffix avoids extensionless native dispatch.",
+    "Windows missing configuration raises before PATH lookup. Any explicit relative/missing/directory path is rejected; explicit path containing spaces remains one subprocess argv element.",
+    "ProcessScope validates/configures inherited shell before spawn; child revalidates after go. Both application shell and original-wrapper-stop share dispatch. Job assignment still precedes go; POSIX session handling unchanged.",
+    "Removing helper/launch assignment and restoring bare child command exactly reproduces prior ci-run SHA b1f80ee826ce606fbd0c000629adc15591d732aca40eb6abe0c03a1ee4b06b29.",
+    "Two focused resolver tests add missing-Windows/no-PATH-fallback, explicit spaced path and invalid path counterexamples; six existing real process/output safety cases remain. Local patched-platform selection test is not native Windows execution.",
+    "Reversing only needs edges/matrix limits/two comments reproduces prior ci.yml SHA45685fc7a14ce739a03ce66c0a37a18a831ea3af3577be421b8bb7aada0de944; commands, permissions, pins, cleanup, exact all-job gate unchanged.",
+    "Six independent heavy job definitions consume source, not each other outputs. Fanout after wrapper/dependency preflight, Desktop max3/macOS packaging max2 yields max9 distinct hosted VMs. No VPS parallel build authorization.",
+    "INTEGRATION.md explicitly records owner-authorized hosted-only override, unchanged per-host worker/resource constraints and pending protected merge/mobile gates."
+  ],
+  "local_scope": {
+    "bound_seconds": 120,
+    "commands": [
+      "Run scripts/test-ci-run.py via actual scripts/ci-python.sh under Bash",
+      "Bash syntax check of modified launcher",
+      "Existing ruby scripts/validate-ci-workflow-security.rb"
+    ],
+    "conditions": [
+      "CI03 final cancelled and monitor/lock settled, freshly verify no active conflicting run",
+      "Fresh root-owned coordination lock; disk>=3GiB and RAM>=25%",
+      "Synthetic private HOME/TMP and scrubbed environment; source hashes before/after",
+      "Cleanup installed before execution; record fresh explicit owned PGIDs",
+      "Terminate only newly owned groups if required; positive settlement before deleting new private roots; preserve HOLD on ambiguity",
+      "No Gradle/application/provider/network/archived helpers; wrapper stop not-started"
+    ],
+    "guard_cases": 8,
+    "result": "NOT_YET_EXECUTED_OR_CLAIMED_PASS_BY_THIS_REVIEW",
+    "validator_sha256": "8a0674152c4bb78cf25b24a68836fc89701e0fa6fbfd284a04eeda0c3654af87"
+  },
+  "method": "Named SOURCE/DATA reads, stdlib hash/source reconstruction only; no Git/network/build/test/helper execution or live process/resource probes",
+  "plan": {
+    "path": "merge-main-01/ci04/PLAN.md",
+    "sha256": "9470842db755d67103b25321546377b4a975e736865c67574a5447d2fc75f762"
+  },
+  "previous_cleanup": {
+    "path": "merge-main-01/ci04/PREVIOUS-CLEANUP.json",
+    "qualification": "Hosted VM disposal fallback is not positive process settlement. Historical scope is not retried/recovered/adopted; new corrected-source CI requires different fresh hosted jobs. Parent reports CI03 completed/cancelled and monitor exited; reviewer did not live probe.",
+    "reviewed_summary": "Six receipts cleanupPASS retained. Cancelled macOS receipt exitnull/cleanupHOLD/wrapper_stop0/reports pre-settlement and Private-home process remains outside scope remains HOLD. Windows pre-Gradle failure produced no cleanup artifact.",
+    "sha256": "2f3662151f7a194dde36049b2417c243c143f3edb91584c175ded4d4e492cc86"
+  },
+  "reviewed_at_utc": "2026-09-15T08:58:36.492779+00:00",
+  "reviewer": "/root/current_ledger",
+  "schema": 1,
+  "sources": {
+    ".github/workflows/ci.yml": "ba7aff0b0ec5e708b7ff4fbedf06fad251edb947ea6ddb635ba7246713fb471a",
+    "docs/review/INTEGRATION.md": "310bee0f5bcda7e9b56805d688f1eb1795f6f6e001832995929a52c16b92d6a6",
+    "scripts/ci-python.sh": "b4800387c0d0bf8223a3eb99c1e39dec81b23f3d837806cd6d22a11f49312fe1",
+    "scripts/ci-run.py": "f046f4ee713e0bcc15cb9226a6e4721fdf1c2979d1ec59b94e739059e4381318",
+    "scripts/test-ci-run.py": "3f45d35a9db669343c7d47e67d89ef63e9010e5c002d079e1032e4861df122d8"
+  },
+  "unchanged_restrictions": [
+    "Protected main/testing/release/tags/build1017001 unchanged",
+    "No production/store publication, signing secrets or beta gate waiver",
+    "No C20 expansion",
+    "PVU007 STOP",
+    "PVU011 NO-RETRY",
+    "PVA029 failure/no automatic retry",
+    "G7/G8 and WindowsGraph03 CLOSED",
+    "All HOLD/UNKNOWN retained",
+    "Actual independent GitHub approval required; agent review is not that approval"
+  ]
+}
