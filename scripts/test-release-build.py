@@ -124,10 +124,11 @@ class ReleaseStagingTest(unittest.TestCase):
         self.assertFalse((self.out / signing.name).exists())
 
     def test_actual_batch_stops_original_synthetic_wrapper_and_stages_after_settlement(self):
-        # Two real process/filesystem executions. No Gradle or product process.
-        for snapshot_failure in (False, True):
-            with self.subTest(initial_snapshot_failure=snapshot_failure):
-                repo = self.root / ("actual-" + str(snapshot_failure))
+        # Real process/filesystem executions, including iOS heap propagation.
+        # No Gradle, Xcode, signing or product process.
+        for mode, snapshot_failure in (("android", False), ("android", True), ("ios", False)):
+            with self.subTest(mode=mode, initial_snapshot_failure=snapshot_failure):
+                repo = self.root / ("actual-" + mode + str(snapshot_failure))
                 repo.mkdir()
                 temp = repo / "runner-temp"
                 temp.mkdir()
@@ -139,11 +140,16 @@ class ReleaseStagingTest(unittest.TestCase):
                 (repo / "gradlew.bat").write_text('@echo off\r\nif not "%1"=="--stop" exit /b 9\r\necho stopped>stop-marker\r\n')
                 script = repo / "synthetic-build.sh"
                 script.write_text('set -eu\nmkdir -p "$GRADLE_USER_HOME/daemon" app-android/build/outputs/{apk/release,bundle/release,mapping/release}\nprintf fixture-apk > app-android/build/outputs/apk/release/app-android-release.apk\nprintf fixture-aab > app-android/build/outputs/bundle/release/app-android-release.aab\nprintf fixture-map > app-android/build/outputs/mapping/release/mapping.txt\n')
+                if mode == "ios":
+                    script.write_text('set -eu\nmkdir -p "$GRADLE_USER_HOME/daemon" "$PRIVATE_RUNTIME/PassVault.xcarchive/Products" "$PRIVATE_RUNTIME/export"\nprintf fixture-ipa > "$PRIVATE_RUNTIME/export/PassVault.ipa"\nprintf fixture-map > "$PRIVATE_RUNTIME/PassVault-LinkMap.txt"\n')
+                with script.open("a") as stream:
+                    stream.write('cp "$GRADLE_USER_HOME/gradle.properties" observed-gradle.properties\n')
                 github_env = repo / "github-env"
                 github_env.touch()
                 env = {"GITHUB_ACTIONS": "true", "RUNNER_ENVIRONMENT": "github-hosted", "GITHUB_WORKSPACE": str(repo),
                        "GITHUB_RUN_ID": "1", "GITHUB_RUN_ATTEMPT": "1", "GITHUB_JOB": "synthetic", "RUNNER_TEMP": str(temp),
-                       "GITHUB_ENV": str(github_env), "HOME": str(home), "USERPROFILE": str(home)}
+                       "GITHUB_ENV": str(github_env), "HOME": str(home), "USERPROFILE": str(home),
+                       "PRIVATE_RUNTIME": str(temp / "passvault-release")}
                 real_check_output = subprocess.check_output
                 def check_output(args, **kwargs):
                     if args == ["git", "rev-parse", "HEAD"]:
@@ -161,7 +167,7 @@ class ReleaseStagingTest(unittest.TestCase):
                     with patch.dict(os.environ, env), patch.object(release.subprocess, "check_output", side_effect=check_output), \
                             patch.object(release.guard, "generated_roots", return_value=[repo / "app-android/build"]), \
                             patch.object(release.guard, "preserve_reports", side_effect=preserve):
-                        self.assertEqual(release.main("android", script), 0)
+                        self.assertEqual(release.main(mode, script), 0)
                 finally:
                     os.chdir(cwd)
                     for sig, handler in handlers.items():
@@ -171,11 +177,27 @@ class ReleaseStagingTest(unittest.TestCase):
                 self.assertEqual(len(receipts), 1)
                 result = json.loads(receipts[0].read_text())
                 self.assertEqual((result["cleanup"], result["wrapper_stop"]), ("PASS", 0))
+                expected_heap = 4096 if mode == "ios" else 2048
+                self.assertEqual(result["gradle_heap_mib"], expected_heap)
+                properties = (repo / "observed-gradle.properties").read_text()
+                self.assertIn(f"org.gradle.jvmargs=-Xmx{expected_heap}m ", properties)
+                self.assertIn("-Dpassvault.release.owner=", properties)
+                for setting in ("org.gradle.workers.max=1", "org.gradle.parallel=false", "org.gradle.daemon=false",
+                                "org.gradle.configureondemand=false", "kotlin.compiler.execution.strategy=in-process"):
+                    self.assertIn(setting + "\n", properties)
                 self.assertEqual("initial_report_snapshot_error" in result, snapshot_failure)
-                self.assertEqual((repo / ".release-artifacts/app-android-release.aab").read_bytes(), b"fixture-aab")
+                artifact, data, env_key = (("PassVault.ipa", b"fixture-ipa", "IOS_IPA_PATH=") if mode == "ios" else
+                                           ("app-android-release.aab", b"fixture-aab", "ANDROID_AAB_PATH="))
+                self.assertEqual((repo / ".release-artifacts" / artifact).read_bytes(), data)
                 self.assertFalse((repo / "app-android/build").exists())
-                self.assertEqual(list(temp.iterdir()), [])
-                self.assertIn("ANDROID_AAB_PATH=", github_env.read_text())
+                if mode == "ios":
+                    # This runtime belongs to the workflow, not the build adapter.
+                    # Its fake export parent remains, but deliverables moved.
+                    self.assertEqual(list((temp / "passvault-release/export").iterdir()), [])
+                    self.assertEqual(list(temp.glob("passvault-release-build-*")), [])
+                else:
+                    self.assertEqual(list(temp.iterdir()), [])
+                self.assertIn(env_key, github_env.read_text())
 
     def test_dispose_refuses_missing_or_failed_producer_receipt(self):
         evidence = self.root / ".release-evidence"
