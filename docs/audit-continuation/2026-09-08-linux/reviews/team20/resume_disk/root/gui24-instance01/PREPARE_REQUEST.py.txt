@@ -1,0 +1,59 @@
+# Source-only metadata preparation, NOT an application runner. Root executes only
+# after independently accepted controls have been installed and prior slot retired.
+from pathlib import Path
+import ast, datetime, hashlib, json, os, stat
+D=Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root')
+H=D/'gui24-instance01'
+S=D/'EXECUTION_SLOT.json'
+assert not json.loads(S.read_text())['operation']['active']
+assert not (H/'REQUEST.json').exists()
+def descriptor(p):
+ b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+def pin(s,directory=False):
+ v={k:getattr(s,'st_'+k) for k in ('dev','ino','uid','mode')}
+ if not directory:v.update(nlink=s.st_nlink,bytes=s.st_size,mtime_ns=s.st_mtime_ns,ctime_ns=s.st_ctime_ns)
+ return v
+def capture(p):
+ original=p.lstat();target=p
+ if stat.S_ISLNK(original.st_mode):
+  assert str(p)=='/usr/bin/python3' and os.readlink(p)=='python3.12'
+  target=Path('/usr/bin/python3.12')
+ before=target.lstat();assert stat.S_ISREG(before.st_mode) and before.st_nlink==1 and before.st_uid==0 and not before.st_mode&0o022 and before.st_size<=32*1024**2
+ fd=os.open(target,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)
+ try:
+  with os.fdopen(fd,'rb',closefd=False) as f:b=f.read(32*1024**2+1)
+  assert len(b)==before.st_size and pin(before)==pin(os.fstat(fd))==pin(target.lstat()) and pin(original)==pin(p.lstat())
+ finally:os.close(fd)
+ v={'sha256':hashlib.sha256(b).hexdigest(),'pin':pin(before)}
+ if target!=p:v.update(link_pin=pin(original),link_target='python3.12')
+ return v
+def constant(name):
+ tree=ast.parse((H/'OUTER.py').read_text())
+ n=next(n for n in tree.body if isinstance(n,ast.Assign) and isinstance(n.targets[0],ast.Name) and n.targets[0].id==name)
+ return ast.literal_eval(n.value)
+old=json.loads((D/'gui23-instance01/REQUEST.json').read_text())
+r=json.loads(json.dumps(old).replace('integration23','integration24').replace('INTEGRATION23','INTEGRATION24').replace('GUI23','GUI24').replace('gui23','gui24'))
+paths=[Path(p) for p in r['images']]
+assert len(paths)==len(set(paths))==26
+r['images']={str(p):capture(p) for p in paths}
+r['directories']={p:pin(Path(p).lstat(),True) for p in r['directories']}
+r['lock']=pin(Path('/root/projects/PassVault/.audit-coordination-linux-20260914-c20/build.lock').lstat())
+assert r['lock']==constant('EXPECTED_LOCK')
+r['parent_namespaces']={k:os.readlink('/proc/self/ns/'+k) for k in ('pid','mnt','net')}
+r['source_binding']=constant('SOURCE_BINDING');r['source_overlay']=constant('SOURCE_OVERLAY')
+now=datetime.datetime.now(datetime.timezone.utc).isoformat();fs=os.statvfs(D)
+resources={'disk_available_bytes':fs.f_bavail*fs.f_frsize,'meminfo':[l for l in Path('/proc/meminfo').read_text().splitlines() if l.startswith(('MemTotal:','MemAvailable:'))]}
+assert resources['disk_available_bytes']>=8*1024**3
+facts={'utc':now,**{k:r[k] for k in ('images','directories','lock','parent_namespaces')},'resources':resources,'qualification':'Fresh26 fixedinput/tool/source and necessary4parentmetadata/lock/selfnamespace facts only. PriorHOLD roots/retiredWGit not probed. OriginalWindows04actual/Jobzero/observer settlement mustbe independentlyadopted; logicalslotretired only.'}
+(H/'FRESH-FACTS01.json').write_text(json.dumps(facts,indent=2)+'\n')
+(H/'SCHEDULER-BEFORE-REQUEST.json').write_bytes(S.read_bytes())
+coverage='GUI23 original1XMLFAIL beforeHome/cancel; bothstops0/GUIandnamespace settled/27558entriesremoved independentlyadopted. GUI24 preserves guards and adds only whitelisted diagnostic code and lastrequestedproperty label, not cause proof. Root sole build/test/Git/CI/cleanup owner,current_ledger reviewonly. Windows04 originalterminal/Jobsettlement/observer actuals mustbe adopted before this request. GUI20successfulunchangedcase not rerun. All priorHOLD including Image02 and Android07 preserved. Fresh26fixedinputs/P23rawsource plus approved pinneddesktopTestdependency and reviewed fixture. OnePVU003chooser/Home/cancel case/3roles/7events/9files/0crops. Unchanged8GiBentry3running3private/25percententry20percentrunningRAM; normal12unmet. Bothwrapperstops/GUI/privateNSsettlement and allowlistedcleanup required. No knownotherauditjob/originalstop inflight; cooperativecustody notglobalidleness. AllSTOP/NO-RETRY/CLOSED scopes and protectedrefs preserved.'
+(H/'HOST-CUSTODY.json').write_text(json.dumps({'utc':now,'coverage':coverage,'resources':resources,'qualification':'Fresh cooperative root declarations, not oldruntimeownership or global idle proof.'},indent=2)+'\n')
+records=[D/'gui23-instance01/ACTUAL-ADOPTION.json',H/'FRESH-FACTS01.json',H/'SCHEDULER-BEFORE-REQUEST.json',H/'HOST-CUSTODY.json',H/'RESOURCE-FALLBACK-PROPOSAL.json',H/'INSTALL.json',D/'windows-after-flush-ci04/ACTUAL-ADOPTION.json',D.parent/'current_ledger/gui24_diagnostic_controls_source/SOURCE-REVIEW.json',D/'gui20-instance01/ACTUAL-ADOPTION.json',D/'android-framework-package-action-instance07/ACTUAL-ADOPTION.json',D/'RESUME-INSTRUCTION-DISCOVERY-VARIANCE08.json',D.parent/'current_ledger/pvu003_native_ownership_inline04/SOURCE-REVIEW.json']
+for name in ('audit_launch_accounting','local_and_ci_scheduler','source_control_tools_cache_custody'):
+ r['host_policy']['root_evidence'][name]={'coverage':coverage,'records':[descriptor(p) for p in records]}
+r['host_policy']['root_evidence']['shared_host_capacity']={'coverage':coverage,'records':[descriptor(H/'FRESH-FACTS01.json'),descriptor(H/'RESOURCE-FALLBACK-PROPOSAL.json')]}
+# scanner_kernel_contracts contains reusable source/ABI evidence, not old runtime custody.
+r['host_policy']['root_evidence']['scanner_kernel_contracts']=old['host_policy']['root_evidence']['scanner_kernel_contracts']
+(H/'REQUEST.json').write_text(json.dumps(r,indent=2)+'\n')
+print('Prepared fresh26input GUI24 request',descriptor(H/'REQUEST.json'))

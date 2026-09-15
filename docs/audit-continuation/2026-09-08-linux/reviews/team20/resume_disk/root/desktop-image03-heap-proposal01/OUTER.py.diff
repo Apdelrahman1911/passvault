@@ -1,0 +1,140 @@
+--- accepted-image02/OUTER.py
++++ proposed-image03/OUTER.py
+@@ -25,11 +25,11 @@
+ 
+ W = Path('/root/projects/PassVault/passvault-linux')
+ B = W / 'docs/audit-continuation/2026-09-08-linux'
+-R = Path('/root/projects/PassVault/audit-runtime-linux-desktop-installed-image02')
+-E = B / 'runs/linux-desktop-installed-image02'
+-SELF = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image02-instance01/OUTER.py')
+-REQUEST = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image02-instance01/REQUEST.json')
+-APPROVAL = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image02-instance01/APPROVAL.json')
++R = Path('/root/projects/PassVault/audit-runtime-linux-desktop-installed-image03')
++E = B / 'runs/linux-desktop-installed-image03'
++SELF = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image03-instance01/OUTER.py')
++REQUEST = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image03-instance01/REQUEST.json')
++APPROVAL = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image03-instance01/APPROVAL.json')
+ LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260914-c20/build.lock')
+ # Actual source/store/index/tool/exclude identities require root's fresh review.
+ # Paths or old receipts alone never admit the retired source store or an index.
+@@ -39,18 +39,18 @@
+ RUBY_IMAGE = Path('/usr/bin/ruby3.2')
+ EXCLUDE_STATE = 'FILE'  # Retained P23 expectation; fresh root confirmation required.
+ GIT_METADATA, GIT_INDEX = R / 'git-metadata', R / 'git-index'
+-INNER, INIT = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image02-instance01/INNER.py'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image02-instance01/INIT.gradle')
++INNER, INIT = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image03-instance01/INNER.py'), Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image03-instance01/INIT.gradle')
+ SOURCE = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint23/source-prepare01/SOURCE.json')  # Retained adopted P23 SOURCE; no new capture.
+ JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64/bin/java')
+ RELEASE = JAVA.parent.parent / 'release'
+ PYTHON, INNER_PYTHON, UNSHARE = '/usr/bin/python3.12', '/usr/bin/python3', '/usr/bin/unshare'
+-RUN, PURPOSE = 'linux-desktop-installed-image02', 'ONE_LINUX_DESKTOP_INSTALLED_IMAGE02'
++RUN, PURPOSE = 'linux-desktop-installed-image03', 'ONE_LINUX_DESKTOP_INSTALLED_IMAGE03'
+ IMAGE_TARGETS = [
+     ':app-desktop:verifyDesktopInstalledLegalNotices',
+     ':app-desktop:verifyDesktopInstalledRuntime',
+     ':app-desktop:verifyDesktopInstalledBiometricBridge',
+ ]
+-HOST_POLICY_ID = 'DESKTOPINSTALLEDIMAGE02_SCHEDULING_ONLY_BOUND_NONLIVE_UNKNOWN_ERRNO_V5'
++HOST_POLICY_ID = 'DESKTOPINSTALLEDIMAGE03_SCHEDULING_ONLY_BOUND_NONLIVE_UNKNOWN_ERRNO_V5'
+ HOST_POLICY_ASSERTIONS = (
+     'complete_prior_and_current_audit_launch_accounting',
+     'every_prior_admitted_audit_operation_has_independently_accepted_scheduling_disposition',
+@@ -62,7 +62,7 @@
+     'only_original_run_private_writable_caches_and_temporary_paths',
+     'owned_commands_do_not_escape_to_parent_namespaces_or_mutate_host_mounts',
+     'shared_host_capacity_assumptions_and_soft_limits_explicitly_admitted',
+-    'unconsumed_desktopinstalledimage02_only_no_old_hold_or_retry_authority',
++    'unconsumed_desktopinstalledimage03_only_no_old_hold_or_retry_authority',
+     'bound_terminal_unknown_is_not_owned_idle_or_cleanup_authority',
+     'proc_anchor_and_flags0_thread_group_contracts_corroborated',
+     'known_host_custody_identity_and_evidence_contradictions_remain_cleanup_hold',
+@@ -74,7 +74,7 @@
+     'platforms/android-37.0/package.xml', 'build-tools/36.0.0/source.properties',
+     'build-tools/36.0.0/package.xml', 'licenses/android-sdk-license'))
+ SDK_OPERATION = 'READ_ONLY_EXISTING_SDK_CONFIGURATION_CONTEXT_NO_TASKS_COPY_INSTALL_LICENSE_CHANGES'
+-IMAGE_BINDING = {'runtimeRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image02', 'evidenceRoot': '/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-installed-image02', 'readRoots': ['/root/projects/PassVault/audit-runtime-linux-desktop-installed-image02/checkout', '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image02/gradle-home', '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image02/tmp', '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image02/konan', '/usr/lib/jvm/java-17-openjdk-amd64', '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image02/sdk-readonly'], 'offline': False, 'sourceManifestSha256': '1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc', 'subjectSha256': '9263cf5e857f55afd4669aa524eaf36f37d3b5a18f4eca293da148bd55b3e709', 'acceptedGraph': {'recordSha256': 'a716a0c832bc5e13951501b26731ec9c5c79fee9e1b9d27b73b0414b29983dc2', 'reviewSha256': 'e7a61d7bab13c1a4692615b47581b7667db31e012acb6268df93cd94b93d7b7f', 'adoptionSha256': '411ef663174b7be3a679e14283452fa05317a4cbccb73bbadb0a2b9d4fd011ed', 'frameSha256': 'ad71dc70f128120451a837de45a78bbcd4b075c43c657d453207eac29de39a77', 'tasks': 292, 'dependencies': 567, 'finalizers': 1}, 'sourceStoreAffinity': {'store': '/root/projects/PassVault/passvault-publication-20260913-03/.git', 'commit': '59bee33096f538b9444f00236448d7fc0ea740b2', 'tree': '76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6', 'sourceSha256': '1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc', 'indexSha256': '36f9edc3b2f4e6eff79f66d78da1c86a92cb8156edd2b08e879b08f4c124909c', 'reviewSha256': 'ac5c84e320fca4cfba63a18fe7e75d6f7173f99d84d9ec95b2651e5154d2cec0'}, 'taskIo': {'policy': 'PER_TASK_SOURCE_PROJECT_BUILD_ROOTS_V1', 'projectDirectories': {':app-desktop': 'app-desktop', ':core:crypto': 'core/crypto', ':core:database': 'core/database', ':core:designsystem': 'core/designsystem', ':core:domain': 'core/domain', ':core:navigation': 'core/navigation', ':core:otp': 'core/otp', ':core:security': 'core/security', ':feature:backup': 'feature/backup', ':feature:credential': 'feature/credential', ':feature:generator': 'feature/generator', ':feature:health': 'feature/health', ':feature:onboarding': 'feature/onboarding', ':feature:settings': 'feature/settings', ':feature:unlock': 'feature/unlock', ':feature:vault': 'feature/vault', ':shared': 'shared'}}, 'classpathInputs': {'policy': 'PUBLIC_CLASSPATH_READ_ROOTS_NO_PATH_SNAPSHOT_V1', 'accessors': {'org.gradle.api.tasks.compile.JavaCompile_Decorated': 'JAVA_COMPILE_CLASSPATH', 'org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated': 'DECLARED_INPUT_ARCHIVES', 'com.google.devtools.ksp.gradle.KspAATask_Decorated': 'DECLARED_INPUT_ARCHIVES', 'org.jetbrains.compose.desktop.application.tasks.AbstractJLinkTask_Decorated': 'DECLARED_INPUT_ARCHIVES', 'org.jetbrains.compose.desktop.application.tasks.AbstractJPackageTask_Decorated': 'DECLARED_INPUT_ARCHIVES'}}, 'imageLayout': {'resourceSync': ':app-desktop:prepareDesktopAppResources', 'jlink': ':app-desktop:createRuntimeImage', 'jpackage': ':app-desktop:createReleaseDistributable', 'imageRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image02/checkout/app-desktop/build/compose/binaries/main-release/app', 'resourceRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image02/checkout/app-desktop/build/generated/desktopAppResources', 'producerRoots': {':app-desktop:createRuntimeImage': {'outputRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image02/checkout/app-desktop/build/compose/audit-installed-runtime02', 'workingRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image02/checkout/app-desktop/build/compose/tmp/createRuntimeImage', 'argumentFile': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image02/checkout/app-desktop/build/compose/tmp/createRuntimeImage.args.txt'}, ':app-desktop:createReleaseDistributable': {'outputRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image02/checkout/app-desktop/build/compose/binaries/main-release/app', 'workingRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image02/checkout/app-desktop/build/compose/tmp/createReleaseDistributable', 'argumentFile': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image02/checkout/app-desktop/build/compose/tmp/createReleaseDistributable.args.txt'}}, 'opaqueActionInputsAndWritesReviewed': True}, 'roomFinalizer': {'producer': ':core:database:kspKotlinDesktop', 'finalizer': ':core:database:copyRoomSchemas', 'schemaDirectory': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image02/checkout/core/database/schemas', 'allowedNewSchemas': [], 'sourceBytesMustRemainExact': True}, 'linkPolicy': {'policy': 'OBSERVED_LEAF_DIRECT_REGULAR_TARGET_SAME_ROOT_V1', 'maximumRoots': 16, 'maximumLinks': 256, 'deviceSource': 'ORIGINAL_RUNTIME_DIRECTORY', 'regularFileDevice': 24}, 'privateInput': {'mode': 'SYNTHETIC_NONPUBLISHING', 'provenance': 'EXACT_REVIEWED_PUBLIC_LITERAL_NO_API_OR_DNS', 'value': 'desktop-contract-only@nonpublishing.passvault.audit', 'publicationAllowed': False, 'productionSupportVerified': False}, 'privateRetention': {'policy': 'PRIVATE_R_ONLY_SAFE_OUTCOMES_NO_OPAQUE_COPY', 'discardKnownDslAndProblemsAfterSafeProjection': True, 'unexpectedDiagnostic': 'HOLD_NO_EXPORT_NO_DELETE'}, 'resourceElection': {'launchGiB': 8, 'runningGiB': 5, 'launchRamFraction': 0.25, 'runningRamFraction': 0.2, 'gradleHeapMiB': 2048, 'workers': 1, 'sampleLogicalGiB': 3, 'imageSeconds': 3600, 'stopSeconds': 600, 'settlementSeconds': 120, 'workSeconds': 5250, 'outerSeconds': 6000}}
++IMAGE_BINDING = {'runtimeRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image03', 'evidenceRoot': '/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-installed-image03', 'readRoots': ['/root/projects/PassVault/audit-runtime-linux-desktop-installed-image03/checkout', '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image03/gradle-home', '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image03/tmp', '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image03/konan', '/usr/lib/jvm/java-17-openjdk-amd64', '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image03/sdk-readonly'], 'offline': False, 'sourceManifestSha256': '1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc', 'subjectSha256': '9263cf5e857f55afd4669aa524eaf36f37d3b5a18f4eca293da148bd55b3e709', 'acceptedGraph': {'recordSha256': 'a716a0c832bc5e13951501b26731ec9c5c79fee9e1b9d27b73b0414b29983dc2', 'reviewSha256': 'e7a61d7bab13c1a4692615b47581b7667db31e012acb6268df93cd94b93d7b7f', 'adoptionSha256': '411ef663174b7be3a679e14283452fa05317a4cbccb73bbadb0a2b9d4fd011ed', 'frameSha256': 'ad71dc70f128120451a837de45a78bbcd4b075c43c657d453207eac29de39a77', 'tasks': 292, 'dependencies': 567, 'finalizers': 1}, 'sourceStoreAffinity': {'store': '/root/projects/PassVault/passvault-publication-20260913-03/.git', 'commit': '59bee33096f538b9444f00236448d7fc0ea740b2', 'tree': '76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6', 'sourceSha256': '1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc', 'indexSha256': '36f9edc3b2f4e6eff79f66d78da1c86a92cb8156edd2b08e879b08f4c124909c', 'reviewSha256': 'ac5c84e320fca4cfba63a18fe7e75d6f7173f99d84d9ec95b2651e5154d2cec0'}, 'taskIo': {'policy': 'PER_TASK_SOURCE_PROJECT_BUILD_ROOTS_V1', 'projectDirectories': {':app-desktop': 'app-desktop', ':core:crypto': 'core/crypto', ':core:database': 'core/database', ':core:designsystem': 'core/designsystem', ':core:domain': 'core/domain', ':core:navigation': 'core/navigation', ':core:otp': 'core/otp', ':core:security': 'core/security', ':feature:backup': 'feature/backup', ':feature:credential': 'feature/credential', ':feature:generator': 'feature/generator', ':feature:health': 'feature/health', ':feature:onboarding': 'feature/onboarding', ':feature:settings': 'feature/settings', ':feature:unlock': 'feature/unlock', ':feature:vault': 'feature/vault', ':shared': 'shared'}}, 'classpathInputs': {'policy': 'PUBLIC_CLASSPATH_READ_ROOTS_NO_PATH_SNAPSHOT_V1', 'accessors': {'org.gradle.api.tasks.compile.JavaCompile_Decorated': 'JAVA_COMPILE_CLASSPATH', 'org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated': 'DECLARED_INPUT_ARCHIVES', 'com.google.devtools.ksp.gradle.KspAATask_Decorated': 'DECLARED_INPUT_ARCHIVES', 'org.jetbrains.compose.desktop.application.tasks.AbstractJLinkTask_Decorated': 'DECLARED_INPUT_ARCHIVES', 'org.jetbrains.compose.desktop.application.tasks.AbstractJPackageTask_Decorated': 'DECLARED_INPUT_ARCHIVES'}}, 'imageLayout': {'resourceSync': ':app-desktop:prepareDesktopAppResources', 'jlink': ':app-desktop:createRuntimeImage', 'jpackage': ':app-desktop:createReleaseDistributable', 'imageRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image03/checkout/app-desktop/build/compose/binaries/main-release/app', 'resourceRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image03/checkout/app-desktop/build/generated/desktopAppResources', 'producerRoots': {':app-desktop:createRuntimeImage': {'outputRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image03/checkout/app-desktop/build/compose/audit-installed-runtime02', 'workingRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image03/checkout/app-desktop/build/compose/tmp/createRuntimeImage', 'argumentFile': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image03/checkout/app-desktop/build/compose/tmp/createRuntimeImage.args.txt'}, ':app-desktop:createReleaseDistributable': {'outputRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image03/checkout/app-desktop/build/compose/binaries/main-release/app', 'workingRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image03/checkout/app-desktop/build/compose/tmp/createReleaseDistributable', 'argumentFile': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image03/checkout/app-desktop/build/compose/tmp/createReleaseDistributable.args.txt'}}, 'opaqueActionInputsAndWritesReviewed': True}, 'roomFinalizer': {'producer': ':core:database:kspKotlinDesktop', 'finalizer': ':core:database:copyRoomSchemas', 'schemaDirectory': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image03/checkout/core/database/schemas', 'allowedNewSchemas': [], 'sourceBytesMustRemainExact': True}, 'linkPolicy': {'policy': 'OBSERVED_LEAF_DIRECT_REGULAR_TARGET_SAME_ROOT_V1', 'maximumRoots': 16, 'maximumLinks': 256, 'deviceSource': 'ORIGINAL_RUNTIME_DIRECTORY', 'regularFileDevice': 24}, 'privateInput': {'mode': 'SYNTHETIC_NONPUBLISHING', 'provenance': 'EXACT_REVIEWED_PUBLIC_LITERAL_NO_API_OR_DNS', 'value': 'desktop-contract-only@nonpublishing.passvault.audit', 'publicationAllowed': False, 'productionSupportVerified': False}, 'privateRetention': {'policy': 'PRIVATE_R_ONLY_SAFE_OUTCOMES_NO_OPAQUE_COPY', 'discardKnownDslAndProblemsAfterSafeProjection': True, 'unexpectedDiagnostic': 'HOLD_NO_EXPORT_NO_DELETE'}, 'resourceElection': {'launchGiB': 8, 'runningGiB': 5, 'launchRamFraction': 0.25, 'runningRamFraction': 0.2, 'gradleHeapMiB': 4096, 'workers': 1, 'sampleLogicalGiB': 3, 'imageSeconds': 3600, 'stopSeconds': 600, 'settlementSeconds': 120, 'workSeconds': 5250, 'outerSeconds': 6000}}
+ READ_ROOT_ENVELOPE = (R / 'checkout', R / 'gradle-home', R / 'tmp', R / 'konan', JAVA.parent.parent, SDK_VIEW)
+ COMMIT = '59bee33096f538b9444f00236448d7fc0ea740b2'
+ TREE = '76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6'
+@@ -111,7 +111,7 @@
+ reasons, resources, churn, directories, images = [], [], 0, {}, {}
+ child, lock_fd, owned_domain, cancel_written, index_copy = None, None, None, False, None
+ host_policy_admitted = False
+-receipt = {'format': 'passvault-linux-desktop-installed-image02-outer-receipt-v3', 'run_id': RUN,
++receipt = {'format': 'passvault-linux-desktop-installed-image03-outer-receipt-v3', 'run_id': RUN,
+            'status': 'HOLD', 'inner_started': False, 'cleanup': 'NOT_ATTEMPTED', 'children': []}
+ 
+ def require(value, message):
+@@ -137,7 +137,7 @@
+ IMAGE_OUTCOMES = ('UNSTARTED', 'ENTERED_NO_OUTCOME', 'FAIL', 'NO_SOURCE', 'UP_TO_DATE',
+                   'SKIPPED', 'TASK_COMPLETED', 'UNKNOWN')
+ RESOURCE_ELECTION = {'launchGiB': 8, 'runningGiB': 5, 'launchRamFraction': 0.25,
+-    'runningRamFraction': 0.20, 'gradleHeapMiB': 2048, 'workers': 1, 'sampleLogicalGiB': 3,
++    'runningRamFraction': 0.20, 'gradleHeapMiB': 4096, 'workers': 1, 'sampleLogicalGiB': 3,
+     'imageSeconds': 3600, 'stopSeconds': 600, 'settlementSeconds': 120, 'workSeconds': 5250,
+     'outerSeconds': 6000}
+ PRIVATE_RETENTION = {'policy': 'PRIVATE_R_ONLY_SAFE_OUTCOMES_NO_OPAQUE_COPY',
+@@ -146,7 +146,7 @@
+ 
+ TASK_IO_POLICY = {'policy': 'PER_TASK_SOURCE_PROJECT_BUILD_ROOTS_V1', 'projectDirectories': {':app-desktop': 'app-desktop', ':core:crypto': 'core/crypto', ':core:database': 'core/database', ':core:designsystem': 'core/designsystem', ':core:domain': 'core/domain', ':core:navigation': 'core/navigation', ':core:otp': 'core/otp', ':core:security': 'core/security', ':feature:backup': 'feature/backup', ':feature:credential': 'feature/credential', ':feature:generator': 'feature/generator', ':feature:health': 'feature/health', ':feature:onboarding': 'feature/onboarding', ':feature:settings': 'feature/settings', ':feature:unlock': 'feature/unlock', ':feature:vault': 'feature/vault', ':shared': 'shared'}}
+ CLASSPATH_POLICY = {'policy': 'PUBLIC_CLASSPATH_READ_ROOTS_NO_PATH_SNAPSHOT_V1', 'accessors': {'org.gradle.api.tasks.compile.JavaCompile_Decorated': 'JAVA_COMPILE_CLASSPATH', 'org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated': 'DECLARED_INPUT_ARCHIVES', 'com.google.devtools.ksp.gradle.KspAATask_Decorated': 'DECLARED_INPUT_ARCHIVES', 'org.jetbrains.compose.desktop.application.tasks.AbstractJLinkTask_Decorated': 'DECLARED_INPUT_ARCHIVES', 'org.jetbrains.compose.desktop.application.tasks.AbstractJPackageTask_Decorated': 'DECLARED_INPUT_ARCHIVES'}}
+-ROOM_POLICY = {'producer': ':core:database:kspKotlinDesktop', 'finalizer': ':core:database:copyRoomSchemas', 'schemaDirectory': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image02/checkout/core/database/schemas', 'allowedNewSchemas': [], 'sourceBytesMustRemainExact': True}
++ROOM_POLICY = {'producer': ':core:database:kspKotlinDesktop', 'finalizer': ':core:database:copyRoomSchemas', 'schemaDirectory': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image03/checkout/core/database/schemas', 'allowedNewSchemas': [], 'sourceBytesMustRemainExact': True}
+ LINK_POLICY = {'policy': 'OBSERVED_LEAF_DIRECT_REGULAR_TARGET_SAME_ROOT_V1', 'maximumRoots': 16, 'maximumLinks': 256, 'deviceSource': 'ORIGINAL_RUNTIME_DIRECTORY'}
+ 
+ 
+@@ -580,7 +580,7 @@
+ 
+ def screen():
+     global churn
+-    require(host_policy_admitted and HOST_POLICY_ID == 'DESKTOPINSTALLEDIMAGE02_SCHEDULING_ONLY_BOUND_NONLIVE_UNKNOWN_ERRNO_V5',
++    require(host_policy_admitted and HOST_POLICY_ID == 'DESKTOPINSTALLEDIMAGE03_SCHEDULING_ONLY_BOUND_NONLIVE_UNKNOWN_ERRNO_V5',
+             'prospective bound-terminal policy requires genuine fresh exact-instance intake')
+     import errno
+ 
+@@ -1391,7 +1391,7 @@
+     IMAGES = tuple(dict.fromkeys(REQUIRED + (SELF, Path(UNSHARE), Path(PYTHON), Path(INNER_PYTHON),
+         Path('/usr/bin/env'), INDEX_SOURCE, GITDIR / 'config')
+         + ((GITDIR / 'info/exclude',) if EXCLUDE_STATE == 'FILE' else ())))
+-    require(request['format'] == 'passvault-linux-desktop-installed-image02-request-v3' and request['run_id'] == RUN and
++    require(request['format'] == 'passvault-linux-desktop-installed-image03-request-v3' and request['run_id'] == RUN and
+             request['purpose'] == PURPOSE and request['commit'] == COMMIT and request['tree'] == TREE, 'request purpose/source')
+     require(request['coordination'] == {'sole_build_owner': '/root', 'agents_quiescent': True, 'no_ci': True}
+             and request['coordination']['agents_quiescent'] is True and request['coordination']['no_ci'] is True,
+@@ -1403,7 +1403,7 @@
+     receipt['parent_at_entry'] = entry_parent  # Provenance only, never signalling/adoption/deletion authority.
+     require(set(request['directories']) == {str(p) for p in PARENTS} and set(request['images']) == {str(p) for p in IMAGES}, 'fixed sets')
+     require(set(approval) == {'format', 'reviewer', 'disposition', 'purpose', 'run_id', 'request_sha256', 'sources'} and
+-            approval['format'] == 'passvault-linux-desktop-installed-image02-approval-v3' and
++            approval['format'] == 'passvault-linux-desktop-installed-image03-approval-v3' and
+             approval['reviewer'] == '/root/current_ledger' and
+             approval['disposition'] == 'ACCEPT_EXACT_NEW_INSTANCE' and approval['purpose'] == PURPOSE and approval['run_id'] == RUN and
+             approval['request_sha256'] == request_image['sha256'] and approval['sources'] ==
+@@ -1440,7 +1440,7 @@
+     directory(E, True)
+     directory(R, True)
+     receipt.update(request=request_image, approval=approval_image, parent_namespaces=parent_ns, device_model=DEVICE)
+-    allocation = {'format': 'passvault-linux-desktop-installed-image02-allocation-v1', 'run_id': RUN, 'purpose': PURPOSE,
++    allocation = {'format': 'passvault-linux-desktop-installed-image03-allocation-v1', 'run_id': RUN, 'purpose': PURPOSE,
+         'commit': COMMIT, 'tree': TREE, 'source_members': MEMBERS, 'source_representation': 'RAW_GIT_BLOBS',
+         'host_policy_id': HOST_POLICY_ID,
+         'allocated_directories': {str(p): directories[p][1] for p in (E, R)},
+@@ -1525,7 +1525,7 @@
+             inner_images[str(GIT_INDEX)] = index_copy['copy_image']
+             for relative in ('config',) + (('info/exclude',) if EXCLUDE_STATE == 'FILE' else ()):
+                 inner_images[str(GIT_METADATA / relative)] = images[str(GITDIR / relative)]
+-            output('OUTER-INTENT.json', encoded({'format': 'passvault-linux-desktop-installed-image02-outer-v1', 'run_id': RUN, 'commit': COMMIT, 'tree': TREE,
++            output('OUTER-INTENT.json', encoded({'format': 'passvault-linux-desktop-installed-image03-outer-v1', 'run_id': RUN, 'commit': COMMIT, 'tree': TREE,
+                 'source_representation': 'RAW_GIT_BLOBS', 'source_members': MEMBERS, 'source_capacity': SOURCE_CAPACITY,
+                 'parent_namespaces': parent_ns, 'host_policy_id': HOST_POLICY_ID,
+                 'directories': {str(p): v[1] for p, v in directories.items() if p == R or R in p.parents or p == E or E in p.parents},
+@@ -1539,7 +1539,7 @@
+     raw, result_image = capture(E / 'INNER-RESULT.json', MIB)
+     result = decode(raw)
+     receipt.update(inner_exit=code, inner_result=result_image)
+-    require(code in (0, 1) and result['format'] == 'passvault-linux-desktop-installed-image02-inner-v1' and result['run_id'] == RUN and
++    require(code in (0, 1) and result['format'] == 'passvault-linux-desktop-installed-image03-inner-v1' and result['run_id'] == RUN and
+             result['commit'] == COMMIT and result['tree'] == TREE and result['parent_namespaces'] == parent_ns and all(result[k] is True for k in
+             ('source_before', 'source_after', 'all_required_stops_ok', 'namespace_empty_before_exit',
+              'cleanup_safe', 'private_io_lifecycle_ok', 'git_bindings_established', 'git_bindings_stable', 'sealed_index_unchanged',

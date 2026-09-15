@@ -1,0 +1,165 @@
+#!/usr/bin/python3.12
+"""SOURCE PROPOSAL ONLY: isolated read-only X11 chooser observation, not execution admission.
+A fresh controller must bind this image, libX11, original private display/auth file,
+caller PID/main XID, deadline/output caps and child settlement before invocation.
+No global X error handler is installed in the AWT process: errors terminate only
+this disposable probe using Xlib's default error handler. No input/focus APIs.
+"""
+import ctypes as C
+import os
+import sys
+
+# Fixed public guard IDs only; never emit a traceback, observed property or path.
+LAST_PROPERTY = 'NONE'
+GUARD_CODES = {'Linux x64 ABI only': 'G01', 'focused native chooser changed': 'G02', 'cannot establish focus ancestry': 'G03', 'cannot open original private display': 'G04', 'cannot translate native client geometry': 'G05', 'chooser PID mismatch': 'G06', 'chooser owner mismatch': 'G07', 'fixed integer observation': 'G08', 'focus ancestry bound': 'G09', 'focus moved during observation': 'G10', 'fresh unconsumed runtime only': 'G11', 'invalid caller/window identity': 'G12', 'isolated interpreter required': 'G13', 'keyboard focus is not owned by chooser': 'G14', 'main PID mismatch': 'G15', 'missing/ambiguous/oversized native ownership property': 'G16', 'native geometry unavailable': 'G17', 'no separate focused native chooser': 'G18', 'original private authority required': 'G19', 'owned runtime, original caller PID, main client XID required': 'G20', 'private display required': 'G21', 'required ownership atom missing': 'G22', 'unexpected native title': 'G23', 'unsupported native frame extents': 'G24', 'unsupported native geometry': 'G25', 'unsupported property width': 'G26', 'invalid optional ownership query': 'G27'}
+from pathlib import Path
+
+
+def require(value, message):
+    if not value:
+        raise RuntimeError(message)
+
+
+def main():
+    require(sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode,
+            'isolated interpreter required')
+    require(len(sys.argv) == 4, 'owned runtime, original caller PID, main client XID required')
+    runtime, caller, main_xid = Path(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3])
+    require(str(runtime) == '/root/projects/PassVault/audit-runtime-linux-desktop-integration25',
+            'fresh unconsumed runtime only')
+    require(caller > 1 and 1 < main_xid < 2**32, 'invalid caller/window identity')
+    # Host/display admission must verify these exact paths; environment is not ownership proof.
+    require(os.environ.get('DISPLAY') == ':88', 'private display required')
+    require(os.environ.get('XAUTHORITY') == '/tmp/passvault-desktop-integration25/Xauthority',
+            'original private authority required')
+    require(C.sizeof(C.c_ulong) == 8 and C.sizeof(C.c_void_p) == 8, 'Linux x64 ABI only')
+    x = C.CDLL('/usr/lib/x86_64-linux-gnu/libX11.so.6.4.0')
+    U, I, P = C.c_ulong, C.c_int, C.c_void_p
+    def bind(name, result, args):
+        f = getattr(x, name); f.restype = result; f.argtypes = args; return f
+    open_display = bind('XOpenDisplay', P, [C.c_char_p])
+    close = bind('XCloseDisplay', I, [P])
+    root_window = bind('XDefaultRootWindow', U, [P])
+    atom = bind('XInternAtom', U, [P, C.c_char_p, I])
+    prop = bind('XGetWindowProperty', I, [P, U, U, C.c_long, C.c_long, I, U,
+        C.POINTER(U), C.POINTER(I), C.POINTER(U), C.POINTER(U), C.POINTER(P)])
+    free = bind('XFree', I, [P])
+    focus = bind('XGetInputFocus', I, [P, C.POINTER(U), C.POINTER(I)])
+    tree = bind('XQueryTree', I, [P, U, C.POINTER(U), C.POINTER(U), C.POINTER(P), C.POINTER(C.c_uint)])
+    geometry = bind('XGetGeometry', I, [P, U, C.POINTER(U), C.POINTER(I), C.POINTER(I),
+        C.POINTER(C.c_uint), C.POINTER(C.c_uint), C.POINTER(C.c_uint), C.POINTER(C.c_uint)])
+    translate = bind('XTranslateCoordinates', I, [P, U, U, I, I, C.POINTER(I), C.POINTER(I), C.POINTER(U)])
+    sync = bind('XSync', I, [P, I])
+    d = open_display(b':88'); require(d, 'cannot open original private display')
+    try:
+        root = root_window(d)
+        def property_value(window, name, kind, fmt, count, allow_absent=False):
+            global LAST_PROPERTY
+            LAST_PROPERTY = {
+                '_NET_ACTIVE_WINDOW': 'ACTIVE',
+                '_NET_WM_PID': 'MAIN_PID' if window == main_xid else 'CHOOSER_PID',
+                'WM_TRANSIENT_FOR': 'OWNER', '_NET_WM_NAME': 'TITLE', '_NET_FRAME_EXTENTS': 'FRAME',
+            }.get(name, 'UNCLASSIFIED')
+            name_atom, kind_atom = atom(d, name.encode('ascii'), 1), atom(d, kind.encode('ascii'), 1)
+            require(name_atom and kind_atom, 'required ownership atom missing')
+            actual, width, n, remaining, data = U(), I(), U(), U(), P()
+            try:
+                result = prop(d, window, name_atom, 0, 64, 0, kind_atom,
+                    C.byref(actual), C.byref(width), C.byref(n), C.byref(remaining), C.byref(data))
+                # Only focus-ancestor discovery may skip an absent transient-owner
+                # property. A malformed/present foreign property never becomes absence.
+                require(not allow_absent or (name == 'WM_TRANSIENT_FOR' and kind == 'WINDOW'
+                        and fmt == 32 and count == 1), 'invalid optional ownership query')
+                if (allow_absent and result == 0 and actual.value == 0 and width.value == 0
+                        and n.value == 0 and remaining.value == 0):
+                    return None
+                require(result == 0 and actual.value == kind_atom and width.value == fmt
+                        and remaining.value == 0 and n.value == count and data.value,
+                        'missing/ambiguous/oversized native ownership property')
+                if fmt == 8:
+                    return C.string_at(data, count)
+                require(fmt == 32, 'unsupported property width')
+                return list(C.cast(data, C.POINTER(U))[:count])
+            finally:
+                if data.value: free(data)
+        def single(window, name, kind):
+            return property_value(window, name, kind, 32, 1)[0]
+        def focused_chooser():
+            # Walk only the actual input-focus ancestry, never root children or
+            # a global window list. No EWMH active-window proxy authorizes input.
+            current, revert = U(), I(); focus(d, C.byref(current), C.byref(revert))
+            seen = set()
+            for _ in range(32):
+                require(current.value > 1 and current.value not in (root, main_xid)
+                        and current.value not in seen, 'no separate focused native chooser')
+                seen.add(current.value)
+                owner = property_value(current.value, 'WM_TRANSIENT_FOR', 'WINDOW', 32, 1,
+                                       allow_absent=True)
+                if owner is not None:
+                    require(owner == [main_xid], 'chooser owner mismatch')
+                    return current.value
+                parent, got_root, children, count = U(), U(), P(), C.c_uint()
+                try:
+                    require(tree(d, current, C.byref(got_root), C.byref(parent),
+                            C.byref(children), C.byref(count)) != 0 and got_root.value == root,
+                            'cannot establish focus ancestry')
+                finally:
+                    if children.value: free(children)
+                current = parent
+            raise RuntimeError('focus ancestry bound')
+        chooser = focused_chooser()
+        def identity_check():
+            require(focused_chooser() == chooser, 'focused native chooser changed')
+            require(single(main_xid, '_NET_WM_PID', 'CARDINAL') == caller, 'main PID mismatch')
+            require(single(chooser, '_NET_WM_PID', 'CARDINAL') == caller, 'chooser PID mismatch')
+            require(single(chooser, 'WM_TRANSIENT_FOR', 'WINDOW') == main_xid, 'chooser owner mismatch')
+            title = b'Save encrypted backup'
+            require(property_value(chooser, '_NET_WM_NAME', 'UTF8_STRING', 8, len(title)) == title,
+                    'unexpected native title')
+        def focused_descendant():
+            current, revert = U(), I(); focus(d, C.byref(current), C.byref(revert))
+            first = current.value; seen = set()
+            for _ in range(32):
+                if current.value == chooser: return first
+                require(current.value > 1 and current.value != root and current.value not in seen,
+                        'keyboard focus is not owned by chooser')
+                seen.add(current.value); parent, got_root, children, count = U(), U(), P(), C.c_uint()
+                try:
+                    require(tree(d, current, C.byref(got_root), C.byref(parent), C.byref(children), C.byref(count)) != 0
+                            and got_root.value == root, 'cannot establish focus ancestry')
+                finally:
+                    if children.value: free(children)
+                current = parent
+            raise RuntimeError('focus ancestry bound')
+        identity_check(); first_focus = focused_descendant()
+        got_root, gx, gy, width, height, border, depth = U(), I(), I(), C.c_uint(), C.c_uint(), C.c_uint(), C.c_uint()
+        require(geometry(d, chooser, C.byref(got_root), C.byref(gx), C.byref(gy), C.byref(width),
+                C.byref(height), C.byref(border), C.byref(depth)) != 0 and got_root.value == root,
+                'native geometry unavailable')
+        screen_x, screen_y, child = I(), I(), U()
+        require(translate(d, chooser, root, 0, 0, C.byref(screen_x), C.byref(screen_y), C.byref(child)) != 0,
+                'cannot translate native client geometry')
+        require(0 < width.value <= 4096 and 0 < height.value <= 4096 and border.value <= 16,
+                'unsupported native geometry')
+        extents = property_value(chooser, '_NET_FRAME_EXTENTS', 'CARDINAL', 32, 4)
+        require(all(0 <= value <= 128 for value in extents), 'unsupported native frame extents')
+        identity_check(); require(focused_descendant() == first_focus, 'focus moved during observation')
+        sync(d, 0)
+        return dict(format='passvault-owned-chooser-observation-v1', caller_pid=caller, main_xid=main_xid,
+            chooser_xid=chooser, focus_xid=first_focus, client=[screen_x.value, screen_y.value,width.value,height.value],
+            frame_extents=extents, qualification='bounded point observation, not atomic input authorization')
+    finally:
+        close(d)
+
+
+if __name__ == '__main__':
+    try:
+        value = main()
+    except Exception as failure:
+        code = GUARD_CODES.get(str(failure), 'UNCLASSIFIED') if type(failure) is RuntimeError else 'UNCLASSIFIED'
+        print('PVU003_NATIVE_FAILURE_V1\t' + code + '\t' + LAST_PROPERTY)
+        raise SystemExit(1)
+    fields = [value['caller_pid'], value['main_xid'], value['chooser_xid'], value['focus_xid'],
+              *value['client'], *value['frame_extents']]
+    require(len(fields) == 12 and all(type(v) is int for v in fields), 'fixed integer observation')
+    print('PVU003_NATIVE_BOUNDS_V2\t' + '\t'.join(str(v) for v in fields))

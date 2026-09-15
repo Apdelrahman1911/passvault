@@ -1,0 +1,46 @@
+--- windows04/passvault_biometric_windows_security_test.cpp
++++ membership-proposal/passvault_biometric_windows_security_test.cpp
+@@ -1161,9 +1161,24 @@
+                 GetProcessId(child.info.hProcess) == child.info.dwProcessId &&
+                 GetProcessIdOfThread(child.info.hThread) == child.info.dwProcessId &&
+                 GetProcessTimes(child.info.hProcess, &creation, &exit_time, &kernel, &user));
+-  // Read-only diagnostic of this original unnamed Job while its only admitted
+-  // child is still suspended. Do not turn a nested-Job counter into a relaxed
+-  // ownership oracle; the existing late TotalProcesses == 1 check is retained.
++  // Bind the actual member, not just a cumulative association counter. The
++  // unnamed non-inheritable Job has no breakaway mode and permits one active
++  // process; this parent performs exactly one assignment before resuming it.
++  DWORD job_handle_flags = 0;
++  JOBOBJECT_EXTENDED_LIMIT_INFORMATION effective_limits{};
++  JOBOBJECT_BASIC_PROCESS_ID_LIST initial_members{};
++  PV_TEST_CHECK(GetHandleInformation(job.get(), &job_handle_flags) &&
++                (job_handle_flags & HANDLE_FLAG_INHERIT) == 0 &&
++                QueryInformationJobObject(job.get(), JobObjectExtendedLimitInformation,
++                    &effective_limits, static_cast<DWORD>(sizeof(effective_limits)), nullptr) &&
++                effective_limits.BasicLimitInformation.LimitFlags ==
++                    (JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE | JOB_OBJECT_LIMIT_ACTIVE_PROCESS) &&
++                effective_limits.BasicLimitInformation.ActiveProcessLimit == 1 &&
++                QueryInformationJobObject(job.get(), JobObjectBasicProcessIdList,
++                    &initial_members, static_cast<DWORD>(sizeof(initial_members)), nullptr) &&
++                initial_members.NumberOfAssignedProcesses == 1 &&
++                initial_members.NumberOfProcessIdsInList == 1 &&
++                initial_members.ProcessIdList[0] == static_cast<ULONG_PTR>(child.info.dwProcessId));
+   JOBOBJECT_BASIC_ACCOUNTING_INFORMATION initial_accounting{};
+   PV_TEST_CHECK(QueryInformationJobObject(job.get(), JobObjectBasicAccountingInformation,
+       &initial_accounting, static_cast<DWORD>(sizeof(initial_accounting)), nullptr));
+@@ -1228,7 +1243,14 @@
+       static_cast<unsigned long>(accounting.ActiveProcesses),
+       static_cast<unsigned long>(accounting.TotalTerminatedProcesses)) > 0);
+   PV_TEST_CHECK(std::fflush(stdout) == 0);
+-  PV_TEST_CHECK(accounting.TotalProcesses == 1);
++  // TotalProcesses also counts failed associations (including limit failures),
++  // so it cannot prove successful admission cardinality. Preserve its diagnostic
++  // above; require an empty original Job after the exact child handle settled.
++  JOBOBJECT_BASIC_PROCESS_ID_LIST final_members{};
++  PV_TEST_CHECK(QueryInformationJobObject(job.get(), JobObjectBasicProcessIdList,
++      &final_members, static_cast<DWORD>(sizeof(final_members)), nullptr) &&
++      final_members.NumberOfAssignedProcesses == 0 &&
++      final_members.NumberOfProcessIdsInList == 0);
+ 
+   BY_HANDLE_FILE_INFORMATION final_destination{}, final_sentinel{}, retained_temporary{};
+   PV_TEST_CHECK(snapshot_writer_file(sentinel, sentinel_bytes, &final_sentinel) &&

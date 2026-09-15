@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "utc": "2026-09-15T01:36:26.739245+00:00",
+  "reviewer": "/root/current_ledger",
+  "author": "/root",
+  "disposition": "ACCEPT_IMAGE03_ORIGINAL_PREBUILD_FAILURE_AND_LOGICAL_RETIREMENT_ONLY",
+  "scope": "Original terminal/stdout plus retained source/data only. No old-runtime inquiry/replay/recovery/deletion and no namespace-cleanup claim.",
+  "bindings": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image03-instance01/ORIGINAL-TOOL-RESULT.json",
+      "bytes": 281,
+      "sha256": "221e7d8fac9abd121a055e23e054b29749427538957d3c9db9a47c3938615da5"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image03-instance01/ORIGINAL-STDOUT.txt",
+      "bytes": 933,
+      "sha256": "f8731a952c86a5b89aa76bed923297b8b8dba68cc61dc96dceabb51e2108c71c"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image03-instance01/OUTER.py",
+      "bytes": 108709,
+      "sha256": "b8c56c0e3cc421f89685be2524ab065fbcb7fe6a59ccec2af2521ea2df49e14b"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image03-instance01/INNER.py",
+      "bytes": 91464,
+      "sha256": "4b3ff021c851e86c33398dbe344df57102f103da76cf1719b5bc441fd5792a44"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image03-instance01/INIT.gradle",
+      "bytes": 55775,
+      "sha256": "daf4e7e5cbdf9531519192410de33138766188f38c254e492d93018ba919950a"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image03-instance01/REQUEST.json",
+      "bytes": 38236,
+      "sha256": "750d11eebeabdf6f4c3dd876680def4c986427cccd6aeede5a2c58f1e58d0ccd"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image03-instance01/APPROVAL.json",
+      "bytes": 1247,
+      "sha256": "bbc740cdfc1784d82b80148e7722e1e45e1e5c3e922785d45583dedf466fa3bb"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/desktop_image03_heap_source/SOURCE-REVIEW.json",
+      "bytes": 7106,
+      "sha256": "46a445b250fdc1607c09d0fe0c39e8d9562159b4a1bda39969d3f2f3258c3a4f"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/desktop_image03_instance/INSTANCE-REVIEW.json",
+      "bytes": 6004,
+      "sha256": "790d84bb298aa8d7c498c4a6b60b435f49c160e9e78d36a514f347dc99ed7446"
+    }
+  ],
+  "actual": {
+    "original_tool_chunk": "0c3e33",
+    "original_tool_exit": 70,
+    "session_id": null,
+    "stdout_receipt": {
+      "inner_started": false,
+      "children": [],
+      "cleanup": "NOT_ATTEMPTED",
+      "status": "HOLD",
+      "elapsed_seconds": 0.008,
+      "resource_points": [],
+      "reason": "RuntimeError:input image/pin mismatch",
+      "preterminal": true
+    },
+    "qualification": "Fallback JSON was originally emitted to stdout; no OUTER-RECEIPT file was created. Earlier claimed runs/.../OUTER-RECEIPT path and ORIGINAL-TOOL-RESULT qualification were incorrect and are superseded here. Retained ORIGINAL-STDOUT is a root-provided copy of original tool stdout, not regenerated output. Actual terminal70 supplements, not erases, preterminal receipt qualification."
+  },
+  "source_proof": {
+    "outer_first_required_input": "INNER",
+    "request_and_installed_inner_sha256": "4b3ff021c851e86c33398dbe344df57102f103da76cf1719b5bc441fd5792a44",
+    "outer_frozen_inner_sha256": "7f1409d0556523a7580868532da0b58883c731b7d8ebcc7f06fd287f718e47c6",
+    "request_and_installed_init_sha256": "daf4e7e5cbdf9531519192410de33138766188f38c254e492d93018ba919950a",
+    "outer_and_inner_frozen_init_sha256": "77a13e5d8933976315db0bebcd82d237d1c80e80dd3c0fdd1a1e2870184c16d8",
+    "order": "OUTER88,94,1391 and1418-1424 put contradictory firstINNER equality before watch1431, consumed-name gate1438, E/R creation1440-1441 or process launch. No value can meet both request equality and differing FROZEN hash. INNER also has stale INIT pin, independently a second source-binding defect.",
+    "limit": "Compound diagnostic does not identify a particular metadata disjunct. The immutable contradictory equalities establish a sufficient deterministic failure; do not invent other observed pin failures or infer preexisting runtime absence."
+  },
+  "review_correction": "Both author and independent reviewer missed internal FROZEN cascade. Preserve prior SOURCE-REVIEW and INSTANCE-REVIEW/approval unchanged as historical mistakes; this explicitly supersedes their image03 binding/admission sufficiency. Normalized code/source comparisons and unchanged control evidence remain useful, but Image03 was not a sound admitted heap experiment.",
+  "retirement": "Original controller terminal returned; source and original receipt establish no inner/Gradle/application/native/test start. No Gradle --stop, child settlement, runtime deletion or namespace cleanup is owed/claimed for this prebuild failure. Root may retire only the cooperative original slot and prepare a separately named corrected instance. No old runtime authority is granted.",
+  "credit": {
+    "xml_cases": 0,
+    "passed_cases": 0,
+    "family_closures": 0,
+    "mixed_xml_total_unchanged": 268,
+    "heap_hypothesis": "UNTESTED_BY_IMAGE03",
+    "readiness": "INCOMPLETE_NOT_READY"
+  },
+  "restrictions": "All STOP/NO-RETRY/CLOSED/HOLD/protected refs/tags/build1017001/eightPVD preserved. No reviewer execution/import/Git/network/build/test/process/resource/SDK/cleanup probe."
+}

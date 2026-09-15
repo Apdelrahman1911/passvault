@@ -1,0 +1,20 @@
+--- unexecutedProposal02
++++ correctedProposal03
+@@ -31,7 +31,7 @@
+ REQUEST = f"{BASE}/requests/windows-after-flush-05.json"
+ HELPER = "scripts/audit/windows_after_flush_05.py"
+ WORKFLOW = ".github/workflows/audit-windows-after-flush05.yml"
+-SCOPE = f"{BASE}/reviews/team20/resume_disk/root/windows-after-flush05-controls-proposal02/SCOPE.md"
++SCOPE = f"{BASE}/reviews/team20/resume_disk/root/windows-after-flush05-controls-proposal03/SCOPE.md"
+ REVIEW = f"{BASE}/reviews/team20/resume_disk/current_ledger/windows_after_flush05_instance/INSTANCE-ACCEPT.json"
+ SUITE = "windows-after-flush-05"
+ SDK = "10.0.26100.0"
+@@ -975,7 +975,7 @@
+     require(request.get("independent_review_sha256") == hashlib.sha256(review_data).hexdigest(), "Review hash mismatch")
+     review = json.loads(review_data, object_pairs_hook=no_duplicate_keys)
+     require(review.get("schema") == 1 and review.get("reviewer") == "/root/current_ledger" and
+-            review.get("disposition") == "ACCEPT_WINDOWS_AFTER_FLUSH_04_INSTANCE",
++            review.get("disposition") == "ACCEPT_WINDOWS_AFTER_FLUSH_05_INSTANCE",
+             "Missing genuine independent after-flush instance acceptance")
+     require(review.get("suite") == SUITE and review.get("nonce") == request["nonce"] and
+             review.get("case_names") == CASES and review.get("target") == TARGET and

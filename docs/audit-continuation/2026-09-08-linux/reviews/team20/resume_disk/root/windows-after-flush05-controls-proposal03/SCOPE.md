@@ -1,0 +1,7 @@
+# Windows05 original-member oracle correction — non-publishing scope
+
+PVA036 native after-flush two-case validation. Test-only correction of a cumulative Job counter used as an admission-cardinality oracle: read back exact hardactive1/killclose/no-breakaway limits and noninheritableJob, require original solePID while suspended, then exactemptyJob after bounded originalhandleexit/active0. Counterdiagnostics remain. All realFlushFileBuffers, content/fileidentity/order/normalrelease/processdeath/disposal assertions unchanged. Independent review accepted source; actual total2causeunknown. OldWindows04firstFAIL/secondUNSTARTED/wholeHOLD remains unchanged, not retrospectivelypassed.
+
+Only direct CMake passvault_biometric_windows_after_flush_test and its continue/process_death selectors, onebuild/oneworker; Windows2022/MSVCx64/SDK10.0.26100.0. NoGradle/provider/allocationcut/interactiveHello/productionseam.480scontroller/20minjob; originalnonbreakawayJob/controlledcleanupbeforeconfigure, shortcompactartifacts/noappbinaries. Existingdisposalcontrolfunctions unchanged; reuseaccepted8controls.
+
+Freshsourcepublication, exactsource/request/trigger/resource/coordination/admission needed before anynewrun. This inertproposal cannot activate CI. Rootsolebuildowner; no overlapwithlocalGUI24. AllSTOP/NO-RETRY/CLOSED/HOLD/protectedrefs/tag/build1017001 preserved. No signing/publishing/Store/version/productiondependencychange.

@@ -1,0 +1,9 @@
+# Source-only hypothesis: cumulative Job accounting is not admission cardinality
+
+Windows04 original34915384375 retains a failure, not a pass: suspended total1/active1/terminated0; settled total2/active0/terminated0. The process-death selector did not run. Entire remote runtime remainsHOLD. Do not retry it or read any private runtime.
+
+The public Microsoft JOBOBJECT_BASIC_ACCOUNTING_INFORMATION contract explicitly says TotalProcesses also increments for association attempts that fail a limit check. Thus the post-exit `TotalProcesses == 1` assertion conflates a cumulative counter with successful admission cardinality. This does NOT establish what caused the observed increment, whether a rejected association happened, or whether the product is defective. The malformed separate limit-page excerpt is marked INVALID and supplies no evidence.
+
+Potential repair, NOT implemented/admitted: preserve original CreateProcess handle/creationtime/PID+thread identity/IsProcessInJob binding, exact initial single-member snapshot, configured one-active-process and kill-on-close/no-breakaway Job limits, bounded original child wait/exit and whole-Job active-zero settlement. Replace the invalid cumulative-cardinality assumption only if an independent reviewer can establish that this complete ownership oracle excludes an unowned admitted worker across the relevant lifetime. Do NOT simply change the expected total to2, accept arbitrary deltas, or call the failing run a pass. Completion-port notifications alone are not assumed to be exhaustive.
+
+A separately reviewed source correction and fresh targeted Windows instance would still be required. Original controls/evidence and all two-case filesystem-content/identity/order/cleanup assertions remain necessary. No production or provider seam changes are proposed.

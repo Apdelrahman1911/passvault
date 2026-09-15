@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "suite": "windows-after-flush-05",
+  "nonce": "262deb5429d4d9c842d0bc6c830d6699",
+  "case_names": [
+    "passvault_biometric_windows_after_flush_continue",
+    "passvault_biometric_windows_after_flush_process_death"
+  ],
+  "case_argv": {
+    "passvault_biometric_windows_after_flush_continue": [
+      "--after-flush-case",
+      "continue"
+    ],
+    "passvault_biometric_windows_after_flush_process_death": [
+      "--after-flush-case",
+      "process_death"
+    ]
+  },
+  "target": "passvault_biometric_windows_after_flush_test",
+  "audit_controls": false,
+  "after_flush_controls": true,
+  "sdk": "10.0.26100.0",
+  "max_seconds": 480,
+  "helper_sha256": "6dc4e6f7860b36619a8a86648d128358b769e5e1b8901a4dfcf2bba9c6cadd97",
+  "workflow_sha256": "dde74bf199b459e061b5a1b6a40ffaeae42a2fcf36746aa1a105530e106f2ac8",
+  "scope_sha256": "537898a02c7169f48ddca682d323975548be68fd4d445671f6af1f85cdfdaf79",
+  "input_sha256": {
+    ".gitattributes": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5",
+    "app-desktop/native/biometric-bridge/CMakeLists.txt": "5bd3de7d16958c466ad740b2c14800f2f8b81e115323ad486ecf5a08f02a036e",
+    "app-desktop/native/biometric-bridge/include/passvault_biometric.h": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+    "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp": "93746b0cdb399aa17dd8c3c915e907244d4e86e5b566c51714ccc7f80310bd5d",
+    "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.rc": "13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c",
+    "app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+    "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp": "7644a27f40fe0b3f1fa50df36825f2dac5b833573326d37b0e9b8c7683dfa854",
+    "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/platform_review/new80/PVA036-AFTER-FLUSH-SOURCE-REVIEW.json": "742c0c820bdbfe1c31d3dc96ed1a04cfd8a5449285651ea05bb773456c59c9d2"
+  },
+  "utc": "2026-09-15T01:17:27.701323+00:00",
+  "reviewer": "/root/current_ledger",
+  "author": "/root",
+  "disposition": "ACCEPT_WINDOWS_AFTER_FLUSH_05_INSTANCE",
+  "authority_scope": "EXACT_NONCE_AND_SOURCE_CONTENT_CONTRACT_ONLY_NOT_PUBLICATION_ACTIVATION_OR_CI_EXECUTION",
+  "source_review": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/windows_after_flush05_controls_source/SOURCE-REVIEW.json",
+    "bytes": 4874,
+    "sha256": "dd9493db9c31690dd08f0b4a6396501a1ec3afaa776caa596c76e53e03fa0156"
+  },
+  "membership_review": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/windows_job_membership_source/SOURCE-REVIEW.json",
+    "bytes": 6854,
+    "sha256": "4a816b5d2f227977b85d4f07c86298a2dfbbbf56940f1e8a0b9e9a004e3caa7d"
+  },
+  "proposal": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-after-flush05-controls-proposal03/PROPOSAL.json",
+    "bytes": 2445,
+    "sha256": "1ec9147d699c4dfde9ea3524ce4fb7945f1db63fe0ca568e27956d291480592b"
+  },
+  "installation_qualification": "Combinedsource/contentacceptance permits rootinstall exactbytes; doesnotclaiminstallationactualverified. Sourcepublicationmanifest mustbindinstalledbytes before sourcecommit/push/activation; no install-onlyreviewlooprequired.",
+  "remaining": "Freshsource-onlypublication manifest/tree/privacy/triggerreview; then direct-child exactrequestactivation/observer/resources/exclusivity/cleanup admission after previousheavyjobactualadoption/retirement. OriginaltwoXML/nativeJob/handle/cleanup actuals needindependentreview; alloldHOLD unchanged/no retry.",
+  "credit": {
+    "cases": 0,
+    "family_closures": 0
+  }
+}

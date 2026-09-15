@@ -1,0 +1,85 @@
+--- acceptedGUI24probe
++++ proposedGUI25focusdiscovery
+@@ -11,7 +11,7 @@
+ 
+ # Fixed public guard IDs only; never emit a traceback, observed property or path.
+ LAST_PROPERTY = 'NONE'
+-GUARD_CODES = {'Linux x64 ABI only': 'G01', 'active native window changed': 'G02', 'cannot establish focus ancestry': 'G03', 'cannot open original private display': 'G04', 'cannot translate native client geometry': 'G05', 'chooser PID mismatch': 'G06', 'chooser owner mismatch': 'G07', 'fixed integer observation': 'G08', 'focus ancestry bound': 'G09', 'focus moved during observation': 'G10', 'fresh unconsumed runtime only': 'G11', 'invalid caller/window identity': 'G12', 'isolated interpreter required': 'G13', 'keyboard focus is not owned by chooser': 'G14', 'main PID mismatch': 'G15', 'missing/ambiguous/oversized native ownership property': 'G16', 'native geometry unavailable': 'G17', 'no separate active native chooser': 'G18', 'original private authority required': 'G19', 'owned runtime, original caller PID, main client XID required': 'G20', 'private display required': 'G21', 'required ownership atom missing': 'G22', 'unexpected native title': 'G23', 'unsupported native frame extents': 'G24', 'unsupported native geometry': 'G25', 'unsupported property width': 'G26'}
++GUARD_CODES = {'Linux x64 ABI only': 'G01', 'focused native chooser changed': 'G02', 'cannot establish focus ancestry': 'G03', 'cannot open original private display': 'G04', 'cannot translate native client geometry': 'G05', 'chooser PID mismatch': 'G06', 'chooser owner mismatch': 'G07', 'fixed integer observation': 'G08', 'focus ancestry bound': 'G09', 'focus moved during observation': 'G10', 'fresh unconsumed runtime only': 'G11', 'invalid caller/window identity': 'G12', 'isolated interpreter required': 'G13', 'keyboard focus is not owned by chooser': 'G14', 'main PID mismatch': 'G15', 'missing/ambiguous/oversized native ownership property': 'G16', 'native geometry unavailable': 'G17', 'no separate focused native chooser': 'G18', 'original private authority required': 'G19', 'owned runtime, original caller PID, main client XID required': 'G20', 'private display required': 'G21', 'required ownership atom missing': 'G22', 'unexpected native title': 'G23', 'unsupported native frame extents': 'G24', 'unsupported native geometry': 'G25', 'unsupported property width': 'G26', 'invalid optional ownership query': 'G27'}
+ from pathlib import Path
+ 
+ 
+@@ -25,12 +25,12 @@
+             'isolated interpreter required')
+     require(len(sys.argv) == 4, 'owned runtime, original caller PID, main client XID required')
+     runtime, caller, main_xid = Path(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3])
+-    require(str(runtime) == '/root/projects/PassVault/audit-runtime-linux-desktop-integration24',
++    require(str(runtime) == '/root/projects/PassVault/audit-runtime-linux-desktop-integration25',
+             'fresh unconsumed runtime only')
+     require(caller > 1 and 1 < main_xid < 2**32, 'invalid caller/window identity')
+     # Host/display admission must verify these exact paths; environment is not ownership proof.
+     require(os.environ.get('DISPLAY') == ':88', 'private display required')
+-    require(os.environ.get('XAUTHORITY') == '/tmp/passvault-desktop-integration24/Xauthority',
++    require(os.environ.get('XAUTHORITY') == '/tmp/passvault-desktop-integration25/Xauthority',
+             'original private authority required')
+     require(C.sizeof(C.c_ulong) == 8 and C.sizeof(C.c_void_p) == 8, 'Linux x64 ABI only')
+     x = C.CDLL('/usr/lib/x86_64-linux-gnu/libX11.so.6.4.0')
+@@ -53,7 +53,7 @@
+     d = open_display(b':88'); require(d, 'cannot open original private display')
+     try:
+         root = root_window(d)
+-        def property_value(window, name, kind, fmt, count):
++        def property_value(window, name, kind, fmt, count, allow_absent=False):
+             global LAST_PROPERTY
+             LAST_PROPERTY = {
+                 '_NET_ACTIVE_WINDOW': 'ACTIVE',
+@@ -66,6 +66,13 @@
+             try:
+                 result = prop(d, window, name_atom, 0, 64, 0, kind_atom,
+                     C.byref(actual), C.byref(width), C.byref(n), C.byref(remaining), C.byref(data))
++                # Only focus-ancestor discovery may skip an absent transient-owner
++                # property. A malformed/present foreign property never becomes absence.
++                require(not allow_absent or (name == 'WM_TRANSIENT_FOR' and kind == 'WINDOW'
++                        and fmt == 32 and count == 1), 'invalid optional ownership query')
++                if (allow_absent and result == 0 and actual.value == 0 and width.value == 0
++                        and n.value == 0 and remaining.value == 0):
++                    return None
+                 require(result == 0 and actual.value == kind_atom and width.value == fmt
+                         and remaining.value == 0 and n.value == count and data.value,
+                         'missing/ambiguous/oversized native ownership property')
+@@ -77,10 +84,32 @@
+                 if data.value: free(data)
+         def single(window, name, kind):
+             return property_value(window, name, kind, 32, 1)[0]
+-        chooser = single(root, '_NET_ACTIVE_WINDOW', 'WINDOW')
+-        require(chooser > 1 and chooser != main_xid, 'no separate active native chooser')
++        def focused_chooser():
++            # Walk only the actual input-focus ancestry, never root children or
++            # a global window list. No EWMH active-window proxy authorizes input.
++            current, revert = U(), I(); focus(d, C.byref(current), C.byref(revert))
++            seen = set()
++            for _ in range(32):
++                require(current.value > 1 and current.value not in (root, main_xid)
++                        and current.value not in seen, 'no separate focused native chooser')
++                seen.add(current.value)
++                owner = property_value(current.value, 'WM_TRANSIENT_FOR', 'WINDOW', 32, 1,
++                                       allow_absent=True)
++                if owner is not None:
++                    require(owner == [main_xid], 'chooser owner mismatch')
++                    return current.value
++                parent, got_root, children, count = U(), U(), P(), C.c_uint()
++                try:
++                    require(tree(d, current, C.byref(got_root), C.byref(parent),
++                            C.byref(children), C.byref(count)) != 0 and got_root.value == root,
++                            'cannot establish focus ancestry')
++                finally:
++                    if children.value: free(children)
++                current = parent
++            raise RuntimeError('focus ancestry bound')
++        chooser = focused_chooser()
+         def identity_check():
+-            require(single(root, '_NET_ACTIVE_WINDOW', 'WINDOW') == chooser, 'active native window changed')
++            require(focused_chooser() == chooser, 'focused native chooser changed')
+             require(single(main_xid, '_NET_WM_PID', 'CARDINAL') == caller, 'main PID mismatch')
+             require(single(chooser, '_NET_WM_PID', 'CARDINAL') == caller, 'chooser PID mismatch')
+             require(single(chooser, 'WM_TRANSIENT_FOR', 'WINDOW') == main_xid, 'chooser owner mismatch')

@@ -1,0 +1,68 @@
+# Fresh metadata preparation only. Never import/execute the old validation runner.
+from pathlib import Path
+import ast, datetime, hashlib, json, os, stat
+D=Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root')
+B=D.parents[3]; H=D/'desktop-image04-instance01'; S=D/'EXECUTION_SLOT.json'
+assert not json.loads(S.read_text())['operation']['active']
+assert not (H/'REQUEST.json').exists()
+def descriptor(p):
+ b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+def pin(s,directory=False):
+ v={k:getattr(s,'st_'+k) for k in ('dev','ino','uid','mode')}
+ if not directory:v.update(nlink=s.st_nlink,bytes=s.st_size,mtime_ns=s.st_mtime_ns,ctime_ns=s.st_ctime_ns)
+ return v
+def capture(p):
+ original=p.lstat();target=p
+ if stat.S_ISLNK(original.st_mode):
+  assert str(p)=='/usr/bin/python3' and os.readlink(p)=='python3.12';target=Path('/usr/bin/python3.12')
+ before=target.lstat();assert stat.S_ISREG(before.st_mode) and before.st_nlink==1 and before.st_uid==0 and not before.st_mode&0o022 and before.st_size<=32*1024**2
+ fd=os.open(target,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)
+ try:
+  with os.fdopen(fd,'rb',closefd=False) as f:b=f.read(32*1024**2+1)
+  assert len(b)==before.st_size and pin(before)==pin(os.fstat(fd))==pin(target.lstat()) and pin(original)==pin(p.lstat())
+ finally:os.close(fd)
+ v={'sha256':hashlib.sha256(b).hexdigest(),'pin':pin(before)}
+ if target!=p:v.update(link_pin=pin(original),link_target='python3.12')
+ return v
+def constant(name):
+ n=next(n for n in ast.parse((H/'OUTER.py').read_text()).body if isinstance(n,ast.Assign) and isinstance(n.targets[0],ast.Name) and n.targets[0].id==name)
+ return ast.literal_eval(n.value)
+old=json.loads((B/'requests/LINUX-DESKTOP-INSTALLED-IMAGE-01.json').read_text())
+r=json.loads(json.dumps(old).replace('installed-image01','installed-image04').replace('INSTALLED_IMAGE01','INSTALLED_IMAGE04').replace('.audit-coordination-linux-20260908','.audit-coordination-linux-20260914-c20'))
+replacements={str(B/'reviews/desktop-installed-image04-outer/LAUNCH.py'):str(H/'OUTER.py'),str(B.parents[2]/'scripts/audit/linux_desktop_installed_image_01.py'):str(H/'INNER.py'),str(B.parents[2]/'scripts/audit/desktop_installed_image_01.init.gradle'):str(H/'INIT.gradle')}
+paths=[Path(replacements.get(p,p)) for p in r['images']];assert len(paths)==len(set(paths))==24
+assert H/'INNER.py' in paths and H/'INIT.gradle' in paths and H/'OUTER.py' in paths
+r['images']={str(p):capture(p) for p in paths}
+# Bind every literal source hash to its exact captured target before admission.
+# Read AST as DATA only; never import a controller while preparing metadata.
+for controller, names in [(H/'INNER.py', {'INIT': H/'INIT.gradle'}),
+                          (H/'OUTER.py', {'INIT': H/'INIT.gradle', 'INNER': H/'INNER.py'})]:
+ tree=ast.parse(controller.read_text())
+ node=next(n.value for n in tree.body if isinstance(n,ast.Assign) and isinstance(n.targets[0],ast.Name) and n.targets[0].id=='FROZEN')
+ frozen={k.id:ast.literal_eval(v) for k,v in zip(node.keys,node.values)}
+ for name,path in names.items():assert frozen[name]==r['images'][str(path)]['sha256'], 'Embedded helper hash cascade mismatch'
+r['directories']={p:pin(Path(p).lstat(),True) for p in r['directories']}
+r['lock']=pin(Path('/root/projects/PassVault/.audit-coordination-linux-20260914-c20/build.lock').lstat());assert r['lock']==constant('EXPECTED_LOCK')
+r['parent_namespaces']={k:os.readlink('/proc/self/ns/'+k) for k in ('pid','mnt')}
+r['image_binding']=constant('IMAGE_BINDING')
+g=Path(r['git_inventory_binding']['publication_store']);r['git_inventory_binding']['metadata_directory']=pin(g.lstat(),True)
+r['git_inventory_binding']['excludes']['info_directory']={**pin((g/'info').lstat(),True),'nlink':(g/'info').lstat().st_nlink}
+r['sdk_existing_use']['directory']=pin(Path('/opt/android-sdk').lstat(),True)
+for path,v in r['tool_aliases'].items():
+ p=Path(path);v['lstat']=pin(p.lstat());v['readlink']=os.readlink(p) if p.is_symlink() else None
+now=datetime.datetime.now(datetime.timezone.utc).isoformat();fs=os.statvfs(D)
+resources={'disk_available_bytes':fs.f_bavail*fs.f_frsize,'meminfo':[l for l in Path('/proc/meminfo').read_text().splitlines() if l.startswith(('MemTotal:','MemAvailable:'))]}
+assert resources['disk_available_bytes']>=8*1024**3
+facts={'utc':now,**{k:r[k] for k in ('images','directories','lock','parent_namespaces','git_inventory_binding','sdk_existing_use','tool_aliases')},'resources':resources,'store_head':capture(g/'HEAD'),'qualification':'Fresh fixedinputs/necessaryparents/lock/selfnamespace only; no oldruntime or retired WGit inquiry. OriginalImage01 request is DATA schema reference only, not authority.'}
+(H/'FRESH-FACTS01.json').write_text(json.dumps(facts,indent=2)+'\n');(H/'SCHEDULER-BEFORE-REQUEST.json').write_bytes(S.read_bytes())
+coverage='Rootsolebuild/test/Git/CI/cleanupowner; current_ledger reviewonly. GUI24andWindows04andImage03 originals independentlyadopted/slotsretired. Image03 prebuildFROZENcascadefailure retained; nochildren orGradlestopowed. New04correctsallfixedhelperhashes and reusesaccepted4GiBheappolicy; nooriginal03replay. Image02 failedreportedOOM/callbackinvalid/zeroqualifiedselectors; originalstop0/NSsettled/runtimeHOLD untouched. NewImage04 resourcehypothesis restoreschecked-in4GiBGradleheap from2GiB; exactOOMcauseunknown. P23rawsource unchanged; same3installedchecks shareonecreateReleaseDistributable. Fourunchangedprojectioncontrols reused, notrerun. No oldruntimeprobe/retry/deletion. Fresh24fixedinputs and currentparent/lock/alias/sourcefacts; sharedtools/cachesreadonly.8GiBentry5running3private25percententry20percentrunningRAM and originalcleanupreservesunchanged; normal12unmet. Syntheticpublicsupportonly/nopublication. Originalwrapperstop/namespace/source/callbackvalidatedallowlistedcleanup required; unexpecteddiagnosticsHOLD. AllpreviousSTOP/NO-RETRY/CLOSED/HOLD preserved; no hardwareorreadinessclaim.'
+(H/'HOST-CUSTODY.json').write_text(json.dumps({'utc':now,'coverage':coverage,'qualification':'Current root cooperative scheduling/custody assertions; not globalidleness/oldruntimeownership.'},indent=2)+'\n')
+(H/'RESOURCE-FALLBACK-PROPOSAL.json').write_text(json.dumps({'normal_floor_unmet':True,'entryGiB':8,'runningGiB':5,'privateGiB':3,'ramEntryFraction':0.25,'ramRunningFraction':0.2,'reason':'Userpermitsbelow12GiB; conservativebatch8/5/3 diskgeometry unchanged;4GiBGradleheapresourcehypothesis subjecttoindependentreview; no unsafeoldHOLD/cachedeletion. Oneheavyjob only.','resources':resources},indent=2)+'\n')
+records=[H/'FRESH-FACTS01.json',H/'SCHEDULER-BEFORE-REQUEST.json',H/'HOST-CUSTODY.json',H/'INSTALL.json',H/'RESOURCE-FALLBACK-PROPOSAL.json',D/'gui24-instance01/ACTUAL-ADOPTION.json',D/'windows-after-flush-ci04/ACTUAL-ADOPTION.json',D/'desktop-image02-failure-projection01/ACTUAL-ADOPTION04.json',D.parent/'current_ledger/desktop_image04_binding_source/SOURCE-REVIEW.json',D/'desktop-image02-instance01/ACTUAL-ADOPTION.json',D/'desktop-image03-instance01/ACTUAL-ADOPTION.json']
+policy={'id':constant('HOST_POLICY_ID'),'candidate_classification':'UNKNOWN_ORIGINAL_PARENT_PID_MNT_OR_BOUND_NONLIVE','root_assertions':dict.fromkeys(constant('HOST_POLICY_ASSERTIONS'),True),'root_evidence':{}}
+for name in ['audit_launch_accounting','local_and_ci_scheduler','source_control_tools_cache_custody']:
+ policy['root_evidence'][name]={'coverage':coverage,'records':[descriptor(p) for p in records]}
+policy['root_evidence']['shared_host_capacity']={'coverage':coverage,'records':[descriptor(H/'FRESH-FACTS01.json'),descriptor(H/'RESOURCE-FALLBACK-PROPOSAL.json')]}
+policy['root_evidence']['scanner_kernel_contracts']=json.loads((D/'gui23-instance01/REQUEST.json').read_text())['host_policy']['root_evidence']['scanner_kernel_contracts']
+r['host_policy']=policy
+(H/'REQUEST.json').write_text(json.dumps(r,indent=2)+'\n');print(descriptor(H/'REQUEST.json'))

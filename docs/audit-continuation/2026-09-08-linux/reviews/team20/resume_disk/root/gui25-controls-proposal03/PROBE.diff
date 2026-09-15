@@ -1,0 +1,15 @@
+--- 
++++ 
+@@ -117,10 +117,10 @@
+             ready_until = time.monotonic() + 1.0
+             for _ in range(101):
+                 current, revert = U(), I(); focus(d, C.byref(current), C.byref(revert))
++                remaining = ready_until - time.monotonic()
++                require(remaining > 0, 'initial focus readiness deadline')
+                 if current.value not in (0, 1, root, main_xid):
+                     break  # Any other focus enters strict ownership discovery NOW.
+-                remaining = ready_until - time.monotonic()
+-                require(remaining > 0, 'initial focus readiness deadline')
+                 time.sleep(min(0.01, remaining))
+             else:
+                 raise RuntimeError('initial focus readiness deadline')

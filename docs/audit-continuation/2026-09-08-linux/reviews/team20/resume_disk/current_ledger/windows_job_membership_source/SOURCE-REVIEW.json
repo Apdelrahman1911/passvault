@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "utc": "2026-09-15T01:11:04.748271+00:00",
+  "reviewer": "/root/current_ledger",
+  "author": "/root",
+  "disposition": "ACCEPT_NARROW_TEST_ONLY_JOB_MEMBERSHIP_ORACLE_SOURCE",
+  "scope": "PVA036 after-real-flush fixture ownership oracle only. Root may install these exact source bytes; no publication/activation/execution admission and no old-runtime inquiry/retry/recovery/deletion.",
+  "bindings": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-job-membership-proposal01/passvault_biometric_windows_security_test.cpp",
+      "bytes": 81936,
+      "sha256": "7644a27f40fe0b3f1fa50df36825f2dac5b833573326d37b0e9b8c7683dfa854"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-after-flush-accounting04-proposal01/passvault_biometric_windows_security_test.cpp.txt",
+      "bytes": 80317,
+      "sha256": "38b41ccf932e16683419fd8f18f84b769148016266befe2d1e6d29cc0cc535b8"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-job-membership-proposal01/SOURCE.diff",
+      "bytes": 3265,
+      "sha256": "24fee56a45b73c9d157110cb6b04b727cc36a497edc3e9f7740c434bf5031a56"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-job-membership-proposal01/PROPOSAL.json",
+      "bytes": 1068,
+      "sha256": "d5a527bd63c17256f1067d3fd935e7f0c748f4cf142a77e86241d57a3c43c741"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-job-accounting-source01/API-DOC-EXCERPT.json",
+      "bytes": 1106,
+      "sha256": "3eced946302a9914839c475e29181bb68322989b9f983890f6c05505868e79c2"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-job-accounting-source01/API-LIMIT-ROW02.json",
+      "bytes": 646,
+      "sha256": "bfe2fc5c08660af6bb5231fb2eb879a13f6ac9a3208c9b047da640e6f8c2c30c"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-job-accounting-source01/FINDING-PROPOSAL.md",
+      "bytes": 1816,
+      "sha256": "ba7d37e4327b6f76db4ad582129c4c0cd76f3084d869ca56fa48c6e0574dc454"
+    }
+  ],
+  "finding": "Documented cumulative TotalProcesses includes associations that fail a limit check; therefore equality with one is not a valid necessary test of successful single-member admission. This establishes the source oracle mismatch, NOT the cause of Windows04 total2. Original Windows04 remains1XMLFAIL/0PASS, other selectorUNSTARTED, entire remote rootHOLD. Invalid first limit-page excerpt supplies no semantics credit.",
+  "independent_challenges": [
+    {
+      "risk": "A second successful member could appear and exit between initial/final snapshots.",
+      "resolution": "Snapshots alone would be insufficient. Readback additionally requires exact active-process-limit1 plus kill-on-close flags and no breakaway/silent-breakaway flags. Source creates an unnamed noninheritable Job, performs exactly one assignment while original child is suspended, and does not subsequently modify limits or assign/open/duplicate a Job handle. Only mapping/ready/release are inherited. While the original is live, an additional inherited member exceeds the hard maximum; after it exits no live member remains to originate a descendant. Original handles/PID/thread/creationtime/IsProcessInJob and exact exit remain checked. This is the bounded cooperative fixture contract, not protection against privileged external handle theft or arbitrary brokered processes."
+    },
+    {
+      "risk": "Fixed process-ID buffer truncation, wrong PID width, or additional nested members might be accepted.",
+      "resolution": "Both structures are zero-initialized documented JOBOBJECT_BASIC_PROCESS_ID_LIST with their native sizeof and one ULONG_PTR slot; expected initial cardinality is exactlyone, compared with ULONG_PTR cast of original DWORD PID. Successful query, NumberOfAssignedProcesses, NumberOfProcessIdsInList and PID must all match. Extra members or truncation either fails the API or fails exact counts. Final original Job query requires both counts zero after bounded ActiveProcesses0 and exact original child wait/exit/creationtime."
+    },
+    {
+      "risk": "Strict limit readback could be incompatible with hosted nested Jobs or delayed membership removal.",
+      "resolution": "Exact required flags/limit and final empty-list conditions remain fail-closed; no fallback, accepted-delta range, retry or mutation is introduced. API/compiler/hosted behavior still needs one fresh targeted Windows validation of both existing selectors; source review does not claim that it will pass. XML Win32-MSBuild labels remain no architecture proof."
+    },
+    {
+      "risk": "Removing a failed assertion might erase data integrity, disposal or provider boundaries.",
+      "resolution": "Independent full diff has onlytwo replacements within test_after_flush_process: stronger pre-resume member/limit/noninheritance checks; and late cumulative assertion replaced by empty actual-membership check. All surrounding source before/after function is byte-identical. Every actual write/flush/sharedphase/order/content/sentinel/destination/residual/identity, original-exit/deadline, explicit-close and validated cleanup guard remains unchanged. Cumulative counters remain diagnostics. No DLL/production/provider/secret seam, dependency or historical dispatch change."
+    }
+  ],
+  "validation_required": "Fresh exact-source request/activation/coordination/cleanup admission after sole slot is free; same two dedicated current-writer continue/process_death selectors on Windows2022/MSVCx64/SDK10.0.26100.0. Do not rerun unrelated native/PRK/provider checks. Original XML+native-log+outerJob+handle/cleanup actuals require independent review. No repeat of unchanged disposal controls is required by this change.",
+  "credit": {
+    "source_harness_oracle_correction": 1,
+    "runtime_cases": 0,
+    "family_closures": 0,
+    "actual_increment_cause": "UNKNOWN"
+  },
+  "restrictions": "PVU007STOP;PVU011NO-RETRY/noinquiry;PVA029failure/noautomaticretry;G7/G8/WindowsGraph03CLOSED; allHOLD/refusedwitnesses includingWindows01/02/03/04,Image01/02,Android07,GUI18/19/21 unchanged; protectedrefs/tags/build1017001/eightPVD preserved. Reviewer readSOURCE/DATA and wroteownrecord only; no helper execution/import, build/test, Git/network, live process/resource/SDK probe or cleanup."
+}

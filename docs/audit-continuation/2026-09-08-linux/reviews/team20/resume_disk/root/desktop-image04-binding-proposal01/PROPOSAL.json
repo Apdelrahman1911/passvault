@@ -1,0 +1,43 @@
+{
+  "status": "UNREVIEWED_SOURCE_ONLY",
+  "finding": "Image03 pinned FROZEN hashes contradict its exact installed inputs (OUTER firstINNER; INNER alsoINIT). This source intake defect gives zero application/native/testcases. Exact runtime diagnostic only input image/pin mismatch; fixed firstmember supplies sufficient deterministic failure, no privateinspection.",
+  "changes": "Fresh04names and complete INIT=>INNER=>OUTER literal hash cascade only; no heap/task/cleanup/resource/product change. Prior03 retained prebuildfailure, no replay.",
+  "checks": [
+    {
+      "controller": "INNER.py",
+      "frozen_key": "INIT",
+      "target": "INIT.gradle",
+      "sha256": "c7747743538071cee14bd32be5af07337953b9ffae7a5e213e238fed84aa575c",
+      "match": true
+    },
+    {
+      "controller": "OUTER.py",
+      "frozen_key": "INIT",
+      "target": "INIT.gradle",
+      "sha256": "c7747743538071cee14bd32be5af07337953b9ffae7a5e213e238fed84aa575c",
+      "match": true
+    },
+    {
+      "controller": "OUTER.py",
+      "frozen_key": "INNER",
+      "target": "INNER.py",
+      "sha256": "32223151b12b4ba2822f362f8d321c5114b843f8d3a058076ffb100554d9fd6a",
+      "match": true
+    }
+  ],
+  "files": {
+    "INIT.gradle": {
+      "bytes": 55775,
+      "sha256": "c7747743538071cee14bd32be5af07337953b9ffae7a5e213e238fed84aa575c"
+    },
+    "INNER.py": {
+      "bytes": 91464,
+      "sha256": "32223151b12b4ba2822f362f8d321c5114b843f8d3a058076ffb100554d9fd6a"
+    },
+    "OUTER.py": {
+      "bytes": 108709,
+      "sha256": "c42adc4f14def7d5bf9c434bdf5ee33fe52697adcdfe5d3b2ff82ee1adb8df2f"
+    }
+  },
+  "qualification": "Source AST assertions only, not executed application tests or current execution admission. Both author/reviewer overlooked original cascade; record failure, do not retroactively claim03valid."
+}

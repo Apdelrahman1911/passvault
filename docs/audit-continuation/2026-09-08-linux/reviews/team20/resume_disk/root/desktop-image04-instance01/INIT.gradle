@@ -1,0 +1,809 @@
+import groovy.json.JsonOutput
+import org.gradle.api.GradleException
+import org.gradle.api.JavaVersion
+import org.gradle.api.artifacts.verification.DependencyVerificationMode
+import org.gradle.api.artifacts.DependencyResolutionListener
+import org.gradle.api.artifacts.ResolvableDependencies
+import java.util.concurrent.atomic.AtomicBoolean
+import org.gradle.api.tasks.Exec
+import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
+import org.gradle.api.tasks.testing.Test
+import java.nio.file.Files
+import java.nio.file.LinkOption
+import java.nio.file.StandardOpenOption
+import java.nio.file.attribute.BasicFileAttributes
+import java.nio.file.attribute.PosixFilePermissions
+import java.nio.channels.FileChannel
+import java.nio.ByteBuffer
+import java.security.MessageDigest
+
+// COMPLETE INERT AFTERIMAGE. Null contracts refuse before any action; no launch admission.
+// Reuses the accepted graph collector/argument/native guards, not its refusal protocol.
+// No private property getter, value/log/hash export, graph rerun or desktopTest lane.
+final Map ADMITTED = ['runtimeRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image04', 'evidenceRoot': '/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-installed-image04', 'readRoots': ['/root/projects/PassVault/audit-runtime-linux-desktop-installed-image04/checkout', '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image04/gradle-home', '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image04/tmp', '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image04/konan', '/usr/lib/jvm/java-17-openjdk-amd64', '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image04/sdk-readonly'], 'offline': false, 'sourceManifestSha256': '1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc', 'subjectSha256': '9263cf5e857f55afd4669aa524eaf36f37d3b5a18f4eca293da148bd55b3e709', 'acceptedGraph': ['recordSha256': 'a716a0c832bc5e13951501b26731ec9c5c79fee9e1b9d27b73b0414b29983dc2', 'reviewSha256': 'e7a61d7bab13c1a4692615b47581b7667db31e012acb6268df93cd94b93d7b7f', 'adoptionSha256': '411ef663174b7be3a679e14283452fa05317a4cbccb73bbadb0a2b9d4fd011ed', 'frameSha256': 'ad71dc70f128120451a837de45a78bbcd4b075c43c657d453207eac29de39a77', 'tasks': 292, 'dependencies': 567, 'finalizers': 1], 'sourceStoreAffinity': ['store': '/root/projects/PassVault/passvault-publication-20260913-03/.git', 'commit': '59bee33096f538b9444f00236448d7fc0ea740b2', 'tree': '76a7dd46c0c1d69bae554c4eb02106da2ac1f6c6', 'sourceSha256': '1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc', 'indexSha256': '36f9edc3b2f4e6eff79f66d78da1c86a92cb8156edd2b08e879b08f4c124909c', 'reviewSha256': 'ac5c84e320fca4cfba63a18fe7e75d6f7173f99d84d9ec95b2651e5154d2cec0'], 'taskIo': ['policy': 'PER_TASK_SOURCE_PROJECT_BUILD_ROOTS_V1', 'projectDirectories': [':app-desktop': 'app-desktop', ':core:crypto': 'core/crypto', ':core:database': 'core/database', ':core:designsystem': 'core/designsystem', ':core:domain': 'core/domain', ':core:navigation': 'core/navigation', ':core:otp': 'core/otp', ':core:security': 'core/security', ':feature:backup': 'feature/backup', ':feature:credential': 'feature/credential', ':feature:generator': 'feature/generator', ':feature:health': 'feature/health', ':feature:onboarding': 'feature/onboarding', ':feature:settings': 'feature/settings', ':feature:unlock': 'feature/unlock', ':feature:vault': 'feature/vault', ':shared': 'shared']], 'classpathInputs': ['policy': 'PUBLIC_CLASSPATH_READ_ROOTS_NO_PATH_SNAPSHOT_V1', 'accessors': ['org.gradle.api.tasks.compile.JavaCompile_Decorated': 'JAVA_COMPILE_CLASSPATH', 'org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated': 'DECLARED_INPUT_ARCHIVES', 'com.google.devtools.ksp.gradle.KspAATask_Decorated': 'DECLARED_INPUT_ARCHIVES', 'org.jetbrains.compose.desktop.application.tasks.AbstractJLinkTask_Decorated': 'DECLARED_INPUT_ARCHIVES', 'org.jetbrains.compose.desktop.application.tasks.AbstractJPackageTask_Decorated': 'DECLARED_INPUT_ARCHIVES']], 'imageLayout': ['resourceSync': ':app-desktop:prepareDesktopAppResources', 'jlink': ':app-desktop:createRuntimeImage', 'jpackage': ':app-desktop:createReleaseDistributable', 'imageRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image04/checkout/app-desktop/build/compose/binaries/main-release/app', 'resourceRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image04/checkout/app-desktop/build/generated/desktopAppResources', 'producerRoots': [':app-desktop:createRuntimeImage': ['outputRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image04/checkout/app-desktop/build/compose/audit-installed-runtime02', 'workingRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image04/checkout/app-desktop/build/compose/tmp/createRuntimeImage', 'argumentFile': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image04/checkout/app-desktop/build/compose/tmp/createRuntimeImage.args.txt'], ':app-desktop:createReleaseDistributable': ['outputRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image04/checkout/app-desktop/build/compose/binaries/main-release/app', 'workingRoot': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image04/checkout/app-desktop/build/compose/tmp/createReleaseDistributable', 'argumentFile': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image04/checkout/app-desktop/build/compose/tmp/createReleaseDistributable.args.txt']], 'opaqueActionInputsAndWritesReviewed': true], 'roomFinalizer': ['producer': ':core:database:kspKotlinDesktop', 'finalizer': ':core:database:copyRoomSchemas', 'schemaDirectory': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image04/checkout/core/database/schemas', 'allowedNewSchemas': [], 'sourceBytesMustRemainExact': true], 'linkPolicy': ['policy': 'OBSERVED_LEAF_DIRECT_REGULAR_TARGET_SAME_ROOT_V1', 'maximumRoots': 16, 'maximumLinks': 256, 'deviceSource': 'ORIGINAL_RUNTIME_DIRECTORY', 'regularFileDevice': 24], 'privateInput': ['mode': 'SYNTHETIC_NONPUBLISHING', 'provenance': 'EXACT_REVIEWED_PUBLIC_LITERAL_NO_API_OR_DNS', 'value': 'desktop-contract-only@nonpublishing.passvault.audit', 'publicationAllowed': false, 'productionSupportVerified': false], 'privateRetention': ['policy': 'PRIVATE_R_ONLY_SAFE_OUTCOMES_NO_OPAQUE_COPY', 'discardKnownDslAndProblemsAfterSafeProjection': true, 'unexpectedDiagnostic': 'HOLD_NO_EXPORT_NO_DELETE'], 'resourceElection': ['launchGiB': 8, 'runningGiB': 5, 'launchRamFraction': 0.25, 'runningRamFraction': 0.2, 'gradleHeapMiB': 4096, 'workers': 1, 'sampleLogicalGiB': 3, 'imageSeconds': 3600, 'stopSeconds': 600, 'settlementSeconds': 120, 'workSeconds': 5250, 'outerSeconds': 6000]]
+final String RUN_ID = 'linux-desktop-installed-image04'
+final List TARGETS = [':app-desktop:verifyDesktopInstalledLegalNotices', ':app-desktop:verifyDesktopInstalledRuntime', ':app-desktop:verifyDesktopInstalledBiometricBridge']
+final String PRODUCER = ':app-desktop:createReleaseDistributable'
+final String RUNTIME_PROPERTIES_PRODUCER = ':app-desktop:checkRuntime'
+final List PREREQUISITES = [':app-desktop:validateDesktopPublisherMetadata', ':app-desktop:prepareDesktopAppResources']
+final String SUBJECT_SHA = '9263cf5e857f55afd4669aa524eaf36f37d3b5a18f4eca293da148bd55b3e709'
+final String JDK = '/usr/lib/jvm/java-17-openjdk-amd64'
+final String RUNTIME_OUTPUT_RELATIVE = 'app-desktop/build/compose/audit-installed-runtime02'
+final String GRAPH_FRAME_SHA = 'ad71dc70f128120451a837de45a78bbcd4b075c43c657d453207eac29de39a77'
+final Map TASK_IO_POLICY = ['policy': 'PER_TASK_SOURCE_PROJECT_BUILD_ROOTS_V1', 'projectDirectories': [':app-desktop': 'app-desktop', ':core:crypto': 'core/crypto', ':core:database': 'core/database', ':core:designsystem': 'core/designsystem', ':core:domain': 'core/domain', ':core:navigation': 'core/navigation', ':core:otp': 'core/otp', ':core:security': 'core/security', ':feature:backup': 'feature/backup', ':feature:credential': 'feature/credential', ':feature:generator': 'feature/generator', ':feature:health': 'feature/health', ':feature:onboarding': 'feature/onboarding', ':feature:settings': 'feature/settings', ':feature:unlock': 'feature/unlock', ':feature:vault': 'feature/vault', ':shared': 'shared']]
+final Map CLASSPATH_POLICY = ['policy': 'PUBLIC_CLASSPATH_READ_ROOTS_NO_PATH_SNAPSHOT_V1', 'accessors': ['org.gradle.api.tasks.compile.JavaCompile_Decorated': 'JAVA_COMPILE_CLASSPATH', 'org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated': 'DECLARED_INPUT_ARCHIVES', 'com.google.devtools.ksp.gradle.KspAATask_Decorated': 'DECLARED_INPUT_ARCHIVES', 'org.jetbrains.compose.desktop.application.tasks.AbstractJLinkTask_Decorated': 'DECLARED_INPUT_ARCHIVES', 'org.jetbrains.compose.desktop.application.tasks.AbstractJPackageTask_Decorated': 'DECLARED_INPUT_ARCHIVES']]
+final Map ROOM_POLICY = ['producer': ':core:database:kspKotlinDesktop', 'finalizer': ':core:database:copyRoomSchemas', 'schemaDirectory': '/root/projects/PassVault/audit-runtime-linux-desktop-installed-image04/checkout/core/database/schemas', 'allowedNewSchemas': [], 'sourceBytesMustRemainExact': true]
+final Map LINK_POLICY = ['policy': 'OBSERVED_LEAF_DIRECT_REGULAR_TARGET_SAME_ROOT_V1', 'maximumRoots': 16, 'maximumLinks': 256, 'deviceSource': 'ORIGINAL_RUNTIME_DIRECTORY']
+def reject = { String why -> throw new GradleException('DesktopInstalledImage02: ' + why) }
+def textBound = { Object value, int cap ->
+    if (!(value instanceof String) || value.empty || value.length() > cap || !(value ==~ /[ -~]+/)) {
+        reject('bounded printable text required')
+    }
+    value
+}
+def taskPath = { Object value ->
+    String s = textBound(value, 512)
+    if (!(s ==~ /:(?:[A-Za-z0-9_-]+:)*[A-Za-z0-9_-]+/)) reject('bounded task path required')
+    s
+}
+def typeName = { Object value ->
+    String s = textBound(value, 512)
+    if (!(s ==~ /[A-Za-z_$][A-Za-z0-9_$]*(?:\.[A-Za-z_$][A-Za-z0-9_$]*)*/)) reject('bounded type required')
+    s
+}
+def absolutePath = { Object value ->
+    String s = textBound(value, 1024)
+    def p = new File(s).toPath()
+    if (!p.isAbsolute() || p.normalize().toString() != s) reject('absolute normalized path required')
+    p
+}
+
+boolean bindingOk = false, imageArmed = false, graphAccepted = false
+int readyCount = 0, finishCount = 0, declaredFileVisits = 0, runtimeRouteCount = 0
+final AtomicBoolean nativeDenied = new AtomicBoolean()
+def taskObjects = [:], taskRows = [:]
+String runtimePropertiesPhase = 'UNBOUND'
+def boundRuntimeProperties = null, freshRuntimePropertiesIdentity = null
+def imageLinkRoots = [], imageAuxiliaryRoots = [], imageForbiddenRoots = []
+def entered = new LinkedHashSet(), completed = new LinkedHashSet()
+def outcomes = TARGETS.collectEntries { [(it): 'UNSTARTED'] }
+def runtimePath = new File(ADMITTED.runtimeRoot).toPath()
+def checkoutPath = runtimePath.resolve('checkout')
+def schemaRoot = checkoutPath.resolve('core/database/schemas')
+def noLinkAncestors = { java.nio.file.Path p ->
+    def current = p.root
+    for (def part : p) {
+        current = current.resolve(part)
+        try {
+            def a = Files.readAttributes(current, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+            if (a.isSymbolicLink() || (current != p && !a.isDirectory()) ||
+                    (!a.isDirectory() && !a.isRegularFile())) reject('no-follow path containment')
+        } catch (java.nio.file.NoSuchFileException absent) { break }
+    }
+}
+def boundedPaths = { Object values, int cap ->
+    if (!(values instanceof Collection) || values.size() > cap) reject('file collection bound')
+    def paths = values.collect { value ->
+        absolutePath(value instanceof File ? value.toPath().toAbsolutePath().toString() : value)
+    }
+    if (paths.toSet().size() != paths.size()) reject('duplicate bound path')
+    paths.sort { a, b -> a.toString() <=> b.toString() }
+}
+def scopeContains = { java.nio.file.Path path, List roots -> roots.any { path.startsWith(it) } }
+def argumentFileCheck = { String raw ->
+    def path = absolutePath(raw)
+    noLinkAncestors(path)
+    try {
+        def attributes = Files.readAttributes(path, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+        def unix = Files.readAttributes(path, 'unix:dev,uid,nlink', LinkOption.NOFOLLOW_LINKS)
+        if (!attributes.isRegularFile() || unix.dev != ADMITTED.linkPolicy.regularFileDevice ||
+                unix.uid != 0 || unix.nlink != 1) reject('Compose argument sibling must be an owned regular file')
+    } catch (java.nio.file.NoSuchFileException absent) { } // Exact absent leaf is permitted before its producer.
+}
+// Only the exact fresh pinned-vendor output may reach ObjectInputStream. The
+// public consumer providers, not a guessed filename/private producer getter,
+// identify the one artifact. Neither its contents nor fingerprint are exported.
+def runtimePropertiesRelation = {
+    def producer = taskObjects[RUNTIME_PROPERTIES_PRODUCER]
+    if (producer == null || !producer.enabled || producer.path != RUNTIME_PROPERTIES_PRODUCER ||
+            typeName(producer.class.name) != 'org.jetbrains.compose.desktop.application.tasks.AbstractCheckNativeDistributionRuntime_Decorated') {
+        reject('runtime-properties producer identity changed')
+    }
+    def paths = [ADMITTED.imageLayout.jlink, PRODUCER].collect { id ->
+        def consumer = taskObjects[id]
+        if (consumer == null || !consumer.enabled ||
+                !taskRows[id].dependencies.contains(RUNTIME_PROPERTIES_PRODUCER)) {
+            reject('runtime-properties direct consumer edge changed')
+        }
+        absolutePath(consumer.getJavaRuntimePropertiesFile().get().asFile.toPath().toAbsolutePath().toString())
+    }
+    def path = paths[0]
+    def appBuild = checkoutPath.resolve('app-desktop/build')
+    if (paths[1] != path || path == appBuild || !path.startsWith(appBuild) ||
+            boundedPaths(producer.outputs.files.files, 1) != [path] ||
+            (boundRuntimeProperties != null && path != boundRuntimeProperties)) {
+        reject('runtime-properties single declared output/consumer relation changed')
+    }
+    noLinkAncestors(path)
+    path
+}
+def runtimePropertiesIdentity = { java.nio.file.Path path ->
+    noLinkAncestors(path)
+    def original = Files.readAttributes(path, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+    def unix = Files.readAttributes(path, 'unix:dev,ino,uid,nlink,ctime', LinkOption.NOFOLLOW_LINKS)
+    if (!original.isRegularFile() || original.fileKey() == null ||
+            unix.dev != ADMITTED.linkPolicy.regularFileDevice || unix.uid != 0 || unix.nlink != 1) {
+        reject('fresh runtime-properties artifact must be owned single-link regular file')
+    }
+    def after = Files.readAttributes(path, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+    if (!after.isRegularFile() || after.fileKey() != original.fileKey() || after.size() != original.size() ||
+            after.lastModifiedTime() != original.lastModifiedTime()) reject('runtime-properties artifact changed during identity check')
+    // Fixed-size private metadata only; same-metadata/in-place content changes
+    // and post-check races remain inside the explicit cooperative vendor trust.
+    [fileKey: original.fileKey(), size: original.size(), modified: original.lastModifiedTime(),
+     device: unix.dev, inode: unix.ino, uid: unix.uid, links: unix.nlink, changed: unix.ctime]
+}
+def taskIoCheck = { task ->
+    String projectId = task.path.substring(0, task.path.lastIndexOf(':'))
+    def relativeProject = TASK_IO_POLICY.projectDirectories[projectId]
+    if (relativeProject == null || task.project.path != projectId) reject('source project identity changed')
+    def projectPath = absolutePath(task.project.projectDir.toPath().toAbsolutePath().toString())
+    def defaultBuild = checkoutPath.resolve(relativeProject).resolve('build')
+    if (projectPath != checkoutPath.resolve(relativeProject) ||
+            task.project.layout.buildDirectory.get().asFile.toPath() != defaultBuild) {
+        reject('source project/default build directory changed')
+    }
+    def reads = ADMITTED.readRoots.collect { absolutePath(it) }
+    // Inspect actual public declarations twice; no ungrounded 292-list snapshot.
+    def outputs = boundedPaths(task.outputs.files.files, 4096)
+    def writes = outputs + (task.path == ROOM_POLICY.finalizer ? [schemaRoot] : [])
+    writes.each { p ->
+        boolean room = task.path == ROOM_POLICY.finalizer && p == schemaRoot
+        if (!(p.startsWith(defaultBuild) || room)) reject('per-task source project write envelope')
+        noLinkAncestors(p)
+    }
+    if (task.path == ROOM_POLICY.finalizer) {
+        // Retain R1: this public provider is @Internal, not bound by outputs.files.
+        def destination = absolutePath(task.getSchemaDirectory().get().asFile.toPath().toAbsolutePath().toString())
+        if (destination != schemaRoot || !writes.contains(destination)) reject('actual Room schema destination not bound')
+        noLinkAncestors(destination)
+    }
+    if (task instanceof org.gradle.api.tasks.Copy || task instanceof org.gradle.api.tasks.Sync) {
+        def destination = absolutePath(task.destinationDir.toPath().toAbsolutePath().toString())
+        if (!outputs.contains(destination)) reject('copy/sync destination not declared')
+        if (task.path == ':app-desktop:prepareDesktopAppResources' &&
+                destination != checkoutPath.resolve('app-desktop/build/generated/desktopAppResources')) {
+            reject('canonical Desktop resource Sync changed')
+        }
+        noLinkAncestors(destination)
+    }
+    if (ADMITTED.imageLayout.producerRoots.containsKey(task.path)) {
+        if (System.getProperty('os.name') != 'Linux' || System.getProperty('os.arch') != 'amd64') {
+            reject('Linux amd64 image source branch required')
+        }
+        if (task.getJavaHome().getOrNull() != JDK) reject('public Compose JavaHome differs from pinned JDK')
+        if (task.getVerbose().getOrNull() != false) reject('Compose verbose output must remain disabled')
+        def freeArgs = task.getFreeArgs().getOrNull()
+        if (freeArgs != null && (!(freeArgs instanceof List) || !freeArgs.isEmpty())) {
+            reject('unreviewed Compose free arguments forbidden')
+        }
+        def roots = ADMITTED.imageLayout.producerRoots[task.path]
+        def destination = absolutePath(task.getDestinationDir().get().asFile.toPath().toAbsolutePath().toString())
+        def working = defaultBuild.resolve('compose/tmp').resolve(task.name)
+        def argument = working.resolveSibling(task.name + '.args.txt')
+        if (destination != absolutePath(roots.outputRoot) || !outputs.contains(destination) ||
+                working != absolutePath(roots.workingRoot) || argument != absolutePath(roots.argumentFile)) {
+            reject('actual public destination/source-derived Compose work/argument binding differs')
+        }
+        noLinkAncestors(destination)
+        noLinkAncestors(working)
+        argumentFileCheck(roots.argumentFile)
+        if (task.path == ADMITTED.imageLayout.jlink &&
+                destination != checkoutPath.resolve(RUNTIME_OUTPUT_RELATIVE)) reject('explicit runtime route changed')
+        if (task.path == PRODUCER) {
+            if (task.getTargetFormat().name() != 'AppImage' || task.getAppImage().isPresent()) {
+                reject('Linux AppImage source branch only; no preexisting app-image input')
+            }
+            def runtimeImage = absolutePath(task.getRuntimeImage().get().asFile.toPath().toAbsolutePath().toString())
+            if (runtimeImage != checkoutPath.resolve(RUNTIME_OUTPUT_RELATIVE) ||
+                    runtimeImage != absolutePath(ADMITTED.imageLayout.producerRoots[ADMITTED.imageLayout.jlink].outputRoot)) {
+                reject('unmodified JPackage runtime input does not equal routed JLink destination')
+            }
+            noLinkAncestors(runtimeImage)
+            if (Files.exists(working.resolve('libs-mapping.txt'), LinkOption.NOFOLLOW_LINKS)) {
+                reject('fresh JPackage may not load a prior Compose libs mapping')
+            }
+        }
+    }
+    // Only public file inputs, NEVER task.inputs.properties or SUPPORT_EMAIL.
+    def inputs = boundedPaths(task.inputs.files.files, 16384)
+    declaredFileVisits += inputs.size() + outputs.size()
+    if (declaredFileVisits > 200000 || inputs.any { !scopeContains(it, reads) }) reject('task input envelope/bound')
+    inputs.each { noLinkAncestors(it) }
+    def mode = CLASSPATH_POLICY.accessors[taskRows[task.path].type]
+    if (mode != null) {
+        def actual
+        if (mode == 'JAVA_COMPILE_CLASSPATH' && task instanceof org.gradle.api.tasks.compile.JavaCompile) {
+            actual = boundedPaths(task.classpath.files, 8192)
+        } else if (mode == 'DECLARED_INPUT_ARCHIVES') {
+            actual = inputs.findAll { p -> ['.jar', '.jmod', '.klib'].any { p.toString().endsWith(it) } }
+            if (actual.size() > 8192) reject('declared archive classpath bound')
+        } else reject('unreviewed classpath accessor; no reflection/fallback')
+        declaredFileVisits += actual.size()
+        if (declaredFileVisits > 200000 || actual.any { !scopeContains(it, reads) }) reject('classpath read envelope/bound')
+        actual.each { noLinkAncestors(it) }
+    }
+    // Exact within-root output/classpath drift detection is intentionally removed.
+    // Declared archives are not hidden-classpath proof; opaque actions still need
+    // independent source review. Root containment is NOT an OS write sandbox.
+    true
+}
+def imageLinkCheck = {
+    ADMITTED.imageLayout.producerRoots.values().each { argumentFileCheck(it.argumentFile) }
+    imageForbiddenRoots.each { path ->
+        noLinkAncestors(path)
+        if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) reject('excluded Mac/installer auxiliary path appeared')
+    }
+    // No FOLLOW_LINKS, no target open, no names/readlinks exported. Single-worker
+    // custody remains required: this pre-consumer guard is not a race-proof sandbox.
+    int visits = 0, links = 0
+    // Directory/link-leaf device is distinct from the separately bound regular-file device.
+    def directoryDevice = Files.getAttribute(runtimePath, 'unix:dev', LinkOption.NOFOLLOW_LINKS)
+    (imageLinkRoots + imageAuxiliaryRoots).each { root ->
+        noLinkAncestors(root)
+        def rootAttributes = null
+        try { rootAttributes = Files.readAttributes(root, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS) }
+        catch (java.nio.file.NoSuchFileException absent) { } // Only absence, never an unreadable root.
+        if (rootAttributes != null) {
+            if (!rootAttributes.isDirectory()) reject('image root is not a directory')
+            def tree = Files.walk(root)
+            try {
+                tree.forEach { p ->
+                    if (++visits > 250000) reject('image tree visit bound')
+                    def original = Files.readAttributes(p, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+                    if (original.isSymbolicLink()) {
+                        if (imageAuxiliaryRoots.contains(root)) reject('auxiliary/resource trees allow no links')
+                        if (++links > 256) reject('image link count bound')
+                        def unix = Files.readAttributes(p, 'unix:dev,uid,nlink', LinkOption.NOFOLLOW_LINKS)
+                        if (unix.dev != directoryDevice || unix.uid != 0 || unix.nlink != 1) reject('image link identity')
+                        String target = Files.readSymbolicLink(p).toString()
+                        if (target.empty || target.length() > 1024 || target.indexOf((char) 0) >= 0 || target.startsWith('/')) {
+                            reject('image link target bound')
+                        }
+                        def current = p.parent
+                        // Do NOT normalize B/../file before checking B: B may be a link.
+                        target.split('/', -1).each { component ->
+                            if (!Files.isDirectory(current, LinkOption.NOFOLLOW_LINKS)) reject('image target intermediate is not a directory')
+                            if (component == '..') {
+                                if (current == root) reject('image target leaves its own root')
+                                current = current.parent
+                            } else if (component != '' && component != '.') current = current.resolve(component)
+                            if (!current.startsWith(root)) reject('image target crosses roots')
+                        }
+                        if (!Files.isRegularFile(current, LinkOption.NOFOLLOW_LINKS)) reject('image target missing/directory/link')
+                        def targetUnix = Files.readAttributes(current, 'unix:dev,uid,nlink', LinkOption.NOFOLLOW_LINKS)
+                        if (targetUnix.dev != ADMITTED.linkPolicy.regularFileDevice ||
+                                targetUnix.uid != 0 || targetUnix.nlink != 1) reject('image target identity')
+                        def after = Files.readAttributes(p, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+                        if (after.fileKey() != original.fileKey() || after.size() != original.size() ||
+                                after.lastModifiedTime() != original.lastModifiedTime() || !after.isSymbolicLink() ||
+                                Files.readSymbolicLink(p).toString() != target) reject('image link changed during check')
+                    } else if (!original.isDirectory() && !original.isRegularFile()) reject('image tree type')
+                    if (imageAuxiliaryRoots.contains(root)) {
+                        def unix = Files.readAttributes(p, 'unix:dev,uid,nlink', LinkOption.NOFOLLOW_LINKS)
+                        def expectedDevice = original.isDirectory() ? directoryDevice : ADMITTED.linkPolicy.regularFileDevice
+                        if (unix.dev != expectedDevice || unix.uid != 0 ||
+                                (original.isRegularFile() && unix.nlink != 1)) reject('auxiliary/resource tree identity')
+                    }
+                }
+            } finally { tree.close() }
+        }
+    }
+}
+def writeOutcome = { Map row ->
+    byte[] data = JsonOutput.toJson(row).getBytes('UTF-8')
+    if (data.length > 65536) reject('outcome bound')
+    def path = runtimePath.resolve('tmp/desktop-image-outcome.json')
+    noLinkAncestors(path.parent)
+    def options = [StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW, LinkOption.NOFOLLOW_LINKS].toSet()
+    def channel = FileChannel.open(path, options, PosixFilePermissions.asFileAttribute('rw-------'))
+    try {
+        def buffer = ByteBuffer.wrap(data)
+        while (buffer.hasRemaining()) channel.write(buffer)
+        channel.force(true)
+    } finally { channel.close() }
+    def parent = FileChannel.open(path.parent, StandardOpenOption.READ)
+    try { parent.force(true) } finally { parent.close() }
+}
+// Install fail-closed entry/outcome gates before configuration. Disabled rows
+// remain disabled and may emit SKIPPED callbacks; they are not force-enabled.
+gradle.taskGraph.beforeTask { task ->
+    String path = taskPath(task.path)
+    if (!imageArmed || !bindingOk || nativeDenied.get() || !taskObjects.containsKey(path) ||
+            !taskObjects[path].is(task) || entered.contains(path) ||
+            task.enabled != taskRows[path].enabled || typeName(task.class.name) != taskRows[path].type || task instanceof Test) {
+        reject('image task entry not admitted')
+    }
+    declaredFileVisits = 0
+    if (path in [ADMITTED.imageLayout.jlink, PRODUCER] || TARGETS.contains(path)) imageLinkCheck()
+    taskIoCheck(task)
+    if (path == RUNTIME_PROPERTIES_PRODUCER) {
+        if (runtimePropertiesPhase != 'ABSENT_AT_GRAPH' ||
+                !Files.notExists(runtimePropertiesRelation(), LinkOption.NOFOLLOW_LINKS)) {
+            reject('runtime-properties output must remain absent before its original producer')
+        }
+        runtimePropertiesPhase = 'PRODUCER_ENTERED'
+    } else if (path in [ADMITTED.imageLayout.jlink, PRODUCER]) {
+        if (runtimePropertiesPhase != 'FRESH_READY' || !completed.contains(RUNTIME_PROPERTIES_PRODUCER) ||
+                runtimePropertiesIdentity(runtimePropertiesRelation()) != freshRuntimePropertiesIdentity) {
+            reject('consumer requires unchanged fresh successful runtime-properties artifact')
+        }
+    }
+    entered.add(path)
+    if (outcomes.containsKey(path)) outcomes[path] = 'ENTERED_NO_OUTCOME'
+}
+gradle.taskGraph.afterTask { task, state ->
+    String path = taskPath(task.path)
+    if (!imageArmed || !taskObjects.containsKey(path) || !taskObjects[path].is(task) ||
+            !entered.contains(path) || completed.contains(path)) reject('unexpected image task outcome')
+    completed.add(path)
+    if (path == RUNTIME_PROPERTIES_PRODUCER) {
+        if (runtimePropertiesPhase != 'PRODUCER_ENTERED' || state.failure != null || !state.executed ||
+                !state.didWork || state.skipped || state.upToDate || state.noSource) {
+            reject('runtime-properties producer must execute its original action successfully')
+        }
+        freshRuntimePropertiesIdentity = runtimePropertiesIdentity(runtimePropertiesRelation())
+        runtimePropertiesPhase = 'FRESH_READY'
+    }
+    if (outcomes.containsKey(path)) {
+        outcomes[path] = state.failure != null ? 'FAIL' : state.noSource ? 'NO_SOURCE' :
+            state.upToDate ? 'UP_TO_DATE' : state.skipped ? 'SKIPPED' : state.executed ? 'TASK_COMPLETED' : 'UNKNOWN'
+    }
+    if (path in [ADMITTED.imageLayout.jlink, PRODUCER]) imageLinkCheck()
+}
+gradle.buildFinished { result ->
+    finishCount++
+    imageArmed = false
+    writeOutcome([format: 'passvault-desktop-installed-image-outcome-v1', runId: RUN_ID,
+        sourceManifestSha256: ADMITTED.sourceManifestSha256, subjectSha256: SUBJECT_SHA,
+        graphFrameSha256: GRAPH_FRAME_SHA, graphAccepted: graphAccepted,
+        readyCallbacks: readyCount, finishCallbacks: finishCount,
+        enteredTasks: entered.size(), completedTasks: completed.size(),
+        buildFailed: result.failure != null, nativeDenied: nativeDenied.get(),
+        selectors: TARGETS.collect { [path: it, outcome: outcomes[it]] }, observedApplicationTestCases: 0])
+}
+
+def start = gradle.startParameter
+def sys = start.systemPropertiesArgs
+def props = start.projectProperties
+if (ADMITTED == null || ADMITTED.keySet() != ['runtimeRoot', 'evidenceRoot', 'readRoots', 'offline', 'sourceManifestSha256', 'subjectSha256', 'acceptedGraph', 'sourceStoreAffinity', 'taskIo', 'classpathInputs', 'imageLayout', 'roomFinalizer', 'linkPolicy', 'privateInput', 'privateRetention', 'resourceElection'].toSet() || !(ADMITTED.offline instanceof Boolean) ||
+        !(ADMITTED.sourceManifestSha256 instanceof String) || !(ADMITTED.sourceManifestSha256 ==~ /[0-9a-f]{64}/) ||
+        ADMITTED.subjectSha256 != SUBJECT_SHA) reject('UNBOUND source/instance/read-root policy')
+def runtime = absolutePath(ADMITTED.runtimeRoot)
+def evidence = absolutePath(ADMITTED.evidenceRoot)
+def checkout = runtime.resolve('checkout')
+def readRoots = [checkout, runtime.resolve('gradle-home'), runtime.resolve('tmp'), runtime.resolve('konan'),
+                 absolutePath(JDK), runtime.resolve('sdk-readonly')].collect { it.toString() }
+if (runtime.parent.toString() != '/root/projects/PassVault' || runtime.fileName.toString() != 'audit-runtime-' + RUN_ID ||
+        evidence.toString() != '/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/' + RUN_ID ||
+        ADMITTED.readRoots != readRoots || start.offline != ADMITTED.offline ||
+        start.currentDir.toPath().toAbsolutePath().normalize() != checkout ||
+        start.gradleUserHomeDir.toPath().toAbsolutePath().normalize() != runtime.resolve('gradle-home') ||
+        System.getenv('ANDROID_HOME') != runtime.resolve('sdk-readonly').toString() ||
+        System.getenv('ANDROID_SDK_ROOT') != runtime.resolve('sdk-readonly').toString() ||
+        ['PASSVAULT_PVA038_MODE', 'PASSVAULT_PVA038_RUN_ROOT', 'PASSVAULT_PVA038_FIXTURE'].any { System.getenv(it) != null }) {
+    reject('fresh fixed instance/SDK view/environment mismatch')
+}
+if (start.logLevel.name() != 'LIFECYCLE') reject('info/debug/alternate logging forbidden')
+if (System.getenv('GH_TOKEN') != null || System.getenv('GITHUB_TOKEN') != null ||
+        System.getenv('MACOS_SIGN') != null) reject('API/signing input forwarded to build')
+// DesktopImage01 keeps ARG01-12 and ARG14-20; ARG13 explicitly includes the native route.
+// One bounded typed vector precedes ARG13; no historical-cause or task authority.
+if (gradle.gradleVersion != '9.7.1') {
+    reject('argument predicate rejected: ARG01_GRADLE_VERSION')
+}
+if (JavaVersion.current() != JavaVersion.VERSION_17) {
+    reject('argument predicate rejected: ARG02_JAVA_VERSION')
+}
+if (start.taskNames != TARGETS) {
+    reject('argument predicate rejected: ARG03_TASK_SELECTION')
+}
+if (start.dryRun) {
+    reject('argument predicate rejected: ARG04_DRY_RUN_FORBIDDEN')
+}
+if (start.continueOnFailure) {
+    reject('argument predicate rejected: ARG05_CONTINUE_ON_FAILURE_FORBIDDEN')
+}
+if (!start.excludedTaskNames.empty) {
+    reject('argument predicate rejected: ARG06_EXCLUDED_TASKS_FORBIDDEN')
+}
+if (start.parallelProjectExecutionEnabled) {
+    reject('argument predicate rejected: ARG07_PARALLEL_FORBIDDEN')
+}
+if (start.configureOnDemand) {
+    reject('argument predicate rejected: ARG08_CONFIGURE_ON_DEMAND_FORBIDDEN')
+}
+if (start.maxWorkerCount != 1) {
+    reject('argument predicate rejected: ARG09_WORKER_COUNT')
+}
+if (start.buildCacheEnabled) {
+    reject('argument predicate rejected: ARG10_BUILD_CACHE_FORBIDDEN')
+}
+if (start.rerunTasks) {
+    reject('argument predicate rejected: ARG11_RERUN_TASKS_FORBIDDEN')
+}
+if (start.dependencyVerificationMode != DependencyVerificationMode.STRICT) {
+    reject('argument predicate rejected: ARG12_DEPENDENCY_VERIFICATION_STRICT')
+}
+// New explicit image-action compatibility contract, NOT a diagnosis of historical Graph02/03.
+// Inner verifies complete checked-in gradle.properties SHA256/raw Git blob before Gradle.
+final String PROPERTY_SOURCE_SHA = '323971ec6c0f02ff28c724b4c4f3120b5b8843faf3d77608485c1e15fb633235'
+final String PROPERTY_CONTRACT = 'EXACT_CLI_NATIVE_PLUS_FIXED_TOOLCHAIN_9_V1'
+final Map CLI_PROPERTIES = [
+    'passvault.audit.mode': 'desktop-installed-image-only',
+    'kotlin.compiler.execution.strategy': 'in-process',
+    'android.builder.sdkDownload': 'false',
+    'kotlin.native.toolchain.enabled': 'true',
+    'kotlin.native.distribution.downloadFromMaven': 'true',
+    'konan.data.dir': runtime.resolve('konan').toString(),
+]
+// Prospective explicit policy mirrors, not identification of historical extras.
+// These three values already occur in the fixed command's -D options.
+final Map FIXED_TOOLCHAIN_PROPERTIES = [
+    'org.gradle.java.installations.auto-download': 'false',
+    'org.gradle.java.installations.auto-detect': 'false',
+    'org.gradle.java.installations.paths': JDK,
+]
+final Map CHECKED_PROPERTIES = [
+    'kotlin.code.style': 'official',
+    'kotlin.daemon.jvmargs': '-Xmx2048M',
+    'kotlin.compiler.execution.strategy': 'in-process',
+    'kotlin.incremental': 'true',
+    'kotlin.experimental.tryNext': 'false',
+    'org.gradle.jvmargs': '-Xmx4096m -Dfile.encoding=UTF-8',
+    'org.gradle.daemon': 'false',
+    'org.gradle.parallel': 'true',
+    'org.gradle.caching': 'true',
+    'org.gradle.configuration-cache': 'true',
+    'org.gradle.configureondemand': 'false',
+    'android.useAndroidX': 'true',
+    'org.jetbrains.compose.experimental.jscanvas.enabled': 'false',
+    'kotlin.mpp.enableCInteropCommonization': 'true',
+    'kotlin.test.default.jvm.target': '17',
+    'systemProp.org.gradle.dependency.verification.console': 'verbose',
+    'org.gradle.tooling.parallel': 'true',
+]
+def fixedProperties = new LinkedHashMap(CLI_PROPERTIES)
+fixedProperties.putAll(FIXED_TOOLCHAIN_PROPERTIES) // Only the new expected map is modified.
+def sourceOnlyKeys = CHECKED_PROPERTIES.keySet().findAll { !CLI_PROPERTIES.containsKey(it) }
+// Exact size + every literal key + exact String value. No subset/normalization,
+// unknown-key iteration, actual-map mutation, inferred origin or wrapper equals.
+def exactPropertyMap = { Map expected ->
+    if (!(props instanceof Map) || props.size() != expected.size()) return false
+    expected.every { String key, String expectedValue ->
+        if (!props.containsKey(key)) return false
+        def observed = props[key]
+        observed instanceof String && expectedValue.equals(observed)
+    }
+}
+def argumentVector = [
+    format: 'passvault-desktop-argument-vector-v1', runId: RUN_ID,
+    phase: 'AFTER_ARG12_BEFORE_ARG13', sourceManifestSha256: 'UNBOUND',
+    propertySourceSha256: PROPERTY_SOURCE_SHA, propertyContract: PROPERTY_CONTRACT,
+    compatibilityShape: 'REJECT',
+    qualification: 'NEW_EXACT_CONTRACT_NOT_REPRODUCED_CAUSE_OR_TASK_AUTHORITY',
+    projectMapKind: props instanceof Map ? 'MAP' : 'OTHER',
+    systemMapKind: sys instanceof Map ? 'MAP' : 'OTHER',
+    keys: [state: 'UNOBSERVED', count: null, expectedMask: null, sourceOnlyMask: null,
+           sourceStringMask: null, sourceValueMatchMask: null, toolchainOnlyMask: null,
+           toolchainStringMask: null, toolchainValueMatchMask: null, sizeAndExpectedMembershipAgree: null],
+    types: [ARG14: 'UNOBSERVED', ARG15: 'UNOBSERVED', ARG16: 'UNOBSERVED',
+            ARG17: 'UNOBSERVED', ARG18: 'UNOBSERVED', ARG19: 'UNOBSERVED', JAVA_HOME: 'UNOBSERVED'],
+    outcomes: [LEGACY_ARG13: 'UNOBSERVED', ARG14: 'UNOBSERVED', ARG15: 'UNOBSERVED',
+               ARG16: 'UNOBSERVED', ARG17: 'UNOBSERVED', ARG18: 'UNOBSERVED',
+               ARG19: 'UNOBSERVED', ARG20: 'UNOBSERVED'],
+    diagnosticError: false,
+]
+def argumentValues = [:] // Only literal-key values, never serialized/printed.
+def valueKind = { Object value -> value == null ? 'NULL' : value instanceof String ? 'STRING' : 'OTHER' }
+def observeArgument = { String id, Closure predicate ->
+    try {
+        def rejected = predicate.call()
+        if (!(rejected instanceof Boolean)) throw new GradleException('nonboolean diagnostic predicate')
+        argumentVector.outcomes[id] = rejected ? 'REJECT' : 'ACCEPT'
+    } catch (Throwable ignored) {
+        argumentVector.outcomes[id] = 'ERROR'
+        argumentVector.diagnosticError = true
+    }
+}
+def readArgument = { String id, Object map, String key ->
+    try {
+        def value = map[key]
+        argumentValues[id] = value
+        argumentVector.types[id] = valueKind(value)
+        true
+    } catch (Throwable ignored) {
+        argumentVector.types[id] = 'ERROR'
+        argumentVector.outcomes[id] = 'ERROR'
+        argumentVector.diagnosticError = true
+        false
+    }
+}
+observeArgument('LEGACY_ARG13') {
+    props.keySet() != ['passvault.audit.mode', 'kotlin.compiler.execution.strategy', 'android.builder.sdkDownload'].toSet()
+}
+try {
+    if (exactPropertyMap(fixedProperties)) argumentVector.compatibilityShape = 'EXACT_CLI_NATIVE_PLUS_FIXED_TOOLCHAIN_9'
+    def keys = props.keySet()
+    if (!(keys instanceof Set)) {
+        argumentVector.keys.state = 'NOT_SET'
+    } else {
+        int count = keys.size()
+        if (count < 0 || count > 64) {
+            argumentVector.keys.state = 'COUNT_OUT_OF_BOUND'
+        } else {
+            String expectedMask = CLI_PROPERTIES.keySet().collect { keys.contains(it) ? '1' : '0' }.join('')
+            String sourceMask = sourceOnlyKeys.collect { keys.contains(it) ? '1' : '0' }.join('')
+            String sourceStringMask = sourceOnlyKeys.collect { props[it] instanceof String ? '1' : '0' }.join('')
+            String sourceValueMask = sourceOnlyKeys.collect {
+                def observed = props[it]
+                observed instanceof String && CHECKED_PROPERTIES[it].equals(observed) ? '1' : '0'
+            }.join('')
+            String toolchainMask = FIXED_TOOLCHAIN_PROPERTIES.keySet().collect { keys.contains(it) ? '1' : '0' }.join('')
+            String toolchainStringMask = FIXED_TOOLCHAIN_PROPERTIES.keySet().collect {
+                props[it] instanceof String ? '1' : '0'
+            }.join('')
+            String toolchainValueMask = FIXED_TOOLCHAIN_PROPERTIES.keySet().collect {
+                def observed = props[it]
+                observed instanceof String && FIXED_TOOLCHAIN_PROPERTIES[it].equals(observed) ? '1' : '0'
+            }.join('')
+            argumentVector.keys = [state: 'COUNT_AND_FIXED_KEYS_VALUES_ONLY', count: count,
+                expectedMask: expectedMask, sourceOnlyMask: sourceMask,
+                sourceStringMask: sourceStringMask, sourceValueMatchMask: sourceValueMask,
+                toolchainOnlyMask: toolchainMask, toolchainStringMask: toolchainStringMask,
+                toolchainValueMatchMask: toolchainValueMask,
+                sizeAndExpectedMembershipAgree: count == 9 && expectedMask == '111111' && toolchainMask == '111']
+        }
+    }
+} catch (Throwable ignored) {
+    argumentVector.keys.state = 'ERROR'
+    argumentVector.compatibilityShape = 'ERROR'
+    argumentVector.diagnosticError = true
+}
+[
+    ['ARG14', props, 'passvault.audit.mode', 'desktop-installed-image-only'],
+    ['ARG15', props, 'kotlin.compiler.execution.strategy', 'in-process'],
+    ['ARG16', props, 'android.builder.sdkDownload', 'false'],
+    ['ARG17', sys, 'org.gradle.java.installations.auto-download', 'false'],
+    ['ARG18', sys, 'org.gradle.java.installations.auto-detect', 'false'],
+].each { selection ->
+    String id = selection[0]
+    if (readArgument(id, selection[1], selection[2])) {
+        if (argumentVector.types[id] in ['NULL', 'STRING']) {
+            observeArgument(id) { argumentValues[id] != selection[3] }
+        } else argumentVector.outcomes[id] = 'UNOBSERVED_TYPE'
+    }
+}
+boolean pathRead = readArgument('ARG19', sys, 'org.gradle.java.installations.paths')
+if (pathRead) {
+    if (argumentVector.types.ARG19 in ['NULL', 'STRING']) {
+        observeArgument('ARG19') { !argumentValues.ARG19 }
+    } else argumentVector.outcomes.ARG19 = 'UNOBSERVED_TYPE'
+}
+def javaHome = null
+try {
+    javaHome = System.getProperty('java.home')
+    argumentVector.types.JAVA_HOME = valueKind(javaHome)
+} catch (Throwable ignored) {
+    argumentVector.types.JAVA_HOME = 'ERROR'
+    argumentVector.diagnosticError = true
+}
+if (!pathRead || argumentVector.outcomes.ARG19 != 'ACCEPT') {
+    argumentVector.outcomes.ARG20 = 'UNOBSERVED_ARG19'
+} else if (argumentVector.types.ARG19 != 'STRING' || argumentVector.types.JAVA_HOME != 'STRING' ||
+        argumentValues.ARG19 != JDK || javaHome != JDK) {
+    argumentVector.outcomes.ARG20 = 'UNOBSERVED_NONFIXED_PATH'
+} else {
+    observeArgument('ARG20') { new File(argumentValues.ARG19).canonicalFile != new File(javaHome).canonicalFile }
+}
+String argumentVectorJson = JsonOutput.toJson(argumentVector)
+if (argumentVectorJson.getBytes('UTF-8').length > 4096) {
+    reject('bounded argument diagnostic unavailable; all task actions forbidden')
+}
+println('PASSVAULT_DESKTOP_ARG_VECTOR=' + argumentVectorJson)
+if (argumentVector.diagnosticError) reject('argument diagnostic read failed; all task actions forbidden')
+if (argumentVector.compatibilityShape != 'EXACT_CLI_NATIVE_PLUS_FIXED_TOOLCHAIN_9') {
+    reject('argument predicate rejected: ARG13_EXACT_PROJECT_PROPERTY_CONTRACT')
+}
+// Original ARG14..ARG20 immediately follow unchanged. Their fresh reads still
+// decide those predicates; observations are not an immutable map snapshot.
+if (props['passvault.audit.mode'] != 'desktop-installed-image-only') {
+    reject('argument predicate rejected: ARG14_AUDIT_MODE')
+}
+if (props['kotlin.compiler.execution.strategy'] != 'in-process') {
+    reject('argument predicate rejected: ARG15_KOTLIN_COMPILER_STRATEGY')
+}
+if (props['android.builder.sdkDownload'] != 'false') {
+    reject('argument predicate rejected: ARG16_ANDROID_SDK_DOWNLOAD_OFF')
+}
+if (sys['org.gradle.java.installations.auto-download'] != 'false') {
+    reject('argument predicate rejected: ARG17_JDK_AUTO_DOWNLOAD_OFF')
+}
+if (sys['org.gradle.java.installations.auto-detect'] != 'false') {
+    reject('argument predicate rejected: ARG18_JDK_AUTO_DETECT_OFF')
+}
+if (!sys['org.gradle.java.installations.paths']) {
+    reject('argument predicate rejected: ARG19_JDK_PATH_REQUIRED')
+}
+if (new File(sys['org.gradle.java.installations.paths']).canonicalFile != new File(System.getProperty('java.home')).canonicalFile) {
+    reject('argument predicate rejected: ARG20_JDK_CANONICAL_HOME_MATCH')
+}
+// Accepted Dependency03 native-route policy, newly composed here: Graph04 lacked it.
+// This is not a general download ban or a promise the requested graph will configure.
+def nativeData = runtime.resolve('konan').toFile()
+def nativeProperties = [
+    'kotlin.native.toolchain.enabled': 'true',
+    'kotlin.native.distribution.downloadFromMaven': 'true',
+    'konan.data.dir': nativeData.path,
+]
+def forbiddenNativeOverrides = ['kotlin.native.home', 'org.jetbrains.kotlin.native.home',
+    'kotlin.native.version', 'org.jetbrains.kotlin.native.version', 'kotlin.native.reinstall']
+if (nativeProperties.any { key, value -> start.projectProperties[key] != value } ||
+        forbiddenNativeOverrides.any { start.projectProperties.containsKey(it) } ||
+        System.getenv('KONAN_DATA_DIR') != nativeData.path || nativeData.canonicalFile != nativeData ||
+        !nativeData.isDirectory() || nativeData.list()?.length != 0) {
+    reject('pinned native route and fresh empty native data directory required')
+}
+gradle.beforeProject { project ->
+    if (nativeProperties.any { key, value -> project.findProperty(key) != value } ||
+            forbiddenNativeOverrides.any { project.findProperty(it) != null }) {
+        reject('native route/home/version/reinstall overrides forbidden')
+    }
+}
+gradle.addListener([
+    beforeResolve: { ResolvableDependencies incoming ->
+        if (incoming.name == 'kotlinNativeBundleConfiguration') {
+            nativeDenied.set(true)
+            reject('Kotlin/Native compiler provisioning forbidden; no retry')
+        }
+    },
+    afterResolve: { ResolvableDependencies ignored -> },
+] as DependencyResolutionListener)
+
+// Null contract values are source-only pending observations, never discovery authority.
+if (ADMITTED.findAll { key, value -> value == null }) reject('UNBOUND image action contract')
+if (!(ADMITTED.taskIo instanceof Map) || !(ADMITTED.classpathInputs instanceof Map) ||
+        !(ADMITTED.imageLayout instanceof Map) || !(ADMITTED.roomFinalizer instanceof Map) ||
+        !(ADMITTED.sourceStoreAffinity instanceof Map) || !(ADMITTED.linkPolicy instanceof Map) ||
+        !(ADMITTED.privateInput instanceof Map) || !(ADMITTED.privateRetention instanceof Map) ||
+        !(ADMITTED.resourceElection instanceof Map)) reject('UNBOUND typed image contract')
+bindingOk = true
+// Only the isolated intermediate runtime DirectoryProperty is routed. This does
+// not guess a Compose default or change product/release identity, graph or tasks.
+gradle.projectsEvaluated {
+    if (!bindingOk || ++runtimeRouteCount != 1) reject('one runtime route binding required')
+    def app = gradle.rootProject.project(':app-desktop')
+    def appBuild = checkoutPath.resolve('app-desktop/build')
+    if (app.projectDir.toPath().toAbsolutePath() != checkoutPath.resolve('app-desktop') ||
+            app.layout.buildDirectory.get().asFile.toPath() != appBuild) reject('runtime route project identity')
+    def link = app.tasks.named('createRuntimeImage').get()
+    if (link.path != ADMITTED.imageLayout.jlink ||
+            typeName(link.class.name) != 'org.jetbrains.compose.desktop.application.tasks.AbstractJLinkTask_Decorated') {
+        reject('runtime route public task identity')
+    }
+    def destination = checkoutPath.resolve(RUNTIME_OUTPUT_RELATIVE)
+    if (ADMITTED.imageLayout.producerRoots[link.path].outputRoot != destination.toString()) {
+        reject('explicit isolated runtime destination not elected')
+    }
+    noLinkAncestors(destination)
+    link.getDestinationDir().set(destination.toFile())
+    link.getDestinationDir().disallowChanges()
+    def pack = app.tasks.named('createReleaseDistributable').get()
+    if (pack.path != PRODUCER ||
+            typeName(pack.class.name) != 'org.jetbrains.compose.desktop.application.tasks.AbstractJPackageTask_Decorated') {
+        reject('nonverbose JPackage public task identity')
+    }
+    [link, pack].each { task ->
+        task.getVerbose().set(false)
+        task.getVerbose().disallowChanges()
+    }
+}
+gradle.taskGraph.whenReady { graph ->
+    readyCount++
+    if (!bindingOk || runtimeRouteCount != 1 || nativeDenied.get() || readyCount != 1 || start.dryRun) reject('one bound action graph required')
+    def tasks = graph.allTasks
+    if (tasks.empty || tasks.size() > 512) reject('requested graph task bound')
+    def paths = tasks.collect { taskPath(it.path) }.toSet()
+    if (paths.size() != tasks.size()) reject('duplicate requested graph path')
+    int edgeRefs = 0
+    def edge = { collection ->
+        if (!(collection instanceof Collection) || collection.size() > 128) reject('edge-list bound/type')
+        if ((edgeRefs += collection.size()) > 8192) reject('total edge-reference bound')
+        def names = collection.collect { taskPath(it.path) }
+        if (names.toSet().size() != names.size()) reject('duplicate edge reference')
+        names.sort()
+    }
+    def rows = tasks.collect { t ->
+        def dependencies = edge(graph.getDependencies(t))
+        if (dependencies.any { !paths.contains(it) }) reject('dependency outside populated graph')
+        [path: taskPath(t.path), type: typeName(t.class.name), enabled: t.enabled,
+         isTest: t instanceof Test, isExec: t instanceof Exec, isJavaExec: t instanceof JavaExec,
+         isArchive: t instanceof AbstractArchiveTask, dependencies: dependencies,
+         finalizers: edge(t.finalizedBy.getDependencies(t)), mustRunAfter: edge(t.mustRunAfter.getDependencies(t)),
+         shouldRunAfter: edge(t.shouldRunAfter.getDependencies(t))]
+    }
+    // Fixed ASCII framing, not another parser or a copied 110KB graph record.
+    String framed = 'PASSVAULT_DESKTOP_TASK_GRAPH_FRAME_V1\n' + rows.collect { r ->
+        [r.path, r.type, r.enabled ? '1' : '0', r.isTest ? '1' : '0', r.isExec ? '1' : '0',
+         r.isJavaExec ? '1' : '0', r.isArchive ? '1' : '0', r.dependencies.join(','), r.finalizers.join(','),
+         r.mustRunAfter.join(','), r.shouldRunAfter.join(',')].join('\t') + '\n'
+    }.join('')
+    String digest = MessageDigest.getInstance('SHA-256').digest(framed.getBytes('US-ASCII')).encodeHex().toString()
+    if (digest != GRAPH_FRAME_SHA || tasks.size() != 292 || edgeRefs != 568 || rows.any { it.isTest }) {
+        reject('action graph differs from independently accepted actual')
+    }
+    taskRows = rows.collectEntries { [(it.path): it] }
+    taskObjects = tasks.collectEntries { [(it.path): it] }
+    if (ADMITTED.taskIo != TASK_IO_POLICY || ADMITTED.classpathInputs != CLASSPATH_POLICY ||
+            tasks.collect { it.project.path }.toSet() != TASK_IO_POLICY.projectDirectories.keySet() ||
+            !taskRows[PRODUCER].enabled || PREREQUISITES.any { !taskRows[it].enabled } ||
+            TARGETS.any { !taskRows[it].enabled || taskRows[it].isTest || taskRows[it].isExec || taskRows[it].isJavaExec ||
+                !taskRows[it].dependencies.contains(PRODUCER) } ||
+            PREREQUISITES.any { !taskRows[PRODUCER].dependencies.contains(it) }) reject('shared image/action binding')
+    def room = ADMITTED.roomFinalizer
+    if (room != ROOM_POLICY || taskRows[room.producer].finalizers != [room.finalizer] ||
+            taskRows[room.finalizer].type != 'androidx.room.gradle.RoomSchemaCopyTask_Decorated' ||
+            rows.sum { it.finalizers.size() } != 1) reject('exact Room1-5/zero-new-schema finalizer contract')
+    def linkPolicy = ADMITTED.linkPolicy
+    if (linkPolicy.keySet() != (LINK_POLICY.keySet() + ['regularFileDevice']).toSet() ||
+            linkPolicy.findAll { key, ignored -> key != 'regularFileDevice' } != LINK_POLICY ||
+            !(linkPolicy.regularFileDevice instanceof Integer || linkPolicy.regularFileDevice instanceof Long) ||
+            linkPolicy.regularFileDevice < 0) reject('UNBOUND original regular-file device/link policy')
+    def layout = ADMITTED.imageLayout
+    if (layout.keySet() != ['resourceSync', 'jlink', 'jpackage', 'imageRoot', 'resourceRoot',
+            'producerRoots', 'opaqueActionInputsAndWritesReviewed'].toSet() ||
+            layout.resourceSync != ':app-desktop:prepareDesktopAppResources' || layout.jlink != ':app-desktop:createRuntimeImage' ||
+            layout.jpackage != PRODUCER || layout.imageRoot != checkoutPath.resolve('app-desktop/build/compose/binaries/main-release/app').toString() ||
+            layout.resourceRoot != checkoutPath.resolve('app-desktop/build/generated/desktopAppResources').toString() ||
+            layout.opaqueActionInputsAndWritesReviewed != true || !(layout.producerRoots instanceof Map) ||
+            layout.producerRoots.keySet() != [layout.jlink, PRODUCER].toSet()) {
+        reject('UNBOUND source image/precise producer roots/opaque action review')
+    }
+    def appBuild = checkoutPath.resolve('app-desktop/build')
+    layout.producerRoots.each { task, roots ->
+        if (!(roots instanceof Map) || roots.keySet() != ['outputRoot', 'workingRoot', 'argumentFile'].toSet()) reject('producer root schema')
+        def name = task.substring(task.lastIndexOf(':') + 1)
+        def working = appBuild.resolve('compose/tmp').resolve(name)
+        if (absolutePath(roots.workingRoot) != working ||
+                absolutePath(roots.argumentFile) != working.resolveSibling(name + '.args.txt')) reject('source-derived Compose local-state/argument binding')
+        boundedPaths([roots.outputRoot, roots.workingRoot], 2).each { p ->
+            if (!p.startsWith(appBuild) || p == appBuild) reject('precise producer root outside owned app build')
+            noLinkAncestors(p)
+            imageLinkRoots.add(p)
+        }
+    }
+    // Known private/protected LocalState providers are derived from retained
+    // constructor source, never called through reflection/protected getters.
+    // These are ordinary no-link trees, not extra allowed-link domains.
+    imageAuxiliaryRoots = ['resources', 'skiko'].collect { appBuild.resolve('compose/tmp').resolve(it) } +
+            [absolutePath(layout.resourceRoot)] +
+            ['createRuntimeImage', 'createReleaseDistributable'].collect { appBuild.resolve('compose/logs').resolve(it) }
+    imageForbiddenRoots = ['sign', 'propertyFiles'].collect { appBuild.resolve('compose/tmp').resolve(it) }
+    def allImageIoRoots = imageLinkRoots + imageAuxiliaryRoots
+    if (layout.producerRoots[ADMITTED.imageLayout.jlink].outputRoot != checkoutPath.resolve(RUNTIME_OUTPUT_RELATIVE).toString() ||
+            layout.producerRoots[PRODUCER].outputRoot != layout.imageRoot || allImageIoRoots.size() > 16 ||
+            allImageIoRoots.toSet().size() != allImageIoRoots.size() || allImageIoRoots.any { a ->
+                allImageIoRoots.any { b -> a != b && a.startsWith(b) } }) reject('image root domains overlap/change')
+    declaredFileVisits = 0
+    imageLinkCheck()
+    boundRuntimeProperties = runtimePropertiesRelation()
+    if (runtimePropertiesPhase != 'UNBOUND' ||
+            !Files.notExists(boundRuntimeProperties, LinkOption.NOFOLLOW_LINKS)) {
+        reject('runtime-properties output must be absent in the accepted fresh graph')
+    }
+    runtimePropertiesPhase = 'ABSENT_AT_GRAPH'
+    tasks.each { taskIoCheck(it) }  // Every declared producer before ANY action.
+    graphAccepted = true
+    imageArmed = true
+}

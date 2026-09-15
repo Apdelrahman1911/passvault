@@ -1,0 +1,30 @@
+--- 
++++ 
+@@ -79,15 +79,15 @@
+  'framed_transport_bytes': 153725453,
+  'effective_bytes': 153493115,
+  'base_content_identity_sha256': '19211d126337ddf19a37a6b89522642d62dcc247c199a6420cdc1e4b28abd91c',
+- 'effective_content_identity_sha256': '76df24e4b50e4f6b38f75e5c4550b5440bdd8ab4814109e3de57b3ca6b4d50ce',
++ 'effective_content_identity_sha256': '4f5274b75eb7e655a0b56f92af8d4999d75bda67b3d931161e51674b2eab2c00',
+  'diagnostic_overlay': {'path': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt',
+                         'git_mode': '100644',
+                         'before': {'bytes': 88602,
+                                    'sha256': '5fe322e48fef5fe7b6d2729817ad6fdbeb6bec182bf1cde5198ffdb1bb8c01a3',
+                                    'git_blob': '91858bd15c2ab211bc263b881157cebd9a283154'},
+                         'after': {'bytes': 122714,
+-                                  'sha256': '02dabb37dd305a43ffea0741ef6ae0275dd84dab3480c693cda746b71d9e9225',
+-                                  'git_blob': 'f7d1ac1f2090ecbba8594930049f9a8b50f8d490'},
++                                  'sha256': '286400ba036c7b1df5e9cde013f2cd5f70c57179c5346040d8c027eeacefa8b8',
++                                  'git_blob': '6dcdb94372b65f4c8efc93156e14d791f50aa937'},
+                         'scope': 'PVU003-only real native chooser ownership/focus via exact inline read-only '
+                                  'isolated Python/libX11; successful Main and PVA027 not executed. No '
+                                  'production overlay.'}}
+@@ -114,7 +114,7 @@
+ PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
+ DEVICE = {'directory_device': 23, 'regular_file_device': 24}  # Selected DATA literals only; root must verify fresh facts before approval.
+ EXPECTED_LOCK = {'bytes': 0, 'ctime_ns': 1789367939912132665, 'dev': 24, 'ino': 13719326, 'mode': 33152, 'mtime_ns': 1789367939912132665, 'nlink': 1, 'uid': 0}  # Selected DATA literals only; no inherited lock custody.
+-FROZEN = {INNER: 'fa55d0a2f327ce7f7918e33f389f2760356176e1a046f85c90c542e3ab6c6cd0', INIT: '83bd4f3d714e27f41b2fa3415acc4e8412233da51efd7078f1aac19d83ecdcd4', SOURCE: '1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc', DIAGNOSTIC: '02dabb37dd305a43ffea0741ef6ae0275dd84dab3480c693cda746b71d9e9225'}
++FROZEN = {INNER: '37fbe27037934aeb1fde172ae10ac46f9d24c51cb4041b10178670bc46770eb5', INIT: '83bd4f3d714e27f41b2fa3415acc4e8412233da51efd7078f1aac19d83ecdcd4', SOURCE: '1984fc3221b38fbd4e1c894b0a5b2cc13df8828dc7b5415aa50b0e887e47fccc', DIAGNOSTIC: '286400ba036c7b1df5e9cde013f2cd5f70c57179c5346040d8c027eeacefa8b8'}
+ TOP = 'checkout home tmp jna sqlite gradle-home konan android-user xdg-cache xdg-config xdg-data xdg-state workers pvu003'.split()
+ WORKERS = ['mainnav']
+ PVA027_CROPS = ('tray-tooltip-en1.png', 'tray-tooltip-ar.png', 'tray-tooltip-en2.png',

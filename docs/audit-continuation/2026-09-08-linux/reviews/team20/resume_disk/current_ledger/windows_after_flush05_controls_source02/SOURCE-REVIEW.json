@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "utc": "2026-09-15T01:17:27.701323+00:00",
+  "reviewer": "/root/current_ledger",
+  "author": "/root",
+  "disposition": "REJECT_STALE_04_ACCEPTANCE_MARKER_IN_PROPOSAL02",
+  "bindings": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-after-flush05-controls-proposal02/PROPOSAL.json",
+      "bytes": 2413,
+      "sha256": "e74f5c4b1a866ad5de37c81a24a06096b021f579578e829f5fdc9ff41f322ce4"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/windows-after-flush05-controls-proposal02/windows_after_flush_05.py.txt",
+      "bytes": 78622,
+      "sha256": "fb5b54aabd2a56f13b9f30f25090c2f405e931767d541cc243130f7527b3d09b"
+    }
+  ],
+  "finding": "Helper:978stillrequires ACCEPT_WINDOWS_AFTER_FLUSH_04_INSTANCE; normal05disposition wouldrefuse. Suite/nonce/sourcehash checks prevent replay of old04acceptance; freshcontract-label mismatch, not establishedsecuritybypass.",
+  "resolution": "Root independentlycaught marker and suppliedproposal03 correctingmarker+scopepath only. No runtimeattempt/testcredit/familyclosure. Originals01/02preserved."
+}

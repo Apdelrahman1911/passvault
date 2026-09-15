@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "utc": "2026-09-15T01:42:15.763848+00:00",
+  "reviewer": "/root/current_ledger",
+  "author": "/root",
+  "disposition": "ACCEPT_IMAGE04_ORIGINAL_PRE_GRADLE_RESOURCE_FAILURE_AND_LOGICAL_RETIREMENT_ONLY",
+  "scope": "Retained original public SOURCE/DATA only, no HOLD runtime inquiry/replay/recovery/deletion. No successful image/cleanup or namespace-wide future custody claim.",
+  "bindings": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image04-instance01/ORIGINAL-TOOL-RESULT.json",
+      "bytes": 118,
+      "sha256": "9ad8edfd753b6e1ecedfde4bda30ba9433af456eac630141cb099833b7fd8a58"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-installed-image04/OUTER-RECEIPT.json",
+      "bytes": 26414,
+      "sha256": "5e5db4138cb0add5352f7bfa78036585820b05c6453932022539542e2307e669"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-installed-image04/INNER-RESULT.json",
+      "bytes": 8064,
+      "sha256": "21584273daef612221118e26090d7228fc5e0511056373021077358c61b598a7"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-installed-image04/PHASE-git-sdk-isolation.json",
+      "bytes": 120,
+      "sha256": "bd1c142217e9cb1f10cfcdf6c62d7dc2d615f48ad2076359bb483e83f39be03d"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-installed-image04/INNER-PREFLIGHT.json",
+      "bytes": 167,
+      "sha256": "3ce71b90583f9bc4a24b71b2c9046a94d9b25985dc3aefdeace2fe9b5a248dbf"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image04-instance01/OUTER.py",
+      "bytes": 108709,
+      "sha256": "c42adc4f14def7d5bf9c434bdf5ee33fe52697adcdfe5d3b2ff82ee1adb8df2f"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image04-instance01/INNER.py",
+      "bytes": 91464,
+      "sha256": "32223151b12b4ba2822f362f8d321c5114b843f8d3a058076ffb100554d9fd6a"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image04-instance01/REQUEST.json",
+      "bytes": 39891,
+      "sha256": "2a7de8f7fa89a1edddb4e32216764eecf391ca4712dd49c9d74700edbdbf688b"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/desktop-image04-instance01/APPROVAL.json",
+      "bytes": 1247,
+      "sha256": "9cbcfdd6c9a8d1fddb49b377e32699be28b2b3b281053071f1da673e00e879e5"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_ledger/desktop_image04_instance/INSTANCE-REVIEW.json",
+      "bytes": 9102,
+      "sha256": "c8918119e83175ffd9bc6ef9111278c2e51b9eb04bb8947525e5633234134586"
+    }
+  ],
+  "actual": {
+    "session_id": 14614,
+    "entry_chunk": "ebe39e",
+    "terminal_chunk": "099373",
+    "exit_code": 70,
+    "outer_elapsed_seconds": 23.758,
+    "outer_status": "HOLD",
+    "outer_cleanup": "NOT_ATTEMPTED",
+    "outer_reason": "PRIVATE_RUNTIME_HOLD:RuntimeError",
+    "children": [
+      {
+        "role": "raw Git blob transport",
+        "exit": 0
+      },
+      {
+        "role": "original unshare/inner controller",
+        "exit": 70
+      }
+    ],
+    "inner_started": true,
+    "inner_image_attempted": false,
+    "inner_private_phase_attempted": false,
+    "inner_errors": [
+      "RuntimeError: disk/RAM floor: launch=True disk_bytes=8342093824 MemAvailable_bytes=32278786048 MemTotal_bytes=33666850816"
+    ],
+    "phase": {
+      "commands": [],
+      "phase": "git-sdk-isolation",
+      "settled": true,
+      "stop_attempted": false,
+      "stop_ok": false,
+      "stop_required": false
+    },
+    "all_required_stops_ok": true,
+    "namespace_empty_before_exit": true,
+    "source_before": true,
+    "source_after": true,
+    "git_bindings_established": false,
+    "sdk_readonly_view_established": false,
+    "cleanup_safe": false
+  },
+  "independent_checks": [
+    "Original request/approval and allfour consumedsourcebindings match approved exactinstance; inner IMAGE_BINDING/source/parent identities matchrequest. Original namespacepreflight matchesouter-ownedchild namespace; retainedphasehash/content matchesINNERresult. No reviewer runtime probe.",
+    "INNER814-825 applies8GiBlaunch/5GiBrunningand25%/20%RAM. INNER1120 callslaunchresourcegate beforefirstGit/SDK bindcommand and before Gradle/image phase1325. Originalphase haszero commands; stoprequiredfalse. all_required_stops_ok=true is vacuous, not successful Gradle --stop evidence.",
+    "OriginalouterGit transport completed0 and materialized raw5121source rows; outer source_before identity19211d126337ddf19a37a6b89522642d62dcc247c199a6420cdc1e4b28abd91c. INNER before/after true are retained public original assertions, not anew private sourceinspection. Checkout-EOL qualifications retained.",
+    "OUTER1508 rejects isolated child70 before capturingINNER-RESULT1539; receipt has noinner_resultbinding. Originalpublic INNER-RESULT is independently reviewed retained data, NOT falsely presented as accepted/captured byOUTER. Incomplete git/index/SDKproofs also independently failcleanup; preserve all uncertainty.",
+    "Originalpreterminal receipt is supplemented by actualterminal70; nopidfd kill attempted. Original inner reportspositiveprivateNSsettlement; originaldirectchildrenterminal. This permits cooperative slotretirement, notoldruntime ownership/reclassification/deletion."
+  ],
+  "resources": {
+    "outer_entry_disk_bytes": 8667463680,
+    "inner_pre_command_disk_bytes": 8342093824,
+    "required_launch_disk_bytes": 8589934592,
+    "deficit_bytes": 247840768,
+    "inner_mem_available_bytes": 32278786048,
+    "mem_total_bytes": 33666850816,
+    "ram_gate_passed": true,
+    "outer_unclassified_host_churn": 25,
+    "qualification": "Entry was above8GiB but withinsufficient materialization headroom; copiedrawsourceandretainedtransport precede another8GiBlaunchgate. Sourcebytes plusframing explain expected consumption, but exact whole diskdelta attribution isnotproved onsharedhost. Do not lower8GiBfloor orrerun unchanged. Normal12GiB remains unmet. Future local8GiB jobs currentlyresourceblocked per root; WindowsCI/source-onlywork can proceed underseparatelyadmitted controls."
+  },
+  "retirement_cleanup": "No Gradle/application/native/test/image task launched, so no wrapper --stop owed. Originalphase/namespace/directchild settlement accepted only as recorded. Entire freshImage04 runtime remainsHOLD: no cleanup_safe, no deletion attempt, noprivate inquiry/replay/recovery. Source/metadata/storage are not retroactively erased because no build began.",
+  "credit": {
+    "xml_cases": 0,
+    "selectors_completed": 0,
+    "family_closures": 0,
+    "mixed_xml_total_unchanged": 268,
+    "heap_hypothesis": "UNTESTED_BY_IMAGE04",
+    "readiness": "INCOMPLETE_NOT_READY"
+  },
+  "restrictions": "AllSTOP/NO-RETRY/CLOSED/HOLD/protectedrefs/tags/build1017001/eightPVD preserved. RevieweronlySOURCE/DATA/hash/AST/ownrecord; no subjectexecution/import/Git/network/build/test/process/resource/SDK/cleanup probe."
+}

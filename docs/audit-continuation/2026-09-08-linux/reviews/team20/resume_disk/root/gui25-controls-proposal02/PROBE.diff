@@ -1,0 +1,48 @@
+--- 
++++ 
+@@ -8,10 +8,11 @@
+ import ctypes as C
+ import os
+ import sys
++import time
+ 
+ # Fixed public guard IDs only; never emit a traceback, observed property or path.
+ LAST_PROPERTY = 'NONE'
+-GUARD_CODES = {'Linux x64 ABI only': 'G01', 'focused native chooser changed': 'G02', 'cannot establish focus ancestry': 'G03', 'cannot open original private display': 'G04', 'cannot translate native client geometry': 'G05', 'chooser PID mismatch': 'G06', 'chooser owner mismatch': 'G07', 'fixed integer observation': 'G08', 'focus ancestry bound': 'G09', 'focus moved during observation': 'G10', 'fresh unconsumed runtime only': 'G11', 'invalid caller/window identity': 'G12', 'isolated interpreter required': 'G13', 'keyboard focus is not owned by chooser': 'G14', 'main PID mismatch': 'G15', 'missing/ambiguous/oversized native ownership property': 'G16', 'native geometry unavailable': 'G17', 'no separate focused native chooser': 'G18', 'original private authority required': 'G19', 'owned runtime, original caller PID, main client XID required': 'G20', 'private display required': 'G21', 'required ownership atom missing': 'G22', 'unexpected native title': 'G23', 'unsupported native frame extents': 'G24', 'unsupported native geometry': 'G25', 'unsupported property width': 'G26', 'invalid optional ownership query': 'G27'}
++GUARD_CODES = {'Linux x64 ABI only': 'G01', 'focused native chooser changed': 'G02', 'cannot establish focus ancestry': 'G03', 'cannot open original private display': 'G04', 'cannot translate native client geometry': 'G05', 'chooser PID mismatch': 'G06', 'chooser owner mismatch': 'G07', 'fixed integer observation': 'G08', 'focus ancestry bound': 'G09', 'focus moved during observation': 'G10', 'fresh unconsumed runtime only': 'G11', 'invalid caller/window identity': 'G12', 'isolated interpreter required': 'G13', 'keyboard focus is not owned by chooser': 'G14', 'main PID mismatch': 'G15', 'missing/ambiguous/oversized native ownership property': 'G16', 'native geometry unavailable': 'G17', 'no separate focused native chooser': 'G18', 'original private authority required': 'G19', 'owned runtime, original caller PID, main client XID required': 'G20', 'private display required': 'G21', 'required ownership atom missing': 'G22', 'unexpected native title': 'G23', 'unsupported native frame extents': 'G24', 'unsupported native geometry': 'G25', 'unsupported property width': 'G26', 'invalid optional ownership query': 'G27', 'invalid observer mode': 'G28', 'initial focus readiness deadline': 'G29'}
+ from pathlib import Path
+ 
+ 
+@@ -23,8 +24,10 @@
+ def main():
+     require(sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode,
+             'isolated interpreter required')
+-    require(len(sys.argv) == 4, 'owned runtime, original caller PID, main client XID required')
++    require(len(sys.argv) == 5, 'owned runtime, original caller PID, main client XID required')
+     runtime, caller, main_xid = Path(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3])
++    mode = sys.argv[4]
++    require(mode in ('initial', 'strict'), 'invalid observer mode')
+     require(str(runtime) == '/root/projects/PassVault/audit-runtime-linux-desktop-integration25',
+             'fresh unconsumed runtime only')
+     require(caller > 1 and 1 < main_xid < 2**32, 'invalid caller/window identity')
+@@ -107,6 +110,20 @@
+                     if children.value: free(children)
+                 current = parent
+             raise RuntimeError('focus ancestry bound')
++        if mode == 'initial':
++            # AWT showing may precede native mapping/focus transfer. Wait only
++            # before the FIRST observation, never before Home or Escape input.
++            require(single(main_xid, '_NET_WM_PID', 'CARDINAL') == caller, 'main PID mismatch')
++            ready_until = time.monotonic() + 1.0
++            for _ in range(101):
++                current, revert = U(), I(); focus(d, C.byref(current), C.byref(revert))
++                if current.value not in (0, 1, root, main_xid):
++                    break  # Any other focus enters strict ownership discovery NOW.
++                remaining = ready_until - time.monotonic()
++                require(remaining > 0, 'initial focus readiness deadline')
++                time.sleep(min(0.01, remaining))
++            else:
++                raise RuntimeError('initial focus readiness deadline')
+         chooser = focused_chooser()
+         def identity_check():
+             require(focused_chooser() == chooser, 'focused native chooser changed')
