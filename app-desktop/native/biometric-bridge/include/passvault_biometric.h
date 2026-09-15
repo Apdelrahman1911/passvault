@@ -53,6 +53,11 @@ PV_BIO_API pv_bio_status PV_BIO_CALL
 pv_bio_create(const char *data_directory_utf8, size_t data_directory_length,
               pv_bio_context **out_context);
 
+/*
+ * Starts terminal context destruction. The caller must never use context
+ * again after invoking this function. An implementation may defer final
+ * reclamation until an already in-flight operation returns.
+ */
 PV_BIO_API void PV_BIO_CALL pv_bio_destroy(pv_bio_context *context);
 
 PV_BIO_API pv_bio_status PV_BIO_CALL

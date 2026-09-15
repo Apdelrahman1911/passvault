@@ -11,6 +11,8 @@ import com.passvault.core.security.BiometricType
 import com.passvault.core.security.BiometricUnlockService
 import com.passvault.core.security.BiometricUnlockStatus
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 
 /**
  * Connects OS-protected biometric storage to the existing verified vault
@@ -24,6 +26,12 @@ class DefaultBiometricUnlockService(
 ) : BiometricUnlockService {
 
     override suspend fun getStatus(): BiometricUnlockStatus {
+        val metadataResult = vaultRepository.getMetadata()
+        val vaultId = metadataResult.getOrNull()?.id?.value
+        val repositoryHasNoVault = vaultId == null && vaultRepository.exists().getOrNull() == false
+        if (vaultId != null || repositoryHasNoVault) {
+            resultCall { keyStore.reconcile(vaultId) }.rethrowCancellationFailure()
+        }
         val capability = valueCall { keyStore.getCapability() }
             .getOrElse {
                 return BiometricUnlockStatus(
@@ -35,7 +43,6 @@ class DefaultBiometricUnlockService(
                 )
             }
 
-        val vaultId = vaultRepository.getMetadata().getOrNull()?.id?.value
         val enabled = if (vaultId == null) {
             false
         } else {
@@ -87,6 +94,9 @@ class DefaultBiometricUnlockService(
     }
 
     override suspend fun unlock(): BiometricOperationResult {
+        // A completed lock must supersede the whole attempt, not only the work
+        // after a platform key has arrived at the repository.
+        val attempt = vaultRepository.beginBiometricUnlock().getOrElse { return it.toOperationResult() }
         val vaultId = vaultRepository.getMetadata().getOrNull()?.id?.value
         val enabledResult = vaultId?.let { id -> valueCall { keyStore.contains(id) } }
         return when {
@@ -106,7 +116,8 @@ class DefaultBiometricUnlockService(
                         ?: BiometricOperationResult.Failure(BiometricFailureReason.INTERNAL_ERROR)
                 } else {
                     try {
-                        val unlockResult = vaultRepository.unlockWithBiometricKey(vaultKey)
+                        currentCoroutineContext().ensureActive()
+                        val unlockResult = vaultRepository.unlockWithBiometricKey(vaultKey, attempt)
                         if (unlockResult.isSuccess) {
                             BiometricOperationResult.Success
                         } else if (unlockResult.exceptionOrNull() is BiometricVaultKeyRejectedException) {
@@ -133,6 +144,7 @@ class DefaultBiometricUnlockService(
 
     private fun Throwable.toOperationResult(): BiometricOperationResult = when (this) {
         is CancellationException -> throw this
+        is VaultSessionLockedException -> BiometricOperationResult.Failure(BiometricFailureReason.VAULT_LOCKED)
         is BiometricKeyStoreException.Cancelled -> BiometricOperationResult.Cancelled
         is BiometricKeyStoreException.NotAvailable -> {
             BiometricOperationResult.Failure(BiometricFailureReason.NOT_AVAILABLE)

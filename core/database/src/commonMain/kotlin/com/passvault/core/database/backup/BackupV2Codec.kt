@@ -44,8 +44,7 @@ internal class BackupV2Writer private constructor(
     private var writtenBytes = authenticatedHeader.size.toLong()
 
     suspend fun writeRecord(type: Int, plaintext: ByteArray) {
-        require(BackupRecordType.isValid(type))
-        require(plaintext.size <= BackupLimits.MAX_ENTITY_RECORD_BYTES)
+        requireValidBackupRecordPlaintextSize(type, plaintext.size)
         val associatedData = recordAssociatedData(type, recordIndex, plaintext.size)
         val encrypted = try {
             cryptoEngine.encrypt(plaintext, derivedKey.key, associatedData).getOrThrow()
@@ -151,6 +150,7 @@ internal class BackupV2Reader private constructor(
     private val cryptoEngine: CryptoEngine,
     private val derivedKey: DerivedKey,
     private val authenticatedHeader: ByteArray,
+    private val declaredSizeBytes: Long?,
     private var consumedBytes: Long,
 ) {
     private var expectedRecordIndex = 0L
@@ -162,20 +162,21 @@ internal class BackupV2Reader private constructor(
     }
 
     suspend fun readRecord(
-        maxPlaintextBytes: Int,
+        expectedType: Int,
         includeInMetadataTranscript: Boolean = false,
     ): BackupRecord {
-        require(maxPlaintextBytes in 0..BackupLimits.MAX_ENTITY_RECORD_BYTES)
+        require(BackupRecordType.isValid(expectedType))
         val type = readByte()
+        require(BackupRecordType.isValid(type))
+        require(type == expectedType)
         val index = readLong()
         val plaintextSize = readInt()
-        require(BackupRecordType.isValid(type))
         require(index == expectedRecordIndex)
-        require(plaintextSize in 0..maxPlaintextBytes)
+        requireValidBackupRecordPlaintextSize(type, plaintextSize)
         val nonce = readExact(NONCE_BYTES)
         val ciphertextSize = readInt()
         require(ciphertextSize == plaintextSize + ENCRYPTION_OVERHEAD_BYTES)
-        val ciphertext = readExact(ciphertextSize)
+        val ciphertext = readCiphertextExact(ciphertextSize)
         val associatedData = recordAssociatedData(type, index, plaintextSize)
         return try {
             val plaintext = cryptoEngine.decrypt(
@@ -202,7 +203,7 @@ internal class BackupV2Reader private constructor(
         val probe = ByteArray(1)
         try {
             require(source.read(probe) == -1)
-            source.declaredSizeBytes?.let { require(consumedBytes == it) }
+            declaredSizeBytes?.let { require(consumedBytes == it) }
         } finally {
             cryptoEngine.secureWipe(probe)
         }
@@ -268,8 +269,7 @@ internal class BackupV2Reader private constructor(
     }
 
     private suspend fun readExact(size: Int): ByteArray {
-        require(size >= 0)
-        require(consumedBytes + size <= BackupLimits.MAX_BACKUP_BYTES)
+        requireReadableBytes(size)
         val bytes = ByteArray(size)
         var offset = 0
         var completed = false
@@ -293,6 +293,78 @@ internal class BackupV2Reader private constructor(
         }
     }
 
+    /**
+     * Large ciphertext is accumulated in bounded chunks before its contiguous AEAD input is allocated.
+     * This keeps a short or size-misreporting source from triggering the full unauthenticated allocation.
+     */
+    private suspend fun readCiphertextExact(size: Int): ByteArray {
+        if (size <= MAX_DIRECT_PREAUTH_ALLOCATION_BYTES) return readExact(size)
+        requireReadableBytes(size)
+
+        val chunks = mutableListOf<ByteArray>()
+        val readBuffers = mutableMapOf<Int, ByteArray>()
+        var currentChunk = ByteArray(minOf(READ_BUFFER_BYTES, size)).also(chunks::add)
+        var currentOffset = 0
+        var storedBytes = 0
+        var remainingBytes = size
+        var result: ByteArray? = null
+        var ownershipTransferred = false
+        try {
+            while (remainingBytes > 0) {
+                val requestBytes = largestPowerOfTwoAtMost(minOf(READ_BUFFER_BYTES, remainingBytes))
+                val readBuffer = readBuffers.getOrPut(requestBytes) { ByteArray(requestBytes) }
+                val count = source.read(readBuffer)
+                require(count in 1..readBuffer.size)
+                consumedBytes += count
+                remainingBytes -= count
+
+                var sourceOffset = 0
+                while (sourceOffset < count) {
+                    if (currentOffset == currentChunk.size) {
+                        currentChunk = ByteArray(minOf(READ_BUFFER_BYTES, size - storedBytes)).also(chunks::add)
+                        currentOffset = 0
+                    }
+                    val copyBytes = minOf(currentChunk.size - currentOffset, count - sourceOffset)
+                    readBuffer.copyInto(
+                        destination = currentChunk,
+                        destinationOffset = currentOffset,
+                        startIndex = sourceOffset,
+                        endIndex = sourceOffset + copyBytes,
+                    )
+                    currentOffset += copyBytes
+                    sourceOffset += copyBytes
+                    storedBytes += copyBytes
+                }
+            }
+
+            require(storedBytes == size)
+            val ciphertext = ByteArray(size)
+            result = ciphertext
+            var destinationOffset = 0
+            chunks.forEach { chunk ->
+                chunk.copyInto(ciphertext, destinationOffset = destinationOffset)
+                destinationOffset += chunk.size
+            }
+            require(destinationOffset == size)
+            ownershipTransferred = true
+            return ciphertext
+        } finally {
+            chunks.forEach(cryptoEngine::secureWipe)
+            readBuffers.values.forEach(cryptoEngine::secureWipe)
+            if (!ownershipTransferred) result?.let(cryptoEngine::secureWipe)
+        }
+    }
+
+    private fun requireReadableBytes(size: Int) {
+        require(size >= 0)
+        val requestedBytes = size.toLong()
+        require(requestedBytes <= BackupLimits.MAX_BACKUP_BYTES - consumedBytes)
+        declaredSizeBytes?.let { declaredBytes ->
+            require(consumedBytes <= declaredBytes)
+            require(requestedBytes <= declaredBytes - consumedBytes)
+        }
+    }
+
     private fun recordAssociatedData(type: Int, index: Long, plaintextSize: Int): ByteArray = Buffer()
         .write(authenticatedHeader)
         .writeUtf8(RECORD_AAD_DOMAIN)
@@ -310,7 +382,8 @@ internal class BackupV2Reader private constructor(
         ): BackupV2Reader {
             require(BackupPasswordPolicy.acceptsExisting(password))
             require(magic.contentEquals(MAGIC))
-            source.declaredSizeBytes?.let { require(it in HEADER_BYTES.toLong()..BackupLimits.MAX_BACKUP_BYTES) }
+            val declaredSizeBytes = source.declaredSizeBytes
+            declaredSizeBytes?.let { require(it in HEADER_BYTES.toLong()..BackupLimits.MAX_BACKUP_BYTES) }
             var passwordBytes: ByteArray? = null
             var salt: ByteArray? = null
             var derivedKey: DerivedKey? = null
@@ -337,6 +410,7 @@ internal class BackupV2Reader private constructor(
                     cryptoEngine = cryptoEngine,
                     derivedKey = derivedKey,
                     authenticatedHeader = authenticatedHeader,
+                    declaredSizeBytes = declaredSizeBytes,
                     consumedBytes = authenticatedHeader.size.toLong(),
                 ).also { derivedKey = null }
             } finally {
@@ -376,6 +450,31 @@ internal class BackupV2Reader private constructor(
     }
 }
 
+internal fun maximumBackupRecordPlaintextBytes(type: Int): Int = when (type) {
+    BackupRecordType.MANIFEST,
+    BackupRecordType.METADATA,
+    BackupRecordType.FOLDER,
+    BackupRecordType.TAG,
+    BackupRecordType.CREDENTIAL,
+    BackupRecordType.CREDENTIAL_FOLDER_REFERENCE,
+    BackupRecordType.CREDENTIAL_TAG_REFERENCE,
+    BackupRecordType.ATTACHMENT,
+    BackupRecordType.PASSWORD_HISTORY,
+    BackupRecordType.METADATA_END,
+    -> BackupEntityBinaryCodec.maximumPlaintextBytes(type)
+    BackupRecordType.ATTACHMENT_START,
+    BackupRecordType.ATTACHMENT_END,
+    -> BackupLimits.ATTACHMENT_CONTROL_PLAINTEXT_BYTES
+    BackupRecordType.ATTACHMENT_CONTENT -> BackupLimits.RECORD_PLAINTEXT_BYTES
+    BackupRecordType.FINAL -> BackupLimits.FINAL_RECORD_PLAINTEXT_BYTES
+    else -> error("Unsupported backup record type")
+}
+
+internal fun requireValidBackupRecordPlaintextSize(type: Int, plaintextSize: Int) {
+    require(BackupRecordType.isValid(type))
+    require(plaintextSize in 0..maximumBackupRecordPlaintextBytes(type))
+}
+
 internal val BACKUP_V2_MAGIC: ByteArray
     get() = MAGIC.copyOf()
 
@@ -392,9 +491,18 @@ private const val NONCE_BYTES = 24
 private const val ENCRYPTION_OVERHEAD_BYTES = 20
 private const val TRANSCRIPT_TAG_BYTES = 16
 private const val READ_BUFFER_BYTES = 64 * 1024
+private const val MAX_DIRECT_PREAUTH_ALLOCATION_BYTES =
+    BackupLimits.RECORD_PLAINTEXT_BYTES + ENCRYPTION_OVERHEAD_BYTES
 private const val PARALLELISM = 1
 private const val V2_MIN_ARGON2_OPS = 3
 private const val V2_MAX_ARGON2_OPS = 4
 private const val V2_ARGON2_MEM = 64 * 1024 * 1024
 private val MAGIC = byteArrayOf(0x50, 0x56, 0x42, 0x41, 0x43, 0x4b, 0x02, 0x00)
 private val HEADER_BYTES = MAGIC.size + Int.SIZE_BYTES * 5 + SALT_BYTES
+
+private fun largestPowerOfTwoAtMost(value: Int): Int {
+    require(value > 0)
+    var result = 1
+    while (result <= value / 2) result *= 2
+    return result
+}

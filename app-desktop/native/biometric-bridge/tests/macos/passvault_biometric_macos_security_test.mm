@@ -3,6 +3,7 @@
 #include "../../src/macos/passvault_biometric_macos.mm"
 
 #include <cstdlib>
+#include <future>
 
 #define PV_TEST_CHECK(condition)                                               \
   do {                                                                         \
@@ -10,10 +11,38 @@
       return __LINE__;                                                         \
   } while (false)
 
+bool verify_bounded_busy_destroy(bool commit_before_destroy) {
+  auto *context = new pv_bio_context();
+  LAContext *authentication_context = [[LAContext alloc] init];
+  constexpr uint64_t operation_id = 73;
+  if (!begin_operation(context, operation_id, authentication_context)) {
+    delete context;
+    return false;
+  }
+  if (commit_before_destroy && !commit_operation(context, operation_id)) {
+    finish_operation_and_release(context, operation_id);
+    delete context;
+    return false;
+  }
+
+  auto destroy = std::async(std::launch::async,
+                            [context] { pv_bio_destroy(context); });
+  const bool bounded =
+      destroy.wait_for(kDestroyDrainTimeout + std::chrono::seconds(2)) ==
+      std::future_status::ready;
+  const bool cancelled = operation_was_cancelled(context, operation_id);
+  finish_operation_and_release(context, operation_id);
+  destroy.get();
+  return bounded && cancelled;
+}
+
 int main() {
   @autoreleasepool {
-    char directory_template[] = "/tmp/passvault-biometric-native-test.XXXXXX";
-    char *root_value = mkdtemp(directory_template);
+    const char *temporary_directory = std::getenv("TMPDIR");
+    std::string directory_template =
+        std::string(temporary_directory ? temporary_directory : "/tmp") +
+        "/passvault-biometric-native-test.XXXXXX";
+    char *root_value = mkdtemp(directory_template.data());
     PV_TEST_CHECK(root_value != nullptr);
     const std::string root(root_value);
     const std::string biometric_directory = root + "/biometric";
@@ -37,6 +66,9 @@ int main() {
     pv_bio_destroy(context);
     secure_wipe(missing_hash.data(), missing_hash.size());
     secure_wipe(missing_output.data(), missing_output.size());
+
+    PV_TEST_CHECK(verify_bounded_busy_destroy(false));
+    PV_TEST_CHECK(verify_bounded_busy_destroy(true));
 
     Metadata expected{};
     for (size_t index = 0; index < expected.vault_hash.size(); ++index) {

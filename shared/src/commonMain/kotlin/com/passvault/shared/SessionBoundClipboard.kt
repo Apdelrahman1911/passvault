@@ -1,6 +1,7 @@
 package com.passvault.shared
 
 import com.passvault.core.domain.model.VaultSessionState
+import com.passvault.core.domain.repository.LockReason
 import com.passvault.core.security.ClipboardService
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.currentCoroutineContext
@@ -16,28 +17,40 @@ import kotlinx.coroutines.withContext
  * may finish first, followed by the pending write restoring the secret. The
  * post-copy session check closes that race. Once authorized, the copy and
  * post-check are non-cancellable so caller teardown cannot skip the cleanup.
+ * iOS may retain a local-only, OS-expiring item across a background lock so
+ * the user can complete a cross-app paste.
  */
 internal suspend fun copySensitiveWhileUnlocked(
     sessionState: Flow<VaultSessionState>,
     clipboardService: ClipboardService,
     text: String,
     timeoutMs: Long,
+    preserveClipboardOnBackgroundLock: Boolean = false,
 ) {
     currentCoroutineContext().ensureActive()
-    val sessionChangedDuringCopy = withContext(NonCancellable) {
+    val copyInvalidated = withContext(NonCancellable) {
         val activeSession = sessionState.first() as? VaultSessionState.Unlocked
         check(activeSession != null) {
             "Vault must be unlocked before copying sensitive text"
         }
         clipboardService.copySensitive(text, timeoutMs)
-        val sessionChanged = sessionState.first() != activeSession
-        if (sessionChanged) {
+        val currentSession = sessionState.first()
+        val preserveAfterBackgroundLock = preserveClipboardOnBackgroundLock &&
+            currentSession.isBackgroundLockTransition()
+        val copyInvalidated = currentSession != activeSession && !preserveAfterBackgroundLock
+        if (copyInvalidated) {
             clipboardService.clear()
         }
-        sessionChanged
+        copyInvalidated
     }
     currentCoroutineContext().ensureActive()
-    check(!sessionChangedDuringCopy) {
+    check(!copyInvalidated) {
         "Vault session changed during sensitive clipboard copy"
     }
+}
+
+private fun VaultSessionState.isBackgroundLockTransition(): Boolean = when (this) {
+    is VaultSessionState.Locking -> reason == LockReason.Background
+    is VaultSessionState.Locked -> reason == LockReason.Background
+    else -> false
 }

@@ -1,6 +1,6 @@
 # PassVault encrypted backup format
 
-Last reviewed: 2026-08-27
+Last reviewed: 2026-09-03
 
 The `.pvault` extension is used for both supported encrypted containers. New exports use binary **format 2**.
 Strict read compatibility with legacy JSON **format 1** is retained.
@@ -21,14 +21,19 @@ Every format-2 file starts with this 44-byte binary header:
 | attachment/record chunk bytes | 4 | 256 KiB |
 | random salt | 16 | exactly 16 bytes |
 
-The backup password is independent of the vault master password. PassVault strictly UTF-8 encodes it and then uses
-the lowercase ASCII hexadecimal bytes as the compatibility-critical Argon2id input; changing to raw UTF-8 would make
-existing backups unreadable. Mutable UTF-8 and hexadecimal buffers are cleared best-effort after deriving the
-32-byte backup key. The device benchmark selects one of the two profiles format 2 has emitted: 64 MiB with either
-three or four operations. Writers and readers reject every other profile before deriving a key; future KDF profiles
-require a new backup format version. The serialized parallelism value is fixed at `1`: the current libsodium
-`crypto_pwhash` binding exposes no lanes argument, so writers must not claim a parallelism value they cannot apply.
-Readers reject any other value.
+The backup key hierarchy is separate from the vault master-password hierarchy: a fresh salt and the supplied backup
+passphrase derive a distinct key. New exports reject a passphrase that exactly matches the current master password;
+users must still choose a distinct, unpredictable passphrase rather than a trivial variation. PassVault verifies this
+without retaining or exposing the master password by unwrapping a candidate VEK and comparing it with the active VEK
+in constant time. Existing backups remain readable even if their passphrase matched the master password.
+
+PassVault strictly UTF-8 encodes the backup passphrase and then uses the lowercase ASCII hexadecimal bytes as the
+compatibility-critical Argon2id input; changing to raw UTF-8 would make existing backups unreadable. Mutable UTF-8 and
+hexadecimal buffers are cleared best-effort after deriving the 32-byte backup key. The device benchmark selects one
+of the two profiles format 2 has emitted: 64 MiB with either three or four operations. Writers and readers reject
+every other profile before deriving a key; future KDF profiles require a new backup format version. The serialized
+parallelism value is fixed at `1`: the current libsodium `crypto_pwhash` binding exposes no lanes argument, so writers
+must not claim a parallelism value they cannot apply. Readers reject any other value.
 
 ### Authenticated records
 
@@ -65,7 +70,9 @@ Managed attachments follow the metadata section in attachment-ID order. An attac
 encrypted object size, 256 KiB content records carry the already encrypted object, and an attachment-end record
 authenticates its ID, total bytes, and chunk count. A final record authenticates the total record count, managed
 attachment count, and total encrypted-object bytes. Attachment content therefore has two independent authenticated
-layers: its per-attachment vault-key container and the backup-password record layer.
+layers: its per-attachment vault-key container and the backup-password record layer. During export, PassVault compares
+SHA-256 fingerprints of the exact inner-container bytes it authenticated and packaged, aborting if an object changes
+between those streaming reads.
 
 The current metadata schema authenticates the aggregate encrypted-object byte total in the manifest. Restore requires
 free space for the remaining objects plus one maximum-size object of reserve when the platform can report capacity,
@@ -103,7 +110,8 @@ snapshot contains raw encrypted Room rows.
 Format 1 has a 128 MiB container limit and a 64 MiB decrypted-snapshot limit. It predates attachment-file support:
 accepted version-1 backups must declare `attachmentsIncluded = false`, contain no attachment rows, and may report an
 omitted attachment count. Preview/restore warns about those omitted legacy files. Format-1 restore remains one
-validated whole-snapshot Room transaction for compatibility; new exports do not use it.
+validated whole-snapshot Room transaction for compatibility; after it commits, object storage is reconciled against
+the format's guaranteed empty attachment set. New exports do not use format 1.
 
 ## Platform file semantics
 

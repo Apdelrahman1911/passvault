@@ -79,8 +79,13 @@ class AttachmentCorruptedException : AttachmentException()
 
 object AttachmentPolicy {
     const val CONTENT_FORMAT_VERSION = 1
+
+    /** Visible metadata slots, including legacy rows whose content is unavailable. */
     const val MAX_ATTACHMENTS_PER_CREDENTIAL = 20
+
     const val MAX_FILE_SIZE_BYTES = 100L * 1024L * 1024L
+
+    /** Aggregate plaintext bytes for managed attachment objects; legacy metadata has no managed object. */
     const val MAX_TOTAL_SIZE_PER_CREDENTIAL_BYTES = 512L * 1024L * 1024L
     const val CONTENT_CHUNK_BYTES = 256 * 1024
     const val MAX_FILE_NAME_CODE_POINTS = 255

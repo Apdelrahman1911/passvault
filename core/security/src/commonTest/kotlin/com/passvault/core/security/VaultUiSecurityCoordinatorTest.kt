@@ -87,4 +87,55 @@ class VaultUiSecurityCoordinatorTest {
         retryWaiter.await()
         assertTrue(coordinator.isAcknowledged(retryEpoch))
     }
+
+    @Test
+    fun `lock clears every registered entry owner synchronously on each transition`() {
+        val coordinator = VaultUiSecurityCoordinator()
+        val calls = mutableListOf<String>()
+        coordinator.registerEntrySensitiveState(RecordingOwner("credential", calls))
+        coordinator.registerEntrySensitiveState(RecordingOwner("two-factor", calls))
+
+        coordinator.clearEntrySensitiveStateForLock()
+        assertEquals(listOf("credential", "two-factor"), calls)
+
+        coordinator.clearEntrySensitiveStateForLock()
+        assertEquals(
+            listOf("credential", "two-factor", "credential", "two-factor"),
+            calls,
+        )
+    }
+
+    @Test
+    fun `closed entry registration is excluded without disturbing live owners`() {
+        val coordinator = VaultUiSecurityCoordinator()
+        val calls = mutableListOf<String>()
+        val removed = coordinator.registerEntrySensitiveState(RecordingOwner("removed", calls))
+        coordinator.registerEntrySensitiveState(RecordingOwner("live", calls))
+
+        removed.close()
+        removed.close()
+        coordinator.clearEntrySensitiveStateForLock()
+
+        assertEquals(listOf("live"), calls)
+    }
+
+    @Test
+    fun `same entry owner cannot be registered twice`() {
+        val coordinator = VaultUiSecurityCoordinator()
+        val owner = RecordingOwner("owner", mutableListOf())
+        coordinator.registerEntrySensitiveState(owner)
+
+        assertFailsWith<IllegalStateException> {
+            coordinator.registerEntrySensitiveState(owner)
+        }
+    }
+
+    private class RecordingOwner(
+        private val name: String,
+        private val calls: MutableList<String>,
+    ) : EntrySensitiveStateOwner {
+        override fun clearForLock() {
+            calls += name
+        }
+    }
 }

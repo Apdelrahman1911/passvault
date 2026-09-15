@@ -8,17 +8,20 @@ import com.passvault.core.security.BiometricKeyStore
 import com.passvault.core.security.BiometricKeyStoreException
 import com.passvault.core.security.BiometricPromptController
 import com.passvault.core.security.BiometricType
+import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.CPointed
 import kotlinx.cinterop.UByteVar
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.alloc
+import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.get
 import kotlinx.cinterop.interpretCPointer
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.objcPtr
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.reinterpret
+import kotlinx.cinterop.toKString
 import kotlinx.cinterop.usePinned
 import kotlinx.cinterop.value
 import kotlinx.coroutines.CancellableContinuation
@@ -29,15 +32,24 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import platform.CoreFoundation.CFArrayGetCount
+import platform.CoreFoundation.CFArrayGetTypeID
+import platform.CoreFoundation.CFArrayGetValueAtIndex
 import platform.CoreFoundation.CFDataCreate
 import platform.CoreFoundation.CFDataGetBytePtr
 import platform.CoreFoundation.CFDataGetLength
 import platform.CoreFoundation.CFDataGetTypeID
 import platform.CoreFoundation.CFDictionaryCreateMutable
+import platform.CoreFoundation.CFDictionaryGetTypeID
+import platform.CoreFoundation.CFDictionaryGetValue
 import platform.CoreFoundation.CFDictionarySetValue
 import platform.CoreFoundation.CFGetTypeID
 import platform.CoreFoundation.CFRelease
 import platform.CoreFoundation.CFStringCreateWithCString
+import platform.CoreFoundation.CFStringGetCString
+import platform.CoreFoundation.CFStringGetLength
+import platform.CoreFoundation.CFStringGetMaximumSizeForEncoding
+import platform.CoreFoundation.CFStringGetTypeID
 import platform.CoreFoundation.CFTypeRefVar
 import platform.CoreFoundation.kCFBooleanFalse
 import platform.CoreFoundation.kCFBooleanTrue
@@ -74,7 +86,9 @@ import platform.Security.kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly
 import platform.Security.kSecClass
 import platform.Security.kSecClassGenericPassword
 import platform.Security.kSecMatchLimit
+import platform.Security.kSecMatchLimitAll
 import platform.Security.kSecMatchLimitOne
+import platform.Security.kSecReturnAttributes
 import platform.Security.kSecReturnData
 import platform.Security.kSecUseAuthenticationContext
 import platform.Security.kSecValueData
@@ -89,6 +103,28 @@ class IosBiometricKeyStore : BiometricKeyStore, BiometricPromptController {
 
     private val defaults: NSUserDefaults
         get() = NSUserDefaults.standardUserDefaults
+
+    private val enrollmentState = IosBiometricEnrollmentState(
+        marker = object : IosBiometricEnrollmentMarker {
+            override fun mark(vaultId: String) {
+                defaults.setBool(true, markerKey(vaultId))
+            }
+
+            override fun clear(vaultId: String) {
+                defaults.removeObjectForKey(markerKey(vaultId))
+            }
+        },
+        keychain = object : IosBiometricKeychainLifecycle {
+            override fun containsWithoutAuthentication(vaultId: String): Result<Boolean> =
+                probeKeychainItem(vaultId)
+
+            override fun accountsWithoutAuthentication(): Result<Set<String>> = listKeychainAccounts()
+
+            override fun delete(vaultId: String): Result<Unit> = deleteKeychainItem(vaultId)
+
+            override fun deleteAll(): Result<Unit> = deleteAllKeychainItems()
+        },
+    )
 
     override fun cancelActive() = promptCoordinator.cancelActive()
 
@@ -116,7 +152,15 @@ class IosBiometricKeyStore : BiometricKeyStore, BiometricPromptController {
     }
 
     override suspend fun contains(vaultId: String): Boolean = mutex.withLock {
-        defaults.boolForKey(markerKey(vaultId))
+        withContext(Dispatchers.Default) {
+            enrollmentState.contains(vaultId).getOrThrow()
+        }
+    }
+
+    override suspend fun reconcile(activeVaultId: String?): Result<Unit> = mutex.withLock {
+        withContext(Dispatchers.Default) {
+            enrollmentState.reconcile(activeVaultId)
+        }
     }
 
     override suspend fun enroll(vaultId: String, vaultKey: ByteArray): Result<Unit> =
@@ -134,16 +178,9 @@ class IosBiometricKeyStore : BiometricKeyStore, BiometricPromptController {
                 authentication.fold(
                     onSuccess = {
                         withContext(Dispatchers.Default) {
-                            // Clear the marker before replacement so a failed add cannot advertise
-                            // a Keychain item that no longer exists.
-                            defaults.removeObjectForKey(markerKey(vaultId))
-                            val deleteResult = deleteKeychainItem(vaultId)
-                            val result = deleteResult.exceptionOrNull()?.let { error -> Result.failure<Unit>(error) }
-                                ?: addKeychainItem(vaultId, vaultKey)
-                            if (result.isSuccess) {
-                                defaults.setBool(true, markerKey(vaultId))
+                            enrollmentState.replace(vaultId) {
+                                addKeychainItem(vaultId, vaultKey)
                             }
-                            result
                         }
                     },
                     onFailure = { error ->
@@ -161,19 +198,26 @@ class IosBiometricKeyStore : BiometricKeyStore, BiometricPromptController {
             var transferredToCaller = false
             try {
                 val result = mutex.withLock {
-                    if (!defaults.boolForKey(markerKey(vaultId))) {
+                    val presence = withContext(Dispatchers.Default) {
+                        enrollmentState.contains(vaultId)
+                    }
+                    if (presence.isFailure) {
+                        return@withLock Result.failure(requireNotNull(presence.exceptionOrNull()))
+                    }
+                    if (presence.getOrThrow() != true) {
                         return@withLock Result.failure(BiometricKeyStoreException.NotEnabled())
                     }
-                    readKeychainItemCancellable(vaultId, promptOperation)
+                    val readResult = readKeychainItemCancellable(vaultId, promptOperation)
                         .onSuccess { producedKey = it }
-                        .onFailure { error ->
-                            if (error is BiometricKeyStoreException.Invalidated ||
-                                error is BiometricKeyStoreException.NotEnabled
-                            ) {
-                                defaults.removeObjectForKey(markerKey(vaultId))
-                                deleteKeychainItem(vaultId)
-                            }
+                    val error = readResult.exceptionOrNull()
+                    if (error is BiometricKeyStoreException.Invalidated ||
+                        error is BiometricKeyStoreException.NotEnabled
+                    ) {
+                        withContext(Dispatchers.Default) {
+                            enrollmentState.delete(vaultId)
                         }
+                    }
+                    readResult
                 }
                 transferredToCaller = true
                 result
@@ -185,8 +229,7 @@ class IosBiometricKeyStore : BiometricKeyStore, BiometricPromptController {
     override suspend fun delete(vaultId: String): Result<Unit> = mutex.withLock {
         withContext(Dispatchers.Default) {
             try {
-                defaults.removeObjectForKey(markerKey(vaultId))
-                deleteKeychainItem(vaultId)
+                enrollmentState.delete(vaultId)
             } catch (cancel: CancellationException) {
                 throw cancel
             } catch (_: Exception) {
@@ -364,17 +407,82 @@ class IosBiometricKeyStore : BiometricKeyStore, BiometricPromptController {
         return outcome
     }
 
-    private fun deleteKeychainItem(vaultId: String): Result<Unit> {
+    /** Checks item metadata with UI explicitly disabled; no VEK bytes are requested. */
+    private fun probeKeychainItem(vaultId: String): Result<Boolean> = withNonInteractiveLAContext { context ->
         val service = cfString(SERVICE_NAME)
-        val account = if (service == null) null else cfString(vaultId)
-        val query = if (service != null && account != null) {
+        val account = service?.let { cfString(vaultId) }
+        val authenticationContext = interpretCPointer<CPointed>(context.objcPtr())
+        val query = if (service != null && account != null && authenticationContext != null) {
             baseQuery(service, account)
         } else {
             null
         }
-        val result = if (query == null) {
+        val result = if (query == null || authenticationContext == null) {
             internalFailure()
         } else {
+            CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitOne)
+            CFDictionarySetValue(query, kSecUseAuthenticationContext, authenticationContext)
+            when (val status = SecItemCopyMatching(query, null)) {
+                errSecSuccess,
+                errSecInteractionNotAllowed,
+                -> Result.success(true)
+                errSecItemNotFound -> Result.success(false)
+                else -> Result.failure(status.toBiometricException())
+            }
+        }
+        releaseCf(query)
+        releaseCf(account)
+        releaseCf(service)
+        result
+    }
+
+    /** Enumerates only non-secret account attributes so old-install orphans can be retired. */
+    private fun listKeychainAccounts(): Result<Set<String>> = withNonInteractiveLAContext { context ->
+        val service = cfString(SERVICE_NAME)
+        val authenticationContext = interpretCPointer<CPointed>(context.objcPtr())
+        val query = service?.let(::serviceQuery)
+        val outcome = if (query == null || authenticationContext == null) {
+            internalFailure()
+        } else {
+            CFDictionarySetValue(query, kSecReturnAttributes, kCFBooleanTrue)
+            CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitAll)
+            CFDictionarySetValue(query, kSecUseAuthenticationContext, authenticationContext)
+            memScoped {
+                val result = alloc<CFTypeRefVar>()
+                result.value = null
+                when (val status = SecItemCopyMatching(query, result.ptr)) {
+                    errSecItemNotFound -> Result.success(emptySet())
+                    errSecSuccess -> result.value?.let(::keychainAccountsFromAttributes) ?: internalFailure()
+                    else -> Result.failure(status.toBiometricException())
+                }.also {
+                    result.value?.let(::CFRelease)
+                }
+            }
+        }
+        releaseCf(query)
+        releaseCf(service)
+        outcome
+    }
+
+    private fun deleteKeychainItem(vaultId: String): Result<Unit> = deleteKeychainItems(vaultId)
+
+    private fun deleteAllKeychainItems(): Result<Unit> = deleteKeychainItems(vaultId = null)
+
+    /** Deletion must never turn startup reconciliation into an authentication prompt. */
+    private fun deleteKeychainItems(vaultId: String?): Result<Unit> = withNonInteractiveLAContext { context ->
+        val service = cfString(SERVICE_NAME)
+        val account = if (service != null && vaultId != null) cfString(vaultId) else null
+        val authenticationContext = interpretCPointer<CPointed>(context.objcPtr())
+        val query = when {
+            service == null || authenticationContext == null -> null
+            vaultId == null -> serviceQuery(service)
+            account != null -> baseQuery(service, account)
+            else -> null
+        }
+        val result = if (query == null || authenticationContext == null) {
+            internalFailure()
+        } else {
+            CFDictionarySetValue(query, kSecUseAuthenticationContext, authenticationContext)
             val status = SecItemDelete(query)
             if (status == errSecSuccess || status == errSecItemNotFound) {
                 Result.success(Unit)
@@ -385,19 +493,89 @@ class IosBiometricKeyStore : BiometricKeyStore, BiometricPromptController {
         releaseCf(query)
         releaseCf(account)
         releaseCf(service)
-        return result
+        result
     }
 
     private fun baseQuery(
         service: platform.CoreFoundation.CFStringRef,
         account: platform.CoreFoundation.CFStringRef,
     ): platform.CoreFoundation.CFMutableDictionaryRef? {
+        val query = serviceQuery(service) ?: return null
+        CFDictionarySetValue(query, kSecAttrAccount, account)
+        return query
+    }
+
+    private fun serviceQuery(
+        service: platform.CoreFoundation.CFStringRef,
+    ): platform.CoreFoundation.CFMutableDictionaryRef? {
         val query = CFDictionaryCreateMutable(null, 0, null, null) ?: return null
         CFDictionarySetValue(query, kSecClass, kSecClassGenericPassword)
         CFDictionarySetValue(query, kSecAttrService, service)
-        CFDictionarySetValue(query, kSecAttrAccount, account)
         CFDictionarySetValue(query, kSecAttrSynchronizable, kCFBooleanFalse)
         return query
+    }
+}
+
+private inline fun <T> withNonInteractiveLAContext(block: (LAContext) -> T): T {
+    val context = LAContext().apply { interactionNotAllowed = true }
+    return try {
+        block(context)
+    } finally {
+        context.invalidate()
+    }
+}
+
+private fun keychainAccountsFromAttributes(value: COpaquePointer): Result<Set<String>> {
+    val dictionaries = keychainAttributeDictionaries(value) ?: return internalFailure()
+    val accounts = linkedSetOf<String>()
+    var valid = true
+    dictionaries.forEach { attributes ->
+        val account = attributes
+            ?.takeIf { CFGetTypeID(it) == CFDictionaryGetTypeID() }
+            ?.reinterpret<cnames.structs.__CFDictionary>()
+            ?.let { CFDictionaryGetValue(it, kSecAttrAccount) }
+            ?.let(::cfStringValue)
+        if (account == null) valid = false else accounts += account
+    }
+    return if (valid) Result.success(accounts) else internalFailure()
+}
+
+private fun keychainAttributeDictionaries(value: COpaquePointer): List<COpaquePointer?>? =
+    when (CFGetTypeID(value)) {
+        CFArrayGetTypeID() -> {
+            val array = value.reinterpret<cnames.structs.__CFArray>()
+            val count = CFArrayGetCount(array)
+            if (count in 0..MAX_KEYCHAIN_ACCOUNT_COUNT) {
+                List(count.toInt()) { index -> CFArrayGetValueAtIndex(array, index.toLong()) }
+            } else {
+                null
+            }
+        }
+        CFDictionaryGetTypeID() -> listOf(value)
+        else -> null
+    }
+
+private fun cfStringValue(value: COpaquePointer?): String? {
+    val string = value
+        ?.takeIf { CFGetTypeID(it) == CFStringGetTypeID() }
+        ?.reinterpret<cnames.structs.__CFString>()
+    val maximumBytes = string?.let {
+        CFStringGetMaximumSizeForEncoding(CFStringGetLength(it), kCFStringEncodingUTF8) + 1
+    }
+    val bufferSize = maximumBytes
+        ?.takeIf { it > 1 }
+        ?.takeIf { it <= MAX_KEYCHAIN_ACCOUNT_UTF8_BYTES }
+    return if (string == null || bufferSize == null) {
+        null
+    } else {
+        memScoped {
+            val buffer = allocArray<ByteVar>(bufferSize)
+            if (CFStringGetCString(string, buffer, bufferSize, kCFStringEncodingUTF8)) {
+                buffer.toKString()
+            } else {
+                null
+            }
+        }
     }
 }
 
@@ -478,3 +656,5 @@ private const val SERVICE_NAME = "com.passvault.biometric-unlock"
 private const val ENROLLMENT_REASON = "Enable biometric unlock for this vault"
 private const val UNLOCK_REASON = "Unlock PassVault"
 private const val VAULT_KEY_BYTES = 32
+private const val MAX_KEYCHAIN_ACCOUNT_COUNT = 256L
+private const val MAX_KEYCHAIN_ACCOUNT_UTF8_BYTES = 4_096L

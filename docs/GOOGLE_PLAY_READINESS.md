@@ -22,7 +22,7 @@ The source manifest requests:
 - `USE_BIOMETRIC`, for optional local vault unlock;
 - `HIDE_OVERLAY_WINDOWS`, for supported sensitive-screen protection; and
 - `RECEIVE_BOOT_COMPLETED`, solely to resume persisted deletion of temporary
-  plaintext attachment previews after a reboot.
+  plaintext attachment preview/export staging after a reboot.
 
 The final merged release also contains `USE_FINGERPRINT` from AndroidX
 Biometric for legacy compatibility and AndroidX Core’s app-specific,

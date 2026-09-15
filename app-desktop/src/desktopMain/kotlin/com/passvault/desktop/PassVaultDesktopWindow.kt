@@ -242,7 +242,10 @@ private fun DesktopWindowEffects(
         windowProtection.configureAutoLock(
             lockOnMinimize = canAutoLock,
             lockOnFocusLost = canAutoLock,
+            // This independent boundary is intentionally stricter than the
+            // user-configurable inactivity timeout (minimum: one minute).
             focusLossDelayMs = DEFAULT_FOCUS_LOCK_DELAY_MS,
+            maximumSuppressedFocusLossMs = MAXIMUM_BIOMETRIC_FOCUS_LOSS_MS,
         )
     }
     DisposableEffect(
@@ -443,3 +446,4 @@ private const val MIN_WINDOW_WIDTH = 480
 private const val MIN_WINDOW_HEIGHT = 360
 private const val MIN_VISIBLE_WINDOW_PIXELS = 80
 private const val DEFAULT_FOCUS_LOCK_DELAY_MS = 30_000L
+private const val MAXIMUM_BIOMETRIC_FOCUS_LOSS_MS = 60_000L

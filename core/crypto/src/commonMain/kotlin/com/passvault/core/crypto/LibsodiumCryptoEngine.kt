@@ -3,15 +3,16 @@
 package com.passvault.core.crypto
 
 import com.ionspin.kotlin.crypto.LibsodiumInitializer
-import com.ionspin.kotlin.crypto.generichash.GenericHash
-import com.ionspin.kotlin.crypto.generichash.crypto_generichash_blake2b_BYTES_MAX
-import com.ionspin.kotlin.crypto.generichash.crypto_generichash_blake2b_BYTES_MIN
-import com.ionspin.kotlin.crypto.pwhash.crypto_pwhash_OPSLIMIT_INTERACTIVE
-import com.ionspin.kotlin.crypto.pwhash.crypto_pwhash_MEMLIMIT_INTERACTIVE
-import com.ionspin.kotlin.crypto.pwhash.crypto_pwhash_ALG_DEFAULT
+import com.ionspin.kotlin.crypto.aead.AeadCorrupedOrTamperedDataException
 import com.ionspin.kotlin.crypto.aead.AuthenticatedEncryptionWithAssociatedData
 import com.ionspin.kotlin.crypto.aead.crypto_aead_xchacha20poly1305_ietf_ABYTES
 import com.ionspin.kotlin.crypto.aead.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
+import com.ionspin.kotlin.crypto.generichash.GenericHash
+import com.ionspin.kotlin.crypto.generichash.crypto_generichash_blake2b_BYTES_MAX
+import com.ionspin.kotlin.crypto.generichash.crypto_generichash_blake2b_BYTES_MIN
+import com.ionspin.kotlin.crypto.pwhash.crypto_pwhash_ALG_DEFAULT
+import com.ionspin.kotlin.crypto.pwhash.crypto_pwhash_MEMLIMIT_INTERACTIVE
+import com.ionspin.kotlin.crypto.pwhash.crypto_pwhash_OPSLIMIT_INTERACTIVE
 import com.ionspin.kotlin.crypto.util.LibsodiumRandom
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -169,13 +170,16 @@ class LibsodiumCryptoEngine : CryptoEngine {
         }
         val nativeCiphertext = ciphertext.copyOfRange(AEAD_ENVELOPE_MAGIC.size, ciphertext.size)
         try {
-            val nativePlaintext =
+            val nativePlaintext = try {
                 AuthenticatedEncryptionWithAssociatedData.xChaCha20Poly1305IetfDecrypt(
                     ciphertextAndTag = nativeCiphertext.asUByteArray(),
                     associatedData = (associatedData ?: ByteArray(0)).asUByteArray(),
                     nonce = nonce.asUByteArray(),
                     key = key.asUByteArray(),
                 ).asByteArray()
+            } catch (_: AeadCorrupedOrTamperedDataException) {
+                throw CiphertextAuthenticationException()
+            }
             try {
                 nativePlaintext.copyOf()
             } finally {
@@ -304,8 +308,8 @@ class LibsodiumCryptoEngine : CryptoEngine {
 }
 
 /**
- * Selects a bounded interactive profile without increasing memory use on faster devices.
- * Slower benchmark results can never select a stronger profile than faster results.
+ * Selects one of the two shipped 64 MiB profiles. Fast devices receive the
+ * higher operation count; slower benchmark results never select a stronger profile.
  */
 internal fun selectArgon2Parameters(durationMilliseconds: Long): Argon2Parameters =
     if (durationMilliseconds < FAST_ARGON2_BENCHMARK_MILLISECONDS) {

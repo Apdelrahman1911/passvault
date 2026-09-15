@@ -35,14 +35,14 @@ interface AttachmentDao {
     @Query("SELECT * FROM attachment_records WHERE storage_state NOT IN ('READY', 'LEGACY')")
     suspend fun getPendingOperations(): List<AttachmentRecordEntity>
 
+    /** After recovery, every persisted metadata row occupies a user-visible attachment slot. */
     @Query(
         """
         SELECT COUNT(*) FROM attachment_records
         WHERE credential_id = :credentialId
-          AND (storage_state != 'LEGACY' OR content_format_version != 0)
         """,
     )
-    suspend fun getManagedCount(credentialId: String): Int
+    suspend fun getOccupiedSlotCount(credentialId: String): Int
 
     @Query(
         """
@@ -66,4 +66,8 @@ interface AttachmentDao {
         """,
     )
     suspend fun getManagedStoragePaths(): List<String>
+
+    /** Every durable reference protects its object, even when its state metadata is inconsistent. */
+    @Query("SELECT EXISTS(SELECT 1 FROM attachment_records WHERE storage_path = :storagePath)")
+    suspend fun hasStoragePathReference(storagePath: String): Boolean
 }

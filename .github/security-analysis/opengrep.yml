@@ -1,0 +1,177 @@
+rules:
+  - id: passvault.kotlin.insecure-cipher-transformation
+    languages: [kotlin]
+    severity: ERROR
+    message: Use an authenticated cipher; ECB and legacy ciphers are forbidden.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: CWE-327
+    pattern-regex: '"(?i:(?:AES|DES|DESEDE|RC2|RC4)(?:/ECB(?:/[A-Z0-9-]+)?)?)"'
+
+  - id: passvault.kotlin.weak-random-in-security-code
+    languages: [kotlin]
+    severity: ERROR
+    message: Security-sensitive code must use CryptoEngine or an operating-system CSPRNG.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: CWE-338
+    paths:
+      include:
+        - app-android/src/main/**/security/**
+        - app-desktop/src/desktopMain/**/security/**
+        - core/crypto/src/**
+        - core/database/src/**
+        - core/otp/src/**
+        - core/security/src/**
+        - shared/src/**/platform/*Biometric*.kt
+    pattern-either:
+      - pattern: java.util.Random(...)
+      - pattern: kotlin.random.Random(...)
+      - pattern: kotlin.random.Random.$METHOD(...)
+
+  - id: passvault.kotlin.sensitive-production-logging
+    languages: [kotlin]
+    severity: ERROR
+    message: Do not send password-manager state or failures to an unstructured production log.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: CWE-532
+    paths:
+      exclude:
+        - "**/*.gradle.kts"
+        - "**/src/*Test/**"
+        - "**/src/test/**"
+        - "**/src/androidHostTest/**"
+        - app-desktop/src/desktopMain/kotlin/com/passvault/desktop/Main.kt
+        - scripts/testdata/security-analysis/**
+    pattern-either:
+      - pattern: println(...)
+      - pattern: print(...)
+      - pattern: $LOGGER.printStackTrace(...)
+      - pattern: android.util.Log.$METHOD(...)
+      - pattern: Log.$METHOD(...)
+
+  - id: passvault.kotlin.interpolated-raw-sql
+    languages: [kotlin]
+    severity: ERROR
+    message: Do not interpolate values into raw SQL; bind values or use a fixed migration statement.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: CWE-89
+    paths:
+      exclude:
+        - "**/src/*Test/**"
+        - "**/src/test/**"
+        - "**/src/androidHostTest/**"
+        - scripts/testdata/security-analysis/**
+    pattern-regex: '(?s)(?:execSQL|rawQuery|SimpleSQLiteQuery)\s*\(\s*"(?:[^"\\]|\\.)*\$\{?(?i:user|input|query|search|filter|sort)[A-Za-z_]*'
+
+  - id: passvault.kotlin.trust-all-tls
+    languages: [kotlin]
+    severity: ERROR
+    message: TLS peer or hostname verification must not be bypassed.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: CWE-295
+    paths:
+      exclude:
+        - "**/src/*Test/**"
+        - "**/src/test/**"
+        - "**/src/androidHostTest/**"
+        - scripts/testdata/security-analysis/**
+    pattern-either:
+      - pattern: HostnameVerifier { $LEFT, $RIGHT -> true }
+      - pattern: javax.net.ssl.HostnameVerifier { $LEFT, $RIGHT -> true }
+
+  - id: passvault.swift.production-logging
+    languages: [swift]
+    severity: ERROR
+    message: Do not send password-manager state or failures to an unstructured production log.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: CWE-532
+    paths:
+      exclude:
+        - scripts/testdata/security-analysis/**
+    pattern-either:
+      - pattern: print(...)
+      - pattern: debugPrint(...)
+      - pattern: NSLog(...)
+
+  - id: passvault.apple.weakened-data-protection
+    languages: [generic]
+    severity: ERROR
+    message: PassVault files and secrets must not use an after-first-unlock or unprotected class.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: CWE-922
+    paths:
+      include:
+        - "**/*.kt"
+        - "**/*.swift"
+        - "**/*.m"
+        - "**/*.mm"
+        - "**/*.plist"
+        - "**/*.entitlements"
+      exclude:
+        - scripts/testdata/security-analysis/**
+    pattern-regex: '(?:NSFileProtectionNone|NSFileProtectionCompleteUntilFirstUserAuthentication|kSecAttrAccessibleAfterFirstUnlock(?:ThisDeviceOnly)?)'
+
+  - id: passvault.native.unsafe-library-call
+    languages: [generic]
+    severity: ERROR
+    message: Use a bounded API and explicit process invocation instead of this unsafe native call.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: CWE-676
+    paths:
+      include:
+        - app-desktop/native/**
+        - scripts/testdata/security-analysis/**
+      exclude:
+        - .github/security-analysis/**
+    pattern-regex: '\b(?:gets|strcpy|strcat|sprintf|system|popen|rand|srand)\s*\('
+
+  - id: passvault.secrets.provider-token
+    languages: [generic]
+    severity: ERROR
+    message: A provider-shaped credential is committed to the repository.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: CWE-798
+    paths:
+      exclude:
+        - scripts/testdata/security-analysis/**
+    pattern-regex: '(?:AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{35}|gh[pousr]_[A-Za-z0-9_]{36,255}|github_pat_[A-Za-z0-9_]{82,255}|xox[baprs]-[0-9A-Za-z-]{20,})'
+
+  - id: passvault.secrets.private-key-material
+    languages: [generic]
+    severity: ERROR
+    message: Private-key material is committed to the repository.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: CWE-798
+    paths:
+      exclude:
+        - scripts/testdata/security-analysis/**
+    pattern-regex: '(?s)-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----\s+[A-Za-z0-9+/=\r\n]{64,}\s+-----END (?:RSA |EC |OPENSSH )?PRIVATE KEY-----'
+
+  - id: passvault.source.bidirectional-control-character
+    languages: [generic]
+    severity: ERROR
+    message: Bidirectional control characters are forbidden in source-controlled code and automation.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: CWE-838
+    pattern-regex: '[\x{202A}-\x{202E}\x{2066}-\x{2069}]'

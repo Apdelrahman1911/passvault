@@ -129,9 +129,9 @@ class BackupEntityBinaryCodecTest {
     }
 
     @Test
-    fun `maximum credential payloads fit one bounded record and round trip`() {
+    fun `maximum backup credential payloads fit one bounded record and round trip`() {
         val entity = credential(
-            summaryBytes = MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES,
+            summaryBytes = BackupEntityBinaryCodec.MAX_COMPACT_ENCRYPTED_PAYLOAD_BYTES,
             secretBytes = MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES,
         )
         val value = BackupMetadataValue.Credential(entity)
@@ -140,9 +140,14 @@ class BackupEntityBinaryCodecTest {
             BackupEntityBinaryCodec.decode(BackupRecordType.CREDENTIAL, encoded),
         )
         try {
-            assertEquals(MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES, decoded.value.summaryPayload.size)
+            assertEquals(
+                BackupEntityBinaryCodec.MAX_COMPACT_ENCRYPTED_PAYLOAD_BYTES,
+                decoded.value.summaryPayload.size,
+            )
             assertEquals(MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES, decoded.value.secretPayload.size)
-            assertTrue(encoded.size <= BackupLimits.MAX_ENTITY_RECORD_BYTES)
+            assertTrue(
+                encoded.size <= BackupEntityBinaryCodec.maximumPlaintextBytes(BackupRecordType.CREDENTIAL),
+            )
         } finally {
             value.clear()
             decoded.clear()
@@ -151,10 +156,10 @@ class BackupEntityBinaryCodecTest {
     }
 
     @Test
-    fun `one byte beyond an encrypted credential field limit is rejected`() {
+    fun `one byte beyond the compact credential field limit is rejected`() {
         val value = BackupMetadataValue.Credential(
             credential(
-                summaryBytes = MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES + 1,
+                summaryBytes = BackupEntityBinaryCodec.MAX_COMPACT_ENCRYPTED_PAYLOAD_BYTES + 1,
                 secretBytes = MINIMUM_ENVELOPE_BYTES,
             ),
         )

@@ -79,6 +79,49 @@ class Argon2Test {
     }
 
     @Test
+    fun `production profiles match independent Argon2id reference vectors`() = runTest {
+        /*
+         * Generated independently with the upstream Argon2 reference CLI,
+         * tag 20190702 (commit 62358ba2123abd17fccf2a108a301d4b52c01a7c):
+         * https://github.com/P-H-C/phc-winner-argon2/tree/20190702
+         * printf '5465737450617373776f726431323321' |
+         *   ./argon2 0123456789abcdef -id -v 13 -t {3,4} -m 16 -p 1 -l 32 -r
+         *
+         * The CLI input is PassVault's compatibility-preserving lowercase
+         * hexadecimal encoding of the original password bytes. `-m 16`
+         * means 2^16 KiB, matching the 64 MiB production profile.
+         */
+        val password = "TestPassword123!".encodeToByteArray()
+        val salt = "0123456789abcdef".encodeToByteArray()
+        val vectors = listOf(
+            Argon2Parameters.INTERACTIVE to
+                "dc1aff4d7c74898c0aca2da51e33760dbe716e70abc86a89f6e9d55d5451b03c",
+            selectArgon2Parameters(durationMilliseconds = 0L) to
+                "ccd29a7f8888cf2ddce1df111f8ad5ba7939b0a177ac6606ad98beb6ac160172",
+        )
+        try {
+            vectors.forEach { (parameters, expectedHex) ->
+                val expected = decodeHex(expectedHex)
+                val derived = LibsodiumCryptoEngine().deriveKey(
+                    password = password,
+                    salt = salt,
+                    opsLimit = parameters.opsLimit,
+                    memLimit = parameters.memLimit,
+                ).getOrThrow()
+                try {
+                    assertContentEquals(expected, derived.key)
+                } finally {
+                    derived.clear()
+                    expected.fill(0)
+                }
+            }
+        } finally {
+            password.fill(0)
+            salt.fill(0)
+        }
+    }
+
+    @Test
     fun `built-in profiles meet the supported minimum and increase monotonically`() {
         val profiles = listOf(
             Argon2Parameters.MINIMUM,

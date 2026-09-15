@@ -74,8 +74,16 @@ internal suspend fun AttachmentRecordEntity.readAttachmentFilename(
     }
 }
 
-internal fun attachmentFilenameAssociatedData(attachmentId: String, credentialId: String): ByteArray =
-    "passvault:attachment:$attachmentId:$credentialId:filename:v1".encodeToByteArray()
+/**
+ * Preserves the deployed v1 bytes while making their delimiter-free identifier invariant explicit.
+ * A future identifier scheme that permits ':' requires a versioned, length-prefixed AAD format and migration.
+ */
+internal fun attachmentFilenameAssociatedData(attachmentId: String, credentialId: String): ByteArray {
+    require(':' !in attachmentId && ':' !in credentialId) {
+        "Attachment filename AAD identifiers must not contain its field delimiter"
+    }
+    return "passvault:attachment:$attachmentId:$credentialId:filename:v1".encodeToByteArray()
+}
 
 private fun String.requiresCurrentPolicyRename(): Boolean = try {
     AttachmentPolicy.validateFileName(this) != this

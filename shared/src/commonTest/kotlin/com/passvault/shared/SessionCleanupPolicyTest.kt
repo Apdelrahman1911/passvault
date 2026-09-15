@@ -40,6 +40,7 @@ class SessionCleanupPolicyTest {
 
         assertFalse(policy.clearSensitiveUiState)
         assertFalse(policy.clearUnlockUiState)
+        assertFalse(policy.clearClipboard)
     }
 
     @Test
@@ -50,7 +51,85 @@ class SessionCleanupPolicyTest {
 
         assertTrue(policy.clearSensitiveUiState)
         assertTrue(policy.clearUnlockUiState)
+        assertTrue(policy.clearClipboard)
         assertFalse(policy.preserveBackupRestore)
+    }
+
+    @Test
+    fun `iOS background lock preserves its bounded sensitive clipboard`() {
+        val lockingPolicy = sessionCleanupPolicy(
+            sessionState = VaultSessionState.Locking(LockReason.Background),
+            preserveClipboardOnBackgroundLock = true,
+        )
+        val conflatedCompletionPolicy = sessionCleanupPolicy(
+            sessionState = VaultSessionState.Locked(LockReason.Background),
+            previousSessionObservation = SessionCleanupObservation(SessionPhase.UNLOCKED),
+            preserveClipboardOnBackgroundLock = true,
+        )
+        val observedCompletionPolicy = sessionCleanupPolicy(
+            sessionState = VaultSessionState.Locked(LockReason.Background),
+            previousSessionObservation = SessionCleanupObservation(
+                phase = SessionPhase.LOCKING,
+                lockingReason = LockReason.Background,
+            ),
+            preserveClipboardOnBackgroundLock = true,
+        )
+
+        assertFalse(lockingPolicy.clearClipboard)
+        assertFalse(conflatedCompletionPolicy.clearClipboard)
+        assertFalse(observedCompletionPolicy.clearClipboard)
+        assertTrue(lockingPolicy.clearSensitiveUiState)
+        assertTrue(conflatedCompletionPolicy.clearSensitiveUiState)
+    }
+
+    @Test
+    fun `iOS non-background locks still clear sensitive clipboard`() {
+        val reasons = listOf(
+            LockReason.Manual,
+            LockReason.AutoLock,
+            LockReason.MemoryPressure,
+            LockReason.Restore,
+        )
+
+        reasons.forEach { reason ->
+            val lockingPolicy = sessionCleanupPolicy(
+                sessionState = VaultSessionState.Locking(reason),
+                preserveClipboardOnBackgroundLock = true,
+            )
+            val conflatedCompletionPolicy = sessionCleanupPolicy(
+                sessionState = VaultSessionState.Locked(reason),
+                previousSessionObservation = SessionCleanupObservation(SessionPhase.UNLOCKED),
+                preserveClipboardOnBackgroundLock = true,
+            )
+
+            assertTrue(lockingPolicy.clearClipboard, "Locking($reason) must clear")
+            assertTrue(conflatedCompletionPolicy.clearClipboard, "Locked($reason) must clear")
+        }
+    }
+
+    @Test
+    fun `superseding non-background lock cannot inherit background clipboard preservation`() {
+        val observedBackgroundLock = SessionCleanupObservation(
+            phase = SessionPhase.LOCKING,
+            lockingReason = LockReason.Background,
+        )
+        val reasons = listOf(
+            LockReason.Manual,
+            LockReason.AutoLock,
+            LockReason.MemoryPressure,
+            LockReason.Restore,
+        )
+
+        reasons.forEach { reason ->
+            val policy = sessionCleanupPolicy(
+                sessionState = VaultSessionState.Locked(reason),
+                previousSessionObservation = observedBackgroundLock,
+                preserveClipboardOnBackgroundLock = true,
+            )
+
+            assertTrue(policy.clearClipboard, "Superseding Locked($reason) must clear")
+            assertTrue(policy.clearSensitiveUiState, "Superseding Locked($reason) must scrub UI")
+        }
     }
 
     @Test
@@ -62,6 +141,7 @@ class SessionCleanupPolicyTest {
 
         assertTrue(policy.clearSensitiveUiState)
         assertTrue(policy.clearUnlockUiState)
+        assertTrue(policy.clearClipboard)
         assertTrue(policy.preserveBackupRestore)
     }
 
@@ -71,6 +151,7 @@ class SessionCleanupPolicyTest {
 
         assertTrue(policy.clearSensitiveUiState)
         assertTrue(policy.clearUnlockUiState)
+        assertTrue(policy.clearClipboard)
         assertFalse(policy.preserveBackupRestore)
     }
 
@@ -78,11 +159,12 @@ class SessionCleanupPolicyTest {
     fun `conflated ordinary lock still scrubs singleton feature state`() {
         val policy = sessionCleanupPolicy(
             sessionState = VaultSessionState.Locked(LockReason.Background),
-            previousSessionPhase = SessionPhase.UNLOCKED,
+            previousSessionObservation = SessionCleanupObservation(SessionPhase.UNLOCKED),
         )
 
         assertTrue(policy.clearSensitiveUiState)
         assertTrue(policy.clearUnlockUiState)
+        assertTrue(policy.clearClipboard)
         assertFalse(policy.preserveBackupRestore)
     }
 
@@ -90,12 +172,13 @@ class SessionCleanupPolicyTest {
     fun `conflated restore lock preserves only its active restore coordinator`() {
         val policy = sessionCleanupPolicy(
             sessionState = VaultSessionState.Locked(LockReason.Restore),
-            previousSessionPhase = SessionPhase.UNLOCKED,
+            previousSessionObservation = SessionCleanupObservation(SessionPhase.UNLOCKED),
             restoreInProgress = true,
         )
 
         assertTrue(policy.clearSensitiveUiState)
         assertTrue(policy.clearUnlockUiState)
+        assertTrue(policy.clearClipboard)
         assertTrue(policy.preserveBackupRestore)
     }
 
@@ -103,12 +186,13 @@ class SessionCleanupPolicyTest {
     fun `conflated background lock cancels an import instead of impersonating restore`() {
         val policy = sessionCleanupPolicy(
             sessionState = VaultSessionState.Locked(LockReason.Background),
-            previousSessionPhase = SessionPhase.UNLOCKED,
+            previousSessionObservation = SessionCleanupObservation(SessionPhase.UNLOCKED),
             restoreInProgress = true,
         )
 
         assertTrue(policy.clearSensitiveUiState)
         assertTrue(policy.clearUnlockUiState)
+        assertTrue(policy.clearClipboard)
         assertFalse(policy.preserveBackupRestore)
     }
 
@@ -116,11 +200,12 @@ class SessionCleanupPolicyTest {
     fun `completed lock scrubs singleton state after UI recreation missed Locking`() {
         val policy = sessionCleanupPolicy(
             sessionState = VaultSessionState.Locked(LockReason.Manual),
-            previousSessionPhase = SessionPhase.UNINITIALIZED,
+            previousSessionObservation = SessionCleanupObservation(SessionPhase.UNINITIALIZED),
         )
 
         assertTrue(policy.clearSensitiveUiState)
         assertTrue(policy.clearUnlockUiState)
+        assertTrue(policy.clearClipboard)
         assertFalse(policy.preserveBackupRestore)
     }
 
@@ -128,11 +213,12 @@ class SessionCleanupPolicyTest {
     fun `failed unlock transition keeps its feedback`() {
         val policy = sessionCleanupPolicy(
             sessionState = VaultSessionState.Locked(),
-            previousSessionPhase = SessionPhase.UNLOCKING,
+            previousSessionObservation = SessionCleanupObservation(SessionPhase.UNLOCKING),
         )
 
         assertFalse(policy.clearSensitiveUiState)
         assertFalse(policy.clearUnlockUiState)
+        assertFalse(policy.clearClipboard)
         assertFalse(policy.preserveBackupRestore)
     }
 
@@ -140,19 +226,27 @@ class SessionCleanupPolicyTest {
     fun `initial locked transition does not impersonate a lock`() {
         val policy = sessionCleanupPolicy(
             sessionState = VaultSessionState.Locked(),
-            previousSessionPhase = SessionPhase.UNINITIALIZED,
+            previousSessionObservation = SessionCleanupObservation(SessionPhase.UNINITIALIZED),
         )
 
         assertFalse(policy.clearSensitiveUiState)
         assertFalse(policy.clearUnlockUiState)
+        assertFalse(policy.clearClipboard)
         assertFalse(policy.preserveBackupRestore)
     }
 
     @Test
-    fun `session transition tracker retains phase instead of session identifier`() {
+    fun `session transition tracker does not retain session identifier`() {
         val state = VaultSessionState.Unlocked(SessionId("sensitive-session-id"))
 
-        assertEquals(SessionPhase.UNLOCKED, state.toSessionPhase())
+        assertEquals(
+            SessionCleanupObservation(SessionPhase.UNLOCKED),
+            state.toSessionCleanupObservation(),
+        )
+        assertEquals(
+            SessionCleanupObservation(SessionPhase.LOCKING, LockReason.Background),
+            VaultSessionState.Locking(LockReason.Background).toSessionCleanupObservation(),
+        )
     }
 
     @Test

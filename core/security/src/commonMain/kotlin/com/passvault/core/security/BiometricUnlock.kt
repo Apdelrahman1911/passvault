@@ -65,6 +65,9 @@ interface BiometricKeyStore {
     suspend fun enroll(vaultId: String, vaultKey: ByteArray): Result<Unit>
     suspend fun retrieve(vaultId: String): Result<ByteArray>
     suspend fun delete(vaultId: String): Result<Unit>
+
+    /** Retires platform entries outside the active single-vault identity; null means no vault exists. */
+    suspend fun reconcile(activeVaultId: String?): Result<Unit> = Result.success(Unit)
 }
 
 /** Cancels a platform biometric prompt before a vault-lock transition waits for it. */

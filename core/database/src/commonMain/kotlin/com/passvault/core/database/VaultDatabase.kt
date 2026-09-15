@@ -40,7 +40,7 @@ import kotlin.time.Instant
         CurrentVersionInfoEntity::class,
         CorruptionLogEntity::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = true,
 )
 @TypeConverters(VaultDatabaseConverters::class)

@@ -61,7 +61,7 @@ class UnlockViewModel(
             vaultRepository.getSessionState().collect { sessionState ->
                 when (sessionState) {
                     is VaultSessionState.Unlocked -> {
-                        _state.update { it.copy(isLoading = false, isBiometricLoading = false) }
+                        _state.update { it.copy(password = "", isLoading = false, isBiometricLoading = false) }
                         val sessionId = sessionState.sessionId.value
                         if (lastNavigatedSession != sessionId) {
                             lastNavigatedSession = sessionId
@@ -72,10 +72,10 @@ class UnlockViewModel(
                         _state.update { it.copy(isLoading = true) }
                     }
                     is VaultSessionState.Locking -> {
-                        _state.update { it.copy(isLoading = false, isBiometricLoading = false) }
+                        _state.update { it.copy(password = "", isLoading = false, isBiometricLoading = false) }
                     }
                     is VaultSessionState.Locked -> {
-                        _state.update { it.copy(isLoading = false, isBiometricLoading = false) }
+                        _state.update { it.copy(password = "", isLoading = false, isBiometricLoading = false) }
                     }
                     else -> { }
                 }
@@ -134,19 +134,28 @@ class UnlockViewModel(
 
     private fun unlock() {
         val current = _state.value
+        if (current.isLoading) return
         val validationError = current.passwordUnlockError()
         when {
             validationError != null -> _state.update { it.copy(errorMessage = validationError) }
-            unlockMutex.tryLock() -> startPasswordUnlock(current.password)
+            unlockMutex.tryLock() -> {
+                val sensitivePassword = SensitiveText.from(current.password)
+                _state.update {
+                    it.copy(
+                        password = "",
+                        isLoading = true,
+                        errorMessage = null,
+                    )
+                }
+                startPasswordUnlock(sensitivePassword)
+            }
             else -> Unit
         }
     }
 
-    private fun startPasswordUnlock(password: String) {
-        _state.update { it.copy(isLoading = true, errorMessage = null) }
+    private fun startPasswordUnlock(sensitivePassword: SensitiveText) {
         unlockJob?.cancel()
         val job = viewModelScope.launch {
-            val sensitivePassword = SensitiveText.from(password)
             try {
                 val result = vaultRepository.unlock(sensitivePassword)
                 currentCoroutineContext().ensureActive()
@@ -155,7 +164,6 @@ class UnlockViewModel(
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            password = "",
                             failedAttempts = 0,
                         )
                     }
@@ -168,11 +176,12 @@ class UnlockViewModel(
             } catch (_: Exception) {
                 currentCoroutineContext().ensureActive()
                 handlePasswordUnlockFailure()
-            } finally {
-                sensitivePassword.clear()
             }
         }
-        job.invokeOnCompletion { unlockMutex.unlock() }
+        job.invokeOnCompletion {
+            sensitivePassword.clear()
+            unlockMutex.unlock()
+        }
         unlockJob = job
     }
 
@@ -254,7 +263,14 @@ class UnlockViewModel(
     }
 
     private fun startBiometricUnlock() {
-        _state.update { it.copy(isLoading = true, isBiometricLoading = true, errorMessage = null) }
+        _state.update {
+            it.copy(
+                password = "",
+                isLoading = true,
+                isBiometricLoading = true,
+                errorMessage = null,
+            )
+        }
         unlockJob?.cancel()
         val job = viewModelScope.launch {
             try {

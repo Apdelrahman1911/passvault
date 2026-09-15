@@ -6,6 +6,9 @@ import com.passvault.core.designsystem.generated.resources.error_master_password
 import com.passvault.core.designsystem.generated.resources.error_new_password_weak
 import com.passvault.core.designsystem.text.UiText
 import com.passvault.core.domain.model.MasterPasswordPolicy
+import com.passvault.core.domain.model.SensitiveText
+import com.passvault.core.domain.model.SessionId
+import com.passvault.core.domain.model.VaultSessionState
 import com.passvault.core.domain.model.codePointLength
 import com.passvault.core.domain.repository.AppSettings
 import com.passvault.core.domain.repository.AppSettingsStore
@@ -212,6 +215,29 @@ class SettingsBiometricViewModelTest {
         assertEquals("", viewModel.state.value.currentPassword)
     }
 
+    @Test
+    fun `password change clears state synchronously and owned buffers on completion`() = runTest(dispatcher) {
+        repository.currentSessionState = VaultSessionState.Unlocked(SessionId("settings-test"))
+        val viewModel = createViewModel()
+        runCurrent()
+        viewModel.onEvent(SettingsViewModel.SettingsEvent.OnCurrentPasswordChanged("current-password"))
+        viewModel.onEvent(SettingsViewModel.SettingsEvent.OnNewPasswordChanged(STRONG_PASSWORD))
+        viewModel.onEvent(SettingsViewModel.SettingsEvent.OnConfirmPasswordChanged(STRONG_PASSWORD))
+
+        viewModel.onEvent(SettingsViewModel.SettingsEvent.OnChangePasswordConfirm)
+
+        assertEquals("", viewModel.state.value.currentPassword)
+        assertEquals("", viewModel.state.value.newPassword)
+        assertEquals("", viewModel.state.value.confirmPassword)
+        assertTrue(viewModel.state.value.isChangingPassword)
+
+        runCurrent()
+
+        assertFalse(viewModel.state.value.isChangingPassword)
+        assertCleared(repository.lastCurrentPasswordChange)
+        assertCleared(repository.lastNewPasswordChange)
+    }
+
     private fun createViewModel(
         settingsStore: AppSettingsStore = InMemoryAppSettingsStore(),
     ): SettingsViewModel = SettingsViewModel(
@@ -219,6 +245,15 @@ class SettingsBiometricViewModelTest {
         appSettingsStore = settingsStore,
         biometricUnlockService = biometricService,
     )
+
+    private fun assertCleared(value: SensitiveText?) {
+        val characters = requireNotNull(value).expose()
+        try {
+            assertTrue(characters.all { it == '\u0000' })
+        } finally {
+            characters.fill('\u0000')
+        }
+    }
 
     private class InMemoryAppSettingsStore : AppSettingsStore {
         var settings = AppSettings()

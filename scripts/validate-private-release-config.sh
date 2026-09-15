@@ -100,7 +100,6 @@ required_values=(
     IOS_DISTRIBUTION_CERTIFICATE_PASSWORD TESTFLIGHT_EXTERNAL_GROUP
     WINDOWS_SIGNING_BACKEND WINDOWS_EXPECTED_PUBLISHER_NAME
     MACOS_CERTIFICATE_PASSWORD
-    MACOS_NOTARIZATION_APPLE_ID MACOS_NOTARIZATION_PASSWORD
     EXPORT_COMPLIANCE_STATUS IOS_FRANCE_AVAILABLE
     RELEASE_NOTES_EN_FILE RELEASE_NOTES_AR_FILE PRIVACY_TEXT_EN_FILE PRIVACY_TEXT_AR_FILE
     ANDROID_UPLOAD_KEYSTORE_FILE IOS_DISTRIBUTION_CERTIFICATE_FILE
@@ -168,7 +167,7 @@ for name in "${required_values[@]}"; do
 done
 
 email_pattern='^[^[:space:]@,]+@[^[:space:]@,]+\.[^[:space:]@,]+$'
-for name in SUPPORT_EMAIL SECURITY_EMAIL APP_REVIEW_EMAIL MACOS_NOTARIZATION_APPLE_ID; do
+for name in SUPPORT_EMAIL SECURITY_EMAIL APP_REVIEW_EMAIL; do
     value="${!name:-}"
     if [[ -n "$value" && ( ! "$value" =~ $email_pattern || "$value" == *.invalid ) ]]; then
         fail_result "$name" "Input validation" "No" "values.env:$name" "Invalid email" \
@@ -903,6 +902,13 @@ validate_text_file() {
     record_result "$variable_name" "Metadata validation" "Ready" "${!variable_name}" \
         "Non-placeholder $language content" "None"
 }
+
+if ! ruby "$repository_root/scripts/validate-store-metadata-inputs.rb" \
+    "$private_root" "$values_file" >/dev/null 2>&1; then
+    fail_result "Canonical store metadata" "Metadata validation" "No" \
+        "release/private metadata files" "Configured paths or canonical payloads differ from the archive contract" \
+        "Use the eight canonical release/private filenames and approved bilingual content."
+fi
 
 validate_text_file RELEASE_NOTES_EN_FILE English
 validate_text_file RELEASE_NOTES_AR_FILE Arabic

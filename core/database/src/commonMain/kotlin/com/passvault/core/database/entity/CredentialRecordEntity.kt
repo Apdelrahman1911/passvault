@@ -1,6 +1,7 @@
 package com.passvault.core.database.entity
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.ColumnInfo
 import androidx.room.Index
@@ -11,6 +12,14 @@ import androidx.room.Index
  */
 @Entity(
     tableName = "credential_records",
+    foreignKeys = [
+        ForeignKey(
+            entity = FolderRecordEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["folder_id"],
+            onDelete = ForeignKey.SET_NULL,
+        ),
+    ],
     indices = [
         Index(value = ["folder_id"]),
         Index(value = ["is_favorite"]),

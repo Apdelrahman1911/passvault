@@ -1,6 +1,9 @@
 # PassVault Issue Triage Summary
 
-> Reply-aware review and final close verification performed against GitHub issues 35–146, with remediation synchronized through commit `b6d80a2`. Every close decision was checked against the issue, its comments, and the code. **61 issues are closed on GitHub; 51 remain open.**
+> Reply-aware review and final close verification performed against GitHub issues 35–146. Every disposition was
+> checked against the issue, its comments, and the code. At the triage snapshot, **61 issues were closed on GitHub and
+> 51 remained open**; later local remediations recorded below do not imply that their branches were pushed or their
+> tracker issues were closed.
 
 ## Triage legend
 
@@ -11,17 +14,29 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 70** (41 resolved as listed below; 29 still open)
-- **DIG: 22**
-- **CLOSE/ACCEPT: 20**
+- **FIX: 74** (45 resolved as listed below; 29 still open)
+- **DIG: 5**
+- **CLOSE/ACCEPT: 33**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
 
 ### Final verification dispositions
 
 - **Closed with an evidence comment:** #55, #56, #66, #70, #80–#81, #97, #103, #109, #110, #111, #116, #124, #129, #131, #137, #138, #142, #145, #146.
 - **Reclassified to FIX (open):** #117 (unsigned-local-release verification), #122 (pre-service temp-file ownership gap).
-- **Reclassified to DIG (open):** #130 (legal/export-compliance evidence). Live App Store territory enforcement disproves its described pipeline failure, but code cannot independently establish the legal classification.
+- **Reclassified to CLOSE/ACCEPT:** #130 (expected export-compliance policy). Apple defines `NO` to include exempt
+  encryption, the publisher-recorded questionnaire outcome is `EXEMPT_APPROVED`, and live Store enforcement disproves
+  the described France-drift failure. Legal classification remains an explicit owner responsibility, not a code claim.
+- **Reclassified to CLOSE/ACCEPT:** #133 (expected external-handler boundary). Launching requires an explicit tap and
+  the common gate validates HTTP(S), authority syntax, characters, and ports before emitting the exact URL field. The
+  app performs no request, so blocking loopback/private sites would break valid local credentials without preventing
+  SSRF. Browser/history/sync/DNS visibility is now documented and the effect gate has positive and negative tests.
 - **Reclassified to CLOSE/ACCEPT:** #80 (the user-writable Windows install premise was removed by #36), #81 (the pinned Gradle action makes PR, testing, and release refs read-only and does not cache configuration state without an encryption key).
+- **Reclassified to CLOSE/ACCEPT:** #82 (Kotlin's supported Xcode integration requires this sandbox setting; the
+  adjacent wrapper-validation gap is hardened and regression-tested).
+- **Reclassified to CLOSE/ACCEPT:** #85 (the claimed durable POSIX file access and unprotected stock-Windows profile
+  premises do not hold; atomic POSIX creation and explicit ACL-presence checks were added as defense in depth).
+- **Reclassified to CLOSE/ACCEPT:** #87 (the delimiter collision exists in isolation but cannot enable the claimed
+  record swap with UUID identities and independently derived per-attachment keys; v1 now rejects delimiter-bearing IDs).
 - **Closed as accepted:** #146 (the Foojay resolver has no toolchain request in the repository or CI; it is dormant unused configuration, not an active defect).
 - **Resolved FIX:** #36 — Windows now requires a timestamped Authenticode signature shared by the packaged launcher and biometric bridge; the installer uses a protected machine-wide location and release scripts enforce the same binding.
 - **Resolved FIX:** #37 — recovery is private and can only run through the mutex-held repository boundary; DI publishes only the interface singleton, and the regression test verifies no public recovery method remains.
@@ -33,12 +48,105 @@
 - **Resolved FIX:** #43 — Desktop lock now synchronously installs the same opaque concealment curtain used at shutdown before iconifying the native window; it stays in place through asynchronous UI cleanup and is restored only on unlock or disposal.
 - **Resolved FIX:** #44 — the V2 restore transfers staged-object ownership in the same non-cancellable region as the Room commit, and abort cleanup cross-checks durable attachment references before deleting; deterministic post-commit cancellation coverage preserves every live object.
 - **Resolved FIX:** #45 — session operations now use tracked, revocable VEK leases rather than holding the state mutex across arbitrary suspending work. Lock publishes `Locking`, cancels the lease operation, wipes the repository key, and force-revokes any non-cooperative lease after a hard deadline; `lockAndRun` additionally refuses protected work unless lease cleanup settled.
-- **Resolved FIX:** #46 — iOS backup staging directories and files now receive checked `NSFileProtectionComplete` attributes before any export write; picker copies are immediately re-protected and rejected/deleted if protection cannot be applied. Simulator regression coverage verifies ordering and fail-closed behavior; physical locked-device verification remains tracked by #35/#128.
+- **Resolved FIX:** #46 — iOS backup staging directories and files now receive checked `NSFileProtectionComplete` attributes before any export write; picker copies are immediately re-protected and rejected/deleted if protection cannot be applied. Simulator regression coverage verifies ordering and fail-closed behavior; physical locked-device verification remains tracked by #35.
 - **Resolved FIX:** #47 — new attachment names enforce a portable Windows-safe namespace and duplicate keys model trailing-dot aliases, while legacy names remain readable and fail safely at output boundaries.
 - **Resolved FIX:** #48 — credential summaries/secrets, password history, and attachment filenames now use an authenticated versioned padding format with power-of-two buckets; v2 records remain readable and are rewritten on ordinary updates.
 - **Resolved FIX:** #49 — Debug and Release now use a checked-in iOS entitlement that makes `NSFileProtectionComplete` the container default and explicitly declares the per-app Keychain group; source and signed-artifact release validators enforce both properties.
 - **Resolved FIX:** #50 — Room v4 removes the unused credential-title blind index without losing dependent rows; new JSON and streaming backups omit it, while authenticated legacy backup readers validate and discard the old field.
 - **Resolved FIX:** #51 — contradictory attachment state/format combinations are quarantined, current-format paths remain protected and quota-accounted despite state tampering, and recovery cannot use a mutable state marker as authority to destroy a published object.
+- **CLOSE/ACCEPT:** #52 — stock SQLite can read the documented credential and relationship metadata, but whole-file
+  confidentiality is explicitly outside the persisted-data boundary. Current-schema allowlists now make any expansion
+  of that accepted surface review-visible, and the remaining PENTEST/database-schema documentation gap is closed.
+- **CLOSE/ACCEPT:** #61 — Android's GCM key already required provider randomization by platform default and encryption
+  never supplied an IV; the key spec now states that invariant explicitly. StrongBox is optional capability hardening,
+  not part of PassVault's OS trust boundary or a universal hardware guarantee, so the default KeyMint implementation
+  remains the documented compatibility policy rather than a Medium-severity bypass.
+- **CLOSE/ACCEPT:** #62 — the five-second repository delay and 30-second UI cooldown are intentionally process-local
+  friction, not a durable anti-guessing boundary. Persisting attacker-modifiable counters cannot protect a copied vault
+  from offline guessing and can create an owner lockout; the password policy and per-attempt Argon2id cost remain the
+  applicable controls. Documentation now prevents the throttle from being represented as stronger than it is.
+- **CLOSE/ACCEPT:** #67 — all recorded Gradle artifacts are pinned by SHA-256 and an induced checksum mismatch fails
+  before project configuration while naming the coordinate. This is strong integrity after pinning, not publisher
+  provenance at first use. Generated PGP metadata would not authenticate signer ownership; enabling it safely requires
+  independently sourced fingerprints, narrow scopes, rotation/revocation policy, an unsigned-artifact inventory, and
+  clean-cache coverage. The checksum-only boundary and atomic migration requirements are now explicit, and the gate
+  separates disallowed PGP metadata from alternate digests rather than representing PGP as a weak hash.
+- **CLOSE/ACCEPT:** #82 — Kotlin's documented direct-integration phase requires Xcode User Script Sandboxing and the
+  phase's "Based on dependency analysis" option disabled. Forcing the sandbox on reproducibly fails in
+  `:shared:checkSandboxAndWriteProtection`, and it could not prevent reviewed Gradle logic from replacing the framework
+  that the phase exists to produce. The real adjacent gap is closed: Xcode checks the exact wrapper JAR SHA-256 before
+  invoking Gradle, the iOS archive job runs Gradle's pinned wrapper-validation action, and adversarial tests reject a
+  changed JAR, a missing phase check, a missing release action, or the incompatible sandbox setting.
+- **CLOSE/ACCEPT:** #85 — create-then-chmod was present, but production creates and hardens an empty data root before
+  Koin or SQLite can create sensitive children. On macOS, a directory descriptor opened before a later `chmod(0700)`
+  could still enumerate names but `openat` was denied after search permission was revoked, disproving the claimed
+  durable read path; the observed home was `0750`, not world-traversable. Windows atomically inherits the user-profile
+  DACL, while administrators and policy-authorized agents remain inside the OS trust boundary. As defense in depth,
+  all four current Desktop initializers now share atomic `0700` POSIX creation, repair existing modes, reject missing
+  access-control support, and preserve rather than overwrite Windows SYSTEM/administrator policy; host tests cover
+  new nested directories, repair, inherited ACL presence, and symlink rejection.
+- **CLOSE/ACCEPT:** #87 — the v1 filename AAD byte encoding is delimiter-ambiguous in isolation, but current attachment
+  and credential IDs are delimiter-free UUIDs and each filename uses an independently random key-derivation context.
+  Replaying ciphertext under another row therefore selects the wrong key; copying that context also breaks the
+  length-prefixed content AAD. The shared filename builder now rejects `:` in either identifier and locks the deployed
+  v1 bytes with compatibility tests. A future broader identifier format must use a versioned, length-prefixed encoding
+  and an explicit legacy migration rather than changing existing AAD in place.
+- **Resolved FIX:** #89 — exact backup/master-password reuse was accepted even though the product described the
+  secrets as separate. The impact is Low rather than Medium because a stolen local database is already an offline
+  master-password verifier and a decrypted backup already exposes its snapshot. New exports now trial-unwrap the VEK,
+  compare it with the active session key in constant time, reject an exact match at the service boundary, and preserve
+  imports of existing backups. Candidate bytes, derived keys, and unwrapped keys retain their existing wipe paths.
+- **CLOSE/ACCEPT:** #91 — the title is false for the shipped selector: it benchmarks libsodium's 2-operation/64 MiB
+  profile and selects either 3 or 4 operations at 64 MiB, so capable devices receive more work rather than less.
+  The fixed memory ceiling is an intentional cross-platform availability policy, not a demonstrated vulnerability;
+  the 32–256 MiB vault reader range is not a writer target, and format-2 backups deliberately admit only the two
+  64 MiB profiles. Raising memory remains a future enhancement requiring mobile OOM/latency evidence and a new backup
+  format version, while #94 already supplies independent known-answer tests for both shipped profiles.
+- **CLOSE/ACCEPT:** #108 — the latency difference is real: a Desktop probe measured about 96 ms for a wrong password
+  versus less than 1 ms for malformed or missing metadata. It is not an authentication oracle: all passwords take the
+  same KDF path when metadata is valid, startup already exposes vault existence, and a database attacker can inspect
+  the structural state being inferred. Pre-KDF validation deliberately bounds attacker-controlled parameters and
+  avoids resource amplification; a regression test now locks that ordering and the shared generic error contract.
+- **CLOSE/ACCEPT:** #115 — all four fields are plaintext, but this is the already documented local metadata boundary,
+  not exposure of attachment content or credential secrets. Current UI creation writes no folder icon and provides no
+  tag editor; new MIME values come from a small fixed detector, while exact size is required for quotas/integrity and
+  is independently inferable from unpadded object framing. Removing the unused color index alone would not conceal
+  colors and still requires a schema migration. Schema tests now make every visible field and index review-explicit.
+- **Resolved FIX:** #120 — under an explicit `umask 022`, the shared store reproduced `0755` on `objects/` and
+  `staging/` while their `0700` parent still prevented cross-user traversal. This confirms a defense-in-depth defect,
+  not the title's implied live disclosure. The Desktop factory now atomically creates or repairs each attachment child
+  through the existing private-directory policy: POSIX requires `0700`, while Windows requires an inherited non-empty
+  ACL without discarding system-managed entries. A host integration test covers the complete directory chain.
+- **Resolved FIX:** #121 — a direct macOS native consumer reproduced `pv_bio_destroy` remaining blocked until an
+  active operation completed, while the production JNA wrapper already prevented this from hanging shutdown. The
+  macOS ABI now waits at most 250 milliseconds and, on timeout, transfers final context reclamation to the operation's
+  scope guard instead of freeing memory still in use. Native tests cover both cancellable and committed operation
+  windows; a permanently wedged OS call can retain resources only until the terminal process deadline.
+- **CLOSE/ACCEPT:** #123 — the 10-byte floor is below RFC 4226 R6, but PassVault consumes issuer-owned keys and the
+  published Google Authenticator Key URI example itself uses 10 bytes. Rejecting that established input would break
+  interoperability without strengthening the issuer's account. The accepted 10–128-byte range, residual risk, and
+  non-conformance are now explicit in source and security documentation; manual and URI boundary tests pin rejection
+  below 10 bytes, acceptance at 10 bytes, and acceptance at the RFC's 16-byte boundary.
+- **Resolved FIX:** #128 — #49 eliminated the weak container default that originally created the picker-copy window.
+  As defense in depth, the attachment picker now re-applies `NSFileProtectionComplete` synchronously in its delegate,
+  before continuation resumption or the dispatcher hop, and deletes/rejects the copy if protection fails. The adopted
+  destination still receives an independent checked assertion; simulator tests cover ordering and fail-closed cleanup.
+- **CLOSE/ACCEPT:** #130 — `ITSAppUsesNonExemptEncryption=NO` means no encryption **or exempt encryption**, not
+  "no cryptography." The recorded Apple questionnaire result, a successful signed TestFlight submission, and the live
+  France-availability gate support the current non-France policy. Documentation now makes the publisher/legal authority
+  boundary, release-by-release inventory review, annual cadence, and mandatory change triggers explicit.
+- **CLOSE/ACCEPT:** #133 — the title's "scheme allowlist only" claim is false: the common validator also rejects
+  malformed DNS/IP authorities, credentials, invalid ports, whitespace, backslashes, and unsafe code points. The OS
+  browser boundary is expected after an explicit user tap, and local/private hosts remain useful supported targets
+  rather than an SSRF surface because PassVault never fetches the URL. Tests pin accepted and rejected effect payloads;
+  security and privacy documentation now record what the receiving browser, DNS, and network may observe.
+- **CLOSE/ACCEPT:** #140 — the package-wide keep is confirmed, but the claim that every wrapper name is required by JNI
+  is false. The pinned AAR uses a 152-method JNA interface plus five `Structure` types as reflective boundaries; its
+  other wrappers use direct references. R8 retained all 82 binding classes, while a scratch-only narrowed build retained
+  11 and reduced DEX by 61,252 bytes, but compilation cannot prove runtime JNA correctness. The conservative keep stays
+  until minified Release device coverage exists. The unrelated blanket `-dontwarn` was removed after a warning-clean R8
+  build, and `verifyAndroidR8Policy` now rejects extra project keeps or restoring that suppression. This is a size and
+  reliability trade-off, not a cryptographic weakness.
 - **CLOSE/ACCEPT:** #55 — readable KDF parameters already determine the authenticated unwrap key, `entry_count` reveals no more than the accepted plaintext database structure, and exported `vault_id` values remain inside authenticated encryption; the proposed AAD change adds no independent protection.
 - **Resolved FIX:** #54 and #102 — password text is encoded directly into owned mutable UTF-8 and historical lowercase-hex buffers before raw libsodium Argon2 calls on every platform, preserving existing vault/backup keys while removing the avoidable immutable KDF copies.
 - **Resolved FIX:** #53 — unreadable or historically unsafe attachment names are isolated as visible quarantined rows, so valid siblings remain usable and the corrupt row can be renamed or deleted while every plaintext-producing path remains fail-closed.
@@ -51,6 +159,7 @@
 - **Resolved FIX:** #68 — TOTP generation now decodes Base32 directly from mutable character buffers and uses byte-array HMAC implementations on every platform, clearing every application-owned seed and digest intermediate without introducing a long-lived decoded-key cache.
 - **Resolved FIX:** #69 — format-2 backup readers and writers now admit only the two historical 64 MiB Argon2 profiles (three or four operations), rejecting attacker-only profiles before derivation while leaving legacy format-1 compatibility unchanged.
 - **Resolved FIX:** #71 — format-2 restore now authenticates actual encrypted attachment bytes in metadata schema 3, preflights and rechecks attachment-volume capacity with bounded reserve, preserves schema-1/2 compatibility, maps real storage-full failures to an actionable localized error, and cleans objects published immediately before cancellation.
+- **Resolved FIX:** #76 — the required CI test job now runs checksum-pinned OpenGrep rules across an exact 516-file Kotlin/Swift/native/automation inventory, proves detection with a known-bad canary, rejects analyzer errors and coverage drift, and makes every Detekt aggregate depend on a reviewed 393-file source floor. Android Lint remains a separate gate; no crash-to-success behavior was found. Detekt stays serial because no stable Detekt 2 release existed on 2026-09-03.
 - **Resolved FIX:** #78 — Dependabot now schedules Gradle and Bundler updates as well as GitHub Actions, and a release-automation guard ensures the two runtime/release dependency manifests remain enrolled.
 - **Resolved FIX:** #88 — `SensitiveText` no longer implies non-existent automatic clearing; a scoped temporary-copy API clears its copied characters on every exit path.
 - **Resolved FIX:** #92 — review scope now correctly includes managed attachment storage and the macOS/Windows native biometric unlock bridge, with a CI-run documentation guard against the stale non-feature claims.
@@ -63,6 +172,10 @@
 - **Resolved FIX:** #119 — production screenshot protection no longer exposes a runtime disable operation; the enabled state is one-way and a regression test guards the public API.
 - **Resolved FIX:** #134 — sourced shell-library contracts are documented and enforced, inline workflow callers enable strict mode, and macOS keychain capture now checks the `security` command directly instead of losing its status through process substitution.
 - **Resolved FIX:** #136 — every iOS `LAContext` now passes through a suspending, `finally`-backed lifecycle helper, including capability probing, enrollment, and Keychain reads; simulator tests cover success, failure, and cancellation invalidation.
+- **Mitigated, verification still open:** #132 — iOS now observes protected-data transitions, keeps the native cover
+  opaque, locks and scrubs the session, dismantles Compose, checkpoints/closes Room, stops Koin, and rebuilds only
+  after data is available. Automated lifecycle/WAL/protection tests and Debug/Release simulator builds pass; a
+  passcode-enabled physical-iPhone forced-I/O and repeated-cycle matrix is still required before closure.
 
 The detailed tables below retain the original recommendations for traceability; this section is the authoritative final disposition.
 
@@ -71,6 +184,12 @@ The detailed tables below retain the original recommendations for traceability; 
 - **#55** — KDF parameter changes already fail the authenticated VEK unwrap; count metadata is redundant with the accepted plaintext schema, and exported vault IDs are encrypted.
 - **#56** — Compose already supplies password semantics/content type and Android `FLAG_SECURE` disables capture.
 - **#66** — only 6- and 8-digit TOTP configurations are accepted; the branch is exhaustive and tested.
+- **#91** — the benchmark raises the libsodium probe's operation count from two to three or four; the fixed 64 MiB
+  memory target is a tested portability policy, while a 256 MiB tier has no required mobile availability evidence.
+- **#108** — the measured difference identifies only already-observable vault structure, never partial password
+  correctness; pre-KDF validation is an intentional resource-safety boundary rather than a defect.
+- **#115** — the listed columns are inside the explicitly accepted local metadata boundary; current writers sharply
+  limit visual/MIME exposure, and hiding exact size requires object padding rather than merely bucketing one column.
 - **#103** — the local GOOD bucket intentionally includes domain FAIR, so UI and execution thresholds match.
 - **#109** — biometric success is cryptographically verified; resetting a ≤5-second process-local delay is not an authentication bypass.
 - **#110** — `lastNavigatedSession` is intentional deduplication for a non-replayed effect.
@@ -78,11 +197,16 @@ The detailed tables below retain the original recommendations for traceability; 
 - **#117** — the claimed debug-signing fallback is false; the remaining unsigned-local-release verification gap is reclassified FIX.
 - **#122** — the proposed terminal-cleanup mechanism is false; a separate pre-service ownership gap is reclassified FIX.
 - **#124** — `storeScreenshot` is a debug-derived, workflow-isolated screenshot artifact, not a release vulnerability.
-- **#130** — live App Store/France checks disprove the described pipeline failure; legal classification evidence remains DIG.
+- **#130** — Apple's key semantics and live App Store/France checks disprove the described mismatch and pipeline
+  failure; the current result remains a publisher-owned legal attestation rather than a claim derived from source.
 - **#131** — readiness literals are written only after live store checks; the alleged tautological bypass is not present.
 - **#138** — fresh iOS `LAContext` instances use Apple’s zero reuse default.
 - **#142** — data-protection Keychain is the iOS/Catalyst default/only store; omission is not a downgrade.
 - **#145** — both privacy-manifest reason codes match actual in-container and user-selected file metadata access.
+
+GitHub vulnerability alerts are enabled. Secret scanning, push protection, and Dependabot security updates were
+disabled when read through the GitHub API on 2026-09-03; enabling those external controls remains separate from the
+repository fix for #76 and requires owner authorization.
 
 ## FIX NOW — critical/high findings
 | Issue | Severity | Short summary | Recommended next step |
@@ -161,23 +285,7 @@ The detailed tables below retain the original recommendations for traceability; 
 | Issue | Severity | Short summary | Recommended next step |
 |---:|:---:|---|---|
 | [35](https://github.com/Apdelrahman1911/passvault/issues/35) | Verification | Complete iOS/macOS security review on Apple hardware | Apple source review is complete, but runtime/hardware evidence is still missing; keep this verification ledger open. |
-| [52](https://github.com/Apdelrahman1911/passvault/issues/52) | Medium | Vault-wide plaintext metadata graph in an unencrypted SQLite file | Plaintext metadata graph is confirmed; decide whether whole-database confidentiality is required by the local-attacker threat model. |
-| [61](https://github.com/Apdelrahman1911/passvault/issues/61) | Medium | Biometric key does not request StrongBox and relies on an implicit GCM-IV default | StrongBox omission is optional capability hardening and the GCM-IV concern is false under Android defaults; keep for device/product decision, not as a Medium bypass. |
-| [62](https://github.com/Apdelrahman1911/passvault/issues/62) | Medium | Failed-attempt throttle is volatile, trivially reset, and capped at 5 seconds | Volatile five-second backoff is a policy weakness, but persistence needs an authenticated/device-bound design and an attack-rate decision. |
-| [67](https://github.com/Apdelrahman1911/passvault/issues/67) | Medium | Dependency verification is checksum-only, and the repo's own gate forbids enabling signatures | SHA-256 verification provides artifact integrity; the remaining provenance/signature/SBOM choice needs an explicit supply-chain policy and curated keys. |
-| [82](https://github.com/Apdelrahman1911/passvault/issues/82) | Medium | `ENABLE_USER_SCRIPT_SANDBOXING = NO` with an unpinned Gradle shell phase in Release | Unsandboxed/untracked Release Gradle phase is confirmed, but impact depends on the build trust boundary; validate inputs/outputs and sandbox compatibility before gating. |
-| [85](https://github.com/Apdelrahman1911/passvault/issues/85) | Medium | `~/.passvault` creation has a permission TOCTOU window; Windows gets no explicit ACL | The create-then-chmod window and missing explicit Windows ACL are code facts, but cross-user exposure is unproven; verify OS behavior before hardening. |
-| [87](https://github.com/Apdelrahman1911/passvault/issues/87) | Low | Filename AAD uses unprefixed concatenation | AAD concatenation is ambiguous in theory, but UUID-derived keys prevent the claimed swap; retain as next-format cryptographic hardening/design review. |
-| [89](https://github.com/Apdelrahman1911/passvault/issues/89) | Medium | Backup password may equal the vault master password; no check exists | Backup/master equality check is absent and can be derived by trial unwrap, but enforcing it is a product policy; decide whether compartmentalization outweighs weaker-user-password risk. |
-| [91](https://github.com/Apdelrahman1911/passvault/issues/91) | Low | `benchmarkArgon2` can only *lower* cost on fast devices | The “only lower” title is imprecise, but memory remains fixed at 64 MiB; decide whether calibration should vary memory and preserve compatibility. |
-| [108](https://github.com/Apdelrahman1911/passvault/issues/108) | Low | Unlock failure timing distinguishes corrupt/missing vault from wrong password | Timing differs for corrupt/missing metadata versus wrong password, but the observer needs local DB write access; treat as informational latency-floor decision. |
-| [115](https://github.com/Apdelrahman1911/passvault/issues/115) | Low | Plaintext folder `icon`, tag `color`, attachment `mime_type` and exact `size_bytes` | Plain icon/color/MIME/size metadata is deliberately exposed for UI/quota/handoff; decide privacy value versus migration/query cost. |
-| [120](https://github.com/Apdelrahman1911/passvault/issues/120) | Low | Attachment `objects/` and `staging/` created world-readable-mode | Default child permissions are not checked, but the hardened parent blocks normal traversal; verify ACL/umask behavior before treating this as disclosure. |
-| [121](https://github.com/Apdelrahman1911/passvault/issues/121) | Low | `pv_bio_destroy` waits without a timeout while an OS prompt is pending | Native destroy can wait forever for a direct consumer, while the JVM wrapper bounds/avoids the path; add ABI robustness tests before elevating impact. |
-| [123](https://github.com/Apdelrahman1911/passvault/issues/123) | Low | Minimum seed length is 80 bits, below RFC 4226 R6 (128 bits) | 80-bit TOTP seeds are below RFC 4226 R6; confirm provider interoperability, then raise the new-enrollment floor or document migration. |
-| [128](https://github.com/Apdelrahman1911/passvault/issues/128) | Low | Document-picker `asCopy` intermediate sits at default protection briefly | The picker-controlled intermediate protection window needs real iOS device evidence and immediate post-receipt protection. |
-| [132](https://github.com/Apdelrahman1911/passvault/issues/132) | Low | No `protectedDataWillBecomeUnavailable` handling despite `NSFileProtectionComplete` | No protected-data lifecycle handling exists despite NSFileProtectionComplete; test I/O during lock and design quiesce/reopen behavior. |
-| [133](https://github.com/Apdelrahman1911/passvault/issues/133) | Low | External URL opening relies on a scheme allowlist only | The title overstates the gap: HTTP(S), authority, character, and port syntax are validated. IP classes (127.0.0.1/private/link-local) are not filtered; decide if that informational hardening is needed. |
+| [132](https://github.com/Apdelrahman1911/passvault/issues/132) | Low | No `protectedDataWillBecomeUnavailable` handling despite `NSFileProtectionComplete` | Source mitigation and automated regression coverage are implemented; keep open until physical-device lock/forced-I/O/WAL and repeated-cycle verification proves the runtime behavior. |
 | [135](https://github.com/Apdelrahman1911/passvault/issues/135) | Low | Notices are generated, not diffed against the actual release graph | Notice checks compare repository files, not the resolved dependency graph; automate SBOM/license diffing as a release-process improvement. |
 | [140](https://github.com/Apdelrahman1911/passvault/issues/140) | Informational | R8 keeps the entire libsodium binding package unshrunk | The blanket libsodium keep rule is conservative, not proven required; measure minified builds and narrow only after KAT/instrumentation tests. |
 | [143](https://github.com/Apdelrahman1911/passvault/issues/143) | Informational | `AndroidAttachmentFileStore.attach()` reads shared state outside the monitor | Unsynchronized launcher reads are real but main-thread confinement is the intended invariant; enforce/assert it and test lifecycle races. |
@@ -204,7 +312,6 @@ The detailed tables below retain the original recommendations for traceability; 
 | [122](https://github.com/Apdelrahman1911/passvault/issues/122) | Low | Backup temp files leak on coroutine cancellation | False positive for coroutine cancellation: NonCancellable abort/commit handles the ownership handoff; rewrite only if crash residue is reproducibly orphaned. |
 | [124](https://github.com/Apdelrahman1911/passvault/issues/124) | Low | `storeScreenshot` variant disables all protection and shares the debug applicationId | False positive as a release vulnerability: storeScreenshot is debug-derived, workflow-dispatch-only, and not uploaded to Play. Close with a publication guard. |
 | [129](https://github.com/Apdelrahman1911/passvault/issues/129) | Informational | `single<Any> { Unit }` registers the root type globally in Koin | Root Any bindings are a DI workaround across platforms; replace with typed context or document/accept as non-security. |
-| [130](https://github.com/Apdelrahman1911/passvault/issues/130) | Low | `ITSAppUsesNonExemptEncryption = NO` declared by a vault application | False positive as an active release failure: export-compliance status and France availability are checked against live ASC and documented; close as accepted policy, reopening on scope change. |
 | [131](https://github.com/Apdelrahman1911/passvault/issues/131) | Low | Readiness manifest external-review states are asserted by `jq` | False positive as a tautological readiness bypass: live store checks run before literals are written; close or convert to evidence-fidelity enhancement. |
 | [137](https://github.com/Apdelrahman1911/passvault/issues/137) | Informational | `ci.yml` has no `concurrency` block | No CI concurrency is a confirmed cost/queue issue, not a security defect; close or track as optimization. |
 | [138](https://github.com/Apdelrahman1911/passvault/issues/138) | Informational | `touchIDAuthenticationAllowableReuseDuration` not explicitly zeroed on iOS | False positive mechanism: fresh iOS LAContext defaults to zero reuse; explicit zero is auditability hardening. Close/accept. |
@@ -216,6 +323,5 @@ The detailed tables below retain the original recommendations for traceability; 
 1. Fix the remaining attachment/restore and session-boundary paths first (#74–#75, #77, #79, #83–#84, #86, #90, #93, #98–#99, #101, #107, #112–#114, #118, #122, #125).
 2. Address the remaining CI, release, and platform defects (#72–#73, #76, #94, #117, #126–#127, #139, #141, #144).
 3. Resolve every remaining DIG disposition using the required policy, runtime, legal, and platform evidence:
-   #35, #52, #61–#62, #67, #82, #85, #87, #89, #91, #108, #115, #120–#121, #123, #128, #130,
-   #132–#133, #135, #140, and #143.
+   #35, #132, #135, #140, and #143.
 4. Close accepted issues only after the corrected rationale is recorded in the threat model, release docs, or tests.

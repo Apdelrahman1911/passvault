@@ -6,6 +6,7 @@ import com.passvault.core.designsystem.text.UiText
 import app.cash.turbine.test
 import com.passvault.core.domain.model.MasterPasswordPolicy
 import com.passvault.core.domain.model.SessionId
+import com.passvault.core.domain.model.SensitiveText
 import com.passvault.core.domain.model.VaultSessionState
 import com.passvault.core.domain.model.codePointLength
 import com.passvault.core.testing.fakes.FakeVaultRepository
@@ -126,6 +127,7 @@ class UnlockViewModelTest {
         viewModel.effect.test {
             viewModel.onEvent(UnlockViewModel.UnlockEvent.OnPasswordChanged("correct password"))
             viewModel.onEvent(UnlockViewModel.UnlockEvent.OnUnlockClick)
+            assertEquals("", viewModel.state.value.password)
             assertTrue(viewModel.state.value.isLoading)
 
             runCurrent()
@@ -134,6 +136,7 @@ class UnlockViewModelTest {
             assertEquals("", viewModel.state.value.password)
             assertEquals(0, viewModel.state.value.failedAttempts)
             assertFalse(viewModel.state.value.isLoading)
+            assertCleared(repository.lastUnlockPassword)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -163,6 +166,7 @@ class UnlockViewModelTest {
 
         viewModel.onEvent(UnlockViewModel.UnlockEvent.OnPasswordChanged("wrong password"))
         viewModel.onEvent(UnlockViewModel.UnlockEvent.OnUnlockClick)
+        assertEquals("", viewModel.state.value.password)
         runCurrent()
 
         assertEquals("", viewModel.state.value.password)
@@ -171,6 +175,7 @@ class UnlockViewModelTest {
             Res.string.error_unlock_failed,
             (viewModel.state.value.errorMessage as UiText.Resource).resource,
         )
+        assertCleared(repository.lastUnlockPassword)
     }
 
     @Test
@@ -198,6 +203,7 @@ class UnlockViewModelTest {
 
         viewModel.onEvent(UnlockViewModel.UnlockEvent.OnPasswordChanged("first-attempt"))
         viewModel.onEvent(UnlockViewModel.UnlockEvent.OnUnlockClick)
+        assertEquals("", viewModel.state.value.password)
         viewModel.clearForLock()
         runCurrent()
 
@@ -209,6 +215,22 @@ class UnlockViewModelTest {
         assertIs<VaultSessionState.Unlocked>(repository.currentSessionState)
         assertEquals("", viewModel.state.value.password)
         assertFalse(viewModel.state.value.isLoading)
+    }
+
+    @Test
+    fun `cancelling an active unlock clears the owned password`() = runTest(dispatcher) {
+        val viewModel = existingVaultViewModel()
+        repository.unlockDelayMillis = 1_000
+
+        viewModel.onEvent(UnlockViewModel.UnlockEvent.OnPasswordChanged("first-attempt"))
+        viewModel.onEvent(UnlockViewModel.UnlockEvent.OnUnlockClick)
+        runCurrent()
+        val cancelledPassword = requireNotNull(repository.lastUnlockPassword)
+
+        viewModel.clearForLock()
+        runCurrent()
+
+        assertCleared(cancelledPassword)
     }
 
     @Test
@@ -342,5 +364,14 @@ class UnlockViewModelTest {
     private fun existingVaultViewModel(): UnlockViewModel {
         repository.setupExistingVault()
         return UnlockViewModel(repository, biometricService)
+    }
+
+    private fun assertCleared(value: SensitiveText?) {
+        val characters = requireNotNull(value).expose()
+        try {
+            assertTrue(characters.all { it == '\u0000' })
+        } finally {
+            characters.fill('\u0000')
+        }
     }
 }

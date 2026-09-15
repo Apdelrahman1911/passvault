@@ -1,9 +1,12 @@
 package com.passvault.feature.backup.presentation
 
 import com.passvault.core.database.backup.BackupInsufficientStorageException
+import com.passvault.core.database.backup.BackupPasswordReusesMasterPasswordException
 import com.passvault.core.designsystem.generated.resources.Res
 import com.passvault.core.designsystem.generated.resources.error_backup_insufficient_storage
 import com.passvault.core.designsystem.generated.resources.error_backup_invalid
+import com.passvault.core.designsystem.generated.resources.error_backup_password_reuses_master
+import com.passvault.core.designsystem.generated.resources.error_backup_save
 import com.passvault.core.designsystem.text.UiText
 import com.passvault.core.domain.model.BackupPasswordPolicy
 import com.passvault.feature.backup.BackupFile
@@ -127,5 +130,17 @@ class BackupPasswordUnicodeTest {
             (capacityError as UiText.Resource).resource,
         )
         assertEquals(Res.string.error_backup_invalid, (otherError as UiText.Resource).resource)
+    }
+
+    @Test
+    fun `reused master password has a dedicated export error`() {
+        val reuseError = backupCreateError(BackupPasswordReusesMasterPasswordException())
+        val otherError = backupCreateError(IllegalStateException("export failed"))
+
+        assertEquals(
+            Res.string.error_backup_password_reuses_master,
+            (reuseError as UiText.Resource).resource,
+        )
+        assertEquals(Res.string.error_backup_save, (otherError as UiText.Resource).resource)
     }
 }

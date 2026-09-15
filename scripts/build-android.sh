@@ -58,6 +58,7 @@ if [[ "$build_debug" == true ]]; then
 fi
 if [[ "$build_release" == true ]]; then
     gradle_arguments+=(
+        :app-android:verifyReleaseSigningConfiguration
         :app-android:assembleRelease
         :app-android:bundleRelease
         :app-android:lintRelease

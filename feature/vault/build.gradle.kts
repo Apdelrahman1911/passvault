@@ -35,6 +35,7 @@ kotlin {
                 implementation(project(":core:domain"))
                 implementation(project(":core:designsystem"))
                 implementation(project(":core:otp"))
+                implementation(project(":core:security"))
 
                 // Compose
                 implementation(libs.compose.runtime)

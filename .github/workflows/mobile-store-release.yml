@@ -22,6 +22,10 @@ on:
         required: false
         default: ''
         type: string
+      candidate_commit:
+        required: false
+        default: ''
+        type: string
       testflight_distribution:
         required: false
         default: email-list
@@ -123,6 +127,7 @@ env:
   REQUEST_OPERATION: ${{ inputs.operation }}
   REQUEST_VERSION: ${{ inputs.version }}
   REQUEST_BUILD_NUMBER: ${{ inputs.build_number }}
+  REQUEST_CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
   REQUEST_TESTFLIGHT_DISTRIBUTION: ${{ inputs.testflight_distribution }}
   REQUEST_PRODUCTION_CONFIRMATION: ${{ inputs.production_confirmation }}
   REQUEST_TESTING_CONFIRMATION: ${{ inputs.testing_confirmation }}
@@ -153,6 +158,18 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+        with:
+          cache-cleanup: always
+
+      - name: Verify third-party attribution
+        run: ./gradlew checkThirdPartyAttribution --stacktrace
+
       - name: Require the correct protected branch and confirmations
         run: |
           if [[ "$ANDROID_PACKAGE_NAME" != com.passvault.android ||
@@ -174,7 +191,7 @@ jobs:
             exit 1
           fi
           expected_branch=testing
-          if [[ "$REQUEST_CHANNEL" == "production" ]]; then expected_branch=release; fi
+          if [[ "$REQUEST_CHANNEL" == "production" ]]; then expected_branch=main; fi
           if [[ "$GITHUB_REF" != "refs/heads/$expected_branch" ]]; then
             echo "$REQUEST_CHANNEL must run from $expected_branch." >&2
             exit 1
@@ -216,17 +233,24 @@ jobs:
           if [[ -z "$VERSION" ]]; then
             VERSION="$(awk -F= '$1 == "VERSION_NAME" { print $2 }' version.properties)"
           fi
+          # Production may promote an older version, but never noncanonical text.
+          if [[ ! "$VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "The marketing version must be a canonical major.minor.patch value." >&2
+            exit 1
+          fi
           if [[ ! "$VERSION_CODE" =~ ^[1-9][0-9]*$ ]] ||
              (( ${#VERSION_CODE} > 10 )) ||
              (( 10#$VERSION_CODE < 1000000 || 10#$VERSION_CODE > 2100000000 )); then
             echo "The build number must be a canonical integer from 1000000 through 2100000000." >&2
             exit 1
           fi
-          ./scripts/validate-release-metadata.sh "$VERSION"
-          COMMITTED_BUILD_NUMBER="$(awk -F= '$1 == "VERSION_CODE" { print $2 }' version.properties)"
-          if [[ "$VERSION_CODE" != "$COMMITTED_BUILD_NUMBER" ]]; then
-            echo "The requested Store build must exactly match committed VERSION_CODE=$COMMITTED_BUILD_NUMBER." >&2
-            exit 1
+          if [[ "$REQUEST_CHANNEL" != "production" ]]; then
+            ./scripts/validate-release-metadata.sh "$VERSION"
+            COMMITTED_BUILD_NUMBER="$(awk -F= '$1 == "VERSION_CODE" { print $2 }' version.properties)"
+            if [[ "$VERSION_CODE" != "$COMMITTED_BUILD_NUMBER" ]]; then
+              echo "The requested Store build must exactly match committed VERSION_CODE=$COMMITTED_BUILD_NUMBER." >&2
+              exit 1
+            fi
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
@@ -235,41 +259,69 @@ jobs:
         if: inputs.channel == 'production'
         env:
           CANDIDATE_TAG: ${{ inputs.candidate_tag }}
+          CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+          RELEASE_BUILD_NUMBER: ${{ steps.version.outputs.version_code }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          expected_tag="v${{ steps.version.outputs.version }}-rc.${{ steps.version.outputs.version_code }}"
+          expected_tag="v${RELEASE_VERSION}-rc.${RELEASE_BUILD_NUMBER}"
           if [[ "$CANDIDATE_TAG" != "$expected_tag" ]]; then
             echo "Production requires the exact readiness candidate $expected_tag." >&2
             exit 1
           fi
+          git fetch origin release --no-tags
+          git fetch origin "refs/tags/$CANDIDATE_TAG:refs/tags/$CANDIDATE_TAG" --force --no-tags
+          release_commit="$(git rev-parse refs/remotes/origin/release)"
+          tag_commit="$(git rev-list -n 1 "$CANDIDATE_TAG")"
+          if [[ -n "$CANDIDATE_COMMIT" && ! "$CANDIDATE_COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "The protected caller supplied an invalid candidate commit." >&2
+            exit 1
+          fi
+          if [[ -z "$CANDIDATE_COMMIT" ]]; then
+            CANDIDATE_COMMIT="$tag_commit"
+          fi
+          if [[ "$release_commit" != "$CANDIDATE_COMMIT" || "$tag_commit" != "$CANDIDATE_COMMIT" ]]; then
+            echo "The release branch, candidate tag, and authorized candidate commit differ." >&2
+            exit 1
+          fi
           gh release download "$CANDIDATE_TAG" \
             --pattern readiness-manifest.json \
-            --pattern '*-artifact-receipt.json' \
+            --pattern android-artifact-receipt.json \
+            --pattern ios-artifact-receipt.json \
             --dir "$RUNNER_TEMP/production-candidate"
           manifest="$RUNNER_TEMP/production-candidate/readiness-manifest.json"
           gh attestation verify "$manifest" \
             --repo "$GITHUB_REPOSITORY" \
             --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/candidate-readiness.yml" \
             --source-ref refs/heads/testing \
-            --source-digest "$GITHUB_SHA" \
+            --source-digest "$CANDIDATE_COMMIT" \
             --deny-self-hosted-runners >/dev/null
-          source_tree="$(git rev-parse "$GITHUB_SHA^{tree}")"
-          ruby scripts/validate-candidate-manifest.rb "$manifest" "$GITHUB_SHA" "$source_tree"
-          for receipt in "$RUNNER_TEMP/production-candidate"/*-artifact-receipt.json; do
+          source_tree="$(git rev-parse "$CANDIDATE_COMMIT^{tree}")"
+          ruby scripts/validate-candidate-manifest.rb --mobile-only "$manifest" "$CANDIDATE_COMMIT" "$source_tree"
+          for platform in android ios; do
+            receipt="$RUNNER_TEMP/production-candidate/$platform-artifact-receipt.json"
             gh attestation verify "$receipt" \
               --repo "$GITHUB_REPOSITORY" \
               --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
               --source-ref refs/heads/testing \
-              --source-digest "$GITHUB_SHA" \
+              --source-digest "$CANDIDATE_COMMIT" \
               --deny-self-hosted-runners >/dev/null
           done
-          ruby scripts/validate-candidate-artifact-provenance.rb \
-            "$manifest" "$RUNNER_TEMP/production-candidate" "$GITHUB_SHA" "$source_tree"
-          ./scripts/require-production-signing-validation.sh "$CANDIDATE_TAG"
+          ruby scripts/validate-candidate-artifact-provenance.rb --mobile-only \
+            "$manifest" "$RUNNER_TEMP/production-candidate" "$CANDIDATE_COMMIT" "$source_tree"
           if [[ "$(jq -r .candidateTag "$manifest")" != "$CANDIDATE_TAG" ]]; then
             echo "Readiness provenance does not match the requested candidate tag." >&2
             exit 1
           fi
+          if [[ "$(jq -r .marketingVersion "$manifest")" != "$RELEASE_VERSION" ||
+                "$(jq -r .buildNumber "$manifest")" != "$RELEASE_BUILD_NUMBER" ]]; then
+            echo "The requested mobile version/build does not match candidate provenance." >&2
+            exit 1
+          fi
+          candidate_source="$RUNNER_TEMP/mobile-production-candidate-source"
+          git worktree add --detach "$candidate_source" "$CANDIDATE_COMMIT"
+          (cd "$candidate_source" && ruby scripts/validate-mobile-store-assets.rb)
+          git worktree remove --force "$candidate_source"
 
       - name: Select protected environment
         id: environment
@@ -285,14 +337,13 @@ jobs:
       - name: Validate repository release automation
         run: ./scripts/test-release-automation.sh
 
-      - name: Require production store assets
-        if: inputs.channel == 'production'
-        run: ./scripts/validate-mobile-store-assets.rb
-
   android:
     name: Android ${{ inputs.channel }}
     if: inputs.operation == 'upload' && (inputs.platform == 'both' || inputs.platform == 'android')
     needs: validate
+    env:
+      RELEASE_VERSION: ${{ needs.validate.outputs.version }}
+      RELEASE_BUILD_NUMBER: ${{ needs.validate.outputs.version_code }}
     runs-on: ubuntu-latest
     environment: ${{ needs.validate.outputs.environment }}
     permissions:
@@ -338,7 +389,7 @@ jobs:
           ruby scripts/extract-store-metadata-archive.rb \
             "$PRIVATE_RUNTIME/store-metadata.tar.gz" "$PRIVATE_RUNTIME/store-input"
           ./scripts/prepare-mobile-store-metadata.sh \
-            "$PRIVATE_RUNTIME/store-input" "$PRIVATE_RUNTIME/store" "${{ needs.validate.outputs.version_code }}"
+            "$PRIVATE_RUNTIME/store-input" "$PRIVATE_RUNTIME/store" "$RELEASE_BUILD_NUMBER"
           echo "KEYSTORE_PATH=$PRIVATE_RUNTIME/android-upload.jks" >> "$GITHUB_ENV"
           echo "STORE_METADATA_ROOT=$PRIVATE_RUNTIME/store" >> "$GITHUB_ENV"
 
@@ -365,8 +416,8 @@ jobs:
             :app-android:verifyReleasePackageContents \
             --no-configuration-cache \
             -Ppassvault.requireReleaseSigning=true \
-            -Ppassvault.versionName=${{ needs.validate.outputs.version }} \
-            -Ppassvault.versionCode=${{ needs.validate.outputs.version_code }}
+            "-Ppassvault.versionName=$RELEASE_VERSION" \
+            "-Ppassvault.versionCode=$RELEASE_BUILD_NUMBER"
           ./scripts/verify-android-signatures.sh
           ruby scripts/validate-google-play-readiness.rb
           echo "ANDROID_AAB_PATH=$GITHUB_WORKSPACE/app-android/build/outputs/bundle/release/app-android-release.aab" >> "$GITHUB_ENV"
@@ -465,6 +516,9 @@ jobs:
     name: iOS ${{ inputs.channel }}
     if: inputs.operation == 'upload' && (inputs.platform == 'both' || inputs.platform == 'ios')
     needs: validate
+    env:
+      RELEASE_VERSION: ${{ needs.validate.outputs.version }}
+      RELEASE_BUILD_NUMBER: ${{ needs.validate.outputs.version_code }}
     # Compose Multiplatform 1.11 links UIKit symbols introduced with the
     # Xcode 26 SDK. Keep the store archive on the matching hosted image.
     runs-on: macos-26
@@ -475,12 +529,22 @@ jobs:
       contents: read
       id-token: write
     steps:
+      - name: Require isolated GitHub-hosted macOS runner
+        run: |
+          if [[ "${RUNNER_ENVIRONMENT:-}" != "github-hosted" ]]; then
+            echo "Production Apple signing is restricted to an ephemeral GitHub-hosted runner." >&2
+            exit 1
+          fi
+
       - name: Initialize private runtime paths
         run: |
           echo "PRIVATE_RUNTIME=$RUNNER_TEMP/passvault-release" >> "$GITHUB_ENV"
           echo "KEYCHAIN_PATH=$RUNNER_TEMP/passvault-release/release.keychain-db" >> "$GITHUB_ENV"
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
 
       - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
@@ -524,7 +588,12 @@ jobs:
         run: |
           set -euo pipefail
           install -d -m 700 "$PRIVATE_RUNTIME/store-input" "$PRIVATE_RUNTIME/store" "$PRIVATE_RUNTIME/export"
-          printf '%s' "$IOS_CERTIFICATE_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/distribution.p12"
+          ios_certificate_base64="$IOS_CERTIFICATE_BASE64"
+          ios_certificate_password="$IOS_CERTIFICATE_PASSWORD"
+          unset IOS_CERTIFICATE_BASE64 IOS_CERTIFICATE_PASSWORD
+          printf '%s' "$ios_certificate_base64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/distribution.p12"
+          ios_certificate_base64=""
+          unset ios_certificate_base64
           printf '%s' "$IOS_PROFILE_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/profile.mobileprovision"
           printf '%s' "$ASC_PRIVATE_KEY_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/app-store-connect-key.p8"
           printf '%s' "$STORE_METADATA_ARCHIVE_BASE64" |
@@ -541,9 +610,12 @@ jobs:
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          security import "$PRIVATE_RUNTIME/distribution.p12" -k "$KEYCHAIN_PATH" \
-            -P "$IOS_CERTIFICATE_PASSWORD" -t cert -f pkcs12 \
-            -T /usr/bin/codesign -T /usr/bin/security >/dev/null
+          printf '%s\n' "$ios_certificate_password" |
+            scripts/import-apple-signing-certificate.sh \
+              "$PRIVATE_RUNTIME/distribution.p12" "$KEYCHAIN_PATH" >/dev/null
+          ios_certificate_password=""
+          unset ios_certificate_password
+          rm -f -- "$PRIVATE_RUNTIME/distribution.p12"
           security set-key-partition-list -S apple-tool:,apple: -s \
             -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH" >/dev/null
           passvault_activate_release_keychain "$KEYCHAIN_PATH" "$ORIGINAL_KEYCHAINS_PATH"
@@ -590,7 +662,7 @@ jobs:
             "$HOME/Library/MobileDevice/Provisioning Profiles/$PROFILE_UUID.mobileprovision"
 
           ./scripts/prepare-mobile-store-metadata.sh \
-            "$PRIVATE_RUNTIME/store-input" "$PRIVATE_RUNTIME/store" "${{ needs.validate.outputs.version_code }}"
+            "$PRIVATE_RUNTIME/store-input" "$PRIVATE_RUNTIME/store" "$RELEASE_BUILD_NUMBER"
 
           {
             printf 'PROFILE_UUID=%s\n' "$PROFILE_UUID"
@@ -635,8 +707,8 @@ jobs:
             TEAM_ID="$TEAM_ID" \
             DEVELOPMENT_TEAM="$TEAM_ID" \
             PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
-            MARKETING_VERSION="${{ needs.validate.outputs.version }}" \
-            CURRENT_PROJECT_VERSION="${{ needs.validate.outputs.version_code }}" \
+            MARKETING_VERSION="$RELEASE_VERSION" \
+            CURRENT_PROJECT_VERSION="$RELEASE_BUILD_NUMBER" \
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="$CODESIGN_IDENTITY" \
             PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
@@ -668,7 +740,7 @@ jobs:
           IPA_PATH="$(find "$PRIVATE_RUNTIME/export" -maxdepth 1 -type f -name '*.ipa' -print)"
           ./scripts/verify-ios-exported-artifact.sh \
             "$ARCHIVE_PATH" "$IPA_PATH" "$TEAM_ID" "$BUNDLE_ID" "$PROFILE_UUID" \
-            "${{ needs.validate.outputs.version }}" "${{ needs.validate.outputs.version_code }}" \
+            "$RELEASE_VERSION" "$RELEASE_BUILD_NUMBER" \
             "$PRIVATE_RUNTIME/PassVault-LinkMap.txt"
           echo "IOS_IPA_PATH=$IPA_PATH" >> "$GITHUB_ENV"
 
@@ -783,6 +855,9 @@ jobs:
     name: Promote Android ${{ inputs.channel }}
     if: inputs.operation == 'promote' && (inputs.platform == 'both' || inputs.platform == 'android')
     needs: validate
+    env:
+      RELEASE_VERSION: ${{ needs.validate.outputs.version }}
+      RELEASE_BUILD_NUMBER: ${{ needs.validate.outputs.version_code }}
     runs-on: ubuntu-latest
     environment: ${{ needs.validate.outputs.environment }}
     permissions:
@@ -824,7 +899,7 @@ jobs:
             "$PRIVATE_RUNTIME/store-metadata.tar.gz" "$PRIVATE_RUNTIME/input"
           ./scripts/prepare-mobile-store-metadata.sh \
             "$PRIVATE_RUNTIME/input" "$PRIVATE_RUNTIME/store" \
-            "${{ needs.validate.outputs.version_code }}"
+            "$RELEASE_BUILD_NUMBER"
           echo "STORE_METADATA_ROOT=$PRIVATE_RUNTIME/store" >> "$GITHUB_ENV"
 
       - name: Authenticate to Google with OIDC
@@ -850,7 +925,7 @@ jobs:
             source_track=alpha
           fi
           ./scripts/check-play-track-build.sh \
-            "$source_track" "${{ needs.validate.outputs.version_code }}"
+            "$source_track" "$RELEASE_BUILD_NUMBER"
 
       - name: Promote exact Google Play build
         env:
@@ -883,6 +958,9 @@ jobs:
       (inputs.operation == 'promote' || inputs.operation == 'store-assets') &&
       (inputs.platform == 'both' || inputs.platform == 'ios')
     needs: validate
+    env:
+      RELEASE_VERSION: ${{ needs.validate.outputs.version }}
+      RELEASE_BUILD_NUMBER: ${{ needs.validate.outputs.version_code }}
     runs-on: macos-26
     environment: ${{ needs.validate.outputs.environment }}
     permissions:
@@ -924,7 +1002,7 @@ jobs:
             "$PRIVATE_RUNTIME/store-metadata.tar.gz" "$PRIVATE_RUNTIME/input"
           ./scripts/prepare-mobile-store-metadata.sh \
             "$PRIVATE_RUNTIME/input" "$PRIVATE_RUNTIME/store" \
-            "${{ needs.validate.outputs.version_code }}"
+            "$RELEASE_BUILD_NUMBER"
           echo "STORE_METADATA_ROOT=$PRIVATE_RUNTIME/store" >> "$GITHUB_ENV"
 
       - name: Enforce email-list TestFlight policy and verify exact processed App Store Connect build

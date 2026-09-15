@@ -27,6 +27,7 @@ import com.passvault.core.domain.repository.CredentialRepository
 import com.passvault.core.domain.repository.FolderRepository
 import com.passvault.core.otp.StandardTotpService
 import com.passvault.core.otp.TotpService
+import com.passvault.core.security.EntrySensitiveStateOwner
 import com.passvault.feature.credential.AttachmentFileStore
 import com.passvault.feature.credential.UnavailableAttachmentFileStore
 import kotlinx.coroutines.CancellationException
@@ -62,7 +63,7 @@ class CredentialViewModel(
     private val clock: Clock = Clock.System,
     attachmentRepository: AttachmentRepository = defaultAttachmentRepository,
     attachmentFileStore: AttachmentFileStore = UnavailableAttachmentFileStore,
-) : ViewModel() {
+) : ViewModel(), EntrySensitiveStateOwner {
 
     private val _state = MutableStateFlow(CredentialState())
     val state: StateFlow<CredentialState> = _state.asStateFlow()
@@ -310,7 +311,7 @@ class CredentialViewModel(
         }
     }
 
-    fun clearForLock() {
+    override fun clearForLock() {
         cancelPendingOperations()
         clearStateSensitiveValues()
         editingRevision++
