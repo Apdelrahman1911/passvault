@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
+# Report source location only; never echo fixture values or command arguments.
+trap 'printf "Release automation failed at line %s\n" "$LINENO" >&2' ERR
 
 repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repository_root"
@@ -128,8 +130,8 @@ cp .github/workflows/ci.yml "$ci_security_fixture"
 ruby -e '
   path = ARGV.fetch(0)
   source = File.read(path, encoding: "UTF-8")
-  needle = "    permissions:\n      contents: read\n    steps:\n"
-  replacement = "    permissions:\n      checks: write\n      contents: read\n    steps:\n"
+  needle = "    permissions:\n      contents: read\n"
+  replacement = "    permissions:\n      checks: write\n      contents: read\n"
   abort("missing test permission fixture") unless source.sub!(needle, replacement)
   File.write(path, source)
 ' "$ci_security_fixture"
@@ -2387,8 +2389,8 @@ if grep -Fq 'Build Android Release (unsigned)' .github/workflows/ci.yml; then
     exit 1
 fi
 for ci_release_signing_control in \
-    'Build Android Release with ephemeral validation signing' \
-    'keystore_path="${RUNNER_TEMP:?}/passvault-ci-validation-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.p12"' \
+    'Build Android Debug and Release with ephemeral validation signing' \
+    'keystore_path="${TMPDIR:?}/passvault-ci-validation-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.p12"' \
     'keytool -genkeypair' \
     '-storepass:env KEYSTORE_PASSWORD' \
     'trap cleanup EXIT' \
@@ -2709,7 +2711,9 @@ grep -Fq 'Enforce email-list TestFlight policy and verify exact processed App St
 grep -Fq "grep -Fqx 'PROCESSING_STATE=VALID'" .github/workflows/mobile-store-release.yml
 grep -Fq 'set_environment_variable mobile-production TESTFLIGHT_EXTERNAL_GROUP' \
     scripts/configure-github-mobile-release.sh
-grep -Fq 'gh secret delete TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64' \
+grep -Fq 'ruby scripts/delete-github-environment-secret.rb "$GITHUB_REPOSITORY"' \
+    scripts/configure-github-mobile-release.sh
+grep -Fq 'mobile-external-beta TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64' \
     scripts/configure-github-mobile-release.sh
 # Configuration-script expressions must be matched literally.
 # shellcheck disable=SC2016

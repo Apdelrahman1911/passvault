@@ -6,17 +6,23 @@ on:
   pull_request:
     branches: [ main, testing, release ]
 
+# Serialize updates to this PR/ref without cancelling a running verification.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
 permissions:
   contents: read
 
 env:
   JAVA_VERSION: '17'
-  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2 -Xmx2048m'
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false'
 
 jobs:
   validate:
     name: Validate Gradle Wrapper
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -29,7 +35,11 @@ jobs:
   dependency-verification:
     name: Dependency Verification
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     needs: validate
+    defaults:
+      run:
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/ci-run.py {0}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -45,15 +55,28 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
         with:
-          cache-cleanup: always
+          cache-disabled: true
 
       - name: Verify dependency integrity and attribution
         run: ./gradlew verifyDependencies checkThirdPartyAttribution --stacktrace
 
+      - name: Upload compact verification evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: dependency-verification-evidence
+          path: .ci-evidence/
+          include-hidden-files: true
+          retention-days: 3
+
   build-android:
     name: Build Android
     runs-on: ubuntu-latest
-    needs: validate
+    timeout-minutes: 45
+    needs: test
+    defaults:
+      run:
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/ci-run.py {0}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -69,26 +92,12 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
         with:
-          cache-cleanup: always
+          cache-disabled: true
 
-      - name: Build Android Debug
-        run: |
-          ./gradlew \
-            :app-android:assembleDebug \
-            :app-android:verifyDebugComposeResources \
-            --stacktrace
-
-      - name: Upload Android APK
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: android-debug-apk
-          path: app-android/build/outputs/apk/debug/*.apk
-
-      - name: Build Android Release with ephemeral validation signing
-        shell: bash
+      - name: Build Android Debug and Release with ephemeral validation signing
         run: |
           set -euo pipefail
-          keystore_path="${RUNNER_TEMP:?}/passvault-ci-validation-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.p12"
+          keystore_path="${TMPDIR:?}/passvault-ci-validation-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.p12"
           keystore_password="$(openssl rand -hex 32)"
           key_alias="$(tr -d '\r\n' < release/android/passvault-upload-alias.txt)"
           cleanup() {
@@ -114,6 +123,8 @@ jobs:
             -dname "CN=PassVault CI Validation, O=Non-Publishing Test" \
             -noprompt
           ./gradlew \
+            :app-android:assembleDebug \
+            :app-android:verifyDebugComposeResources \
             :app-android:verifyReleaseSigningConfiguration \
             :app-android:assembleRelease \
             :app-android:bundleRelease \
@@ -124,19 +135,37 @@ jobs:
             --stacktrace
           ruby scripts/validate-google-play-readiness.rb
 
+      - name: Upload compact verification evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: build-android-evidence
+          path: .ci-evidence/
+          include-hidden-files: true
+          retention-days: 3
+
   build-desktop:
     name: Build Desktop
     runs-on: ${{ matrix.os }}
-    needs: validate
+    timeout-minutes: 45
+    needs: build-android
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+    defaults:
+      run:
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/ci-run.py {0}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+
+      - name: Test CI resource guard
+        shell: bash
+        run: bash scripts/ci-python.sh scripts/test-ci-run.py
 
       - name: Setup JDK
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
@@ -147,17 +176,33 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
         with:
-          cache-cleanup: always
+          cache-disabled: true
 
       - name: Build Desktop
-        run: ./gradlew :core:security:desktopTest :app-desktop:desktopTest --stacktrace
+        run: |
+          if [[ "$RUNNER_OS" == Windows ]]; then
+            ./gradlew.bat :core:security:desktopTest :app-desktop:desktopTest --stacktrace
+          else
+            ./gradlew :core:security:desktopTest :app-desktop:desktopTest --stacktrace
+          fi
+
+      - name: Upload compact verification evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: build-desktop-${{ matrix.os }}-evidence
+          path: .ci-evidence/
+          include-hidden-files: true
+          retention-days: 3
 
   package-desktop-macos:
     name: Package Desktop macOS (${{ matrix.architecture }})
     runs-on: ${{ matrix.runner }}
-    needs: validate
+    timeout-minutes: 45
+    needs: build-desktop
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         include:
           - runner: macos-15
@@ -168,6 +213,9 @@ jobs:
       PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
       COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
       SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
+    defaults:
+      run:
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/ci-run.py {0}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -182,6 +230,8 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+        with:
+          cache-disabled: true
 
       - name: Test Apple signing secret handling
         run: ./scripts/test-apple-signing-secret-handling.sh
@@ -192,17 +242,34 @@ jobs:
           :app-desktop:packageReleaseDmg
           --stacktrace
 
+      - name: Upload compact verification evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: package-desktop-macos-${{ matrix.architecture }}-evidence
+          path: .ci-evidence/
+          include-hidden-files: true
+          retention-days: 3
+
   test:
     name: Run Tests
     runs-on: ubuntu-latest
-    needs: validate
+    timeout-minutes: 45
+    needs: dependency-verification
     permissions:
       contents: read
+    defaults:
+      run:
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/ci-run.py {0}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+
+      - name: Test CI resource guard
+        shell: bash
+        run: bash scripts/ci-python.sh scripts/test-ci-run.py
 
       - name: Setup JDK
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
@@ -213,7 +280,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
         with:
-          cache-cleanup: always
+          cache-disabled: true
 
       - name: Run KMP and native security analysis
         run: ./scripts/run-security-analysis.sh
@@ -229,14 +296,21 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: test-reports
+          retention-days: 3
+          include-hidden-files: true
           path: |
-            **/build/reports/tests/**
-            **/build/test-results/**
+            .ci-evidence/**/build/reports/tests/**
+            .ci-evidence/**/build/test-results/**
+            .ci-evidence/**/cleanup.json
 
   shared-compile:
     name: Shared Compile
     runs-on: ubuntu-latest
-    needs: validate
+    timeout-minutes: 45
+    needs: package-desktop-macos
+    defaults:
+      run:
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/ci-run.py {0}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -252,15 +326,28 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
         with:
-          cache-cleanup: always
+          cache-disabled: true
 
       - name: Compile the shared Desktop graph
         run: ./gradlew :shared:compileKotlinDesktop :app-desktop:compileKotlinDesktop --stacktrace
 
+      - name: Upload compact verification evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: shared-compile-evidence
+          path: .ci-evidence/
+          include-hidden-files: true
+          retention-days: 3
+
   ios-simulator-compile:
     name: iOS Simulator Compile
     runs-on: macos-15
-    needs: validate
+    timeout-minutes: 45
+    needs: shared-compile
+    defaults:
+      run:
+        shell: bash --noprofile --norc scripts/ci-python.sh scripts/ci-run.py {0}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -272,6 +359,8 @@ jobs:
           distribution: temurin
 
       - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+        with:
+          cache-disabled: true
 
       - name: Compile iOS simulator framework sources
         run: ./gradlew :shared:compileKotlinIosSimulatorArm64 --stacktrace
@@ -279,10 +368,20 @@ jobs:
       - name: Verify iOS Development and Store identities
         run: ./scripts/validate-ios-build-identities.sh
 
+      - name: Upload compact verification evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ios-simulator-compile-evidence
+          path: .ci-evidence/
+          include-hidden-files: true
+          retention-days: 3
+
   ci-gate:
     name: CI Gate
     if: always()
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     needs:
       - validate
       - dependency-verification

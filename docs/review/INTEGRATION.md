@@ -6,34 +6,60 @@ The selected source is prepared on `codex/consolidate-completed-20260915`, based
 on main `0dbc12c7f1b7770e75963c751c8c67af6e8b057a`. A branch push is not a main
 merge, protected-check success, or review approval.
 
-Do not open the main PR until its automatic workflow is admitted. Current
-`.github/workflows/ci.yml` starts seven heavy workstreams after wrapper validation,
-including a three-host Desktop matrix, two macOS package jobs, Android validation
-signing/builds, full tests/security analysis, and shared/iOS compilation. This
-violates the campaign's one-heavy-job rule if triggered unchanged. A new branch
-push does not match its protected-branch push triggers.
+The normal CI workflow now serializes its existing coverage: wrapper validation,
+dependency/attribution verification, full tests/static checks, Android validation,
+Desktop tests (one host at a time), unsigned macOS packages (one architecture at a
+time), shared compilation, then iOS simulator compilation. Required check names and
+the fail-closed all-job CI Gate are retained. No skipped or renamed check substitutes
+for a successful check. Only CI is triggered by the proposed PR; the Pages workflow's
+path filters are not touched. Testing promotion remains blocked separately.
 
-The remaining CI preparation is concrete:
+`ci-run.py` is permanent hosted-CI resource cleanup, not an archived audit runner.
+Each shell batch gets private HOME/TMP/Gradle/Konan storage, JDK17, one worker,
+in-process Kotlin, non-daemon execution and configure-on-demand disabled. Native
+CMake builds use one worker and CTest has a120-second timeout. The Windows wrapper
+is `gradlew.bat`; POSIX uses `gradlew`. Strict dependency verification is unchanged.
+Windows processes enter a no-breakaway JobObject before shell launch; POSIX uses an
+owned session and checks the unique Gradle JVM marker for detached workers.
 
-1. Preserve `Validate Gradle Wrapper` and `Run Tests`, actual coverage and strict
-   checks. Never spoof a check or treat a skipped required gate as evidence.
-2. Serialize heavy jobs with a `needs` chain and each matrix with
-   `max-parallel: 1`. Shared per-job concurrency is not a safe replacement: it can
-   cancel pending jobs. Coordinate the whole run with the local build owner.
-3. Review each native/package scope against existing CLOSED/HOLD restrictions;
-   current Linux admission does not admit Windows/macOS/Android executions.
-4. Install per-platform original-wrapper stop and owned-worker/output cleanup
-   before each invocation; keep compact XML/logs, not unnecessary APK/package
-   uploads. Use short artifact retention, JDK17, one worker, non-daemon and
-   configure-on-demand disabled; retain strict dependency verification.
-5. Bind the admitted commands and runner/toolchain to the integration SHA, then
-   open the PR and obtain actual required checks and a qualified GitHub approval.
-   No administrator bypass, force push, or protection change is authorized.
+Original-wrapper stop and positive worker settlement precede allowlisted output/
+private-cache deletion. Compact reports are snapshotted even on cleanup failure;
+only post-settlement reports are final. Symlink/tracked-source guards refuse unsafe
+cleanup. Failed/ambiguous cleanup records HOLD and retains private roots, without
+stop retries or unrelated process kills. Forced runner loss cannot prove immediate
+cleanup: hosted VM disposal is the fallback, never an invented successful stop.
+Artifacts retain compact reports/cleanup receipts for three days, not APK/DMG files.
+Batch timeout35minutes, job timeout45minutes; wrapper stop60seconds, settlement15seconds.
+RAM launch/running floors25%/20%; owner-authorized fallback disk floor3GiB is checked
+before/during work. Root coordinates one audit-owned build/test job at a time.
 
-The workflow has deliberately not been weakened or partially rewritten as an
-unfinished change in this product integration. Until safe CI and independent
-GitHub approval exist, **main remains unmodified**. This is an outstanding
-engineering/review gate, not a completed merge.
+The Android validation certificate and Apple importer fixture are synthetic and
+private to the batch; no signing/Store secrets are requested. A hosted native test
+or simulator compile is not physical-device security evidence. No stopped audit
+scope, PVA029 failing runner, or GUI opt-in has been reopened.
+
+**Merge still requires actual CI success and an independent GitHub approval.**
+At2026-09-15 the only listed repository collaborator was the PR-author account;
+the owner must provide a qualified independent reviewer with write access. Agent
+source review is not a GitHub approval. Never use administrator bypass, force push,
+or protection changes. Until normal requirements pass, main remains unmodified.
+
+## Branch retention
+
+Fourteen remote branches were inventoried on2026-09-15. Keep main/testing/release,
+the seven open Dependabot PR branches176–182, the active integration, continuation,
+and compact-evidence branches. No branch has yet been deleted.
+
+The old handoff branch is a potential post-merge cleanup candidate only: its exact
+commit `9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed` (tree
+`05014e9f635131d5db06701e4013b4b5a746465a`) is an ancestor of retained evidence
+commit `f733441da87c3a3a00c181f832a96644b08a56c9`. Retrieval does not require
+keeping a redundant branch name: fetch `codex/consolidation-evidence-20260915`,
+then inspect the exact historical commit. Before any deletion, recheck exact
+remote tips, ancestry, live PR/run references and whether the branch remains needed.
+Do not delete the integration branch until its exact commits/evidence are durably
+preserved after the protected merge; squash/rebase patch equivalence alone is not
+exact commit preservation. No branch-pointer cleanup is meaningful disk reclamation.
 
 ## Conditional mobile beta gate
 

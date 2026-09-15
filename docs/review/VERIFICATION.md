@@ -1,9 +1,10 @@
 # Selected corrections and verification
 
-This integration takes selected completed corrections, not the continuation's
-entire tree/history. The 73 selected source/dependency files include the unchanged
-existing `scripts/lib/macos-keychain.sh`; the commit changes 72 product/test/tooling
-files plus six durable documentation files, not 73 code changes.
+The original selective commit `beb131add14a53ad13d9b7ebb30a5ab4738adec2` takes
+completed corrections, not the continuation's entire tree/history. Its73 selected
+source/dependency files include unchanged `scripts/lib/macos-keychain.sh`; that
+commit changes72 product/test/tooling files plus six durable documentation files,
+not73 code changes. The later12-file CI/resource-safety follow-up is separate.
 No version, application identity, dependency version, schema,
 release tag, occupied build, or Store state is changed by the selection.
 
@@ -67,3 +68,32 @@ That was an efficiency warning, not a dependency-integrity bypass. The original
 wrapper stop exited0, owned processes settled, source hashes remained unchanged,
 and validated generated roots/private cache were removed. The corrected static
 check uses the proper shared read-only cache root without deleting that cache.
+
+## Protected-merge CI preparation
+
+New hosted-CI cleanup has six synthetic process/output safety cases, actually
+passed on Linux after review (including success/failure exit status, descendant
+settlement, bounded owned termination, tracked/symlink cleanup refusal, compact
+report retention and non-hosted admission refusal). This is not Windows execution
+or a proof of cleanup under forced runner loss. Target-host checks precede Desktop
+batches; original normal CI coverage remains required.
+
+The full release-automation shell suite exposed stale source assertions during
+integration: old PENTEST wording, the pre-batching Android step/private-temp path,
+and the retired best-effort tester-secret deletion call. Assertions were aligned
+with the truthful scope and hardened implementations; no product or security gate
+was removed. Initial failed invocations remain recorded. One invocation observed
+its process group still present immediately on exit and did not retain the PGID;
+its empty private directories remain UNKNOWN/HOLD. Later bounded runs do not
+retroactively close that observation. The subsequent run settled its groups and
+removed its private roots; its six guard cases and eight entitlement cases passed,
+but the whole shell command failed on the stale deletion predicate. No whole-suite
+success is inferred from these partial results. Protected CI must run the corrected
+full suite; prior107 release cases remain separately source-qualified above.
+
+The corrected379-line source-validation suffix then passed separately in0.97s;
+its process group settled and private directories were removed. Its inherited
+`Release automation tests passed.` footer refers only to that extracted suffix,
+not a fresh full-suite pass. Source-affinity review verified the already-executed
+prefix was unchanged apart from a line-number-only failure diagnostic. Do not
+repeat that prefix locally for reassurance; the normal CI runs the whole suite.

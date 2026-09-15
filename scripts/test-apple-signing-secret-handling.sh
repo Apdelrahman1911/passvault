@@ -18,24 +18,36 @@ openssl_binary="$PASSVAULT_OPENSSL_BINARY"
 
 temporary_root="$(mktemp -d "${TMPDIR:-/tmp}/passvault-apple-signing-test.XXXXXX")"
 keychain_path="$temporary_root/test.keychain-db"
+keychain_created=false
+cleanup() {
+    local result=$?
+    trap - EXIT
+    if [[ "$keychain_created" == true ]]; then
+        if ! /usr/bin/security delete-keychain "$keychain_path" >/dev/null 2>&1; then
+            echo "Synthetic test keychain cleanup failed; retaining its private root." >&2
+            touch "$temporary_root/CLEANUP_HOLD"
+            result=1
+        else
+            keychain_created=false
+        fi
+    fi
+    if [[ "$keychain_created" == false &&
+        "$temporary_root" == "${TMPDIR:-/tmp}"/passvault-apple-signing-test.* &&
+        -d "$temporary_root" && ! -L "$temporary_root" ]]; then
+        if ! rm -rf -- "$temporary_root"; then
+            echo "Synthetic signing fixture cleanup failed." >&2
+            result=1
+        fi
+    fi
+    unset fixture_password keychain_password
+    exit "$result"
+}
+trap cleanup EXIT
+trap 'exit 1' HUP INT TERM
 keychain_password="$(openssl rand -hex 32)"
 # Command-looking characters verify that the password is data, not shell input.
 # shellcheck disable=SC2016
 fixture_password='fixture p@$$word; $(must-not-run) `still-data`'
-
-cleanup() {
-    /usr/bin/security delete-keychain "$keychain_path" >/dev/null 2>&1 || true
-    if [[ "$temporary_root" == "${TMPDIR:-/tmp}"/passvault-apple-signing-test.* &&
-        -d "$temporary_root" ]]; then
-        find "$temporary_root" -type f -exec chmod 600 {} + 2>/dev/null || true
-        find "$temporary_root" -type f -exec rm -f -- {} + 2>/dev/null || true
-        find "$temporary_root" -depth -type d -exec rmdir {} + 2>/dev/null || true
-    fi
-    fixture_password=""
-    unset fixture_password
-}
-trap cleanup EXIT
-trap 'exit 1' HUP INT TERM
 
 certificate_path="$temporary_root/certificate.pem"
 private_key_path="$temporary_root/private-key.pem"
@@ -55,6 +67,7 @@ mkdir -m 700 "$import_temporary_root"
     -in "$certificate_path" -inkey "$private_key_path" -out "$pkcs12_path" \
     -passout fd:3 3<<<"$fixture_password" >/dev/null 2>&1
 
+keychain_created=true # An interrupted/partial creation still requires deletion.
 /usr/bin/security create-keychain -p "$keychain_password" "$keychain_path"
 /usr/bin/security unlock-keychain -p "$keychain_password" "$keychain_path"
 printf '%s\n' "$fixture_password" |

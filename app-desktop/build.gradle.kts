@@ -918,6 +918,7 @@ val buildDesktopBiometricBridge = configureDesktopBiometricBridge?.let { configu
             "--config",
             "Release",
             "--parallel",
+            "1",
         )
     }
 }
@@ -928,6 +929,8 @@ val testDesktopBiometricBridge = buildDesktopBiometricBridge?.let { buildTask ->
         dependsOn(buildTask)
         commandLine(
             "ctest",
+            "--timeout",
+            "120",
             "--test-dir",
             nativeBiometricBuildDirectory.get().asFile.absolutePath,
             "--build-config",

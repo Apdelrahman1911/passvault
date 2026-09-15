@@ -38,8 +38,11 @@ bool verify_bounded_busy_destroy(bool commit_before_destroy) {
 
 int main() {
   @autoreleasepool {
-    char directory_template[] = "/tmp/passvault-biometric-native-test.XXXXXX";
-    char *root_value = mkdtemp(directory_template);
+    const char *temporary_directory = std::getenv("TMPDIR");
+    std::string directory_template =
+        std::string(temporary_directory ? temporary_directory : "/tmp") +
+        "/passvault-biometric-native-test.XXXXXX";
+    char *root_value = mkdtemp(directory_template.data());
     PV_TEST_CHECK(root_value != nullptr);
     const std::string root(root_value);
     const std::string biometric_directory = root + "/biometric";

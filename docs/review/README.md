@@ -21,8 +21,9 @@ retain evidence qualifications, failures, source identities and independent revi
 The same commit retains `docs/audit-handoff/` and its evidence packs/index. No evidence
 branch is being deleted. Historical instructions in those records are not execution authority.
 
-The September 15 remote inventory found 12 branches: main/testing/release, two
-handoff/continuation branches, and seven Dependabot branches with open PRs176–182.
+The initial September15 inventory found12 branches; after publishing the integration
+and compact-evidence branches, the refreshed inventory found14. These include
+main/testing/release, handoff/continuation, and seven Dependabot branches with open PRs176–182.
 Dependency upgrades are separate, not part of this consolidation. No branch is
 being deleted. Testing/release non-merge commits are patch-equivalent to main
 except the combined 1.0.6 promotion `852a765f4970a4bfe0171d3cf5c435052e742701`.
