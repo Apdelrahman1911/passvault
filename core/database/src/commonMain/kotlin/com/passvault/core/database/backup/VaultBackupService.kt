@@ -199,16 +199,16 @@ class VaultBackupService(
     suspend fun inspectBackup(
         source: BackupContentSource,
         password: SensitiveText,
-    ): Result<BackupInspection> = operationMutex.withLock {
-        inspectStreamingSource(source, password)
+    ): Result<BackupInspection> = withOwnedBackupSource(source) { ownedSource ->
+        operationMutex.withLock { inspectStreamingSource(ownedSource, password) }
     }
 
     suspend fun restoreBackup(
         source: BackupContentSource,
         password: SensitiveText,
         onProgress: (Int) -> Unit = {},
-    ): Result<BackupInspection> = operationMutex.withLock {
-        restoreStreamingSource(source, password, onProgress)
+    ): Result<BackupInspection> = withOwnedBackupSource(source) { ownedSource ->
+        operationMutex.withLock { restoreStreamingSource(ownedSource, password, onProgress) }
     }
 
     suspend fun createBackup(
@@ -399,16 +399,11 @@ class VaultBackupService(
             } else {
                 val legacy = LegacyBackupEnvelopeReader(source, prefix).read()
                 prefix = null
-                try {
-                    inspectLegacyBackup(legacy, password)
-                } finally {
-                    source.close()
-                }
+                inspectLegacyBackup(legacy, password)
             }
         } catch (cancel: CancellationException) {
             throw cancel
         } catch (_: Exception) {
-            runCatching { source.close() }
             Result.failure(IllegalArgumentException(BACKUP_INVALID_MESSAGE))
         } finally {
             prefix?.let(cryptoEngine::secureWipe)
@@ -428,16 +423,11 @@ class VaultBackupService(
             } else {
                 val legacy = LegacyBackupEnvelopeReader(source, prefix).read()
                 prefix = null
-                try {
-                    restoreLegacyBackup(legacy, password)
-                } finally {
-                    source.close()
-                }
+                restoreLegacyBackup(legacy, password)
             }
         } catch (cancel: CancellationException) {
             throw cancel
         } catch (_: Exception) {
-            runCatching { source.close() }
             Result.failure(IllegalArgumentException(BACKUP_INVALID_MESSAGE))
         } finally {
             prefix?.let(cryptoEngine::secureWipe)

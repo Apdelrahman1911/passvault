@@ -2,6 +2,10 @@
 
 Do not publish an artifact while any required item is unchecked. Command evidence belongs in
 [`docs/PRODUCTION_READINESS_AUDIT.md`](docs/PRODUCTION_READINESS_AUDIT.md).
+Checked historical entries are not approval of a later source tree. Record the exact commit/tree,
+command, and result for every new candidate; unexecuted remediation gates remain unchecked.
+Schema scope below was inspected at source commit `0dbc12c7f1b7770e75963c751c8c67af6e8b057a`
+(tree `20fb8f6f2c6fb11ad99af80c170b4150c16beb6f`), not inferred from an older checklist.
 
 ## Repository gates
 
@@ -13,9 +17,9 @@ Do not publish an artifact while any required item is unchecked. Command evidenc
   `com.passvault.android`. No testing-track flavor or F-Droid identity exists.
 - [x] The Xcode scheme runs Debug as `PassVault Dev` / `com.passvault.ios.debug` and archives Release as
   `PassVault` / `com.passvault.ios`.
-- [x] The next Google Play/App Store candidate uses the exact committed build `1017001`; both the legacy Testing Candidate workflow
-  and Mobile Release Kit use that same `VERSION_CODE` / `CURRENT_PROJECT_VERSION`, which is above the previously distributed
-  `1015001` build.
+- [x] Historical candidate build `1017001` is already allocated and immutable. Promote only its recorded mobile
+  receipts; never rebuild or replace its binaries/metadata/tag. A changed-source candidate requires a separately
+  authorized new build number; this checklist does not allocate one.
 - [ ] The release APK/AAB is signed with publisher-owned credentials and signature verification passes.
 - [x] The current-host Desktop package task and exact packaged-launch startup smoke pass after the final source edit.
 - [ ] Desktop packages are built for every claimed OS and signed/notarized with publisher-owned credentials.
@@ -27,8 +31,9 @@ Do not publish an artifact while any required item is unchecked. Command evidenc
   pre-rendered English. Platform launcher metadata remains in its required native resource.
 - [x] Deprecated Gradle 10 source-set delegates and `kotlinx.datetime.Instant` aliases are removed; warning-mode
   configuration reports no Gradle deprecations.
-- [x] Room schemas 1/2/3 are exported; explicit 1 -> 2 -> 3 migrations, direct supported upgrades, fresh install,
-  query-plan index use, and injected-failure rollback are tested without destructive fallback.
+- [ ] Room schemas 1/2/3/4/5 are exported; verify explicit 1 -> 2 -> 3 -> 4 -> 5 migrations, every supported
+  prior-schema upgrade, fresh install, query-plan index use, and injected-failure rollback without destructive
+  fallback against the exact candidate tree. Historical test results do not complete this new-candidate gate.
 - [x] Streaming backup format-2 and legacy format-1 compatibility, exact limits, attachment preservation,
   wrong-password/tamper/cancellation/cleanup/rollback, and large-data boundary tests pass.
 - [x] English/Arabic resource and plural keys/placeholders are complete and enforced by an allowlist-aware validator.
@@ -58,8 +63,8 @@ Do not publish an artifact while any required item is unchecked. Command evidenc
 ## Security and publication
 
 - [ ] Independent security review and penetration test are complete for the release candidate.
-- [x] Every supported prior Room schema in this repository (1 and 2) upgrades non-destructively to schema 3, and a
-  fresh schema-3 install matches the exported artifact.
+- [ ] Every supported prior Room schema (1, 2, 3, and 4) upgrades non-destructively to schema 5, and a fresh
+  schema-5 install matches the exported artifact. Attach source-bound preservation/rollback test receipts.
 - [ ] Publisher identity, license, third-party notices, privacy terms, support address, and private vulnerability
   disclosure channel are verified.
 - [ ] Android signing material and Desktop signing/notarization credentials are stored only in the publisher's secret

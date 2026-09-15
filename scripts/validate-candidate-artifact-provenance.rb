@@ -5,9 +5,10 @@ require "json"
 require "pathname"
 require "rbconfig"
 
+mobile_only = ARGV.delete("--mobile-only")
 manifest_path = Pathname.new(ARGV.fetch(0) do
   abort(
-    "Usage: #{$PROGRAM_NAME} <candidate-manifest.json> <receipt-directory> <commit> <tree> " \
+    "Usage: #{$PROGRAM_NAME} [--mobile-only] <candidate-manifest.json> <receipt-directory> <commit> <tree> " \
       "[desktop-artifact-directory]",
   )
 end).expand_path
@@ -16,12 +17,24 @@ expected_commit = ARGV.fetch(2).downcase
 expected_tree = ARGV.fetch(3).downcase
 desktop_artifact_root = ARGV[4]&.then { |path| Pathname.new(path).expand_path }
 abort("Too many arguments") if ARGV.length > 5
+abort("Mobile-only validation cannot validate Desktop artifacts") if mobile_only && desktop_artifact_root
 
 unless manifest_path.file? && !manifest_path.symlink? &&
        receipt_root.directory? && !receipt_root.symlink?
   abort("Candidate manifest or receipt directory is unsafe")
 end
 
+# This validator proves artifact binding, not Store readiness; callers retain
+# their separate non-pending readiness gate and attestation checks.
+manifest_arguments = ["--allow-pending"]
+manifest_arguments << "--mobile-only" if mobile_only
+unless system(
+  RbConfig.ruby, File.join(__dir__, "validate-candidate-manifest.rb"),
+  *manifest_arguments, manifest_path.to_s, expected_commit, expected_tree,
+  out: File::NULL,
+)
+  abort("Candidate manifest failed structural/source validation")
+end
 manifest = JSON.parse(manifest_path.read(encoding: "UTF-8"))
 version = manifest.fetch("marketingVersion")
 build_number = manifest.fetch("buildNumber")
@@ -29,8 +42,8 @@ build_number = manifest.fetch("buildNumber")
 receipts = {
   "android" => receipt_root.join("android-artifact-receipt.json"),
   "ios" => receipt_root.join("ios-artifact-receipt.json"),
-  "desktop" => receipt_root.join("desktop-artifact-receipt.json"),
 }
+receipts["desktop"] = receipt_root.join("desktop-artifact-receipt.json") unless mobile_only
 
 receipts.each do |platform, path|
   unless path.file? && !path.symlink? && path.dirname.realpath == receipt_root.realpath

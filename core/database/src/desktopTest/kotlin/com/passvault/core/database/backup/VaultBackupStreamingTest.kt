@@ -15,8 +15,8 @@ import com.passvault.core.database.attachment.attachmentFilenameAssociatedData
 import com.passvault.core.database.dao.VaultBackupDao
 import com.passvault.core.database.dao.VaultBackupEntities
 import com.passvault.core.database.entity.AttachmentRecordEntity
-import com.passvault.core.database.entity.TagRecordEntity
 import com.passvault.core.database.repository.CredentialRepositoryImpl
+import com.passvault.core.database.repository.TagRepositoryImpl
 import com.passvault.core.database.repository.VaultRepositoryImpl
 import com.passvault.core.database.repository.VaultSessionManager
 import com.passvault.core.domain.model.AttachmentAvailability
@@ -26,6 +26,8 @@ import com.passvault.core.domain.model.CredentialType
 import com.passvault.core.domain.model.PasswordHealth
 import com.passvault.core.domain.model.PasswordStrengthEvaluator
 import com.passvault.core.domain.model.SensitiveText
+import com.passvault.core.domain.model.Tag
+import com.passvault.core.domain.model.TagId
 import com.passvault.core.domain.repository.AttachmentContentSink
 import com.passvault.core.domain.repository.AttachmentContentSource
 import com.passvault.core.domain.repository.AttachmentCountLimitException
@@ -34,8 +36,11 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.runCurrent
 import okio.Buffer
 import okio.BufferedSink
 import okio.BufferedSource
@@ -936,6 +941,118 @@ class VaultBackupStreamingTest {
     }
 
     @Test
+    fun `preview and restore cancellation close prefix legacy and v2 sources exactly once`() = runTest {
+        val legacy = withBackupPassword { password -> backupService.createBackup(password).getOrThrow() }
+        withBackupPassword { password -> backupService.createBackup(password, PathBackupSink(backupPath)).getOrThrow() }
+        val v2 = Files.readAllBytes(backupPath)
+        try {
+            val phases = listOf(legacy to 1, legacy to BACKUP_V2_MAGIC.size + 4, v2 to BACKUP_V2_MAGIC.size + 4)
+            for (restore in listOf(false, true)) {
+                for ((bytes, pauseAfter) in phases) {
+                    val source = SourceOwnershipProbe(bytes, pauseAfter = pauseAfter)
+                    val operation = async {
+                        withBackupPassword { password ->
+                            if (restore) backupService.restoreBackup(source, password)
+                            else backupService.inspectBackup(source, password)
+                        }
+                    }
+                    try {
+                        source.readSuspended.await()
+                        operation.cancelAndJoin()
+                        assertEquals(1, source.closeCalls, "restore=$restore pauseAfter=$pauseAfter")
+                        assertFalse(source.open)
+                    } finally {
+                        operation.cancelAndJoin()
+                    }
+                }
+            }
+        } finally {
+            legacy.fill(0)
+            v2.fill(0)
+        }
+    }
+
+    @Test
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    fun `cancellation while waiting for backup admission still closes the supplied source`() = runTest {
+        val bytes = "{\"formatVersion\":1}".encodeToByteArray()
+        val activeSource = SourceOwnershipProbe(bytes, pauseAfter = 1)
+        val waitingSource = SourceOwnershipProbe(bytes)
+        val active = async {
+            withBackupPassword { password -> backupService.inspectBackup(activeSource, password) }
+        }
+        activeSource.readSuspended.await()
+        val waiting = async {
+            withBackupPassword { password -> backupService.restoreBackup(waitingSource, password) }
+        }
+        try {
+            runCurrent()
+            waiting.cancelAndJoin()
+            assertEquals(0, waitingSource.readCalls)
+            assertEquals(1, waitingSource.closeCalls)
+            active.cancelAndJoin()
+            assertEquals(1, activeSource.closeCalls)
+        } finally {
+            waiting.cancelAndJoin()
+            active.cancelAndJoin()
+            bytes.fill(0)
+        }
+    }
+
+    @Test
+    fun `successful legacy and v2 inspection close once and two pass restore closes each pass`() = runTest {
+        val legacy = withBackupPassword { password -> backupService.createBackup(password).getOrThrow() }
+        withBackupPassword { password -> backupService.createBackup(password, PathBackupSink(backupPath)).getOrThrow() }
+        val v2 = Files.readAllBytes(backupPath)
+        try {
+            for (bytes in listOf(legacy, v2)) {
+                val source = SourceOwnershipProbe(bytes)
+                withBackupPassword { password -> backupService.inspectBackup(source, password).getOrThrow() }
+                assertEquals(1, source.closeCalls)
+                assertFalse(source.open)
+            }
+            val source = SourceOwnershipProbe(v2)
+            withBackupPassword { password -> backupService.restoreBackup(source, password).getOrThrow() }
+            assertEquals(1, source.rewindCalls)
+            assertEquals(2, source.closeCalls)
+            assertFalse(source.open)
+        } finally {
+            legacy.fill(0)
+            v2.fill(0)
+        }
+    }
+
+    @Test
+    fun `rewind failure after reopening cannot escape source cleanup`() = runTest {
+        withBackupPassword { password -> backupService.createBackup(password, PathBackupSink(backupPath)).getOrThrow() }
+        val bytes = Files.readAllBytes(backupPath)
+        val source = SourceOwnershipProbe(bytes, failRewind = true)
+        try {
+            withBackupPassword { password -> assertTrue(backupService.restoreBackup(source, password).isFailure) }
+            assertEquals(1, source.rewindCalls)
+            assertEquals(2, source.closeCalls)
+            assertFalse(source.open)
+            assertEquals(1, database.attachmentDao().getByCredential(credentialId.value).size)
+        } finally {
+            bytes.fill(0)
+        }
+    }
+
+    @Test
+    fun `read and close failures do not repeat source closure or mask invalid backup result`() = runTest {
+        for (restore in listOf(false, true)) {
+            val source = SourceOwnershipProbe(byteArrayOf(1, 2, 3), failRead = true, failClose = true)
+            withBackupPassword { password ->
+                val result = if (restore) backupService.restoreBackup(source, password)
+                else backupService.inspectBackup(source, password)
+                assertTrue(result.isFailure)
+            }
+            assertEquals(1, source.closeCalls)
+            assertFalse(source.open)
+        }
+    }
+
+    @Test
     fun `stream manifest rejects one entity beyond the exact global count bound`() {
         assertFails {
             backupService.newStreamValidator(
@@ -977,9 +1094,13 @@ class VaultBackupStreamingTest {
     }
 
     @Test
-    fun `stream validator rejects identifier text beyond its retained byte budget`() {
-        val validator = backupService.newStreamValidator(
-            manifest = BackupStreamManifest(
+    fun `stream validator rejects identifier text beyond its retained byte budget`() = runTest {
+        val tagRepository = TagRepositoryImpl(database.tagDao(), cryptoEngine, vaultRepository)
+        val tag = Tag(id = TagId("four"), name = "Synthetic budget tag", color = null)
+        assertEquals(tag.id, tagRepository.save(tag).getOrThrow())
+        val value = BackupMetadataValue.Tag(assertNotNull(database.tagDao().getById(tag.id.value)))
+        try {
+            val manifest = BackupStreamManifest(
                 credentialCount = 0,
                 folderCount = 0,
                 tagCount = 1,
@@ -989,23 +1110,14 @@ class VaultBackupStreamingTest {
                 managedAttachmentCount = 0,
                 passwordHistoryCount = 0,
                 managedAttachmentObjectBytes = 0L,
-            ),
-            retainedIdentifierBytes = 3L,
-        )
-
-        assertFailsWith<IllegalArgumentException> {
-            validator.accept(
-                BackupMetadataValue.Tag(
-                    TagRecordEntity(
-                        id = "four",
-                        nameHash = ByteArray(0),
-                        encryptedPayload = ByteArray(0),
-                        payloadNonce = ByteArray(0),
-                        color = null,
-                        createdAt = 0L,
-                    ),
-                ),
             )
+            // Use the same otherwise-valid encrypted row on both sides of the byte boundary.
+            backupService.newStreamValidator(manifest, retainedIdentifierBytes = 4L).accept(value)
+            val tooSmall = backupService.newStreamValidator(manifest, retainedIdentifierBytes = 3L)
+            val failure = assertFailsWith<IllegalArgumentException> { tooSmall.accept(value) }
+            assertEquals("Backup identifiers exceed the validation memory budget", failure.message)
+        } finally {
+            value.clear()
         }
     }
 
@@ -1475,6 +1587,52 @@ class VaultBackupStreamingTest {
         override suspend fun close() {
             delegate.close()
             closed = true
+        }
+    }
+
+    /** A lazily opened provider surrogate whose close requires an active cleanup context. */
+    private class SourceOwnershipProbe(
+        private val bytes: ByteArray,
+        private val pauseAfter: Int? = null,
+        private val failRead: Boolean = false,
+        private val failClose: Boolean = false,
+        private val failRewind: Boolean = false,
+    ) : BackupContentSource {
+        override val declaredSizeBytes = bytes.size.toLong()
+        val readSuspended = CompletableDeferred<Unit>()
+        var readCalls = 0
+        var closeCalls = 0
+        var rewindCalls = 0
+        var open = false
+        private var offset = 0
+
+        override suspend fun read(buffer: ByteArray): Int {
+            readCalls++
+            open = true
+            if (failRead) error("synthetic provider read failure")
+            if (pauseAfter != null && offset >= pauseAfter) {
+                readSuspended.complete(Unit)
+                awaitCancellation()
+            }
+            if (offset == bytes.size) return -1
+            val count = minOf(buffer.size, bytes.size - offset, (pauseAfter ?: bytes.size) - offset)
+            bytes.copyInto(buffer, startIndex = offset, endIndex = offset + count)
+            offset += count
+            return count
+        }
+
+        override suspend fun rewind() {
+            rewindCalls++
+            offset = 0
+            open = true
+            if (failRewind) error("synthetic provider rewind failure after reopen")
+        }
+
+        override suspend fun close() {
+            currentCoroutineContext().ensureActive()
+            closeCalls++
+            open = false
+            if (failClose) error("synthetic provider close failure")
         }
     }
 

@@ -20,6 +20,8 @@ import okio.Path
 import okio.Path.Companion.toPath
 import okio.buffer
 import okio.use
+import kotlin.concurrent.atomics.AtomicReference
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.time.Clock
 
 /** Result of opening and structurally checking the application database. */
@@ -44,18 +46,29 @@ sealed interface VaultDatabaseBootstrapResult {
  * same lazily-created Room instance backs every DAO, so dependency resolution cannot create an
  * unchecked second Room handle before the Compose bootstrap screen is shown.
  */
+@OptIn(ExperimentalAtomicApi::class)
 class VaultDatabaseBootstrap internal constructor(
     private val storage: VaultDatabaseStorage,
     databaseFactory: () -> VaultDatabase,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     private val databaseDelegate = lazy(LazyThreadSafetyMode.SYNCHRONIZED, databaseFactory)
+    private val roomOwnership = AtomicReference(RoomOwnership.UNCLAIMED)
     private val mutex = Mutex()
     private var ready = false
     private var recoveryCanPreserveAndReset = false
 
     /** Returns the stable, lazily-built Room instance used by dependency injection. */
-    fun database(): VaultDatabase = databaseDelegate.value
+    fun database(): VaultDatabase {
+        // Claim the lifetime before invoking a factory that may itself fail after opening
+        // SQLite. A failed/retried health check must never authorize moving its files.
+        if (!roomOwnership.compareAndSet(RoomOwnership.UNCLAIMED, RoomOwnership.CLAIMED)) {
+            check(roomOwnership.load() == RoomOwnership.CLAIMED) {
+                "The database cannot be constructed during recovery preservation"
+            }
+        }
+        return databaseDelegate.value
+    }
 
     /** Runs at most one successful check per process; failed checks can be retried. */
     @Suppress("TooGenericExceptionCaught") // SQLite exposes platform-specific exception implementations.
@@ -92,7 +105,9 @@ class VaultDatabaseBootstrap internal constructor(
      */
     suspend fun preserveAndReset(): Result<Unit> = mutex.withLock {
         withContext(dispatcher) {
-            if (!recoveryCanPreserveAndReset) {
+            if (!recoveryCanPreserveAndReset ||
+                !roomOwnership.compareAndSet(RoomOwnership.UNCLAIMED, RoomOwnership.PRESERVING)
+            ) {
                 return@withContext Result.failure(
                     IllegalStateException("The database is not eligible for safe preservation"),
                 )
@@ -107,6 +122,10 @@ class VaultDatabaseBootstrap internal constructor(
             } catch (_: Exception) {
                 storage.record(VaultDatabaseDiagnosticCode.RECOVERY_PRESERVATION_FAILED)
                 Result.failure(IllegalStateException("The database could not be preserved"))
+            } finally {
+                // A preservation-only runtime has never constructed Room. Permit the
+                // later fresh open, but never reset an already claimed Room lifetime.
+                roomOwnership.store(RoomOwnership.UNCLAIMED)
             }
         }
     }
@@ -184,7 +203,7 @@ class VaultDatabaseBootstrap internal constructor(
         storage.record(failure.diagnosticCode)
         return when (failure) {
             is VaultDatabaseFailure.Corrupt -> {
-                recoveryCanPreserveAndReset = beforeRoomOpen
+                recoveryCanPreserveAndReset = beforeRoomOpen && roomOwnership.load() == RoomOwnership.UNCLAIMED
                 VaultDatabaseBootstrapResult.RecoveryRequired(
                     canPreserveAndReset = recoveryCanPreserveAndReset,
                 )
@@ -195,6 +214,8 @@ class VaultDatabaseBootstrap internal constructor(
             }
         }
     }
+
+    private enum class RoomOwnership { UNCLAIMED, CLAIMED, PRESERVING }
 }
 
 internal interface VaultDatabaseStorage {

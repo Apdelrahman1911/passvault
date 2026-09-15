@@ -14,6 +14,7 @@ ruby scripts/verify-static-analysis-coverage.rb >/dev/null
 ruby scripts/validate-ci-workflow-security.rb >/dev/null
 ruby scripts/validate-apple-signing-secret-boundary.rb >/dev/null
 ruby scripts/validate-ios-gradle-build-boundary.rb >/dev/null
+ruby scripts/test-release-regressions.rb >/dev/null
 ./scripts/test-apple-signing-secret-handling.sh >/dev/null
 ./scripts/verify-gradle-wrapper.sh >/dev/null
 

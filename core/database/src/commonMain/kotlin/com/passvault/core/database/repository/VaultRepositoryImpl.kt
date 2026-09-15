@@ -47,7 +47,8 @@ import kotlin.time.Clock
  * operations receive tracked, revocable key leases so lock can cancel an
  * operation without waiting indefinitely for arbitrary suspending work.
  */
-@Suppress("TooManyFunctions") // This is the sole owner of the in-memory VEK and its serialized state machine.
+// VEK transitions and revocable-lease cleanup deliberately share one serialized state owner.
+@Suppress("TooManyFunctions", "LargeClass")
 class VaultRepositoryImpl(
     private val vaultMetadataDao: VaultMetadataDao,
     private val cryptoEngine: CryptoEngine,
@@ -277,13 +278,32 @@ class VaultRepositoryImpl(
             }
         }
 
+    /** Captures admission before the caller starts metadata lookup or OS authentication. */
+    internal suspend fun beginBiometricUnlock(): Result<BiometricUnlockAttempt> =
+        try {
+            currentCoroutineContext().ensureActive()
+            Result.success(BiometricUnlockAttempt(this, lockIntents.snapshotGeneration()))
+        } catch (_: UnlockPreemptedException) {
+            Result.failure(VaultSessionLockedException())
+        }
+
     /**
-     * Opens a session with a key released by an OS biometric policy. The key
-     * is still authenticated against the vault verification record before it
-     * can become the active session key.
+     * Opens a session with a key released by an OS biometric policy, using the
+     * admission captured before that attempt began. The key is authenticated
+     * against the vault verification record before becoming the session key.
      */
-    suspend fun unlockWithBiometricKey(vaultKey: ByteArray): Result<SessionId> =
+    internal suspend fun unlockWithBiometricKey(
+        vaultKey: ByteArray,
+        attempt: BiometricUnlockAttempt,
+    ): Result<SessionId> =
         withExclusiveSessionTransition {
+            currentCoroutineContext().ensureActive()
+            if (!isCurrentBiometricAttempt(attempt)) {
+                // A foreign or stale caller owns no session here. Do not relock
+                // or wipe a newer valid session or classify its key as invalidated.
+                return@withExclusiveSessionTransition Result.failure(VaultSessionLockedException())
+            }
+            val unlockGeneration = attempt.lockGeneration
             if (vaultKey.size != VEK_BYTES) {
                 return@withExclusiveSessionTransition Result.failure(BiometricVaultKeyRejectedException())
             }
@@ -297,13 +317,11 @@ class VaultRepositoryImpl(
                 // Treat an already-open session as success. This avoids a race
                 // where a concurrent password unlock succeeds and the caller
                 // mistakes the still-valid biometric key for an invalid one.
-                return@withExclusiveSessionTransition Result.success(activeSession.sessionId)
-            }
-            val unlockGeneration = try {
-                lockIntents.snapshotGeneration()
-            } catch (preempted: UnlockPreemptedException) {
-                _sessionState.value = VaultSessionState.Locked(preempted.reason)
-                return@withExclusiveSessionTransition preemptedUnlockResult()
+                return@withExclusiveSessionTransition try {
+                    Result.success(lockIntents.commit(unlockGeneration) { activeSession.sessionId })
+                } catch (_: UnlockPreemptedException) {
+                    Result.failure(VaultSessionLockedException())
+                }
             }
 
             currentVek?.let { cryptoEngine.secureWipe(it) }
@@ -335,6 +353,16 @@ class VaultRepositoryImpl(
                 candidateVek?.let { cryptoEngine.secureWipe(it) }
             }
         }
+
+    private suspend fun isCurrentBiometricAttempt(attempt: BiometricUnlockAttempt): Boolean {
+        if (attempt.repositoryIdentity !== this) return false
+        return try {
+            lockIntents.verify(attempt.lockGeneration)
+            true
+        } catch (_: UnlockPreemptedException) {
+            false
+        }
+    }
 
     override suspend fun lock(reason: LockReason): Result<Unit> {
         cancelBiometricPromptBeforeLock()
@@ -686,23 +714,27 @@ class VaultRepositoryImpl(
                 key = vaultKey,
                 associatedData = VERIFICATION_AAD.encodeToByteArray(),
             ).getOrThrow()
-            require(verificationPlaintext.size == VERIFICATION_BYTES)
+            if (verificationPlaintext.size != VERIFICATION_BYTES) {
+                throw InvalidVerificationPlaintextException()
+            }
         } finally {
             verificationPlaintext?.let { cryptoEngine.secureWipe(it) }
         }
     }
 
-    // Authentication failures are the only failures that invalidate an enrolled key.
-    @Suppress("TooGenericExceptionCaught")
+    // Only explicit authentication or verification-plaintext rejection invalidates
+    // an enrolled key. Provider/initialization failures must leave enrollment intact.
     private suspend fun verifyBiometricVaultKey(metadata: VaultMetadataEntity, vaultKey: ByteArray) {
         try {
             verifyVaultKey(metadata, vaultKey)
-        } catch (cancel: CancellationException) {
-            throw cancel
-        } catch (_: Exception) {
+        } catch (_: CiphertextAuthenticationException) {
+            throw BiometricVaultKeyRejectedException()
+        } catch (_: InvalidVerificationPlaintextException) {
             throw BiometricVaultKeyRejectedException()
         }
     }
+
+    private class InvalidVerificationPlaintextException : IllegalArgumentException("Invalid verification plaintext")
 
     private suspend fun openSession(vaultKey: ByteArray, expectedLockGeneration: Long): SessionId {
         require(vaultKey.size == VEK_BYTES)
@@ -770,6 +802,12 @@ interface VaultSessionManager {
 }
 
 internal class VaultSessionLockedException : IllegalStateException("Vault not unlocked")
+
+/** In-memory, repository-bound admission; never derive a replacement after OS authentication. */
+internal class BiometricUnlockAttempt internal constructor(
+    internal val repositoryIdentity: Any,
+    internal val lockGeneration: Long,
+)
 
 internal class BiometricVaultKeyRejectedException : IllegalStateException("Biometric vault key was rejected")
 

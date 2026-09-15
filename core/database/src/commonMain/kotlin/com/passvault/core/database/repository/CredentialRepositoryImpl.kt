@@ -180,8 +180,12 @@ class CredentialRepositoryImpl(
                 val tagsByCredential = if (projections.isEmpty()) {
                     emptyMap()
                 } else {
-                    credentialDao
-                        .getTagCrossRefsForCredentials(projections.map { it.id })
+                    // Room expands one bind parameter per ID. Keep each query below even
+                    // SQLite's historical 999-variable limit, regardless of vault size.
+                    projections.chunked(TAG_LOOKUP_BATCH_SIZE)
+                        .flatMap { batch ->
+                            credentialDao.getTagCrossRefsForCredentials(batch.map { it.id })
+                        }
                         .groupBy(
                             keySelector = { it.credentialId },
                             valueTransform = { TagId(it.tagId) },
@@ -199,13 +203,23 @@ class CredentialRepositoryImpl(
     }
 
     override suspend fun getById(id: CredentialId): Result<Credential?> {
-        return repositoryResult {
-            sessionManager.withUnlockedSession { vek ->
-                id.value.requireRecordIdentifier("Credential ID")
-                val entity = credentialDao.getById(id.value)
-                    ?: return@withUnlockedSession null
-                decryptCredential(entity, vek)
+        var produced: Credential? = null
+        var delivered = false
+        try {
+            val result = repositoryResult {
+                sessionManager.withUnlockedSession { vek ->
+                    id.value.requireRecordIdentifier("Credential ID")
+                    val entity = credentialDao.getById(id.value)
+                        ?: return@withUnlockedSession null
+                    decryptCredential(entity, vek).also { produced = it }
+                }
             }
+            delivered = result.isSuccess
+            return result
+        } finally {
+            // The session wrapper can reject a completed result during revocation,
+            // cancellation or lease release. The consumer does not own it yet.
+            if (!delivered) produced?.clearSensitiveValues()
         }
     }
 
@@ -355,21 +369,23 @@ class CredentialRepositoryImpl(
         }
     }
 
-    @Suppress("TooGenericExceptionCaught") // Every partially decrypted health input must be cleared on failure.
     override suspend fun getCredentialsForHealthAnalysis(): Result<List<CredentialHealthInput>> {
-        return repositoryResult {
-            sessionManager.withUnlockedSession { vek ->
-                val inputs = mutableListOf<CredentialHealthInput>()
-                try {
+        val inputs = mutableListOf<CredentialHealthInput>()
+        var delivered = false
+        try {
+            val result = repositoryResult {
+                sessionManager.withUnlockedSession { vek ->
                     credentialDao.getLoginsForHealthAnalysis().forEach { entity ->
                         inputs += decryptHealthInput(entity, vek)
                     }
                     inputs
-                } catch (error: Exception) {
-                    inputs.forEach { it.clearSensitiveValues() }
-                    throw error
                 }
             }
+            delivered = result.isSuccess
+            return result
+        } finally {
+            // Own partial and complete batches until the outer session handoff succeeds.
+            if (!delivered) inputs.forEach { it.clearSensitiveValues() }
         }
     }
 
@@ -1299,6 +1315,7 @@ class CredentialRepositoryImpl(
     }
 
     private companion object {
+        const val TAG_LOOKUP_BATCH_SIZE = 900
         const val MAX_ATTACHMENT_MIME_TYPE_LENGTH = 255
         const val MAX_ATTACHMENT_SIZE_BYTES = 4L * 1024L * 1024L * 1024L
         val UUID_HYPHEN_INDICES = setOf(8, 13, 18, 23)
