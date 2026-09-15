@@ -99,9 +99,8 @@ fi
 
 if ! read_pkcs12 -nocerts -nodes 2>/dev/null |
     "$openssl_binary" pkey -traditional 2>/dev/null |
-    /usr/bin/security import /dev/stdin \
-        -k "$keychain_path" -t priv -f openssl -x \
-        -T /usr/bin/codesign -T /usr/bin/security >/dev/null; then
+    bash "$repository_root/scripts/ci-python.sh" \
+        "$repository_root/scripts/import-apple-key-from-stdin.py" "$keychain_path" >/dev/null; then
     echo "Unable to import the Apple signing private key." >&2
     exit 1
 fi

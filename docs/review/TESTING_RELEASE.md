@@ -24,6 +24,42 @@ RAM floor. This is a configuration fix, **not yet proof of a successful archive*
 The new signed archive/export and Store processing must pass before success is
 reported; do not rerun or resume the partially uploaded 1017002 release.
 
+## Apple private-key pipe import
+
+The follow-up main CI [34991312886](https://github.com/Apdelrahman1911/passvault/actions/runs/34991312886)
+failed its macOS Intel **synthetic** signing test on source
+`f25c6888db881109182ea4aebd0fe17b713a08a4`, before Desktop packaging. The private-key
+import returned invalid parameters. The same runner image passed the preceding
+PR CI; this failure must not be waived or blindly retried. Its cleanup passed,
+with no Gradle wrapper started. Testing promotion was not launched.
+
+Apple's published Security implementation sizes file input with `fstat` before
+a single read, including `/dev/stdin`. A live pipe can therefore expose an empty
+or partial key rather than the completed stream. The new bounded in-memory
+adapter waits for EOF, fills a fresh pipe before launching `security`, and
+requires its size to match exactly. No unencrypted key file, password argument,
+or relaxed extractability/trusted-tool setting is introduced. Capacity mismatch,
+empty/oversized input and timeouts fail closed. The existing native test adds a
+controlled incomplete-pipe negative case and delayed/chunked successful import
+into a fresh synthetic keychain, with identity and non-extractability checks.
+PR CI [34993670798](https://github.com/Apdelrahman1911/passvault/actions/runs/34993670798)
+validated the incomplete-pipe negative control, fragmented-input import, identity
+and non-extractability checks on both Intel and Apple Silicon. Both packaging
+jobs passed; all 15 CI cleanup receipts passed on checkout
+`8633157ccc0538b7df3419ccfdff59d8e8bd46a3` (tree
+`63347feb043a8175859a91e7ae452d5634eef8cc`). This is synthetic native evidence, not
+an actual Store archive/upload. The original failed invocation's exact byte count
+is unknown.
+
+That CI still **failed**: the Linux release-automation static policy expected the
+old private-key command in the shell importer. The policy now follows the buffered
+helper and requires its exact stdin-only, non-extractable, restricted-tool command.
+Focused mutations protect password-FD handling, helper routing, non-extractability,
+password-argument refusal, trusted-tool restrictions and stdin binding. The failed
+run is preserved; the corrected validator and all seven focused static cases passed
+on Linux, with immediate fixture cleanup and no build/signing processes started.
+An updated PR CI must pass before promotion.
+
 The release build adapter reuses the current CI process-scope implementation,
 not archived audit runners. It preserves signing HOME on iOS, uses private build
 caches and DerivedData, stops the original wrapper, and requires owned settlement
