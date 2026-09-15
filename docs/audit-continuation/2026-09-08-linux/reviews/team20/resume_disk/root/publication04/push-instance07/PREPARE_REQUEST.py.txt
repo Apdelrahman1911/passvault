@@ -1,0 +1,13 @@
+# Source metadata only; stageactual must be independently adopted before push admission.
+from pathlib import Path
+import hashlib,json,stat
+P=Path('/root/projects/PassVault');D=P/'passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root';H=D/'publication04/push-instance07';S=D/'publication04/stage-instance07'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+assert not (H/'REQUEST.json').exists()
+stage=json.loads((S/'RESULT.json').read_text());assert stage['status']=='STAGED_TREE_PENDING_INDEPENDENT_REVIEW'
+old=json.loads((D/'publication04/push-instance06/REQUEST.json').read_text());old.update(scope='C20_WINDOWS_DIAGNOSTIC_PUSH07_NO_ACTIVATION',base='d8dfe094e9930f19182a73f270d8ab521010ebe2',controller_sha256=sha(H/'PUSH.py'),tool_sha256={p:sha(Path(p)) for p in ['/usr/bin/git','/usr/bin/gh']},tree=stage['tree'],delta_sha256=sha(S/'TREE-DELTA.txt'))
+repo=(P/'passvault-publication-20260914-04').lstat();lock=(P/'.audit-coordination-linux-20260914-c20/build.lock').lstat();old['repo_identity']=[repo.st_dev,repo.st_ino];old['lock_identity']=[lock.st_dev,lock.st_ino,lock.st_uid,stat.S_IMODE(lock.st_mode)]
+old['expected_refs']['refs/heads/codex/audit-continuation-linux-20260908']=old['base']
+old['qualification']='Source-onlyWindows05test/helper/inertworkflow and source/evidence chain; Windows04GUI24Image02/03/04 failures/HOLDs/report29/GUI25source-only. No activationpath/binary/signing/release. [skip ci], noPR-head and exactref/prepush guards. Namedselection only, notwholeWclaim.'
+old['root_admission']='Stage07actualindependentreview/adoption and freshrootresources/quiet/exactpushapproval required. Onephysical/logicalslot; nooldHOLDquery/replay/cleanup, noautomaticretry.'
+(H/'REQUEST.json').write_text(json.dumps(old,indent=2)+'\n');print(stage['tree'],sha(H/'REQUEST.json'))

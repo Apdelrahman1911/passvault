@@ -1,0 +1,32 @@
+--- passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/publication04/push-instance07/PUSH.py
++++ passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/publication04/push-instance08/PUSH.py
+@@ -16,16 +16,16 @@
+ P = Path('/root/projects/PassVault')
+ W = P / 'passvault-linux'
+ D = W / 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root'
+-HERE = D / 'publication04/push-instance07'
++HERE = D / 'publication04/push-instance08'
+ REPO = P / 'passvault-publication-20260914-04'
+-ROOT = P / 'audit-publication04-push07'
++ROOT = P / 'audit-publication04-push08'
+ LOCK = P / '.audit-coordination-linux-20260914-c20/build.lock'
+-BASE = 'd8dfe094e9930f19182a73f270d8ab521010ebe2'
++BASE = '0f3b0c4ce912098a7eed353116b631a6e474422f'
+ LOCAL_HEAD = '832ed5f5aee56fbbf4c298ef0d2b10de154484cf'
+ BRANCH = 'refs/heads/codex/audit-continuation-linux-20260908'
+ REMOTE = 'https://github.com/Apdelrahman1911/passvault.git'
+ GIT, GH = '/usr/bin/git', '/usr/bin/gh'
+-MESSAGE = 'Prepare reviewed Windows accounting diagnostic and reconcile audit evidence [skip ci]\n'
++MESSAGE = 'Retain Windows after-flush results and current completion blockers [skip ci]\n'
+ REFS = [BRANCH, 'refs/heads/codex/remediation-handoff-20260908', 'refs/heads/main',
+         'refs/heads/testing', 'refs/heads/release', 'refs/tags/v1.0.7-rc.1017001']
+ result = {'status': 'UNSTARTED', 'commands': [], 'cases': 0, 'push_attempted': False}
+@@ -132,7 +132,7 @@
+     raw = read(HERE / 'REQUEST.json', 65536)
+     request = json.loads(raw)
+     approval = json.loads(read(HERE / 'APPROVAL.json', 65536))
+-    require(request['scope'] == 'C20_WINDOWS_DIAGNOSTIC_PUSH07_NO_ACTIVATION' and request['base'] == BASE,
++    require(request['scope'] == 'C20_WINDOWS_RESULTS_PUSH08_NO_ACTIVATION' and request['base'] == BASE,
+             'Source-only continuation scope')
+     require(approval['reviewer'] == '/root/current_ledger' and approval['status'] == 'ACCEPT_EXACT_SOURCE_PUSH_ONLY'
+             and approval['request_sha256'] == sha(raw), 'Genuine exact independent review')

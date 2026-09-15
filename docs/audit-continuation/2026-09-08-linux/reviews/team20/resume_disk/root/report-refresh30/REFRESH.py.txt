@@ -1,0 +1,30 @@
+# Current metadata writer only; never executes/imports historical helpers.
+from pathlib import Path
+import hashlib,json
+W=Path('/root/projects/PassVault/passvault-linux');B=W/'docs/audit-continuation/2026-09-08-linux';D=B/'reviews/team20/resume_disk/root';R=D.parent/'current_ledger';H=D/'report-refresh30';E=D/'windows-after-flush-ci05'
+assert not (H/'FROZEN.json').exists()
+def desc(p):
+ b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+review=R/'windows_after_flush05_actual/ACTUAL-REVIEW.json';assert review.is_file() and (E/'ACTUAL-ADOPTION.json').is_file()
+text=(H/'REPORT-DRAFT.md').read_text().replace('Independent actual review is pending at this draft.','Independent actual review and root adoption accept these two scoped cases.').replace('Windows05 adds2 raw passing XML cases\n(subject to independent acceptance), not a family closure. The previous268 mixed\nXML become270 only after adoption:266 application/native/regression/investigation/','Windows05 adds2 independently accepted passing XML cases, not a family closure.\nThe previous268 mixed XML become270 after adoption:266 application/native/regression/investigation/')
+text=text.replace('Windows05 normal-release/controlled-child-death evidence now available for review.','Windows05 normal-release/controlled-child-death evidence independently accepted.')
+text=text.replace('**Current feasible closeout:** independent Windows actual review, compact ledger\n  reconciliation and dedicated-branch publication; roughly1–2 hands-on hours if\n  no new evidence discrepancy, not an overall completion estimate.','**Current feasible closeout:** Windows actual review is complete; compact ledger\n  reconciliation and dedicated-branch publication remain. Roughly30–90minutes\n  hands-on if no new discrepancy; not an overall completion estimate.')
+(B/'C20_REMAINING_WORK_SOLO_2026-09-14.md').write_text(text)
+summary='Windows05 original34919661732/attempt1:2 independently accepted nativePASS, CTest0x2; overallCI FAIL solely outercleanup reparseEntryRefusal/HOLD, target_readfalse. OriginalJobterminated/zero/errors[]; compact33files78737B retained, ZIPremoved/5observerssettled. No retry/probe/recovery/deletion. FamilyPVA036 remainsOPEN.'
+actual={'status':'TWO_SCOPED_NATIVE_PASS_OVERALL_CI_FAIL_CLEANUP_HOLD','run':34919661732,'source_commit':'bed177cadebe79fdc8aec9781a3510e598d3d59c','source_tree':'b882d28b4bdce19f254491e4956e73d56c9a438f','activation_commit':'0f3b0c4ce912098a7eed353116b631a6e474422f','review':desc(review),'adoption':desc(E/'ACTUAL-ADOPTION.json'),'result':desc(E/'artifacts/result.json'),'inventory':desc(E/'ARTIFACT-INVENTORY.json'),'cases':2,'pass':2,'fail':0,'closure_credit':0,'qualification':summary}
+count='268 previous mixed XML +2 Windows05 nativePASS =270 mixed XML elements, NOT270 passes;266 application/native/regression/investigation/control +3 infrastructure +1 producer. Image02/03/04 add0XML/0cases. Separate nonXML controls unchanged:6screen +4terminal +8Windowsdisposal +4Image02projectiongroups. Qualifiedclosures27/39, original19/25, suspicions2/12 unchanged; eightPVD choices separate.'
+for name in ['ISSUE_LEDGER.json','VERIFICATION_LEDGER.json','COVERAGE_DELTA.json']:
+ p=B/name;x=json.loads(p.read_text());assert p.read_bytes()==(H/('PREVIOUS-'+name)).read_bytes()
+ keys=['counting','current_windows05_preparation','current_reconciliation_record','c20_consolidated_report','resumed_current_phase']
+ x['historical_report29_aliases_before_report30']={k:x.get(k) for k in keys}
+ x['current_windows_after_flush05_actual']=actual
+ x['current_windows05_preparation']={'status':'CONSUMED_SCOPED2PASS_OVERALLFAIL_HOLD','actual':actual}
+ x['counting']=count
+ x['current_reconciliation_record']={'source':'reviews/team20/resume_disk/root/report-refresh30/','scope':count,'qualification':'Exact frozen report/ledger review and adoption retained separately at ACTUAL-ADOPTION.json; not final readiness.'}
+ x['c20_consolidated_report']=desc(B/'C20_REMAINING_WORK_SOLO_2026-09-14.md')
+ x['resumed_current_phase']='Windows05 originalCI consumed;2nativePASS/outercleanupFAILHOLD independentlyadopted; all12familiesOPEN. GUI25sourceaccepted/notexecuted; local8GiBafterstagingfloorblocked. Android/iOS targets/physical/provider/permitted-witness gaps remain. Compactpublicationpending; live EXECUTION_SLOT authoritative.'
+ if name=='ISSUE_LEDGER.json':
+  row=next(r for r in x['confirmed_families'] if r['id']=='PVA-036');row['status_before_windows_after_flush05']=row['status'];row['status']='IMPLEMENTED — TWO AFTER-FLUSH CASES VERIFIED; REMAINING BOUNDARIES OPEN';row['current_after_flush05']=actual
+ p.write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+(H/'FROZEN.json').write_text(json.dumps({'scope':'Report30 exactfourcanonicalbytes; independentreview/adoption separate, no recursive hash.','files':[desc(B/n) for n in ['C20_REMAINING_WORK_SOLO_2026-09-14.md','ISSUE_LEDGER.json','VERIFICATION_LEDGER.json','COVERAGE_DELTA.json']]},indent=2)+'\n')
+print(desc(H/'FROZEN.json'))

@@ -1,0 +1,190 @@
+#!/usr/bin/python3.12
+"""Fresh continuation staging proposal ONLY. No commit/push/network/build/test.
+Independent exact request/coordination/source/cleanup admission is required.
+"""
+import fcntl
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import signal
+import stat
+import subprocess
+import time
+
+P = Path('/root/projects/PassVault')
+W = P / 'passvault-linux'
+D = W / 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root'
+HERE = D / 'publication04/stage-instance07'
+REPO = P / 'passvault-publication-20260914-04'
+BASE = 'd8dfe094e9930f19182a73f270d8ab521010ebe2'
+LOCAL_HEAD = '832ed5f5aee56fbbf4c298ef0d2b10de154484cf'
+ROOT = P / 'audit-publication04-stage07'
+LOCK = P / '.audit-coordination-linux-20260914-c20/build.lock'
+GIT = '/usr/bin/git'
+result = {'status': 'UNSTARTED', 'commands': [], 'cases': 0, 'network': False}
+active = None
+cancelled = False
+allocated = False
+lock_fd = None
+started = time.monotonic()
+env = {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC',
+       'GIT_CONFIG_GLOBAL': '/dev/null', 'GIT_CONFIG_SYSTEM': '/dev/null', 'GIT_CONFIG_NOSYSTEM': '1',
+       'GIT_NO_LAZY_FETCH': '1', 'GIT_NO_REPLACE_OBJECTS': '1', 'GIT_OPTIONAL_LOCKS': '0',
+       'GIT_TERMINAL_PROMPT': '0'}
+
+
+def require(value, reason):
+    if not value:
+        raise RuntimeError(reason)
+
+
+def digest(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def read(p, cap):
+    require(p.resolve() == p and p.is_file() and not p.is_symlink(), 'Ordinary canonical input required')
+    before = p.stat()
+    require(before.st_size <= cap, 'Input size cap')
+    data = p.read_bytes()
+    after = p.stat()
+    require((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) ==
+            (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns), 'Input drift')
+    return data
+
+
+def interrupted(_signum, _frame):
+    global cancelled
+    cancelled = True
+
+
+def git(args, data=None):
+    global active
+    require(not cancelled and time.monotonic() - started < 600, 'Staging cancelled/deadline')
+    require(shutil.disk_usage(P).free >= 3 * 1024**3, 'DATA disk floor')
+    argv = [GIT, '--git-dir=' + str(REPO / '.git'), '-c', 'core.hooksPath=/dev/null',
+            '-c', 'core.fsmonitor=false', '-c', 'gc.auto=0', '-c', 'maintenance.auto=false',
+            '-c', 'protocol.allow=never', '-c', 'commit.gpgsign=false', *args]
+    record = {'argv': argv, 'exit': None}
+    result['commands'].append(record)
+    active = subprocess.Popen(argv, cwd=ROOT, env=env, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE, start_new_session=True, close_fds=True)
+    try:
+        pidfd = os.pidfd_open(active.pid)
+    except BaseException:
+        # The original Popen child has not been reaped; never target an unrelated PID.
+        active.terminate()
+        try:
+            active.communicate(timeout=5)
+        except subprocess.TimeoutExpired:
+            active.kill()
+            active.communicate(timeout=5)
+        active = None
+        raise
+    try:
+        out, err = active.communicate(data, timeout=60)
+        record.update(exit=active.returncode, stdout={'bytes': len(out), 'sha256': digest(out)},
+                      stderr={'bytes': len(err), 'sha256': digest(err)})
+        require(len(out) <= 4 * 1024**2 and len(err) <= 65536, 'Metadata output cap')
+        (HERE / ('command-%02d.json' % len(result['commands']))).write_text(json.dumps(record, indent=2) + '\n')
+        require(active.returncode == 0 and not cancelled, 'Original Git command failed/cancelled')
+        return out
+    finally:
+        if active.returncode is None:
+            signal.pidfd_send_signal(pidfd, signal.SIGTERM)
+            try:
+                active.communicate(timeout=5)
+            except subprocess.TimeoutExpired:
+                signal.pidfd_send_signal(pidfd, signal.SIGKILL)
+                active.communicate(timeout=5)
+        os.close(pidfd)
+        require(active.returncode is not None, 'Original Git child not settled')
+        active = None
+
+
+for sig in (signal.SIGTERM, signal.SIGINT):
+    signal.signal(sig, interrupted)
+try:
+    request_raw = read(HERE / 'REQUEST.json', 2 * 1024**2)
+    request = json.loads(request_raw)
+    approval = json.loads(read(HERE / 'APPROVAL.json', 65536))
+    require(approval['reviewer'] == '/root/current_ledger' and
+            approval['status'] == 'ACCEPT_EXACT_STAGE_ONLY' and approval['request_sha256'] == digest(request_raw),
+            'Genuine exact staging approval required')
+    require(request['scope'] == 'PUBLICATION04_STAGE07_NO_COMMIT_PUSH' and request['base'] == BASE,
+            'Exact staging scope')
+    require(digest(read(Path(__file__), 65536)) == request['controller_sha256'], 'Reviewed controller bytes')
+    require(digest(read(Path(GIT), 8 * 1024**2)) == request['git_sha256'], 'Reviewed Git image')
+    require(REPO.resolve() == REPO and (REPO.stat().st_dev, REPO.stat().st_ino) == tuple(request['repo_identity']),
+            'Original new-publication-store identity')
+    lock_fd = os.open(LOCK, os.O_RDONLY | os.O_NOFOLLOW)
+    st = os.fstat(lock_fd)
+    require([st.st_dev, st.st_ino, st.st_uid, stat.S_IMODE(st.st_mode)] == request['lock_identity'],
+            'Exact current coordination lock')
+    fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    memory = {line.split(':')[0]: int(line.split()[1]) * 1024 for line in Path('/proc/meminfo').read_text().splitlines()
+              if line.startswith(('MemAvailable:', 'MemTotal:'))}
+    require(memory['MemAvailable'] >= max(12 * 1024**3, memory['MemTotal'] * 0.25), 'DATA memory admission')
+    require(shutil.disk_usage(P).free >= 3 * 1024**3, 'DATA disk admission')
+    require(not ROOT.exists() and not ROOT.is_symlink(), 'Unconsumed staging namespace')
+    ROOT.mkdir(mode=0o700)
+    allocated = True
+    original = (ROOT.stat().st_dev, ROOT.stat().st_ino)
+    for n in ('home', 'tmp'):
+        (ROOT / n).mkdir(mode=0o700)
+    env.update(HOME=str(ROOT / 'home'), TMPDIR=str(ROOT / 'tmp'), TMP=str(ROOT / 'tmp'),
+               TEMP=str(ROOT / 'tmp'), GIT_INDEX_FILE=str(ROOT / 'index'))
+    require(git(['rev-parse', 'HEAD']).decode().strip() == LOCAL_HEAD, 'Exact unchanged original local HEAD; activation BASE separate')
+    candidate = read(Path(request['candidate']['path']), 2 * 1024**2)
+    require(digest(candidate) == request['candidate']['sha256'], 'Exact reviewed selection')
+    entries = json.loads(candidate)['entries']
+    require(len(entries) <= 1800 and len({e['path'] for e in entries}) == len(entries), 'Unique finite selection')
+    expected = []
+    total = 0
+    for e in entries:
+        p = Path(e['source_path'])
+        require(p.is_relative_to(W) and '..' not in p.parts, 'Only named current source/evidence')
+        require(not any(c in str(p) + e['path'] for c in '\n\r\t\0"'), 'Unambiguous Git paths')
+        require(not Path(e['path']).is_absolute() and '..' not in Path(e['path']).parts
+                and '.git' not in Path(e['path']).parts, 'Safe tracked path')
+        require(e['proposed_git_mode'] in ('100644', '100755'), 'Ordinary Git source mode')
+        raw = read(p, 8 * 1024**2)
+        require(len(raw) == e['bytes'] and digest(raw) == e['sha256'], 'Named source drift')
+        total += len(raw)
+        require(total <= 32 * 1024**2, 'Compact continuation source envelope')
+        expected.append(hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest())
+    git(['read-tree', BASE])
+    blobs = git(['hash-object', '-w', '--no-filters', '--stdin-paths'],
+                ''.join(e['source_path'] + '\n' for e in entries).encode()).decode().splitlines()
+    require(blobs == expected, 'Raw staged blobs match exact source bytes; no EOL/filter substitution')
+    git(['update-index', '--index-info'], ''.join(e['proposed_git_mode'] + ' ' + blob + '\t' + e['path'] + '\n'
+                                                for e, blob in zip(entries, blobs)).encode())
+    tree = git(['write-tree']).decode().strip()
+    delta = git(['diff-tree', '--no-commit-id', '--name-status', '-r', '--no-renames', BASE, tree]).decode()
+    for row in delta.splitlines():
+        state, name = row.split('\t')
+        require(state in ('A', 'M') and name in {e['path'] for e in entries}, 'No deletions/unselected changes')
+    (HERE / 'TREE-DELTA.txt').write_text(delta)
+    result.update(status='STAGED_TREE_PENDING_INDEPENDENT_REVIEW', tree=tree, base=BASE,
+                  candidate_sha256=digest(candidate), staged_entries=len(entries), source_bytes=total,
+                  index=str(ROOT / 'index'))
+except BaseException as failure:
+    result.update(status='FAILED_NO_COMMIT_OR_PUSH', error=type(failure).__name__ + ': ' + str(failure))
+finally:
+    if allocated and active is None:
+        try:
+            require(ROOT.resolve() == ROOT and (ROOT.stat().st_dev, ROOT.stat().st_ino) == original,
+                    'Original staging root identity')
+            # Retain the one index/new Git objects for review/resume. Remove only original EMPTY temp roots.
+            for n in ('home', 'tmp'):
+                (ROOT / n).rmdir()
+            result['cleanup'] = 'EMPTY_HOME_TMP_REMOVED_INDEX_AND_STORE_NEEDED_FOR_REVIEW'
+        except BaseException as failure:
+            result['cleanup'] = 'HOLD_' + type(failure).__name__
+    if lock_fd is not None:
+        os.close(lock_fd)
+    result['elapsed_seconds'] = time.monotonic() - started
+    (HERE / 'RESULT.json').write_text(json.dumps(result, indent=2) + '\n')
+raise SystemExit(0 if result['status'] == 'STAGED_TREE_PENDING_INDEPENDENT_REVIEW' else 1)

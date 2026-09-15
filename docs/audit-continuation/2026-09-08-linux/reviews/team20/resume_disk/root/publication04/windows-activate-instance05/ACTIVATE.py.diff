@@ -1,0 +1,49 @@
+--- acceptedWindows04/ACTIVATE.py
++++ prospectiveWindows05/ACTIVATE.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/python3.12
+-"""SOURCE proposal. One reviewed request-only activation commit/nonforce continuation push for Windows after-flush04.
++"""SOURCE proposal. One reviewed request-only activation commit/nonforce continuation push for Windows after-flush05.
+ No checkout, tag/protected-ref mutation, signing, production artifact or release action.
+ """
+ import fcntl
+@@ -16,17 +16,17 @@
+ P = Path('/root/projects/PassVault')
+ W = P / 'passvault-linux'
+ D = W / 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root'
+-HERE = D / 'publication04/windows-activate-instance04'
++HERE = D / 'publication04/windows-activate-instance05'
+ REPO = P / 'passvault-publication-20260914-04'
+-ROOT = P / 'audit-publication04-windows-activate04'
++ROOT = P / 'audit-publication04-windows-activate05'
+ LOCK = P / '.audit-coordination-linux-20260914-c20/build.lock'
+-BASE = '2f4d250fcb909875f93cf6812410fde13ef19ad0'
++BASE = 'SOURCE_COMMIT_UNBOUND'
+ LOCAL_HEAD = '832ed5f5aee56fbbf4c298ef0d2b10de154484cf'
+ BRANCH = 'refs/heads/codex/audit-continuation-linux-20260908'
+ REMOTE = 'https://github.com/Apdelrahman1911/passvault.git'
+ GIT, GH = '/usr/bin/git', '/usr/bin/gh'
+ MESSAGE = 'Run reviewed non-publishing Windows after-flush native batch\n'
+-ACTIVATION = 'docs/audit-continuation/2026-09-08-linux/requests/windows-after-flush-04.json'
++ACTIVATION = 'docs/audit-continuation/2026-09-08-linux/requests/windows-after-flush-05.json'
+ REFS = [BRANCH, 'refs/heads/codex/remediation-handoff-20260908', 'refs/heads/main',
+         'refs/heads/testing', 'refs/heads/release', 'refs/tags/v1.0.7-rc.1017001']
+ result = {'status': 'UNSTARTED', 'commands': [], 'cases': 0, 'push_attempted': False}
+@@ -133,7 +133,7 @@
+     raw = read(HERE / 'REQUEST.json', 65536)
+     request = json.loads(raw)
+     approval = json.loads(read(HERE / 'APPROVAL.json', 65536))
+-    require(request['scope'] == 'WINDOWS_AFTER_FLUSH_REQUEST_ONLY_ACTIVATION04' and request['base'] == BASE,
++    require(request['scope'] == 'WINDOWS_AFTER_FLUSH_REQUEST_ONLY_ACTIVATION05' and request['base'] == BASE,
+             'Request-only nonpublishing activation scope')
+     require(approval['reviewer'] == '/root/current_ledger' and approval['status'] == 'ACCEPT_EXACT_WINDOWS_ACTIVATION_ONLY'
+             and approval['request_sha256'] == sha(raw), 'Genuine exact independent review')
+@@ -164,7 +164,7 @@
+     require(sha(activation) == request['activation_sha256'], 'Independently reviewed activation bytes')
+     fields = json.loads(activation)
+     require(fields['source_commit'] == BASE and fields['schema'] == 1
+-            and fields['suite'] == 'windows-after-flush-04' and fields['owner'] == '/root'
++            and fields['suite'] == 'windows-after-flush-05' and fields['owner'] == '/root'
+             and fields['target'] == 'passvault_biometric_windows_after_flush_test'
+             and fields['case_names'] == ['passvault_biometric_windows_after_flush_continue',
+                                           'passvault_biometric_windows_after_flush_process_death']

@@ -1,0 +1,22 @@
+--- acceptedWindows04/OBSERVE.py
++++ prospectiveWindows05/OBSERVE.py
+@@ -3,8 +3,8 @@
+ import hashlib,json,os,signal,stat,subprocess,sys,time,zipfile
+ from pathlib import Path
+ D=Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root')
+-A=D/'publication04/windows-activate-instance04'
+-E=D/'windows-after-flush-ci04'
++A=D/'publication04/windows-activate-instance05'
++E=D/'windows-after-flush-ci05'
+ GH='/usr/bin/gh'
+ REPO='Apdelrahman1911/passvault'
+ LIMIT=32*1024**2
+@@ -46,7 +46,7 @@
+         if phase=='artifacts':args=['api',f'repos/{REPO}/actions/runs/{run}/artifacts']
+         else:
+             artifact=json.loads((E/'ARTIFACT.json').read_text());aid=artifact['id']
+-            require(type(aid)is int and aid>0 and artifact['name']==f'audit-windows-after-flush-04-{run}-1' and artifact['expired']is False and 0<artifact['size_in_bytes']<=LIMIT,'Exact bounded compact artifact')
++            require(type(aid)is int and aid>0 and artifact['name']==f'audit-windows-after-flush-05-{run}-1' and artifact['expired']is False and 0<artifact['size_in_bytes']<=LIMIT,'Exact bounded compact artifact')
+             require(artifact['workflow_run']['id']==run and artifact['workflow_run']['head_sha']==commit,'Artifact original run binding')
+             args=['api',f'repos/{REPO}/actions/artifacts/{aid}/zip']
+ root=E/('observation-'+number)

@@ -1,0 +1,21 @@
+# Metadata only, not Git/CI execution. Run after sourcepush07 independently adopted.
+from pathlib import Path
+import hashlib,json,stat,re
+P=Path('/root/projects/PassVault');W=P/'passvault-linux';D=W/'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root';H=D/'publication04/windows-activate-instance05'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+assert not json.loads((D/'EXECUTION_SLOT.json').read_text())['operation']['active']
+assert (D/'publication04/push-instance07/ACTUAL-ADOPTION.json').is_file()
+result=json.loads((D/'publication04/push-instance07/RESULT.json').read_text());assert result['status']=='SOURCE_CONTINUATION_PUSH_VERIFIED_NO_CI_ACTIVATION'
+commit,tree=result['commit'],result['tree'];assert re.fullmatch('[0-9a-f]{40}',commit) and re.fullmatch('[0-9a-f]{40}',tree)
+assert not (H/'REQUEST.json').exists()
+s=(H/'ACTIVATE.py.txt').read_text();assert s.count('SOURCE_COMMIT_UNBOUND')==1;s=s.replace('SOURCE_COMMIT_UNBOUND',commit)
+(H/'ACTIVATE.py').write_text(s);(H/'OBSERVE.py').write_bytes((H/'OBSERVE.py.txt').read_bytes());(H/'QUIET.py').write_bytes((H/'QUIET.py.txt').read_bytes())
+proposal=json.loads((D/'windows-after-flush05-controls-proposal03/PROPOSAL.json').read_text());review=D.parent/'current_ledger/windows_after_flush05_instance/INSTANCE-ACCEPT.json'
+keys=['schema','owner','suite','nonce','case_names','case_argv','target','audit_controls','after_flush_controls','sdk','max_seconds','helper_sha256','workflow_sha256','scope_sha256'];activation={k:proposal[k] for k in keys}
+assert sha(W/'scripts/audit/windows_after_flush_05.py')==activation['helper_sha256'] and sha(W/'.github/workflows/audit-windows-after-flush05.yml')==activation['workflow_sha256']
+activation.update(source_commit=commit,source_tree=tree,independent_review_path=str(review.relative_to(W)),independent_review_sha256=sha(review))
+for key in ['exclusive_build_slot','source_push_excludes_queued_pending_running_local_ci','activation_push_excludes_queued_pending_running_local_ci','source_push_other_workflow_triggers_reviewed','activation_push_other_workflow_triggers_reviewed','generated_cleanup_admitted']:activation[key]=True
+(H/'ACTIVATION.json').write_text(json.dumps(activation,indent=2)+'\n')
+repo=(P/'passvault-publication-20260914-04').lstat();lock=(P/'.audit-coordination-linux-20260914-c20/build.lock').lstat()
+request=dict(scope='WINDOWS_AFTER_FLUSH_REQUEST_ONLY_ACTIVATION05',base=commit,controller_sha256=sha(H/'ACTIVATE.py'),tool_sha256={p:sha(Path(p)) for p in ['/usr/bin/git','/usr/bin/gh']},repo_identity=[repo.st_dev,repo.st_ino],lock_identity=[lock.st_dev,lock.st_ino,lock.st_uid,stat.S_IMODE(lock.st_mode)],expected_refs=result['refs_after'],gh_config_dir='/root/.config/gh',activation_sha256=sha(H/'ACTIVATION.json'))
+(H/'REQUEST.json').write_text(json.dumps(request,indent=2)+'\n');print(commit,tree,sha(H/'REQUEST.json'))

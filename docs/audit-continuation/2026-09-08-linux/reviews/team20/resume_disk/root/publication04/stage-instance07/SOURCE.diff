@@ -1,0 +1,26 @@
+--- acceptedStage06
++++ proposedStage07
+@@ -16,11 +16,11 @@
+ P = Path('/root/projects/PassVault')
+ W = P / 'passvault-linux'
+ D = W / 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root'
+-HERE = D / 'publication04/stage-instance06'
++HERE = D / 'publication04/stage-instance07'
+ REPO = P / 'passvault-publication-20260914-04'
+-BASE = '1cf42f588f120da9734ed862346d82dd9f76041e'
++BASE = 'd8dfe094e9930f19182a73f270d8ab521010ebe2'
+ LOCAL_HEAD = '832ed5f5aee56fbbf4c298ef0d2b10de154484cf'
+-ROOT = P / 'audit-publication04-stage06'
++ROOT = P / 'audit-publication04-stage07'
+ LOCK = P / '.audit-coordination-linux-20260914-c20/build.lock'
+ GIT = '/usr/bin/git'
+ result = {'status': 'UNSTARTED', 'commands': [], 'cases': 0, 'network': False}
+@@ -113,7 +113,7 @@
+     require(approval['reviewer'] == '/root/current_ledger' and
+             approval['status'] == 'ACCEPT_EXACT_STAGE_ONLY' and approval['request_sha256'] == digest(request_raw),
+             'Genuine exact staging approval required')
+-    require(request['scope'] == 'PUBLICATION04_STAGE06_NO_COMMIT_PUSH' and request['base'] == BASE,
++    require(request['scope'] == 'PUBLICATION04_STAGE07_NO_COMMIT_PUSH' and request['base'] == BASE,
+             'Exact staging scope')
+     require(digest(read(Path(__file__), 65536)) == request['controller_sha256'], 'Reviewed controller bytes')
+     require(digest(read(Path(GIT), 8 * 1024**2)) == request['git_sha256'], 'Reviewed Git image')

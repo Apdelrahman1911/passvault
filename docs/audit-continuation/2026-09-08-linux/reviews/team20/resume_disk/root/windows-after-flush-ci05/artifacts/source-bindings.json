@@ -1,0 +1,54 @@
+{
+  "after_flush_controls": true,
+  "audit_controls": false,
+  "case_argv": {
+    "passvault_biometric_windows_after_flush_continue": [
+      "--after-flush-case",
+      "continue"
+    ],
+    "passvault_biometric_windows_after_flush_process_death": [
+      "--after-flush-case",
+      "process_death"
+    ]
+  },
+  "case_names": [
+    "passvault_biometric_windows_after_flush_continue",
+    "passvault_biometric_windows_after_flush_process_death"
+  ],
+  "files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "sha256": "5bd3de7d16958c466ad740b2c14800f2f8b81e115323ad486ecf5a08f02a036e"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/include/passvault_biometric.h",
+      "sha256": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp",
+      "sha256": "93746b0cdb399aa17dd8c3c915e907244d4e86e5b566c51714ccc7f80310bd5d"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.rc",
+      "sha256": "13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp",
+      "sha256": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+      "sha256": "7644a27f40fe0b3f1fa50df36825f2dac5b833573326d37b0e9b8c7683dfa854"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/platform_review/new80/PVA036-AFTER-FLUSH-SOURCE-REVIEW.json",
+      "sha256": "742c0c820bdbfe1c31d3dc96ed1a04cfd8a5449285651ea05bb773456c59c9d2"
+    }
+  ],
+  "suite": "windows-after-flush-05",
+  "target": "passvault_biometric_windows_after_flush_test"
+}

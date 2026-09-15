@@ -1,0 +1,41 @@
+# Metadata-only source preparation, not stage/Git execution.
+from pathlib import Path
+import json,hashlib,stat
+W=Path('/root/projects/PassVault/passvault-linux')
+B=W/'docs/audit-continuation/2026-09-08-linux'
+D=B/'reviews/team20/resume_disk/root';R=D.parent/'current_ledger';H=D/'publication04/stage-instance07'
+BASE='d8dfe094e9930f19182a73f270d8ab521010ebe2'
+assert not (H/'REQUEST.json').exists()
+# These fixed current source/evidence directories are not historical runtimes.
+files=[W/'app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp',W/'scripts/audit/windows_after_flush_05.py',W/'.github/workflows/audit-windows-after-flush05.yml',B/'C20_REMAINING_WORK_SOLO_2026-09-14.md',B/'ISSUE_LEDGER.json',B/'VERIFICATION_LEDGER.json',B/'COVERAGE_DELTA.json']
+dirs=[D/'windows-after-flush05-controls-proposal01',D/'windows-after-flush05-controls-proposal02',D/'windows-after-flush05-controls-proposal03',D/'windows-job-membership-proposal01',R/'windows_job_membership_source',R/'windows_after_flush05_controls_source',R/'windows_after_flush05_instance',D/'windows-after-flush-ci04',R/'windows_after_flush04_actual',R/'windows_after_flush04_activation_actual',D/'gui24-instance01',R/'gui24_actual',D/'desktop-image03-instance01',D/'desktop-image03-heap-proposal01',R/'desktop_image03_heap_source',R/'desktop_image03_instance',R/'desktop_image03_actual',D/'desktop-image04-binding-proposal01',R/'desktop_image04_binding_source',D/'desktop-image04-instance01',R/'desktop_image04_instance',R/'desktop_image04_actual',D/'report-refresh29',R/'publication07_templates_source',R/'report29_reconciliation']
+# Read-only research excerpts; never include full downloaded webpages or private runtimes.
+files.extend(D/'windows-job-accounting-source01'/name for name in ['API-DOC-EXCERPT.json','API-LIMIT-EXCERPT.json','API-LIMIT-ROW02.json','FINDING-PROPOSAL.md'])
+files.extend(B/'runs/linux-desktop-integration24'/name for name in ['OUTER-RECEIPT.json','INNER-RESULT.json','GUI-CLEANUP.json','XML-RESULT.json','PVU003-RESULT.json','SOURCE-BEFORE.json','SOURCE-AFTER.json','pvu003-evidence/main.log','pvu003-evidence/main.events','pvu003-evidence/main.exit','xml/app-desktop--TEST-com.passvault.desktop.Pvu003NativeChooserAdmissionIntegrationTest.xml'])
+# Image04 compact public results must be selected after independent actual review;
+# no wildcard over a runtime and no claim every prospective file already exists.
+
+# Compact original04 public projections only, not its held runtime or private logs.
+files.extend(B/'runs/linux-desktop-installed-image04'/name for name in ['OUTER-RECEIPT.json','OUTER-INTENT.json','OUTER-ALLOCATION.json','OUTER-INDEX-COPY.json','INNER-PREFLIGHT.json','INNER-RESULT.json','PHASE-git-sdk-isolation.json','SOURCE-BEFORE.json','SOURCE-AFTER.json','logs/outer-git.stderr'])
+# ProspectiveGUI25 source is not runtime evidence; retain rejected/superseded proposal ancestry.
+dirs.extend([D/'gui25-focused-ancestry-proposal01',D/'gui25-controls-proposal01',D/'gui25-controls-proposal02',D/'gui25-controls-proposal03',D/'gui25-instance01',R/'gui25_initial_readiness_source'])
+
+for directory in dirs:
+ assert directory.is_dir() and not directory.is_symlink()
+ files.extend(p for p in directory.rglob('*') if p.is_file())
+assert len(files)==len(set(files))
+def desc(p):
+ s=p.lstat();assert stat.S_ISREG(s.st_mode) and not p.is_symlink() and s.st_size<8*1024**2
+ b=p.read_bytes();assert len(b)==s.st_size
+ return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+entries=[]
+for p in sorted(files):
+ rel=str(p.relative_to(W));assert '/requests/' not in rel and p.suffix not in ('.class','.zip','.jar','.exe','.dll')
+ t=desc(p);entries.append({'path':rel,'source_path':str(p),'proposed_git_mode':'100644','bytes':t['bytes'],'sha256':t['sha256'],'category':'windows05_prerequisites_windows04_gui24_image03_image04_reconciliation'})
+(H/'CANDIDATE.json').write_text(json.dumps({'base':BASE,'scope':'Windows05 prerequisites; Windows04 and GUI24 actuals; Image03 failure and Image04 batch; report29 reconciliation. No activation; prepared source is not execution evidence.','entries':entries},indent=2)+'\n')
+# Current metadata only for already-admitted publication store and coordination lock.
+repo=Path('/root/projects/PassVault/passvault-publication-20260914-04').lstat()
+lock=Path('/root/projects/PassVault/.audit-coordination-linux-20260914-c20/build.lock').lstat()
+request={'scope':'PUBLICATION04_STAGE07_NO_COMMIT_PUSH','base':BASE,'controller_sha256':desc(H/'STAGE.py')['sha256'],'git_sha256':desc(Path('/usr/bin/git'))['sha256'],'repo_identity':[repo.st_dev,repo.st_ino],'lock_identity':[lock.st_dev,lock.st_ino,lock.st_uid,stat.S_IMODE(lock.st_mode)],'candidate':desc(H/'CANDIDATE.json'),'root_admission':'Source-only metadata preparation. Root must wait for prior original closeout review/adoption, then fresh resources/quiet and exact independent stage admission. No oldHOLD probe/replay or activation.'}
+(H/'REQUEST.json').write_text(json.dumps(request,indent=2)+'\n')
+print(len(entries),sum(e['bytes'] for e in entries),desc(H/'REQUEST.json'))
