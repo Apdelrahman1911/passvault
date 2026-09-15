@@ -1,0 +1,7 @@
+{
+  "hashes": {
+    "scripts/test-release-automation.sh": "2b8df9cf5915722cf20d34783ad001a30157b703a32cd22b630b085b7752c606",
+    "scripts/test-release-regressions.rb": "b693eb558d73d7fc1d9025bd36db21b2d1c5734a7bfa69a23acc4f77c8eea56d"
+  },
+  "loader": "path = ARGV.fetch(0)\nsource = File.read(path)\nprefix_parts = source.split(\"\\ndef mobile_receipt\", 2)\nmarker = \"# Execute the actual shell guard with an unavailable optional search tool.\"\ntail_parts = source.split(marker, 2)\nraise \"Extraction boundary missing\" unless prefix_parts.size == 2 && tail_parts.size == 2\neval(prefix_parts.first + \"\\n\" + marker + tail_parts.last, TOPLEVEL_BINDING, path, 1)\n"
+}

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="VaultBackupServiceTest[desktop]" tests="26" skipped="0" failures="0" errors="0" timestamp="2026-09-15T07:56:13.238Z" hostname="runnervmlun5p" time="4.241">
+  <properties/>
+  <testcase name="restore aborts when the active session cannot be locked[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.28"/>
+  <testcase name="database rollback restores a previously enabled biometric enrollment[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.251"/>
+  <testcase name="tampered and truncated backups are rejected without replacement[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.247"/>
+  <testcase name="snapshot validation still rejects a mismatched imported entry count[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.023"/>
+  <testcase name="snapshot validation rejects non-exact fixed secret envelopes[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.023"/>
+  <testcase name="snapshot validation rejects encrypted metadata payloads repositories cannot read[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.022"/>
+  <testcase name="snapshot validation rejects unsafe unencrypted metadata[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.024"/>
+  <testcase name="legacy size admission is derived from the largest compatible v1 payload[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.001"/>
+  <testcase name="backup creation uses a fresh salt and nonce each time[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.295"/>
+  <testcase name="streaming legacy backup remains compatible without whole document buffering[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.247"/>
+  <testcase name="non backup input is rejected after a bounded prefix instead of being drained[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.007"/>
+  <testcase name="unsupported envelope version is rejected before decryption[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.156"/>
+  <testcase name="vault format two backup survives inspection and restore[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.341"/>
+  <testcase name="snapshot validation bounds credential relations[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.025"/>
+  <testcase name="attachment accounting rejects backups that claim to package files or contain phantom rows[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.0"/>
+  <testcase name="legacy export derives entry count from credential rows[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.332"/>
+  <testcase name="secure-store failure reports restore activation failure and preserves current data[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.247"/>
+  <testcase name="wrong backup password does not modify current data[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.248"/>
+  <testcase name="snapshot validation rejects folder cycles and accepts a deep acyclic hierarchy[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.054"/>
+  <testcase name="encrypted backup round trip validates before replacing the vault[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.339"/>
+  <testcase name="new legacy backup omits title hash while an old backup still restores[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.422"/>
+  <testcase name="metadata-only backup reports but does not restore unusable attachment rows[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.338"/>
+  <testcase name="successful restore removes the previous vault biometric key[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.246"/>
+  <testcase name="new backup rejects a passphrase below the shared minimum[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.025"/>
+  <testcase name="attachment file packaging is rejected explicitly[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.024"/>
+  <testcase name="snapshot validation rejects non-production credential types[desktop]" classname="com.passvault.core.database.backup.VaultBackupServiceTest" time="0.023"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

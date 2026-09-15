@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="AttachmentRepositoryTest[desktop]" tests="39" skipped="0" failures="0" errors="0" timestamp="2026-09-15T07:55:59.289Z" hostname="runnervmlun5p" time="13.763">
+  <properties/>
+  <testcase name="unavailable database during failed insert cleanup cannot authorize object deletion[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.296"/>
+  <testcase name="filename encryption failure and cancellation wipe the rename subkey without mutating content[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.268"/>
+  <testcase name="state downgrade is quarantined without deleting an intact object[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.266"/>
+  <testcase name="teardown failure does not close an import source twice[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.252"/>
+  <testcase name="truncated containers and swapped attachment objects fail authentication[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.281"/>
+  <testcase name="filename encryption failure and cancellation wipe the import subkey[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.255"/>
+  <testcase name="uneven reads leave only one final short encrypted record[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.266"/>
+  <testcase name="credential deletion cascades metadata then removes every encrypted attachment[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.262"/>
+  <testcase name="corrupt legacy filename is quarantined and does not block import or rename[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.258"/>
+  <testcase name="recovery implementation is not exposed as a public repository operation[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.246"/>
+  <testcase name="cancelled import closes input and removes partial state[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.253"/>
+  <testcase name="short first reads are accumulated before MIME detection[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.252"/>
+  <testcase name="declared file size and count limits fail before plaintext is consumed[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.353"/>
+  <testcase name="unknown fragmented input one byte above maximum is rejected without a row or object[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.536"/>
+  <testcase name="credential delete preserves its Room commit when encrypted object cleanup fails[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.257"/>
+  <testcase name="legacy and managed metadata share the visible attachment slot limit[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.348"/>
+  <testcase name="historical unsafe filename remains visible for collision checks but requires rename[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.258"/>
+  <testcase name="nested credential deletion returns a bounded failure instead of deadlocking[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.25"/>
+  <testcase name="ciphertext tampering is rejected and aborts partial plaintext output[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.258"/>
+  <testcase name="corrupt filename is quarantined without blocking sibling import rename repair or delete[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.261"/>
+  <testcase name="attachment filenames use padded buckets and remain readable after rename[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.256"/>
+  <testcase name="fragmented maximum file fits reader bounds and can be copied verified and backed up[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="3.051"/>
+  <testcase name="format downgrade is quarantined and remains protected and quota accounted[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.262"/>
+  <testcase name="genuine legacy metadata remains deletable without a managed object[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.253"/>
+  <testcase name="exact maximum file size streams without a full plaintext allocation[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.746"/>
+  <testcase name="legacy attachment filename remains readable and is padded on rename[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.249"/>
+  <testcase name="rename validates names resolves duplicates and delete removes row and object[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.254"/>
+  <testcase name="concurrent duplicate imports are serialized and remain independently decryptable[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.252"/>
+  <testcase name="attachment delete commits metadata first and recovers an object cleanup failure[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.249"/>
+  <testcase name="credential aggregate limit fails before opening the selected source[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.25"/>
+  <testcase name="nested attachment operations fail fast and release the operation lock[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.253"/>
+  <testcase name="import detects content type streams plaintext and allocates duplicate names[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.251"/>
+  <testcase name="pending-state tamper cannot authorize deletion of a published object[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.249"/>
+  <testcase name="source failure closes input and leaves no row object or staging file[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.249"/>
+  <testcase name="precommit insert cancellation removes only the unreferenced completed object[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.254"/>
+  <testcase name="filename ciphertext cannot be replayed across independently keyed attachments[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.254"/>
+  <testcase name="recovery removes an encrypted staging object left by process interruption[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.254"/>
+  <testcase name="cancelled insert result keeps the committed row and authenticated object[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.25"/>
+  <testcase name="legacy declared size does not consume managed object byte quota[desktop]" classname="com.passvault.core.database.attachment.AttachmentRepositoryTest" time="0.249"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

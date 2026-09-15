@@ -1,0 +1,93 @@
+{
+  "admitted_local_scope": {
+    "cases": 5,
+    "combined_bytes": 5446,
+    "combined_sha256": "983944153c50c3855e328cb897bbca6464250ed31ab59d2b61471b170cbf0cad",
+    "commands": "bash -n scripts/test-release-automation.sh; ruby -c scripts/test-release-regressions.rb; evaluate helper prefix plus exact new guard tail with actual regression source filename",
+    "not_admitted": "Original107 cases, full shell suite, Gradle, platform/device builds, archived/unadmitted helpers",
+    "prefix_bytes": 3658,
+    "prefix_sha256": "901971e022900f1df9ef33b00ce6574063b303fb9b0ef0e0980e85bb97d07ed8",
+    "tail_bytes": 1788,
+    "tail_sha256": "1e6992160917dc85597c38b251172a5b4dde637eb2dc4f20d8021709b5d35b69"
+  },
+  "coordination_and_cleanup": {
+    "android_cancellation_receipts": [
+      {
+        "data": {
+          "cleanup": "PASS",
+          "exit": null,
+          "minimum_available_ram_fraction": 0.6475501928365502,
+          "minimum_free_bytes": 89678090240,
+          "reports": "post-settlement snapshot",
+          "source": "87efe8c82b7633cac6adc006063ed204acc285c2",
+          "wrapper_stop": 0
+        },
+        "path": "merge-main-01/ci02-artifacts/build-android-evidence/passvault-ci-fk9pqbo5/cleanup.json",
+        "sha256": "19b531a296f1f09318072ccb9d08e60d4a50f8c96884240e4bd2bc4a9014414d"
+      }
+    ],
+    "fresh_root_preconditions": [
+      "Confirm owned CI02 settled and active build/test jobs0",
+      "Acquire fresh validated coordination lock",
+      "Disk floor3GiB and available RAM25%",
+      "Source hashes before/after",
+      "Install cleanup before launch, private synthetic HOME/TMP and scrubbed environment",
+      "Record fresh owned process group/PGID at launch; 120-second bound",
+      "Only bounded owned-group termination if necessary; positive group settlement before deleting private directory",
+      "Preserve logs/results; no Gradle startup, wrapper stop not applicable"
+    ],
+    "parent_report": "CI02 completed/cancelled; monitor PID7669 exited, lock released; all local heavy jobs0. Reviewer does not treat historical PID as execution/signal authority."
+  },
+  "decision": "APPROVED_CONDITIONAL_FRESH_ROOT_EXECUTION_ADMISSION",
+  "independent_challenges": [
+    "Old rg command inside if swallowed missing-tool exit127; author independently reproduced reviewer finding. Current workflows contain neither forbidden token; no exposed production path found.",
+    "Standalone Ruby under existing set -euo pipefail fails closed for missing executable or unreadable File.read; same two case-sensitive tokens; Ruby already required, no dependency change.",
+    "Extracted actual shell block avoids testing a duplicate implementation. Positive case prevents trivially broken fixtures satisfying all negative cases.",
+    "Both prohibited tokens and missing input mutate third workflow, challenging complete input enumeration. Missing-rg and missing-Ruby fixtures return127.",
+    "Existing unique synthetic fixtures, unsetenv_others and no-profile Bash limit environment inheritance; fake provider queue remains empty.",
+    "Source reconstruction reviewed previously confines implementation diff to one guard and new five-case tail; unchanged exact afterimage hashes rechecked now.",
+    "Prefix stops before original cases. Tail retains failure abort and numeric summary. Eval actual source filename preserves ROOT and require_relative."
+  ],
+  "plan": {
+    "path": "merge-main-01/CI03-GUARD-PLAN.md",
+    "sha256": "8ba5d3d6c334254f5df22238d9e1eec41c5a8fe4db115f545725c412f9e6dc68"
+  },
+  "result_limits": [
+    "No local tests were executed by reviewer or claimed passed by this admission",
+    "Five selected cases are not a full112-case pass",
+    "CI02 cancelled, Android exit null is not platform success",
+    "Future hosted corrected-source run needs separate exact commit/tree seal before dedicated-branch push",
+    "Protected merge needs actual required checks and independent GitHub approval; no publication admission"
+  ],
+  "reviewed_at_utc": "2026-09-15T08:17:45.629081+00:00",
+  "reviewer": "/root/current_ledger",
+  "schema": 1,
+  "scope": "Independent SOURCE/DATA review; no Git/network/build/test/helper execution or live coordination/process/resource probes",
+  "source_files": [
+    {
+      "decision": "accept fail-closed production-path guard",
+      "path": "scripts/test-release-automation.sh",
+      "sha256": "2b8df9cf5915722cf20d34783ad001a30157b703a32cd22b630b085b7752c606"
+    },
+    {
+      "decision": "accept five realistic regressions of actual extracted guard",
+      "path": "scripts/test-release-regressions.rb",
+      "sha256": "b693eb558d73d7fc1d9025bd36db21b2d1c5734a7bfa69a23acc4f77c8eea56d"
+    },
+    {
+      "decision": "accept qualified completed CI02 evidence; no new regression or platform pass claimed",
+      "path": "docs/review/VERIFICATION.md",
+      "sha256": "d7c64976d47ae4bb03d4200a06ecfe2ee769b90b8a6825e3514eb5c29900e658"
+    }
+  ],
+  "unchanged_restrictions": [
+    "PVU007 STOP",
+    "PVU011 NO-RETRY",
+    "PVA029 recorded failure/no automatic retry",
+    "G7/G8 and WindowsGraph03 CLOSED",
+    "All HOLD/UNKNOWN",
+    "No C20 scope expansion",
+    "No branch deletion or protected-branch merge",
+    "No beta/Store publication"
+  ]
+}

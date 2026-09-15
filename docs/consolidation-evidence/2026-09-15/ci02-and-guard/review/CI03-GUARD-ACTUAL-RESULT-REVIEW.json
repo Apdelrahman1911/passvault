@@ -1,0 +1,144 @@
+{
+  "accepted_results": {
+    "cases": [
+      "PASS Pilot production guard: valid pilot without ripgrep",
+      "PASS Pilot production guard: reject reusable production submit",
+      "PASS Pilot production guard: reject production environment",
+      "PASS Pilot production guard: reject missing workflow",
+      "PASS Pilot production guard: reject missing Ruby"
+    ],
+    "failed": 0,
+    "passed": 5,
+    "selected_case_seconds": 0.5692014290034422,
+    "skipped": 0,
+    "syntax_checks": [
+      {
+        "command": "bash -n scripts/test-release-automation.sh",
+        "exit": 0
+      },
+      {
+        "command": "ruby -c scripts/test-release-regressions.rb",
+        "exit": 0,
+        "stdout": "Syntax OK"
+      }
+    ]
+  },
+  "cleanup_and_coordination": {
+    "qualification": "Reviewed parent supervisor receipt; not independent live probing or proof under forced process/runner loss. Historical recorded PGIDs confer no future authority.",
+    "receipt": {
+      "active_runs_before": [],
+      "cleanup": "PASS private removed after positive settlement",
+      "commands": [
+        {
+          "elapsed_seconds": 0.5692014290034422,
+          "exit": 0,
+          "group_settled": true,
+          "index": 0,
+          "pgid": 4436,
+          "pid": 4436
+        },
+        {
+          "elapsed_seconds": 0.009571566002705367,
+          "exit": 0,
+          "group_settled": true,
+          "index": 1,
+          "pgid": 4450,
+          "pid": 4450
+        },
+        {
+          "elapsed_seconds": 0.0329988699995738,
+          "exit": 0,
+          "group_settled": true,
+          "index": 2,
+          "pgid": 4451,
+          "pid": 4451
+        }
+      ],
+      "scope": "5 new actual-block synthetic cases +2 syntax checks; not full112case suite",
+      "source": {
+        "scripts/test-release-automation.sh": "2b8df9cf5915722cf20d34783ad001a30157b703a32cd22b630b085b7752c606",
+        "scripts/test-release-regressions.rb": "b693eb558d73d7fc1d9025bd36db21b2d1c5734a7bfa69a23acc4f77c8eea56d"
+      },
+      "source_unchanged": true,
+      "status": "PASS",
+      "utc": "2026-09-15T08:18:08.811173+00:00",
+      "wrapper_stop": "not-started"
+    }
+  },
+  "decision": "ACCEPT_FIVE_CASE_ACTUAL_RESULT_AND_UNCHANGED_REVIEWED_SOURCE",
+  "evidence": {
+    "directory": "merge-main-01/local-check06",
+    "files": {
+      "0.pid": {
+        "bytes": 5,
+        "sha256": "a23e995661123db96ab63b818efea4cfb2dcba703a9dedf6acf95041de9feaa3"
+      },
+      "0.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "0.stdout": {
+        "bytes": 386,
+        "sha256": "15d77835ab908f900aafca459ea142e38c6bc18f17c9e8b746976a3941e74460"
+      },
+      "1.pid": {
+        "bytes": 5,
+        "sha256": "c88f2bf99731a9183ef6cae20ef173e9dff340f71dc937abdabc9318b54ec1f7"
+      },
+      "1.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "1.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "2.pid": {
+        "bytes": 5,
+        "sha256": "bfe665a3ce90b42efda67691ec4f1ae00e86c1f34fe79aa99035b505a45e3d00"
+      },
+      "2.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "2.stdout": {
+        "bytes": 10,
+        "sha256": "bbafef10c22b9323fa5589564990f57fbf57f9a632381d5e765dc5a3b25b4a1b"
+      },
+      "result.json": {
+        "bytes": 1050,
+        "sha256": "218f92807ad3c25a32bfc4179602c69003b5a3549a2f752a1241b04eccd40aed"
+      },
+      "source.json": {
+        "bytes": 675,
+        "sha256": "e5d89aa6278831f79d6bb85ab6f31969367af73ce4931f92281d6f4afd5b391d"
+      }
+    }
+  },
+  "limits": [
+    "5 new selected actual-block synthetic cases, not full112-case local execution",
+    "2 syntax checks are not test cases",
+    "No Gradle or platform runtime evidence added by this run",
+    "Prior CI02 Linux1604passed/5skipped preserved without treating cancelled platform job as passed",
+    "Existing CI workflow, cleanup/resource admission and publication/STOP/NO-RETRY/HOLD boundaries unchanged",
+    "Protected main requires required CI plus independent GitHub approval; agent source review is not GitHub approval"
+  ],
+  "method": "Read exact supplied logs/source/result as DATA; stdlib source/hash reconciliation; no reviewer execution of project tests or helpers and no live process probes",
+  "next_step": "Accept staging/committing only the two reviewed scripts plus truthful reviewed evidence document to dedicated integration branch; root must seal exact commit/tree and verify changed-path/source binding before push triggers admitted normal nonpublishing protected CI. No arbitrary unchanged retry or protected merge admitted.",
+  "prior_admission": {
+    "path": "review/CI03-GUARD-SOURCE-ADMISSION-REVIEW.json",
+    "sha256": "ca0b2e04cc2ff7e57ad8c51d52971824d60c05265b799867340f123129d40986"
+  },
+  "reviewed_at_utc": "2026-09-15T08:19:06.703747+00:00",
+  "reviewer": "/root/current_ledger",
+  "schema": 1,
+  "source_binding": {
+    "combined_subset_bytes": 5446,
+    "combined_subset_sha256": "983944153c50c3855e328cb897bbca6464250ed31ab59d2b61471b170cbf0cad",
+    "extraction": "Recorded loader reconstructs exactly admitted helper-prefix plus five-case tail, eval source filename preserves source-relative imports",
+    "files": {
+      "scripts/test-release-automation.sh": "2b8df9cf5915722cf20d34783ad001a30157b703a32cd22b630b085b7752c606",
+      "scripts/test-release-regressions.rb": "b693eb558d73d7fc1d9025bd36db21b2d1c5734a7bfa69a23acc4f77c8eea56d"
+    }
+  }
+}
