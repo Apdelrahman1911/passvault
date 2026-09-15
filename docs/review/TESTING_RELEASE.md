@@ -1,8 +1,28 @@
 # Testing release resource boundary
 
-Version 1.0.8 uses Store build 1017002, confirmed from the last GitHub publication
-(1.0.7/1017001) and the owner's statement that there were no external uploads.
+Version 1.0.9 reserves Store build 1017003 for a new testing publication.
+Build 1017002 must not be reused: the 1.0.8 GitHub run uploaded Android, but its
+iOS archive failed before upload. The owner confirmed no uploads outside GitHub.
 Deferred findings in BACKLOG.md remain open; this is not production authorization.
+
+## iOS archive memory correction
+
+[Run 34979337404](https://github.com/Apdelrahman1911/passvault/actions/runs/34979337404)
+on source `a929fd97ce9f103c1097027d3065758b9dd7774b` failed at
+`:shared:linkReleaseFrameworkIosArm64`: Kotlin/Native release optimization exhausted
+the Java heap. The adapter had overridden the project's 4 GiB setting with 2 GiB.
+Its wrapper stop succeeded, but failed Xcode settlement remained **HOLD**; subsequent
+cleanup refusals were consequences, not the compiler failure. External promotion
+and Desktop publication were skipped. That evidence and HOLD remain binding.
+
+The new iOS archive uses a 4 GiB heap and the standard `macos-26-intel` runner,
+requiring at least 12 GiB host RAM before signing inputs are created. Xcode 26+,
+the iOS Arm64 destination, application identities, worker limits and live resource
+floors are unchanged. Other release batches retain their 2 GiB heaps. The extra
+host capacity avoids merely shifting heap exhaustion to the 7 GiB Arm64 runner's
+RAM floor. This is a configuration fix, **not yet proof of a successful archive**.
+The new signed archive/export and Store processing must pass before success is
+reported; do not rerun or resume the partially uploaded 1017002 release.
 
 The release build adapter reuses the current CI process-scope implementation,
 not archived audit runners. It preserves signing HOME on iOS, uses private build
@@ -19,7 +39,16 @@ uncertified cleanup interruption, not a passed receipt.
 
 ## Focused verification
 
-Linux: nine synthetic test methods passed, including two real process/filesystem
+1.0.9 local checks: nine test methods passed, now including three real synthetic
+process/filesystem batches. The added iOS batch checks the private 4 GiB Gradle
+configuration reaches the child process, while Android remains at 2 GiB; worker,
+ownership, staging and cleanup contracts are preserved. Both Python files and
+the changed workflow parsed, all 36 workflow Bash blocks passed syntax checks,
+release metadata validated, and shared/Xcode version values matched. All private
+test fixtures and owned processes were cleaned after settlement. These checks
+used dummy wrappers, not a real iOS compiler, signing identity or Store upload.
+
+Previous Linux baseline: nine synthetic test methods passed, including two real process/filesystem
 adapter batches using a **dummy**, not Gradle, wrapper. These protect byte
 preservation, selected artifact retention, occupied/missing/symlink refusals,
 wrapper-stop/settlement ordering, initial-report-copy failure, and

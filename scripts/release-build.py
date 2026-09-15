@@ -187,8 +187,13 @@ def main(mode, script=None):
                                 f' -Djava.io.tmpdir="{private / "tmp"}" -Dpassvault.release.owner={private.name}').strip()
     env["GRADLE_OPTS"] = (f"-Dpassvault.release.owner={private.name} -Dorg.gradle.daemon=false "
                           "-Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false")
+    # Kotlin/Native's optimized iOS framework link exceeds the small CI heap.
+    # Restore the project's 4 GiB budget only for the archive; other release
+    # batches retain their existing 2 GiB limit. The workflow supplies RAM
+    # headroom; worker limits and the live resource floor remain unchanged.
+    heap_mib = 4096 if mode == "ios" else 2048
     (private / "gradle/gradle.properties").write_text(
-        f"org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8 -Dpassvault.release.owner={private.name}\n"
+        f"org.gradle.jvmargs=-Xmx{heap_mib}m -Dfile.encoding=UTF-8 -Dpassvault.release.owner={private.name}\n"
         "org.gradle.workers.max=1\norg.gradle.parallel=false\norg.gradle.daemon=false\n"
         "org.gradle.configureondemand=false\norg.gradle.configuration-cache=false\n"
         "kotlin.compiler.execution.strategy=in-process\n")
@@ -200,7 +205,7 @@ def main(mode, script=None):
                    XDG_CACHE_HOME=str(home / ".cache"))
         env["JAVA_TOOL_OPTIONS"] = f'-Duser.home="{home}" -Djava.io.tmpdir="{private / "tmp"}"'
     scopes, attempted = [], set()
-    result = dict(owner, mode=mode, exit=None, cleanup="HOLD", wrapper_stop="not-started")
+    result = dict(owner, mode=mode, exit=None, cleanup="HOLD", wrapper_stop="not-started", gradle_heap_mib=heap_mib)
     def cancel(_signum, _frame):
         raise RuntimeError("Release batch interrupted; no automatic retry")
     signal.signal(signal.SIGINT, cancel)
