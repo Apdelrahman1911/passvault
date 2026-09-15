@@ -1,7 +1,11 @@
 # PassVault security
 
-PassVault is security-sensitive software under active hardening. It has internal source review and automated tests,
-but no independent audit, penetration-test certification, MASVS certification, or public release attestation.
+PassVault is security-sensitive software under active hardening. Internal source review and automated tests do not
+establish third-party audit, penetration-test or MASVS certification, or production-release attestation.
+
+Historical continuation status and source-bound results are in the [issue ledger][audit-issues] and
+[verification ledger][audit-verification]. The selected integration has separate results in
+[docs/review/VERIFICATION.md](docs/review/VERIFICATION.md). Start with [the consolidation record](docs/review/README.md) for evidence qualifications.
 
 ## Implemented controls
 
@@ -40,9 +44,13 @@ tampering with the original state could deny the owner access without preventing
 
 ## Unsupported security claims
 
-Desktop biometric vault unlock is not shipped. PassVault also has no cloud sync, TLS/certificate-pinning boundary,
-root/jailbreak detection, account service, or CSV export. Mobile biometric and attachment-picker source/automated
-tests do not substitute for physical-device prompt, provider, cancellation, backgrounding, and cleanup evidence.
+The remediation source implements Desktop biometric vault unlock for macOS and Windows; Linux remains
+master-password-only. Desktop production publication is deferred. Implementation and selected host tests do not
+establish completed native/provider/device or production-package verification.
+
+PassVault has no cloud sync, TLS/certificate-pinning boundary, root/jailbreak detection, account service, or CSV
+export. Mobile biometric and attachment-picker source/automated tests do not substitute for physical-device prompt,
+provider, cancellation, backgrounding, and cleanup evidence.
 
 ## Reporting vulnerabilities
 
@@ -60,12 +68,22 @@ unpatched vulnerability.
   recreation, and enrollment-change invalidation.
 - [ ] Desktop graphical smoke tests for focus/lock, clipboard, tray, minimize/focus concealment, and file dialogs;
   portable screenshot prevention is not claimed.
-- [x] Exported Room schemas 1/2/3 and non-destructive 1 -> 3, 2 -> 3, fresh-schema, query-plan, and rollback tests.
+- [ ] Verify every supported prior Room schema (1, 2, 3, and 4) upgrades non-destructively to audited schema 5;
+  verify fresh-schema/export agreement, query-plan indexes, and injected-failure rollback/reopen against the exact
+  final source. Schemas 1–5 and explicit 1 -> 2 -> 3 -> 4 -> 5 migrations are present; historical passes do not
+  complete this final-source gate.
 - [ ] Publisher ownership/disclosure contacts plus release signing and notarization are independently verified; the
   repository's Apache-2.0 license and third-party notices are included in release artifacts.
 - [ ] Full tests, static analysis, Android release/R8 build, and current-host Desktop package pass from a clean
   checkout.
 
-Implementation detail and current evidence are recorded in
-[`docs/SECURITY_MODEL.md`](docs/SECURITY_MODEL.md) and
-[`docs/PRODUCTION_READINESS_AUDIT.md`](docs/PRODUCTION_READINESS_AUDIT.md).
+Schema 5 describes the audited remediation source, not an observed installed or Store build. The handoff records
+occupied candidate 1017001 as schema 4; no current Store/deployed-state query is implied, and it must not be rebuilt
+or replaced.
+
+Implementation details are in [`docs/SECURITY_MODEL.md`](docs/SECURITY_MODEL.md).
+[`docs/PRODUCTION_READINESS_AUDIT.md`](docs/PRODUCTION_READINESS_AUDIT.md) preserves historical command claims;
+use the continuation ledgers above for current qualified outcomes and remaining work.
+
+[audit-issues]: https://github.com/Apdelrahman1911/passvault/blob/df30e43c26184c30a9845c80c368d3ad5413f125/docs/audit-continuation/2026-09-08-linux/ISSUE_LEDGER.json
+[audit-verification]: https://github.com/Apdelrahman1911/passvault/blob/df30e43c26184c30a9845c80c368d3ad5413f125/docs/audit-continuation/2026-09-08-linux/VERIFICATION_LEDGER.json

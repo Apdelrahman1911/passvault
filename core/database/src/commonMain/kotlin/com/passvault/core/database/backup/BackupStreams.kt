@@ -1,5 +1,8 @@
 package com.passvault.core.database.backup
 
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
+
 /** One-shot bounded input for a selected encrypted backup file. */
 interface BackupContentSource {
     val declaredSizeBytes: Long?
@@ -16,6 +19,39 @@ interface BackupContentSource {
     suspend fun rewind()
 
     suspend fun close()
+}
+
+/** Owns prefix dispatch as well as every legacy/v2 read, including cancelled admission. */
+internal suspend fun <T> withOwnedBackupSource(
+    source: BackupContentSource,
+    block: suspend (BackupContentSource) -> T,
+): T {
+    val ownedSource = OwnedBackupSource(source)
+    return try {
+        block(ownedSource)
+    } finally {
+        withContext(NonCancellable) { runCatching { ownedSource.close() } }
+    }
+}
+
+/**
+ * V2 readers close between authenticated passes. Suppress duplicate closes from
+ * nested cleanup, but reacquire ownership before rewind can reopen a handle.
+ */
+private class OwnedBackupSource(private val delegate: BackupContentSource) : BackupContentSource by delegate {
+    private var closeRequired = true
+
+    override suspend fun rewind() {
+        closeRequired = true
+        delegate.rewind()
+    }
+
+    override suspend fun close() = withContext(NonCancellable) {
+        if (closeRequired) {
+            closeRequired = false
+            delegate.close()
+        }
+    }
 }
 
 /**

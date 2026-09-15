@@ -639,7 +639,7 @@ jobs:
         shell: pwsh
         run: >
           ./scripts/update-desktop-biometric-checksum.ps1
-          -RuntimePath app-desktop/build/compose/binaries/main-release/app
+          -RuntimePath app-desktop/build/compose/binaries/main-release/app/PassVault
 
       - name: Package installers from the exact signed Windows app image
         env:

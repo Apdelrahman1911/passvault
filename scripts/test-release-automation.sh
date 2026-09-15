@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
+# Report source location only; never echo fixture values or command arguments.
+trap 'printf "Release automation failed at line %s\n" "$LINENO" >&2' ERR
 
 repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repository_root"
@@ -14,6 +16,7 @@ ruby scripts/verify-static-analysis-coverage.rb >/dev/null
 ruby scripts/validate-ci-workflow-security.rb >/dev/null
 ruby scripts/validate-apple-signing-secret-boundary.rb >/dev/null
 ruby scripts/validate-ios-gradle-build-boundary.rb >/dev/null
+ruby scripts/test-release-regressions.rb >/dev/null
 ./scripts/test-apple-signing-secret-handling.sh >/dev/null
 ./scripts/verify-gradle-wrapper.sh >/dev/null
 
@@ -127,8 +130,8 @@ cp .github/workflows/ci.yml "$ci_security_fixture"
 ruby -e '
   path = ARGV.fetch(0)
   source = File.read(path, encoding: "UTF-8")
-  needle = "    permissions:\n      contents: read\n    steps:\n"
-  replacement = "    permissions:\n      checks: write\n      contents: read\n    steps:\n"
+  needle = "    permissions:\n      contents: read\n"
+  replacement = "    permissions:\n      checks: write\n      contents: read\n"
   abort("missing test permission fixture") unless source.sub!(needle, replacement)
   File.write(path, source)
 ' "$ci_security_fixture"
@@ -2258,11 +2261,15 @@ done
 grep -Fq \
     "https://raw.githubusercontent.com/Apdelrahman1911/mobile-release-kit/${mobile_release_kit_sha}/schemas/project.schema.json" \
     release/mobile-release.json
-if rg -q 'reusable-production-submit|mobile-production' \
-    .github/workflows/mobile-release-{preflight,candidate,external-testing}.yml; then
-    echo "The PassVault pilot callers must not expose a Production path." >&2
-    exit 1
-fi
+# BEGIN PILOT PRODUCTION GUARD
+ruby - .github/workflows/mobile-release-{preflight,candidate,external-testing}.yml <<'PRODUCTION_PATH_GUARD'
+ARGV.each do |path|
+  if File.read(path).match?(/reusable-production-submit|mobile-production/)
+    abort "The PassVault pilot callers must not expose a Production path."
+  end
+end
+PRODUCTION_PATH_GUARD
+# END PILOT PRODUCTION GUARD
 test "$(grep -Fc '      id-token: write' .github/workflows/production-release.yml)" -eq 1
 grep -Fq "10#\$VERSION_CODE > 2100000000" .github/workflows/mobile-store-release.yml
 grep -Fq 'BUILD_NUMBER="$(awk -F= '\''$1 == "VERSION_CODE" { print $2 }'\'' version.properties)"' \
@@ -2386,12 +2393,13 @@ if grep -Fq 'Build Android Release (unsigned)' .github/workflows/ci.yml; then
     exit 1
 fi
 for ci_release_signing_control in \
-    'Build Android Release with ephemeral validation signing' \
-    'keystore_path="${RUNNER_TEMP:?}/passvault-ci-validation-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.p12"' \
+    'Build Android Debug and Release with ephemeral validation signing' \
+    'keystore_path="${TMPDIR:?}/passvault-ci-validation-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.p12"' \
     'keytool -genkeypair' \
     '-storepass:env KEYSTORE_PASSWORD' \
     'trap cleanup EXIT' \
     ':app-android:verifyReleaseSigningConfiguration' \
+    '-Ppassvault.versionCode=1' \
     '-Ppassvault.requireReleaseSigning=true'; do
     grep -Fq -- "$ci_release_signing_control" .github/workflows/ci.yml || {
         echo "Android CI release validation lacks: $ci_release_signing_control" >&2
@@ -2708,7 +2716,9 @@ grep -Fq 'Enforce email-list TestFlight policy and verify exact processed App St
 grep -Fq "grep -Fqx 'PROCESSING_STATE=VALID'" .github/workflows/mobile-store-release.yml
 grep -Fq 'set_environment_variable mobile-production TESTFLIGHT_EXTERNAL_GROUP' \
     scripts/configure-github-mobile-release.sh
-grep -Fq 'gh secret delete TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64' \
+grep -Fq 'ruby scripts/delete-github-environment-secret.rb "$GITHUB_REPOSITORY"' \
+    scripts/configure-github-mobile-release.sh
+grep -Fq 'mobile-external-beta TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64' \
     scripts/configure-github-mobile-release.sh
 # Configuration-script expressions must be matched literally.
 # shellcheck disable=SC2016

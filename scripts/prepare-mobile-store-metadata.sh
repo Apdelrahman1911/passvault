@@ -62,6 +62,8 @@ for name in "${required_files[@]}"; do
     fi
 done
 
+ruby "$repository_root/scripts/validate-store-metadata-inputs.rb" "$source_root" >/dev/null
+
 metadata_keys=(
     STORE_NAME
     APPLE_SUBTITLE
@@ -85,13 +87,7 @@ validate_metadata_file() {
       abort("Unknown store metadata keys: #{unknown.join(", ")}") unless unknown.empty?
       if values.key?("FULL_DESCRIPTION_FILE")
         legacy_path = values.fetch("FULL_DESCRIPTION_FILE")
-        components = legacy_path.split("/", -1)
-        safe_legacy_path = legacy_path.bytesize <= 256 &&
-          components.last == expected_description_file &&
-          components.all? do |component|
-            !["", ".", ".."].include?(component) &&
-              component.match?(/\A[A-Za-z0-9][A-Za-z0-9._-]*\z/)
-          end
+        safe_legacy_path = [expected_description_file, "release/private/#{expected_description_file}"].include?(legacy_path)
         abort("Legacy FULL_DESCRIPTION_FILE does not identify the approved description file") unless
           safe_legacy_path
       end

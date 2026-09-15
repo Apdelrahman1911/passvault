@@ -106,15 +106,17 @@ class AttachmentRepositoryImpl(
         val keyContext = Uuid.random().toString()
         val storagePath = "objects/${Uuid.random()}.pva"
         val key = deriveAttachmentKey(vek, keyContext)
-        val encryptedFilename = encryptFilename(fileName, attachmentId, credentialId.value, key)
+        var encryptedFilename: com.passvault.core.crypto.EncryptedData? = null
         var completed = false
         try {
+            val filename = encryptFilename(fileName, attachmentId, credentialId.value, key)
+            encryptedFilename = filename
             val staging = newStagingEntity(
                 attachmentId = attachmentId,
                 credentialId = credentialId.value,
                 keyContext = keyContext,
                 storagePath = storagePath,
-                encryptedFilename = encryptedFilename,
+                encryptedFilename = filename,
                 declaredSize = source.declaredSizeBytes,
             )
             val stored = codec.encryptToObject(
@@ -136,9 +138,14 @@ class AttachmentRepositoryImpl(
             completed = true
             return ready.toMetadata(fileName)
         } finally {
-            if (!completed) cleanupFailedImport(storagePath)
-            encryptedFilename.clear()
-            cryptoEngine.secureWipe(key)
+            try {
+                encryptedFilename?.clear()
+                cryptoEngine.secureWipe(key)
+            } finally {
+                // Filesystem/Room compensation may suspend. Do not retain the
+                // derived key while waiting to establish deletion authority.
+                if (!completed) cleanupFailedImport(storagePath)
+            }
         }
     }
 
@@ -202,17 +209,19 @@ class AttachmentRepositoryImpl(
                     .map { sibling -> sibling.readAttachmentFilename(credentialId.value, vek, cryptoEngine) }
                 val fileName = uniqueFileName(AttachmentPolicy.validateFileName(newFileName), existingNames)
                 val key = deriveAttachmentKey(vek, entity.keyDerivationContext)
-                val encrypted = encryptFilename(fileName, entity.id, entity.credentialId, key)
+                var encrypted: com.passvault.core.crypto.EncryptedData? = null
                 try {
+                    val filename = encryptFilename(fileName, entity.id, entity.credentialId, key)
+                    encrypted = filename
                     attachmentDao.update(
                         entity.copy(
-                            encryptedFilename = CryptoEnvelope.encode(encrypted),
-                            filenameNonce = encrypted.nonce.copyOf(),
+                            encryptedFilename = CryptoEnvelope.encode(filename),
+                            filenameNonce = filename.nonce.copyOf(),
                         ),
                     )
                     entity.toMetadata(fileName)
                 } finally {
-                    encrypted.clear()
+                    encrypted?.clear()
                     cryptoEngine.secureWipe(key)
                 }
             }
@@ -346,7 +355,12 @@ class AttachmentRepositoryImpl(
         storagePath: String,
     ) = withContext(NonCancellable) {
         recoveryCompleted = false
-        runCatching { blobStore.delete(storagePath) }
+        // Room may commit an insert before cancellation wins its result delivery.
+        // Failed delivery is not failed persistence. Only proven absence of any
+        // durable reference grants deletion authority; query failure retains the
+        // object for a later conservative recovery sweep.
+        val referenced = runCatching { attachmentDao.hasStoragePathReference(storagePath) }.getOrNull()
+        if (referenced == false) runCatching { blobStore.delete(storagePath) }
     }
 
     private suspend fun requireAttachment(

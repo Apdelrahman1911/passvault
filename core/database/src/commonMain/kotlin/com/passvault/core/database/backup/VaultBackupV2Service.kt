@@ -59,14 +59,10 @@ internal class VaultBackupV2Service(
                 sessionManager.withUnlockedSession { vek ->
                     writer = BackupV2Writer.create(sink, password, cryptoEngine)
                     val activeWriter = requireNotNull(writer)
-                    val validated = database.useReaderConnection { connection ->
-                        connection.deferredTransaction {
-                            writeMetadataStream(activeWriter, onProgress)
-                        }
-                    }
+                    val (validated, keyOrder) = writeSnapshotMetadata(activeWriter, onProgress)
                     var totalObjectBytes = 0L
                     var managedIndex = 0
-                    forEachManagedAttachment { attachment ->
+                    forEachManagedAttachment(keyOrder) { attachment ->
                         val expectedId = requireNotNull(validated.managedAttachmentIds.getOrNull(managedIndex))
                         totalObjectBytes += writeValidatedAttachment(activeWriter, attachment, expectedId, vek)
                         managedIndex++
@@ -243,11 +239,29 @@ internal class VaultBackupV2Service(
         }
     }
 
-    private suspend fun writeMetadataStream(
+    private suspend fun writeSnapshotMetadata(
         writer: BackupV2Writer,
         onProgress: (Int) -> Unit,
+    ): Pair<ValidatedBackupStream, BackupDatabaseTextOrder> = database.useReaderConnection { connection ->
+        connection.deferredTransaction {
+            // BINARY compares bytes in the database's actual encoding, not
+            // necessarily Kotlin's UTF-16 String order. Keep this export-local.
+            val order = connection.usePrepared("PRAGMA encoding") { statement ->
+                require(statement.step()) { "Database encoding is missing" }
+                val selected = BackupDatabaseTextOrder.fromPragma(statement.getText(0))
+                require(!statement.step()) { "Database encoding is ambiguous" }
+                selected
+            }
+            writeMetadataStream(writer, order, onProgress) to order
+        }
+    }
+
+    private suspend fun writeMetadataStream(
+        writer: BackupV2Writer,
+        keyOrder: BackupDatabaseTextOrder,
+        onProgress: (Int) -> Unit,
     ): ValidatedBackupStream {
-        val manifest = readDatabaseManifest()
+        val manifest = readDatabaseManifest(keyOrder)
         val validator = newValidator(manifest)
         val manifestBytes = BackupEntityBinaryCodec.encodeManifest(manifest)
         try {
@@ -259,38 +273,38 @@ internal class VaultBackupV2Service(
         val metadata = requireNotNull(backupDao.getVaultMetadata()) { "Vault metadata is missing" }
             .copy(entryCount = manifest.credentialCount)
         writeMetadataValue(writer, validator, BackupMetadataValue.Metadata(metadata))
-        emitSingleKeyPages(
+        keyOrder.emitSingleKeyPages(
             limit = SMALL_PAGE_ROWS,
             fetch = backupDao::getFolderPage,
             key = { it.id },
         ) { writeMetadataValue(writer, validator, BackupMetadataValue.Folder(it)) }
-        emitSingleKeyPages(
+        keyOrder.emitSingleKeyPages(
             limit = SMALL_PAGE_ROWS,
             fetch = backupDao::getTagPage,
             key = { it.id },
         ) { writeMetadataValue(writer, validator, BackupMetadataValue.Tag(it)) }
-        emitSingleKeyPages(
+        keyOrder.emitSingleKeyPages(
             limit = LARGE_VALUE_PAGE_ROWS,
             fetch = backupDao::getCredentialPage,
             key = { it.id },
         ) { writeMetadataValue(writer, validator, BackupMetadataValue.Credential(it)) }
-        emitSingleKeyPages(
+        keyOrder.emitSingleKeyPages(
             limit = REFERENCE_PAGE_ROWS,
             fetch = backupDao::getCanonicalCredentialFolderReferencePage,
             key = { it.credentialId },
         ) { writeMetadataValue(writer, validator, BackupMetadataValue.CredentialFolderReference(it)) }
-        emitCompositeKeyPages(
+        keyOrder.emitCompositeKeyPages(
             limit = REFERENCE_PAGE_ROWS,
             fetch = backupDao::getCredentialTagReferencePage,
             firstKey = { it.credentialId },
             secondKey = { it.tagId },
         ) { writeMetadataValue(writer, validator, BackupMetadataValue.CredentialTagReference(it)) }
-        emitSingleKeyPages(
+        keyOrder.emitSingleKeyPages(
             limit = LARGE_VALUE_PAGE_ROWS,
             fetch = backupDao::getAttachmentPage,
             key = { it.id },
         ) { writeMetadataValue(writer, validator, BackupMetadataValue.Attachment(it)) }
-        emitCompositeKeyPages(
+        keyOrder.emitCompositeKeyPages(
             limit = LARGE_VALUE_PAGE_ROWS,
             fetch = backupDao::getPasswordHistoryPage,
             firstKey = { it.credentialId },
@@ -521,7 +535,7 @@ internal class VaultBackupV2Service(
         backupDao.deleteCorruptionLogs()
     }
 
-    private suspend fun readDatabaseManifest() = BackupStreamManifest(
+    private suspend fun readDatabaseManifest(keyOrder: BackupDatabaseTextOrder) = BackupStreamManifest(
         credentialCount = backupDao.getCredentialCount(),
         folderCount = backupDao.getFolderCount(),
         tagCount = backupDao.getTagCount(),
@@ -530,12 +544,12 @@ internal class VaultBackupV2Service(
         attachmentCount = backupDao.getAttachmentCount(),
         managedAttachmentCount = backupDao.getManagedAttachmentCount(),
         passwordHistoryCount = backupDao.getPasswordHistoryCount(),
-        managedAttachmentObjectBytes = readManagedAttachmentObjectBytes(),
+        managedAttachmentObjectBytes = readManagedAttachmentObjectBytes(keyOrder),
     )
 
-    private suspend fun readManagedAttachmentObjectBytes(): Long {
+    private suspend fun readManagedAttachmentObjectBytes(keyOrder: BackupDatabaseTextOrder): Long {
         var totalBytes = 0L
-        forEachManagedAttachment { attachment ->
+        forEachManagedAttachment(keyOrder) { attachment ->
             try {
                 val objectBytes = blobStore.read(
                     attachment.storagePath,
@@ -550,57 +564,16 @@ internal class VaultBackupV2Service(
         return totalBytes
     }
 
-    private suspend fun forEachManagedAttachment(block: suspend (AttachmentRecordEntity) -> Unit) {
-        emitSingleKeyPages(
+    private suspend fun forEachManagedAttachment(
+        keyOrder: BackupDatabaseTextOrder,
+        block: suspend (AttachmentRecordEntity) -> Unit,
+    ) {
+        keyOrder.emitSingleKeyPages(
             limit = LARGE_VALUE_PAGE_ROWS,
             fetch = backupDao::getManagedAttachmentPage,
             key = { it.id },
             block = block,
         )
-    }
-
-    private suspend fun <T> emitSingleKeyPages(
-        limit: Int,
-        fetch: suspend (String, Int) -> List<T>,
-        key: (T) -> String,
-        block: suspend (T) -> Unit,
-    ) {
-        var after = ""
-        while (true) {
-            val page = fetch(after, limit)
-            require(page.size <= limit)
-            if (page.isEmpty()) return
-            page.forEach { value ->
-                val next = key(value)
-                require(next > after)
-                block(value)
-                after = next
-            }
-        }
-    }
-
-    private suspend fun <T> emitCompositeKeyPages(
-        limit: Int,
-        fetch: suspend (String, String, Int) -> List<T>,
-        firstKey: (T) -> String,
-        secondKey: (T) -> String,
-        block: suspend (T) -> Unit,
-    ) {
-        var afterFirst = ""
-        var afterSecond = ""
-        while (true) {
-            val page = fetch(afterFirst, afterSecond, limit)
-            require(page.size <= limit)
-            if (page.isEmpty()) return
-            page.forEach { value ->
-                val nextFirst = firstKey(value)
-                val nextSecond = secondKey(value)
-                require(nextFirst > afterFirst || nextFirst == afterFirst && nextSecond > afterSecond)
-                block(value)
-                afterFirst = nextFirst
-                afterSecond = nextSecond
-            }
-        }
     }
 
     private suspend fun writeAttachment(

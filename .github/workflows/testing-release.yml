@@ -404,6 +404,10 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # Resumed receipts retain their original ancestor commit. History
+          # fetched by prepare/resume belongs to those jobs, not this checkout.
+          fetch-depth: 0
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           pattern: candidate-desktop-*
