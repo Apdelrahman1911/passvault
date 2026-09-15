@@ -1,0 +1,46 @@
+2026-09-15T18:25:04.9922199Z To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+2026-09-15T18:25:05.8867273Z Daemon will be stopped at the end of the build 
+2026-09-15T18:25:56.8934816Z e: file:///home/runner/work/passvault/passvault/build.gradle.kts:490:27: None of the following candidates is applicable:
+2026-09-15T18:25:56.8935679Z 
+2026-09-15T18:25:56.8936217Z > Configure project :
+2026-09-15T18:25:56.8987834Z 
+2026-09-15T18:25:56.8988571Z fun set(p0: Provider<out String>): Unit:
+2026-09-15T18:25:56.9075552Z   Argument type mismatch: actual type is 'Any', but 'Provider<out String>' was expected.
+2026-09-15T18:25:56.9101433Z 
+2026-09-15T18:25:56.9119809Z fun set(p0: String?): Unit:
+2026-09-15T18:25:56.9135905Z   Argument type mismatch: actual type is 'Any', but 'String?' was expected.
+2026-09-15T18:25:56.9137231Z e: file:///home/runner/work/passvault/passvault/build.gradle.kts:490:52: Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+2026-09-15T18:25:56.9138471Z fun ExtensionContainer.get(name: String): Any
+2026-09-15T18:25:56.9138966Z 
+2026-09-15T18:25:56.9139246Z FAILURE: Build failed with an exception.
+2026-09-15T18:25:56.9142089Z Script compilation errors:
+2026-09-15T18:25:56.9142441Z 
+2026-09-15T18:25:56.9142829Z   Line 490:     kotlinCompilerVersion.set(libs.versions.kotlin.get())
+2026-09-15T18:25:56.9143579Z                                       ^ None of the following candidates is applicable:
+2026-09-15T18:25:56.9144195Z                                         
+2026-09-15T18:25:56.9144772Z                                           fun set(p0: Provider<out String>): Unit:
+2026-09-15T18:25:56.9145755Z                                             Argument type mismatch: actual type is 'Any', but 'Provider<out String>' was expected.
+2026-09-15T18:25:56.9146527Z                                         
+2026-09-15T18:25:56.9147040Z                                           fun set(p0: String?): Unit:
+2026-09-15T18:25:56.9147790Z                                             Argument type mismatch: actual type is 'Any', but 'String?' was expected.
+2026-09-15T18:25:56.9148381Z 
+2026-09-15T18:25:56.9148763Z   Line 490:     kotlinCompilerVersion.set(libs.versions.kotlin.get())
+2026-09-15T18:25:56.9149792Z                                                                ^ Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+2026-09-15T18:25:56.9150846Z                                                                    fun ExtensionContainer.get(name: String): Any
+2026-09-15T18:25:56.9151370Z 
+2026-09-15T18:25:56.9151597Z 2 errors
+2026-09-15T18:25:56.9169336Z 
+2026-09-15T18:25:56.9169745Z fun set(p0: Provider<out String>): Unit:
+2026-09-15T18:25:56.9170509Z   Argument type mismatch: actual type is 'Any', but 'Provider<out String>' was expected.
+2026-09-15T18:25:56.9171098Z 
+2026-09-15T18:25:56.9171362Z fun set(p0: String?): Unit:
+2026-09-15T18:25:56.9173264Z   Argument type mismatch: actual type is 'Any', but 'String?' was expected., location=/home/runner/work/_temp/passvault-ci-ncegwkz8/gradle/.tmp/gradle-kotlin-dsl-16132039972806239711.tmp/build.gradle.kts (490:27)), ScriptCompilationError(message=Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+2026-09-15T18:25:56.9176071Z fun ExtensionContainer.get(name: String): Any, location=/home/runner/work/_temp/passvault-ci-ncegwkz8/gradle/.tmp/gradle-kotlin-dsl-16132039972806239711.tmp/build.gradle.kts (490:52))])
+2026-09-15T18:25:56.9177850Z 	at org.gradle.kotlin.dsl.support.KotlinCompilerKt.reportToMessageCollectorAndThrowOnErrors(KotlinCompiler.kt:211)
+2026-09-15T18:25:56.9179202Z 	at org.gradle.kotlin.dsl.support.KotlinCompilerKt.compileKotlinScriptModuleTo(KotlinCompiler.kt:180)
+2026-09-15T18:25:56.9633792Z 
+2026-09-15T18:25:56.9633798Z 
+2026-09-15T18:25:56.9633913Z BUILD FAILED in 54s
+2026-09-15T18:25:58.3005338Z Picked up JAVA_TOOL_OPTIONS: -Duser.home="/home/runner/work/_temp/passvault-ci-ncegwkz8/home" -Djava.io.tmpdir="/home/runner/work/_temp/passvault-ci-ncegwkz8/tmp"
+2026-09-15T18:25:58.7261353Z No Gradle daemons are running.
+2026-09-15T18:25:59.7952874Z ##[error]Process completed with exit code 1.
