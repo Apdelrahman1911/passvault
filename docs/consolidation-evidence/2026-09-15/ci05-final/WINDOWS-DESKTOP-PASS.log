@@ -1,0 +1,744 @@
+﻿2026-09-15T09:22:44.7081267Z Current runner version: '2.337.0'
+2026-09-15T09:22:44.7105815Z ##[group]Runner Image Provisioner
+2026-09-15T09:22:44.7106663Z Hosted Compute Agent
+2026-09-15T09:22:44.7107228Z Version: 20260828.587
+2026-09-15T09:22:44.7107833Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+2026-09-15T09:22:44.7108599Z Build Date: 2026-08-28T16:44:25Z
+2026-09-15T09:22:44.7109270Z Worker ID: {ab4b67ae-04d7-4e2b-8105-a80b8e791ccc}
+2026-09-15T09:22:44.7109964Z Azure Region: westus
+2026-09-15T09:22:44.7110483Z ##[endgroup]
+2026-09-15T09:22:44.7111848Z ##[group]Operating System
+2026-09-15T09:22:44.7112503Z Microsoft Windows Server 2025
+2026-09-15T09:22:44.7113080Z 10.0.26100
+2026-09-15T09:22:44.7113562Z Datacenter
+2026-09-15T09:22:44.7114058Z ##[endgroup]
+2026-09-15T09:22:44.7114556Z ##[group]Runner Image
+2026-09-15T09:22:44.7115148Z Image: windows-2025-vs2026
+2026-09-15T09:22:44.7115708Z Version: 20260907.229.1
+2026-09-15T09:22:44.7117163Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20260907.229/images/windows/Windows2025-VS2026-Readme.md
+2026-09-15T09:22:44.7118746Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20260907.229
+2026-09-15T09:22:44.7119711Z ##[endgroup]
+2026-09-15T09:22:44.7120709Z ##[group]GITHUB_TOKEN Permissions
+2026-09-15T09:22:44.7122469Z Contents: read
+2026-09-15T09:22:44.7123031Z Metadata: read
+2026-09-15T09:22:44.7123564Z ##[endgroup]
+2026-09-15T09:22:44.7126038Z Secret source: Actions
+2026-09-15T09:22:44.7126960Z Cache mode: write
+2026-09-15T09:22:44.7127631Z Prepare workflow directory
+2026-09-15T09:22:44.7579030Z Prepare all required actions
+2026-09-15T09:22:44.7630060Z Getting action download info
+2026-09-15T09:22:45.1287133Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-09-15T09:22:45.2616898Z Download action repository 'actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961' (SHA:b6effb05e454b25005698d916606bdc6ffcbf961)
+2026-09-15T09:22:45.7743901Z Download action repository 'gradle/actions@9c971963bec38e04b3d30dcc455b5382be2fdbfb' (SHA:9c971963bec38e04b3d30dcc455b5382be2fdbfb)
+2026-09-15T09:22:46.6741229Z Download action repository 'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a' (SHA:043fb46d1a93c77aae656e7c1c64a875d1fc6a0a)
+2026-09-15T09:22:46.9196765Z Complete job name: Build Desktop (windows-latest)
+2026-09-15T09:22:47.0677765Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-09-15T09:22:47.0679343Z with:
+2026-09-15T09:22:47.0680203Z   persist-credentials: false
+2026-09-15T09:22:47.0681177Z   repository: Apdelrahman1911/passvault
+2026-09-15T09:22:47.0688406Z   token: ***
+2026-09-15T09:22:47.0689098Z   ssh-strict: true
+2026-09-15T09:22:47.0689796Z   ssh-user: git
+2026-09-15T09:22:47.0690471Z   clean: true
+2026-09-15T09:22:47.0691212Z   sparse-checkout-cone-mode: true
+2026-09-15T09:22:47.0692043Z   fetch-depth: 1
+2026-09-15T09:22:47.0692751Z   fetch-tags: false
+2026-09-15T09:22:47.0693492Z   show-progress: true
+2026-09-15T09:22:47.0694210Z   lfs: false
+2026-09-15T09:22:47.0694874Z   submodules: false
+2026-09-15T09:22:47.0695601Z   set-safe-directory: true
+2026-09-15T09:22:47.0696416Z   allow-unsafe-pr-checkout: false
+2026-09-15T09:22:47.0697499Z env:
+2026-09-15T09:22:47.0698145Z   JAVA_VERSION: 17
+2026-09-15T09:22:47.0699695Z   GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false
+2026-09-15T09:22:47.0701559Z ##[endgroup]
+2026-09-15T09:22:47.2125100Z Syncing repository: Apdelrahman1911/passvault
+2026-09-15T09:22:47.2127366Z ##[group]Getting Git version info
+2026-09-15T09:22:47.2128362Z Working directory is 'D:\a\passvault\passvault'
+2026-09-15T09:22:47.2966253Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-09-15T09:22:47.6664458Z git version 2.55.0.windows.5
+2026-09-15T09:22:47.6713580Z ##[endgroup]
+2026-09-15T09:22:47.6729055Z Temporarily overriding HOME='D:\a\_temp\38aeff79-ff04-466f-b2a4-eac9d87bfe34' before making global git config changes
+2026-09-15T09:22:47.6733301Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-15T09:22:47.6739899Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\passvault\passvault
+2026-09-15T09:22:47.7432201Z Deleting the contents of 'D:\a\passvault\passvault'
+2026-09-15T09:22:47.7437132Z ##[group]Determining repository object format
+2026-09-15T09:22:47.7439063Z ##[endgroup]
+2026-09-15T09:22:47.7439997Z ##[group]Initializing the repository
+2026-09-15T09:22:47.7447482Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\passvault\passvault
+2026-09-15T09:22:47.8344563Z Initialized empty Git repository in D:/a/passvault/passvault/.git/
+2026-09-15T09:22:47.8387830Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/Apdelrahman1911/passvault
+2026-09-15T09:22:47.8985238Z ##[endgroup]
+2026-09-15T09:22:47.8986025Z ##[group]Disabling automatic garbage collection
+2026-09-15T09:22:47.8986676Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-09-15T09:22:47.9265479Z ##[endgroup]
+2026-09-15T09:22:47.9266652Z ##[group]Setting up auth
+2026-09-15T09:22:47.9267528Z Removing SSH command configuration
+2026-09-15T09:22:47.9277388Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-15T09:22:47.9573607Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-15T09:22:49.3324712Z Removing HTTP extra header
+2026-09-15T09:22:49.3339162Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-15T09:22:49.3687198Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-15T09:22:49.8880831Z Removing includeIf entries pointing to credentials config files
+2026-09-15T09:22:49.8881943Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-15T09:22:49.9163999Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-15T09:22:50.4259284Z [command]"C:\Program Files\Git\bin\git.exe" config --file D:\a\_temp\git-credentials-a5d46162-e729-41f0-97bc-dec8010ea796.config http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-09-15T09:22:50.4549345Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/passvault/passvault/.git.path D:\a\_temp\git-credentials-a5d46162-e729-41f0-97bc-dec8010ea796.config
+2026-09-15T09:22:50.4838850Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/passvault/passvault/.git/worktrees/*.path D:\a\_temp\git-credentials-a5d46162-e729-41f0-97bc-dec8010ea796.config
+2026-09-15T09:22:50.5169690Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-a5d46162-e729-41f0-97bc-dec8010ea796.config
+2026-09-15T09:22:50.5458104Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-a5d46162-e729-41f0-97bc-dec8010ea796.config
+2026-09-15T09:22:50.5755290Z ##[endgroup]
+2026-09-15T09:22:50.5755906Z ##[group]Fetching the repository
+2026-09-15T09:22:50.5768613Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +078dc55fce38b3d953c6ceac47a8940aadda35dc:refs/remotes/pull/183/merge
+2026-09-15T09:22:51.9643554Z From https://github.com/Apdelrahman1911/passvault
+2026-09-15T09:22:51.9646642Z  * [new ref]         078dc55fce38b3d953c6ceac47a8940aadda35dc -> pull/183/merge
+2026-09-15T09:22:51.9685695Z ##[endgroup]
+2026-09-15T09:22:51.9686343Z ##[group]Determining the checkout info
+2026-09-15T09:22:51.9687753Z ##[endgroup]
+2026-09-15T09:22:51.9697982Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-09-15T09:22:52.0168248Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-09-15T09:22:52.0461396Z ##[group]Checking out the ref
+2026-09-15T09:22:52.0469345Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force refs/remotes/pull/183/merge
+2026-09-15T09:22:52.4134400Z Note: switching to 'refs/remotes/pull/183/merge'.
+2026-09-15T09:22:52.4134936Z 
+2026-09-15T09:22:52.4135302Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-09-15T09:22:52.4136039Z changes and commit them, and you can discard any commits you make in this
+2026-09-15T09:22:52.4136832Z state without impacting any branches by switching back to a branch.
+2026-09-15T09:22:52.4137200Z 
+2026-09-15T09:22:52.4137445Z If you want to create a new branch to retain commits you create, you may
+2026-09-15T09:22:52.4137937Z do so (now or later) by using -c with the switch command. Example:
+2026-09-15T09:22:52.4138211Z 
+2026-09-15T09:22:52.4138323Z   git switch -c <new-branch-name>
+2026-09-15T09:22:52.4139287Z 
+2026-09-15T09:22:52.4139381Z Or undo this operation with:
+2026-09-15T09:22:52.4139542Z 
+2026-09-15T09:22:52.4139616Z   git switch -
+2026-09-15T09:22:52.4139731Z 
+2026-09-15T09:22:52.4139998Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-09-15T09:22:52.4140565Z 
+2026-09-15T09:22:52.4141190Z HEAD is now at 078dc55 Merge c94826d1b29493404c8f67744bfca6436ecec829 into 0dbc12c7f1b7770e75963c751c8c67af6e8b057a
+2026-09-15T09:22:52.4271745Z ##[endgroup]
+2026-09-15T09:22:52.4634997Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-09-15T09:22:52.4894047Z 078dc55fce38b3d953c6ceac47a8940aadda35dc
+2026-09-15T09:22:52.4931858Z ##[group]Removing auth
+2026-09-15T09:22:52.4932219Z Removing SSH command configuration
+2026-09-15T09:22:52.4939654Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-15T09:22:52.5222649Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-15T09:22:53.0752018Z Removing HTTP extra header
+2026-09-15T09:22:53.0760474Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-15T09:22:53.1047481Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-15T09:22:53.6263302Z Removing includeIf entries pointing to credentials config files
+2026-09-15T09:22:53.6271924Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-15T09:22:53.6526098Z includeif.gitdir:D:/a/passvault/passvault/.git.path
+2026-09-15T09:22:53.6527100Z includeif.gitdir:D:/a/passvault/passvault/.git/worktrees/*.path
+2026-09-15T09:22:53.6527760Z includeif.gitdir:/github/workspace/.git.path
+2026-09-15T09:22:53.6528323Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-09-15T09:22:53.6569916Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/passvault/passvault/.git.path
+2026-09-15T09:22:53.6817557Z D:\a\_temp\git-credentials-a5d46162-e729-41f0-97bc-dec8010ea796.config
+2026-09-15T09:22:53.6855552Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/passvault/passvault/.git.path D\:\\a\\_temp\\git\-credentials\-a5d46162\-e729\-41f0\-97bc\-dec8010ea796\.config
+2026-09-15T09:22:53.7139597Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/passvault/passvault/.git/worktrees/*.path
+2026-09-15T09:22:53.7381907Z D:\a\_temp\git-credentials-a5d46162-e729-41f0-97bc-dec8010ea796.config
+2026-09-15T09:22:53.7419170Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/passvault/passvault/.git/worktrees/*.path D\:\\a\\_temp\\git\-credentials\-a5d46162\-e729\-41f0\-97bc\-dec8010ea796\.config
+2026-09-15T09:22:53.7701823Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-09-15T09:22:53.7942507Z /github/runner_temp/git-credentials-a5d46162-e729-41f0-97bc-dec8010ea796.config
+2026-09-15T09:22:53.7979606Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-a5d46162\-e729\-41f0\-97bc\-dec8010ea796\.config
+2026-09-15T09:22:53.8270575Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-09-15T09:22:53.8509816Z /github/runner_temp/git-credentials-a5d46162-e729-41f0-97bc-dec8010ea796.config
+2026-09-15T09:22:53.8551718Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-a5d46162\-e729\-41f0\-97bc\-dec8010ea796\.config
+2026-09-15T09:22:53.8838140Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-15T09:22:54.4043793Z Removing credentials config 'D:\a\_temp\git-credentials-a5d46162-e729-41f0-97bc-dec8010ea796.config'
+2026-09-15T09:22:54.4055044Z ##[endgroup]
+2026-09-15T09:22:54.4409521Z ##[group]Run bash scripts/ci-python.sh scripts/test-ci-run.py
+2026-09-15T09:22:54.4410048Z [36;1mbash scripts/ci-python.sh scripts/test-ci-run.py[0m
+2026-09-15T09:22:54.4429555Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-09-15T09:22:54.4429953Z env:
+2026-09-15T09:22:54.4430117Z   JAVA_VERSION: 17
+2026-09-15T09:22:54.4430638Z   GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false
+2026-09-15T09:22:54.4431191Z ##[endgroup]
+2026-09-15T09:22:58.1523591Z .....s..C:\hostedtoolcache\windows\Python\3.12.10\x64\Lib\subprocess.py:1127: ResourceWarning: subprocess 5568 is still running
+2026-09-15T09:22:58.1524687Z   _warn("subprocess %s is still running" % self.pid,
+2026-09-15T09:22:58.1525159Z ResourceWarning: Enable tracemalloc to get the object allocation traceback
+2026-09-15T09:22:58.1561943Z s..
+2026-09-15T09:22:58.1562836Z ----------------------------------------------------------------------
+2026-09-15T09:22:58.1563412Z Ran 11 tests in 1.618s
+2026-09-15T09:22:58.1563641Z 
+2026-09-15T09:22:58.1563758Z OK (skipped=2)
+2026-09-15T09:22:58.2098772Z ##[group]Run actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
+2026-09-15T09:22:58.2099198Z with:
+2026-09-15T09:22:58.2099381Z   java-version: 17
+2026-09-15T09:22:58.2099954Z   distribution: temurin
+2026-09-15T09:22:58.2100213Z   java-package: jdk
+2026-09-15T09:22:58.2100398Z   check-latest: false
+2026-09-15T09:22:58.2100586Z   set-default: true
+2026-09-15T09:22:58.2100764Z   verify-signature: false
+2026-09-15T09:22:58.2100969Z   server-id: github
+2026-09-15T09:22:58.2101157Z   server-username: GITHUB_ACTOR
+2026-09-15T09:22:58.2101386Z   server-password: GITHUB_TOKEN
+2026-09-15T09:22:58.2101609Z   overwrite-settings: true
+2026-09-15T09:22:58.2101811Z   job-status: success
+2026-09-15T09:22:58.2104359Z   token: ***
+2026-09-15T09:22:58.2104553Z   show-download-progress: false
+2026-09-15T09:22:58.2104770Z env:
+2026-09-15T09:22:58.2104926Z   JAVA_VERSION: 17
+2026-09-15T09:22:58.2105462Z   GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false
+2026-09-15T09:22:58.2106262Z ##[endgroup]
+2026-09-15T09:22:58.3938916Z ##[group]Installed distributions
+2026-09-15T09:22:58.4223113Z Resolved Java 17.0.20+101 from tool-cache
+2026-09-15T09:22:58.4224303Z Setting Java 17.0.20+101 as the default
+2026-09-15T09:22:58.4248372Z Creating toolchains.xml for JDK version 17 from temurin
+2026-09-15T09:22:58.4387450Z Writing to C:\Users\runneradmin\.m2\toolchains.xml
+2026-09-15T09:22:58.4391627Z 
+2026-09-15T09:22:58.4391795Z Java configuration:
+2026-09-15T09:22:58.4392764Z   Distribution: temurin
+2026-09-15T09:22:58.4393037Z   Version: 17.0.20+101
+2026-09-15T09:22:58.4393463Z   Path: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-09-15T09:22:58.4394520Z 
+2026-09-15T09:22:58.4394829Z ##[endgroup]
+2026-09-15T09:22:58.4424293Z Creating settings.xml with server-id: github
+2026-09-15T09:22:58.4424879Z Writing to C:\Users\runneradmin\.m2\settings.xml
+2026-09-15T09:22:58.4428002Z Configured MAVEN_ARGS to include -ntp to suppress Maven transfer progress logs. Set 'show-download-progress: true' to keep the download progress output.
+2026-09-15T09:22:58.4861813Z ##[group]Run gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb
+2026-09-15T09:22:58.4862264Z with:
+2026-09-15T09:22:58.4862442Z   cache-disabled: true
+2026-09-15T09:22:58.4862651Z   cache-provider: enhanced
+2026-09-15T09:22:58.4862874Z   cache-read-only: true
+2026-09-15T09:22:58.4863080Z   cache-write-only: false
+2026-09-15T09:22:58.4863297Z   cache-overwrite-existing: false
+2026-09-15T09:22:58.4863527Z   cache-cleanup: on-success
+2026-09-15T09:22:58.4863781Z   gradle-home-cache-includes: caches
+notifications
+
+2026-09-15T09:22:58.4864075Z   add-job-summary: always
+2026-09-15T09:22:58.4864305Z   add-job-summary-as-pr-comment: never
+2026-09-15T09:22:58.4864561Z   dependency-graph: disabled
+2026-09-15T09:22:58.4864843Z   dependency-graph-report-dir: dependency-graph-reports
+2026-09-15T09:22:58.4865188Z   dependency-graph-continue-on-failure: true
+2026-09-15T09:22:58.4865459Z   build-scan-publish: false
+2026-09-15T09:22:58.4865701Z   validate-wrappers: true
+2026-09-15T09:22:58.4865917Z   allow-snapshot-wrappers: false
+2026-09-15T09:22:58.4866162Z   gradle-home-cache-strict-match: false
+2026-09-15T09:22:58.4866460Z   workflow-job-context: {
+  "os": "windows-latest"
+}
+2026-09-15T09:22:58.4869185Z   github-token: ***
+2026-09-15T09:22:58.4869426Z env:
+2026-09-15T09:22:58.4869603Z   JAVA_VERSION: 17
+2026-09-15T09:22:58.4870120Z   GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false
+2026-09-15T09:22:58.4870812Z   JAVA_HOME: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-09-15T09:22:58.4871315Z   JAVA_HOME_17_X64: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-09-15T09:22:58.4871697Z   MAVEN_ARGS: -ntp
+2026-09-15T09:22:58.4871888Z ##[endgroup]
+2026-09-15T09:23:00.2248905Z Setting GRADLE_USER_HOME to D:\a\.gradle to leverage (potentially) faster drive.
+2026-09-15T09:23:00.2301339Z Merged default JDK locations into C:\Users\runneradmin\.m2\toolchains.xml
+2026-09-15T09:23:00.2307545Z Cache is disabled: will not restore state from previous builds.
+2026-09-15T09:23:00.2910649Z ##[group]All Gradle Wrapper jars are valid
+2026-09-15T09:23:00.2912060Z ✓ Found known Gradle Wrapper JAR files:
+2026-09-15T09:23:00.2912908Z   7a9ce74cff467ca1bf60a4fcd9f05185acceda4d0f382434d393e17864262c5d gradle\wrapper\gradle-wrapper.jar
+2026-09-15T09:23:00.2913749Z ##[endgroup]
+2026-09-15T09:23:00.3715619Z ##[group]Run if [[ "$RUNNER_OS" == Windows ]]; then
+2026-09-15T09:23:00.3716047Z [36;1mif [[ "$RUNNER_OS" == Windows ]]; then[0m
+2026-09-15T09:23:00.3716488Z [36;1m  ./gradlew.bat :core:security:desktopTest :app-desktop:desktopTest --stacktrace[0m
+2026-09-15T09:23:00.3716896Z [36;1melse[0m
+2026-09-15T09:23:00.3717209Z [36;1m  ./gradlew :core:security:desktopTest :app-desktop:desktopTest --stacktrace[0m
+2026-09-15T09:23:00.3718258Z [36;1mfi[0m
+2026-09-15T09:23:00.3734079Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc scripts/ci-python.sh scripts/ci-run.py {0}
+2026-09-15T09:23:00.3734526Z env:
+2026-09-15T09:23:00.3734689Z   JAVA_VERSION: 17
+2026-09-15T09:23:00.3735213Z   GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false
+2026-09-15T09:23:00.3735936Z   JAVA_HOME: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-09-15T09:23:00.3736696Z   JAVA_HOME_17_X64: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-09-15T09:23:00.3737104Z   MAVEN_ARGS: -ntp
+2026-09-15T09:23:00.3737329Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+2026-09-15T09:23:00.3737605Z   GRADLE_USER_HOME: D:\a\.gradle
+2026-09-15T09:23:00.3737847Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+2026-09-15T09:23:00.3738261Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+2026-09-15T09:23:00.3738713Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+2026-09-15T09:23:00.3739012Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+2026-09-15T09:23:00.3739251Z ##[endgroup]
+2026-09-15T09:23:01.6013411Z Picked up JAVA_TOOL_OPTIONS: -Duser.home="D:\a\_temp\passvault-ci-yn5lc2zt\home" -Djava.io.tmpdir="D:\a\_temp\passvault-ci-yn5lc2zt\tmp"
+2026-09-15T09:23:02.0368681Z Fetching distribution.
+2026-09-15T09:23:02.0371280Z Downloading https://services.gradle.org/distributions/gradle-9.7.1-bin.zip
+2026-09-15T09:23:04.6119031Z ..............10%..............20%...............30%..............40%...............50%..............60%...............70%..............80%..............90%...............100%
+2026-09-15T09:23:06.8448045Z 
+2026-09-15T09:23:06.8449356Z Welcome to Gradle 9.7.1!
+2026-09-15T09:23:06.8449938Z 
+2026-09-15T09:23:06.8451703Z Here are the highlights of this release:
+2026-09-15T09:23:06.8454045Z  - Isolated Projects graduates to incubating
+2026-09-15T09:23:06.8455787Z  - Broader Configuration Cache compatibility
+2026-09-15T09:23:06.8457585Z  - Resilient Sync helps you fix broken builds
+2026-09-15T09:23:06.8458516Z  - More source locations in problem reports
+2026-09-15T09:23:06.8459173Z 
+2026-09-15T09:23:06.8460046Z For more details see https://docs.gradle.org/9.7.1/release-notes.html
+2026-09-15T09:23:06.8460875Z 
+2026-09-15T09:23:07.0273450Z To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+2026-09-15T09:23:08.8258883Z Daemon will be stopped at the end of the build 
+2026-09-15T09:24:31.7288167Z 
+2026-09-15T09:24:31.7289072Z > Configure project :shared
+2026-09-15T09:24:31.7290242Z w: [33m[1mNative task 'iosSimulatorArm64Test' is disabled[0m[0m
+2026-09-15T09:24:31.7291379Z Task 'iosSimulatorArm64Test' for target 'ios_simulator_arm64' cannot run on the current host (windows-x86_64).
+2026-09-15T09:24:31.7292436Z Reason: simulator tests require macOS
+2026-09-15T09:24:31.7293084Z [32m[1mSolution:[0m[0m
+2026-09-15T09:24:31.7294144Z [32m[3mTo suppress this warning, add 'kotlin.native.ignoreDisabledTargets=true' to gradle.properties.[0m[0m
+2026-09-15T09:24:31.7295009Z 
+2026-09-15T09:24:33.0303163Z 
+2026-09-15T09:24:33.0306530Z > Configure project :core:crypto
+2026-09-15T09:24:33.0317629Z w: [33m[1mCross Compilation with Cinterop Not Supported in Project 'crypto'[0m[0m
+2026-09-15T09:24:33.0324529Z In project 'crypto', cross compilation to target 'iosArm64' has been disabled because it contains cinterops: 'rawSodium' which cannot be processed on host 'mingw_x64'.
+2026-09-15T09:24:33.0327590Z Cinterop libraries require platform-specific native toolchains that aren't available on the current host system.
+2026-09-15T09:24:33.0343587Z [32m[1mSolutions:[0m[0m
+2026-09-15T09:24:33.0353811Z [32m * [3mRemove the cinterop dependencies 'rawSodium' from target 'iosArm64'[0m[0m
+2026-09-15T09:24:33.0369835Z [32m * [3mBuild on a compatible host platform for this target/cinterop combination[0m[0m
+2026-09-15T09:24:33.0371640Z [32m * [3mTo disable klib cross compilation entirely, add 'kotlin.native.enableKlibsCrossCompilation=false' to your Gradle properties[0m[0m
+2026-09-15T09:24:33.0372771Z 
+2026-09-15T09:24:33.0373427Z w: [33m[1mCross Compilation with Cinterop Not Supported in Project 'crypto'[0m[0m
+2026-09-15T09:24:33.0375116Z In project 'crypto', cross compilation to target 'iosSimulatorArm64' has been disabled because it contains cinterops: 'rawSodium' which cannot be processed on host 'mingw_x64'.
+2026-09-15T09:24:33.0376991Z Cinterop libraries require platform-specific native toolchains that aren't available on the current host system.
+2026-09-15T09:24:33.0378125Z [32m[1mSolutions:[0m[0m
+2026-09-15T09:24:33.0379115Z [32m * [3mRemove the cinterop dependencies 'rawSodium' from target 'iosSimulatorArm64'[0m[0m
+2026-09-15T09:24:33.0380444Z [32m * [3mBuild on a compatible host platform for this target/cinterop combination[0m[0m
+2026-09-15T09:24:33.0382234Z [32m * [3mTo disable klib cross compilation entirely, add 'kotlin.native.enableKlibsCrossCompilation=false' to your Gradle properties[0m[0m
+2026-09-15T09:24:33.0383331Z 
+2026-09-15T09:24:33.0384202Z w: [33m[1mDisabled Kotlin/Native Targets[0m[0m
+2026-09-15T09:24:33.0385169Z The following Kotlin/Native targets cannot be built on this machine and are disabled:
+2026-09-15T09:24:33.0386064Z iosArm64, iosSimulatorArm64
+2026-09-15T09:24:33.0386704Z [32m[1mSolution:[0m[0m
+2026-09-15T09:24:33.0387846Z [32m[3mTo hide this message, add 'kotlin.native.ignoreDisabledTargets=true' to the Gradle properties.[0m[0m
+2026-09-15T09:24:33.0388780Z 
+2026-09-15T09:24:50.3302209Z 
+2026-09-15T09:24:50.3303282Z > Task :core:security:kmpPartiallyResolvedDependenciesChecker
+2026-09-15T09:24:50.3304258Z > Task :core:security:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-09-15T09:25:07.8376917Z > Task :core:security:compileKotlinDesktop
+2026-09-15T09:25:07.8377792Z > Task :core:security:compileDesktopMainJava NO-SOURCE
+2026-09-15T09:25:07.8378501Z > Task :core:security:desktopProcessResources NO-SOURCE
+2026-09-15T09:25:07.8379257Z > Task :core:security:processDesktopMainResources SKIPPED
+2026-09-15T09:25:07.8379900Z > Task :core:security:desktopMainClasses
+2026-09-15T09:25:07.9279848Z > Task :core:security:desktopJar
+2026-09-15T09:25:11.8264358Z > Task :core:security:compileTestKotlinDesktop
+2026-09-15T09:25:11.8265401Z > Task :core:security:compileDesktopTestJava NO-SOURCE
+2026-09-15T09:25:11.8266201Z > Task :core:security:desktopTestProcessResources NO-SOURCE
+2026-09-15T09:25:11.8267043Z > Task :core:security:processDesktopTestResources SKIPPED
+2026-09-15T09:25:11.8267804Z > Task :core:security:desktopTestClasses
+2026-09-15T09:25:13.8268223Z 
+2026-09-15T09:25:13.8268891Z > Task :core:security:desktopTest
+2026-09-15T09:25:13.8269824Z Picked up JAVA_TOOL_OPTIONS: -Duser.home="D:\a\_temp\passvault-ci-yn5lc2zt\home" -Djava.io.tmpdir="D:\a\_temp\passvault-ci-yn5lc2zt\tmp"
+2026-09-15T09:25:27.1378314Z 
+2026-09-15T09:25:27.1400019Z > Task :app-desktop:checkDesktopMainComposeLibrariesCompatibility
+2026-09-15T09:25:27.1401277Z > Task :app-desktop:kmpPartiallyResolvedDependenciesChecker
+2026-09-15T09:25:27.1404911Z > Task :app-desktop:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-09-15T09:25:27.1413064Z > Task :app-desktop:convertXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:25:27.1419900Z > Task :app-desktop:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:25:27.1434049Z > Task :app-desktop:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+2026-09-15T09:25:27.1439271Z > Task :app-desktop:generateResourceAccessorsForCommonMain SKIPPED
+2026-09-15T09:25:27.1445110Z > Task :app-desktop:convertXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:25:27.1446597Z > Task :app-desktop:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:25:27.1452894Z > Task :app-desktop:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+2026-09-15T09:25:27.1454088Z > Task :app-desktop:generateResourceAccessorsForDesktopMain SKIPPED
+2026-09-15T09:25:27.1455234Z > Task :app-desktop:generateActualResourceCollectorsForDesktopMain SKIPPED
+2026-09-15T09:25:27.1456322Z > Task :app-desktop:generateComposeResClass SKIPPED
+2026-09-15T09:25:27.1463414Z > Task :app-desktop:generateExpectResourceCollectorsForCommonMain SKIPPED
+2026-09-15T09:25:27.2330430Z > Task :shared:checkDesktopMainComposeLibrariesCompatibility
+2026-09-15T09:25:42.8331162Z > Task :shared:kmpPartiallyResolvedDependenciesChecker
+2026-09-15T09:25:42.8332151Z > Task :shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-09-15T09:25:42.8340869Z > Task :shared:convertXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:25:42.8342050Z > Task :shared:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:25:42.8342827Z > Task :shared:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+2026-09-15T09:25:42.8343509Z > Task :shared:generateResourceAccessorsForCommonMain NO-SOURCE
+2026-09-15T09:25:42.8343965Z > Task :shared:convertXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:25:42.8344982Z > Task :shared:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:25:42.8345790Z > Task :shared:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+2026-09-15T09:25:42.8346421Z > Task :shared:generateResourceAccessorsForDesktopMain NO-SOURCE
+2026-09-15T09:25:42.9394770Z > Task :shared:generateActualResourceCollectorsForDesktopMain
+2026-09-15T09:25:42.9395914Z > Task :shared:generateComposeResClass
+2026-09-15T09:25:42.9396561Z > Task :shared:generateExpectResourceCollectorsForCommonMain
+2026-09-15T09:25:43.0268481Z > Task :core:crypto:kmpPartiallyResolvedDependenciesChecker
+2026-09-15T09:25:43.0270486Z > Task :core:crypto:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-09-15T09:25:46.9367924Z > Task :core:crypto:compileKotlinDesktop
+2026-09-15T09:25:46.9371210Z > Task :core:crypto:compileDesktopMainJava NO-SOURCE
+2026-09-15T09:25:46.9373488Z > Task :core:crypto:desktopProcessResources NO-SOURCE
+2026-09-15T09:25:46.9375214Z > Task :core:crypto:processDesktopMainResources SKIPPED
+2026-09-15T09:25:46.9376334Z > Task :core:crypto:desktopMainClasses
+2026-09-15T09:25:47.0316026Z > Task :core:crypto:desktopJar
+2026-09-15T09:25:47.1281546Z > Task :core:database:kmpPartiallyResolvedDependenciesChecker
+2026-09-15T09:25:47.1290120Z > Task :core:database:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-09-15T09:25:47.1291293Z > Task :core:domain:kmpPartiallyResolvedDependenciesChecker
+2026-09-15T09:25:47.1296967Z > Task :core:domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-09-15T09:25:52.9306931Z > Task :core:domain:compileKotlinDesktop
+2026-09-15T09:25:52.9309125Z > Task :core:domain:compileDesktopMainJava NO-SOURCE
+2026-09-15T09:25:52.9310147Z > Task :core:domain:desktopProcessResources NO-SOURCE
+2026-09-15T09:25:52.9311097Z > Task :core:domain:processDesktopMainResources SKIPPED
+2026-09-15T09:25:52.9311884Z > Task :core:domain:desktopMainClasses
+2026-09-15T09:25:53.0355699Z > Task :core:domain:desktopJar
+2026-09-15T09:26:13.6306756Z > Task :core:database:kspKotlinDesktop
+2026-09-15T09:26:36.8306654Z 
+2026-09-15T09:26:36.8404574Z > Task :core:database:compileKotlinDesktop
+2026-09-15T09:26:36.8423580Z w: file:///D:/a/passvault/passvault/core/database/build/generated/ksp/desktop/desktopMain/kotlin/com/passvault/core/database/AppDatabaseConstructor.kt:5:8 'expect'/'actual' classes (including interfaces, objects, annotations, enums, and 'actual' typealiases) are in Beta. Consider using the '-Xexpect-actual-classes' flag to suppress this warning. Also see: https://youtrack.jetbrains.com/issue/KT-61573
+2026-09-15T09:26:37.6264765Z 
+2026-09-15T09:26:37.6266094Z > Task :core:database:copyRoomSchemas NO-SOURCE
+2026-09-15T09:26:37.6267085Z > Task :core:database:compileDesktopMainJava NO-SOURCE
+2026-09-15T09:26:37.6268138Z > Task :core:database:desktopProcessResources NO-SOURCE
+2026-09-15T09:26:37.6268783Z > Task :core:database:processDesktopMainResources SKIPPED
+2026-09-15T09:26:37.6269364Z > Task :core:database:desktopMainClasses
+2026-09-15T09:26:37.8269119Z > Task :core:database:desktopJar
+2026-09-15T09:26:38.9301416Z > Task :core:designsystem:checkDesktopMainComposeLibrariesCompatibility
+2026-09-15T09:26:43.2299905Z > Task :core:designsystem:kmpPartiallyResolvedDependenciesChecker
+2026-09-15T09:26:43.2301180Z > Task :core:designsystem:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-09-15T09:26:43.3364839Z > Task :core:designsystem:convertXmlValueResourcesForCommonMain
+2026-09-15T09:26:43.3365977Z > Task :core:designsystem:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:26:43.3366996Z > Task :core:designsystem:prepareComposeResourcesTaskForCommonMain
+2026-09-15T09:26:43.8277082Z > Task :core:designsystem:generateResourceAccessorsForCommonMain
+2026-09-15T09:26:43.8278137Z > Task :core:designsystem:convertXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:26:43.8280050Z > Task :core:designsystem:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:26:43.8283267Z > Task :core:designsystem:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+2026-09-15T09:26:43.8284502Z > Task :core:designsystem:generateResourceAccessorsForDesktopMain NO-SOURCE
+2026-09-15T09:26:43.8285396Z > Task :core:designsystem:generateActualResourceCollectorsForDesktopMain
+2026-09-15T09:26:43.8286113Z > Task :core:designsystem:generateComposeResClass
+2026-09-15T09:26:43.8286851Z > Task :core:designsystem:generateExpectResourceCollectorsForCommonMain
+2026-09-15T09:27:00.4398781Z > Task :core:designsystem:compileKotlinDesktop
+2026-09-15T09:27:00.4399678Z > Task :core:designsystem:compileDesktopMainJava NO-SOURCE
+2026-09-15T09:27:00.4400398Z > Task :core:designsystem:assembleDesktopMainResources
+2026-09-15T09:27:00.4400997Z > Task :core:designsystem:desktopProcessResources
+2026-09-15T09:27:00.4401665Z > Task :core:designsystem:processDesktopMainResources SKIPPED
+2026-09-15T09:27:00.4402272Z > Task :core:designsystem:desktopMainClasses
+2026-09-15T09:27:00.4402765Z > Task :core:designsystem:desktopJar
+2026-09-15T09:27:01.5297370Z > Task :core:navigation:kmpPartiallyResolvedDependenciesChecker
+2026-09-15T09:27:01.5298063Z > Task :core:navigation:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-09-15T09:27:04.5353866Z > Task :core:navigation:compileKotlinJvm
+2026-09-15T09:27:04.5354599Z > Task :core:navigation:compileJvmMainJava NO-SOURCE
+2026-09-15T09:27:04.5363453Z > Task :core:navigation:jvmProcessResources NO-SOURCE
+2026-09-15T09:27:04.5364500Z > Task :core:navigation:processJvmMainResources SKIPPED
+2026-09-15T09:27:04.5395798Z > Task :core:navigation:jvmMainClasses
+2026-09-15T09:27:04.6381428Z > Task :core:navigation:jvmJar
+2026-09-15T09:27:04.6382133Z > Task :core:otp:kmpPartiallyResolvedDependenciesChecker
+2026-09-15T09:27:04.6557772Z > Task :core:otp:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-09-15T09:27:06.5376388Z > Task :core:otp:compileKotlinDesktop
+2026-09-15T09:27:06.5377656Z > Task :core:otp:compileDesktopMainJava NO-SOURCE
+2026-09-15T09:27:06.5378654Z > Task :core:otp:desktopProcessResources NO-SOURCE
+2026-09-15T09:27:06.5379336Z > Task :core:otp:processDesktopMainResources SKIPPED
+2026-09-15T09:27:06.5380066Z > Task :core:otp:desktopMainClasses
+2026-09-15T09:27:06.5380618Z > Task :core:otp:desktopJar
+2026-09-15T09:27:06.5381297Z > Task :feature:backup:checkDesktopMainComposeLibrariesCompatibility
+2026-09-15T09:27:06.7278241Z > Task :feature:backup:kmpPartiallyResolvedDependenciesChecker
+2026-09-15T09:27:06.7291432Z > Task :feature:backup:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-09-15T09:27:06.7298499Z > Task :feature:backup:convertXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:27:06.7299535Z > Task :feature:backup:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:27:06.7300500Z > Task :feature:backup:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+2026-09-15T09:27:06.7302400Z > Task :feature:backup:generateResourceAccessorsForCommonMain NO-SOURCE
+2026-09-15T09:27:06.7303359Z > Task :feature:backup:convertXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:27:06.7304315Z > Task :feature:backup:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:27:06.7305348Z > Task :feature:backup:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+2026-09-15T09:27:06.7306330Z > Task :feature:backup:generateResourceAccessorsForDesktopMain NO-SOURCE
+2026-09-15T09:27:06.7307309Z > Task :feature:backup:generateActualResourceCollectorsForDesktopMain
+2026-09-15T09:27:06.7308124Z > Task :feature:backup:generateComposeResClass
+2026-09-15T09:27:06.8338346Z > Task :feature:backup:generateExpectResourceCollectorsForCommonMain
+2026-09-15T09:27:11.0421905Z > Task :feature:backup:compileKotlinDesktop
+2026-09-15T09:27:11.0426791Z > Task :feature:backup:compileDesktopMainJava NO-SOURCE
+2026-09-15T09:27:11.0427634Z > Task :feature:backup:assembleDesktopMainResources
+2026-09-15T09:27:11.0428282Z > Task :feature:backup:desktopProcessResources
+2026-09-15T09:27:11.0428967Z > Task :feature:backup:processDesktopMainResources SKIPPED
+2026-09-15T09:27:11.0429616Z > Task :feature:backup:desktopMainClasses
+2026-09-15T09:27:11.0430182Z > Task :feature:backup:desktopJar
+2026-09-15T09:27:11.0430875Z > Task :feature:credential:checkDesktopMainComposeLibrariesCompatibility
+2026-09-15T09:27:12.3328239Z > Task :feature:credential:kmpPartiallyResolvedDependenciesChecker
+2026-09-15T09:27:12.3331814Z > Task :feature:credential:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-09-15T09:27:12.3334782Z > Task :feature:credential:convertXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:27:12.3335926Z > Task :feature:credential:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:27:12.3337035Z > Task :feature:credential:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+2026-09-15T09:27:12.3338158Z > Task :feature:credential:generateResourceAccessorsForCommonMain NO-SOURCE
+2026-09-15T09:27:12.3339631Z > Task :feature:credential:convertXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:27:12.3340763Z > Task :feature:credential:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:27:12.4274490Z > Task :feature:credential:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+2026-09-15T09:27:12.4279050Z > Task :feature:credential:generateResourceAccessorsForDesktopMain NO-SOURCE
+2026-09-15T09:27:12.4281841Z > Task :feature:credential:generateActualResourceCollectorsForDesktopMain
+2026-09-15T09:27:12.4327947Z > Task :feature:credential:generateComposeResClass
+2026-09-15T09:27:12.4337794Z > Task :feature:credential:generateExpectResourceCollectorsForCommonMain
+2026-09-15T09:27:20.4335288Z > Task :feature:credential:compileKotlinDesktop
+2026-09-15T09:27:20.4336003Z > Task :feature:credential:compileDesktopMainJava NO-SOURCE
+2026-09-15T09:27:20.4346640Z > Task :feature:credential:assembleDesktopMainResources
+2026-09-15T09:27:20.4372968Z > Task :feature:credential:desktopProcessResources
+2026-09-15T09:27:20.4418890Z > Task :feature:credential:processDesktopMainResources SKIPPED
+2026-09-15T09:27:20.4449027Z > Task :feature:credential:desktopMainClasses
+2026-09-15T09:27:20.5303899Z > Task :feature:credential:desktopJar
+2026-09-15T09:27:20.5304734Z > Task :feature:generator:checkDesktopMainComposeLibrariesCompatibility
+2026-09-15T09:27:20.6408157Z > Task :feature:generator:kmpPartiallyResolvedDependenciesChecker
+2026-09-15T09:27:20.6411151Z > Task :feature:generator:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-09-15T09:27:20.6412459Z > Task :feature:generator:convertXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:27:20.6413605Z > Task :feature:generator:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:27:20.6414757Z > Task :feature:generator:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+2026-09-15T09:27:20.6415975Z > Task :feature:generator:generateResourceAccessorsForCommonMain NO-SOURCE
+2026-09-15T09:27:20.6417506Z > Task :feature:generator:convertXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:27:20.6418660Z > Task :feature:generator:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:27:20.6419917Z > Task :feature:generator:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+2026-09-15T09:27:20.6421281Z > Task :feature:generator:generateResourceAccessorsForDesktopMain NO-SOURCE
+2026-09-15T09:27:20.6422975Z > Task :feature:generator:generateActualResourceCollectorsForDesktopMain
+2026-09-15T09:27:20.6424089Z > Task :feature:generator:generateComposeResClass
+2026-09-15T09:27:20.6425107Z > Task :feature:generator:generateExpectResourceCollectorsForCommonMain
+2026-09-15T09:27:23.5417122Z > Task :feature:generator:compileKotlinDesktop
+2026-09-15T09:27:23.5418302Z > Task :feature:generator:compileDesktopMainJava NO-SOURCE
+2026-09-15T09:27:23.5420537Z > Task :feature:generator:assembleDesktopMainResources
+2026-09-15T09:27:23.5421523Z > Task :feature:generator:desktopProcessResources
+2026-09-15T09:27:23.5422464Z > Task :feature:generator:processDesktopMainResources SKIPPED
+2026-09-15T09:27:23.5423428Z > Task :feature:generator:desktopMainClasses
+2026-09-15T09:27:23.6385957Z > Task :feature:generator:desktopJar
+2026-09-15T09:27:23.6387241Z > Task :feature:health:checkDesktopMainComposeLibrariesCompatibility
+2026-09-15T09:27:23.6388325Z > Task :feature:health:kmpPartiallyResolvedDependenciesChecker
+2026-09-15T09:27:23.6389408Z > Task :feature:health:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-09-15T09:27:23.6390532Z > Task :feature:health:convertXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:27:23.6391560Z > Task :feature:health:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:27:23.6392637Z > Task :feature:health:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+2026-09-15T09:27:23.6393739Z > Task :feature:health:generateResourceAccessorsForCommonMain NO-SOURCE
+2026-09-15T09:27:23.6394836Z > Task :feature:health:convertXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:27:23.6395913Z > Task :feature:health:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:27:23.6396947Z > Task :feature:health:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+2026-09-15T09:27:23.6398007Z > Task :feature:health:generateResourceAccessorsForDesktopMain NO-SOURCE
+2026-09-15T09:27:23.7693677Z > Task :feature:health:generateActualResourceCollectorsForDesktopMain
+2026-09-15T09:27:23.7701555Z > Task :feature:health:generateComposeResClass
+2026-09-15T09:27:23.7730305Z > Task :feature:health:generateExpectResourceCollectorsForCommonMain
+2026-09-15T09:27:27.5331835Z > Task :feature:health:compileKotlinDesktop
+2026-09-15T09:27:27.5334950Z > Task :feature:health:compileDesktopMainJava NO-SOURCE
+2026-09-15T09:27:27.5335933Z > Task :feature:health:assembleDesktopMainResources
+2026-09-15T09:27:27.5336924Z > Task :feature:health:desktopProcessResources
+2026-09-15T09:27:27.5337980Z > Task :feature:health:processDesktopMainResources SKIPPED
+2026-09-15T09:27:27.5338986Z > Task :feature:health:desktopMainClasses
+2026-09-15T09:27:27.6274350Z > Task :feature:health:desktopJar
+2026-09-15T09:27:27.6275448Z > Task :feature:onboarding:checkDesktopMainComposeLibrariesCompatibility
+2026-09-15T09:27:27.7391474Z > Task :feature:onboarding:kmpPartiallyResolvedDependenciesChecker
+2026-09-15T09:27:27.7393512Z > Task :feature:onboarding:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-09-15T09:27:27.7394579Z > Task :feature:onboarding:convertXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:27:27.7396086Z > Task :feature:onboarding:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:27:27.7397273Z > Task :feature:onboarding:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+2026-09-15T09:27:27.7398495Z > Task :feature:onboarding:generateResourceAccessorsForCommonMain NO-SOURCE
+2026-09-15T09:27:27.7400375Z > Task :feature:onboarding:convertXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:27:27.7401845Z > Task :feature:onboarding:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:27:27.7403032Z > Task :feature:onboarding:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+2026-09-15T09:27:27.7404209Z > Task :feature:onboarding:generateResourceAccessorsForDesktopMain NO-SOURCE
+2026-09-15T09:27:27.7405372Z > Task :feature:onboarding:generateActualResourceCollectorsForDesktopMain
+2026-09-15T09:27:27.8283736Z > Task :feature:onboarding:generateComposeResClass
+2026-09-15T09:27:27.8284973Z > Task :feature:onboarding:generateExpectResourceCollectorsForCommonMain
+2026-09-15T09:27:30.9302227Z > Task :feature:onboarding:compileKotlinDesktop
+2026-09-15T09:27:30.9309371Z > Task :feature:onboarding:compileDesktopMainJava NO-SOURCE
+2026-09-15T09:27:30.9312836Z > Task :feature:onboarding:assembleDesktopMainResources
+2026-09-15T09:27:30.9314241Z > Task :feature:onboarding:desktopProcessResources
+2026-09-15T09:27:30.9317642Z > Task :feature:onboarding:processDesktopMainResources SKIPPED
+2026-09-15T09:27:30.9343458Z > Task :feature:onboarding:desktopMainClasses
+2026-09-15T09:27:30.9371807Z > Task :feature:onboarding:desktopJar
+2026-09-15T09:27:30.9376021Z > Task :feature:settings:checkDesktopMainComposeLibrariesCompatibility
+2026-09-15T09:27:31.0339781Z > Task :feature:settings:kmpPartiallyResolvedDependenciesChecker
+2026-09-15T09:27:31.0342074Z > Task :feature:settings:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-09-15T09:27:31.0347491Z > Task :feature:settings:convertXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:27:31.0350870Z > Task :feature:settings:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:27:31.0356017Z > Task :feature:settings:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+2026-09-15T09:27:31.0357205Z > Task :feature:settings:generateResourceAccessorsForCommonMain NO-SOURCE
+2026-09-15T09:27:31.0358281Z > Task :feature:settings:convertXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:27:31.0359362Z > Task :feature:settings:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:27:31.0360525Z > Task :feature:settings:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+2026-09-15T09:27:31.0361698Z > Task :feature:settings:generateResourceAccessorsForDesktopMain NO-SOURCE
+2026-09-15T09:27:31.0362823Z > Task :feature:settings:generateActualResourceCollectorsForDesktopMain
+2026-09-15T09:27:31.0363859Z > Task :feature:settings:generateComposeResClass
+2026-09-15T09:27:31.0364756Z > Task :feature:settings:generateExpectResourceCollectorsForCommonMain
+2026-09-15T09:27:35.9441515Z > Task :feature:settings:compileKotlinDesktop
+2026-09-15T09:27:35.9503196Z > Task :feature:settings:compileDesktopMainJava NO-SOURCE
+2026-09-15T09:27:35.9539637Z > Task :feature:settings:assembleDesktopMainResources
+2026-09-15T09:27:35.9540726Z > Task :feature:settings:desktopProcessResources
+2026-09-15T09:27:35.9546165Z > Task :feature:settings:processDesktopMainResources SKIPPED
+2026-09-15T09:27:35.9547999Z > Task :feature:settings:desktopMainClasses
+2026-09-15T09:27:36.0340595Z > Task :feature:settings:desktopJar
+2026-09-15T09:27:36.0344086Z > Task :feature:unlock:checkDesktopMainComposeLibrariesCompatibility
+2026-09-15T09:27:36.1399829Z > Task :feature:unlock:kmpPartiallyResolvedDependenciesChecker
+2026-09-15T09:27:36.1406901Z > Task :feature:unlock:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-09-15T09:27:36.1410425Z > Task :feature:unlock:convertXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:27:36.1412073Z > Task :feature:unlock:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:27:36.1415685Z > Task :feature:unlock:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+2026-09-15T09:27:36.1418122Z > Task :feature:unlock:generateResourceAccessorsForCommonMain NO-SOURCE
+2026-09-15T09:27:36.1419280Z > Task :feature:unlock:convertXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:27:36.1420354Z > Task :feature:unlock:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:27:36.1507520Z > Task :feature:unlock:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+2026-09-15T09:27:36.1509116Z > Task :feature:unlock:generateResourceAccessorsForDesktopMain NO-SOURCE
+2026-09-15T09:27:36.1510284Z > Task :feature:unlock:generateActualResourceCollectorsForDesktopMain
+2026-09-15T09:27:36.1511253Z > Task :feature:unlock:generateComposeResClass
+2026-09-15T09:27:36.1512154Z > Task :feature:unlock:generateExpectResourceCollectorsForCommonMain
+2026-09-15T09:27:38.2412919Z > Task :feature:unlock:compileKotlinDesktop
+2026-09-15T09:27:38.2413763Z > Task :feature:unlock:compileDesktopMainJava NO-SOURCE
+2026-09-15T09:27:38.2420642Z > Task :feature:unlock:assembleDesktopMainResources
+2026-09-15T09:27:38.2439701Z > Task :feature:unlock:desktopProcessResources
+2026-09-15T09:27:38.2463829Z > Task :feature:unlock:processDesktopMainResources SKIPPED
+2026-09-15T09:27:38.2476167Z > Task :feature:unlock:desktopMainClasses
+2026-09-15T09:27:38.2483935Z > Task :feature:unlock:desktopJar
+2026-09-15T09:27:38.2512499Z > Task :feature:vault:checkDesktopMainComposeLibrariesCompatibility
+2026-09-15T09:27:38.3507638Z > Task :feature:vault:kmpPartiallyResolvedDependenciesChecker
+2026-09-15T09:27:38.3520630Z > Task :feature:vault:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-09-15T09:27:38.3586981Z > Task :feature:vault:convertXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:27:38.3608667Z > Task :feature:vault:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+2026-09-15T09:27:38.3609653Z > Task :feature:vault:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+2026-09-15T09:27:38.3610678Z > Task :feature:vault:generateResourceAccessorsForCommonMain NO-SOURCE
+2026-09-15T09:27:38.3611560Z > Task :feature:vault:convertXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:27:38.3626035Z > Task :feature:vault:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+2026-09-15T09:27:38.3627055Z > Task :feature:vault:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+2026-09-15T09:27:38.3628009Z > Task :feature:vault:generateResourceAccessorsForDesktopMain NO-SOURCE
+2026-09-15T09:27:38.3628948Z > Task :feature:vault:generateActualResourceCollectorsForDesktopMain
+2026-09-15T09:27:38.3631334Z > Task :feature:vault:generateComposeResClass
+2026-09-15T09:27:38.3632154Z > Task :feature:vault:generateExpectResourceCollectorsForCommonMain
+2026-09-15T09:27:43.0369162Z > Task :feature:vault:compileKotlinDesktop
+2026-09-15T09:27:43.1414860Z > Task :feature:vault:compileDesktopMainJava NO-SOURCE
+2026-09-15T09:27:43.1430845Z > Task :feature:vault:assembleDesktopMainResources
+2026-09-15T09:27:43.1431909Z > Task :feature:vault:desktopProcessResources
+2026-09-15T09:27:43.1434023Z > Task :feature:vault:processDesktopMainResources SKIPPED
+2026-09-15T09:27:43.1434786Z > Task :feature:vault:desktopMainClasses
+2026-09-15T09:27:43.1443032Z > Task :feature:vault:desktopJar
+2026-09-15T09:27:48.9275050Z > Task :shared:compileKotlinDesktop
+2026-09-15T09:27:48.9275813Z > Task :shared:compileDesktopMainJava NO-SOURCE
+2026-09-15T09:27:48.9276525Z > Task :shared:assembleDesktopMainResources
+2026-09-15T09:27:48.9277127Z > Task :shared:desktopProcessResources
+2026-09-15T09:27:48.9277786Z > Task :shared:processDesktopMainResources SKIPPED
+2026-09-15T09:27:48.9278475Z > Task :shared:desktopMainClasses
+2026-09-15T09:27:49.0340801Z > Task :shared:desktopJar
+2026-09-15T09:27:54.0263247Z > Task :app-desktop:compileKotlinDesktop
+2026-09-15T09:27:54.0264381Z > Task :app-desktop:compileDesktopMainJava NO-SOURCE
+2026-09-15T09:27:54.0265665Z > Task :app-desktop:checkDesktopTestComposeLibrariesCompatibility
+2026-09-15T09:27:54.0266909Z > Task :app-desktop:assembleDesktopMainResources
+2026-09-15T09:27:54.0267674Z > Task :app-desktop:desktopProcessResources
+2026-09-15T09:27:54.0268384Z > Task :app-desktop:processDesktopMainResources SKIPPED
+2026-09-15T09:27:54.0269092Z > Task :app-desktop:desktopMainClasses
+2026-09-15T09:27:54.1627012Z > Task :app-desktop:desktopJar
+2026-09-15T09:27:54.1632580Z > Task :app-desktop:convertXmlValueResourcesForCommonTest NO-SOURCE
+2026-09-15T09:27:54.1701606Z > Task :app-desktop:copyNonXmlValueResourcesForCommonTest NO-SOURCE
+2026-09-15T09:27:54.1702908Z > Task :app-desktop:prepareComposeResourcesTaskForCommonTest NO-SOURCE
+2026-09-15T09:27:54.1933563Z > Task :app-desktop:generateResourceAccessorsForCommonTest SKIPPED
+2026-09-15T09:27:54.2010064Z > Task :app-desktop:convertXmlValueResourcesForDesktopTest NO-SOURCE
+2026-09-15T09:27:54.2019098Z > Task :app-desktop:copyNonXmlValueResourcesForDesktopTest NO-SOURCE
+2026-09-15T09:27:54.2179629Z > Task :app-desktop:prepareComposeResourcesTaskForDesktopTest NO-SOURCE
+2026-09-15T09:27:54.2185159Z > Task :app-desktop:generateResourceAccessorsForDesktopTest SKIPPED
+2026-09-15T09:27:57.2324030Z > Task :app-desktop:compileTestKotlinDesktop
+2026-09-15T09:27:57.2325175Z > Task :app-desktop:compileDesktopTestJava NO-SOURCE
+2026-09-15T09:27:57.2326019Z > Task :app-desktop:assembleDesktopTestResources
+2026-09-15T09:27:57.2326755Z > Task :app-desktop:desktopTestProcessResources
+2026-09-15T09:27:57.2327549Z > Task :app-desktop:processDesktopTestResources SKIPPED
+2026-09-15T09:27:57.2328269Z > Task :app-desktop:desktopTestClasses
+2026-09-15T09:28:06.3261373Z 
+2026-09-15T09:28:06.3262189Z > Task :app-desktop:configureDesktopBiometricBridge
+2026-09-15T09:28:06.3263166Z -- Building for: Visual Studio 18 2026
+2026-09-15T09:28:06.3264044Z -- The C compiler identification is MSVC 19.51.36256.0
+2026-09-15T09:28:07.6352522Z -- The CXX compiler identification is MSVC 19.51.36256.0
+2026-09-15T09:28:07.7299636Z -- Detecting C compiler ABI info
+2026-09-15T09:28:08.7411175Z -- Detecting C compiler ABI info - done
+2026-09-15T09:28:08.7412740Z -- Check for working C compiler: C:/Program Files/Microsoft Visual Studio/18/Enterprise/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64/cl.exe - skipped
+2026-09-15T09:28:08.7414176Z -- Detecting C compile features
+2026-09-15T09:28:08.7415089Z -- Detecting C compile features - done
+2026-09-15T09:28:08.8265812Z -- Detecting CXX compiler ABI info
+2026-09-15T09:28:09.5306789Z -- Detecting CXX compiler ABI info - done
+2026-09-15T09:28:09.5307745Z -- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/18/Enterprise/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64/cl.exe - skipped
+2026-09-15T09:28:09.5308476Z -- Detecting CXX compile features
+2026-09-15T09:28:09.5308823Z -- Detecting CXX compile features - done
+2026-09-15T09:28:09.6264330Z -- Configuring done (11.7s)
+2026-09-15T09:28:09.7266969Z -- Generating done (0.1s)
+2026-09-15T09:28:09.7267614Z CMake Warning (unused-cli):
+2026-09-15T09:28:09.7268239Z   Manually-specified variables were not used by the project:
+2026-09-15T09:28:09.7269215Z -- Build files have been written to: D:/a/passvault/passvault/app-desktop/build/native-biometric/current
+2026-09-15T09:28:09.7269926Z 
+2026-09-15T09:28:09.7270079Z     CMAKE_BUILD_TYPE
+2026-09-15T09:28:09.7270327Z 
+2026-09-15T09:28:09.7270333Z 
+2026-09-15T09:28:11.7334346Z 
+2026-09-15T09:28:11.7335707Z > Task :app-desktop:buildDesktopBiometricBridge
+2026-09-15T09:28:11.7336473Z MSBuild version 18.9.1+a81b43525 for .NET Framework
+2026-09-15T09:28:11.7336891Z 
+2026-09-15T09:28:11.7337057Z   1>Checking Build System
+2026-09-15T09:28:11.7337853Z   Building Custom Rule D:/a/passvault/passvault/app-desktop/native/biometric-bridge/CMakeLists.txt
+2026-09-15T09:28:11.7338734Z   passvault_biometric_windows.cpp
+2026-09-15T09:28:21.1409999Z      Creating library D:/a/passvault/passvault/app-desktop/build/native-biometric/current/Release/passvault_biometric.lib and object D:/a/passvault/passvault/app-desktop/build/native-biometric/current/Release/passvault_biometric.exp
+2026-09-15T09:28:21.2364652Z   passvault_biometric.vcxproj -> D:\a\passvault\passvault\app-desktop\build\native-biometric\current\Release\passvault_biometric.dll
+2026-09-15T09:28:21.3315860Z   Building Custom Rule D:/a/passvault/passvault/app-desktop/native/biometric-bridge/CMakeLists.txt
+2026-09-15T09:28:21.4268272Z   passvault_biometric_abi_test.cpp
+2026-09-15T09:28:21.7395087Z   passvault_biometric_abi_test.vcxproj -> D:\a\passvault\passvault\app-desktop\build\native-biometric\current\Release\passvault_biometric_abi_test.exe
+2026-09-15T09:28:21.7396221Z   Building Custom Rule D:/a/passvault/passvault/app-desktop/native/biometric-bridge/CMakeLists.txt
+2026-09-15T09:28:21.8344723Z   passvault_biometric_windows_security_test.cpp
+2026-09-15T09:28:27.4378216Z      Creating library D:/a/passvault/passvault/app-desktop/build/native-biometric/current/Release/passvault_biometric_windows_security_test.lib and object D:/a/passvault/passvault/app-desktop/build/native-biometric/current/Release/passvault_biometric_windows_security_test.exp
+2026-09-15T09:28:27.5330264Z   passvault_biometric_windows_security_test.vcxproj -> D:\a\passvault\passvault\app-desktop\build\native-biometric\current\Release\passvault_biometric_windows_security_test.exe
+2026-09-15T09:28:27.6398768Z   Building Custom Rule D:/a/passvault/passvault/app-desktop/native/biometric-bridge/CMakeLists.txt
+2026-09-15T09:28:27.6399540Z 
+2026-09-15T09:28:27.6399758Z > Task :app-desktop:stageDesktopBiometricBridge
+2026-09-15T09:28:28.2266361Z 
+2026-09-15T09:28:28.2267145Z > Task :app-desktop:testDesktopBiometricBridge
+2026-09-15T09:28:28.2268233Z Test project D:/a/passvault/passvault/app-desktop/build/native-biometric/current
+2026-09-15T09:28:28.2269344Z     Start 1: passvault_biometric_windows_security
+2026-09-15T09:28:28.2270311Z 1/2 Test #1: passvault_biometric_windows_security ...   Passed    0.02 sec
+2026-09-15T09:28:28.2271354Z     Start 2: passvault_biometric_abi
+2026-09-15T09:28:28.2272284Z 2/2 Test #2: passvault_biometric_abi ................   Passed    0.02 sec
+2026-09-15T09:28:28.2273216Z 
+2026-09-15T09:28:28.2273492Z 100% tests passed out of 2
+2026-09-15T09:28:28.2273966Z 
+2026-09-15T09:28:28.2274268Z Total Test time (real) =   0.07 sec
+2026-09-15T09:28:30.2266144Z 
+2026-09-15T09:28:30.2266807Z > Task :app-desktop:desktopTest
+2026-09-15T09:28:30.2268132Z Picked up JAVA_TOOL_OPTIONS: -Duser.home="D:\a\_temp\passvault-ci-yn5lc2zt\home" -Djava.io.tmpdir="D:\a\_temp\passvault-ci-yn5lc2zt\tmp"
+2026-09-15T09:28:32.3268088Z 
+2026-09-15T09:28:32.3269519Z [Incubating] Problems report is available at: file:///D:/a/passvault/passvault/build/reports/problems/problems-report.html
+2026-09-15T09:28:32.3270654Z 
+2026-09-15T09:28:32.3271024Z BUILD SUCCESSFUL in 5m 30s
+2026-09-15T09:28:32.3271676Z 129 actionable tasks: 129 executed
+2026-09-15T09:28:34.1278718Z Picked up JAVA_TOOL_OPTIONS: -Duser.home="D:\a\_temp\passvault-ci-yn5lc2zt\home" -Djava.io.tmpdir="D:\a\_temp\passvault-ci-yn5lc2zt\tmp"
+2026-09-15T09:28:34.9677263Z No Gradle daemons are running.
+2026-09-15T09:28:39.3053900Z ##[group]Run actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+2026-09-15T09:28:39.3054438Z with:
+2026-09-15T09:28:39.3054716Z   name: build-desktop-windows-latest-evidence
+2026-09-15T09:28:39.3055064Z   path: .ci-evidence/
+2026-09-15T09:28:39.3055336Z   include-hidden-files: true
+2026-09-15T09:28:39.3055598Z   retention-days: 3
+2026-09-15T09:28:39.3055863Z   if-no-files-found: warn
+2026-09-15T09:28:39.3056152Z   compression-level: 6
+2026-09-15T09:28:39.3056407Z   overwrite: false
+2026-09-15T09:28:39.3056638Z   archive: true
+2026-09-15T09:28:39.3056858Z env:
+2026-09-15T09:28:39.3057066Z   JAVA_VERSION: 17
+2026-09-15T09:28:39.3057606Z   GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false
+2026-09-15T09:28:39.3058341Z   JAVA_HOME: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-09-15T09:28:39.3058972Z   JAVA_HOME_17_X64: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-09-15T09:28:39.3059421Z   MAVEN_ARGS: -ntp
+2026-09-15T09:28:39.3059688Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+2026-09-15T09:28:39.3060028Z   GRADLE_USER_HOME: D:\a\.gradle
+2026-09-15T09:28:39.3060336Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+2026-09-15T09:28:39.3060815Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+2026-09-15T09:28:39.3061549Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+2026-09-15T09:28:39.3061946Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+2026-09-15T09:28:39.3062251Z ##[endgroup]
+2026-09-15T09:28:39.5201046Z With the provided path, there will be 47 files uploaded
+2026-09-15T09:28:39.5209092Z Artifact name is valid!
+2026-09-15T09:28:39.5210575Z Root directory input is valid!
+2026-09-15T09:28:39.9373679Z Uploading artifact: build-desktop-windows-latest-evidence.zip
+2026-09-15T09:28:39.9419904Z Beginning upload of artifact content to blob storage
+2026-09-15T09:28:40.5661607Z Uploaded bytes 96781
+2026-09-15T09:28:40.6487464Z Finished uploading artifact content to blob storage!
+2026-09-15T09:28:40.6488506Z SHA256 digest of uploaded artifact is 5e4bae7a836e300d00b409c98e520e62d6eda206c11eeb27c142f21ec0f84136
+2026-09-15T09:28:40.6489331Z Finalizing artifact upload
+2026-09-15T09:28:41.0426386Z Artifact build-desktop-windows-latest-evidence successfully finalized. Artifact ID 10389698477
+2026-09-15T09:28:41.0427355Z Artifact build-desktop-windows-latest-evidence has been successfully uploaded! Final size is 96781 bytes. Artifact ID is 10389698477
+2026-09-15T09:28:41.0434875Z Artifact download URL: https://github.com/Apdelrahman1911/passvault/actions/runs/34951995010/artifacts/10389698477
+2026-09-15T09:28:41.0864923Z Post job cleanup.
+2026-09-15T09:28:41.4034842Z In post-action step
+2026-09-15T09:28:41.4041782Z Cache is disabled: will not restore state from previous builds.
+2026-09-15T09:28:41.4049710Z ##[group]Generating Job Summary
+2026-09-15T09:28:41.4051531Z 
+2026-09-15T09:28:41.4052178Z <b>No Gradle build results detected.</b>
+2026-09-15T09:28:41.4052770Z ============================
+2026-09-15T09:28:41.4053222Z <h4>Gradle State Caching - Disabled</h4>
+2026-09-15T09:28:41.4053568Z 
+2026-09-15T09:28:41.4055348Z [Caching was disabled](https://github.com/gradle/actions/blob/main/docs/setup-gradle.md#disabling-caching) — Gradle User Home was not restored from or saved to the cache.
+2026-09-15T09:28:41.4056483Z 
+2026-09-15T09:28:41.4079962Z ##[endgroup]
+2026-09-15T09:28:41.4081497Z Completed post-action step
+2026-09-15T09:28:41.4922518Z Post job cleanup.
+2026-09-15T09:28:41.6822646Z Post job cleanup.
+2026-09-15T09:28:41.9123813Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-09-15T09:28:41.9467721Z git version 2.55.0.windows.5
+2026-09-15T09:28:41.9539409Z Temporarily overriding HOME='D:\a\_temp\c6fbc873-1307-419f-ab73-48b4e786cbd5' before making global git config changes
+2026-09-15T09:28:41.9540497Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-15T09:28:41.9550429Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\passvault\passvault
+2026-09-15T09:28:41.9841784Z Removing SSH command configuration
+2026-09-15T09:28:41.9858937Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-15T09:28:42.0172027Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-15T09:28:42.5496475Z Removing HTTP extra header
+2026-09-15T09:28:42.5507073Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-15T09:28:42.5815995Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-15T09:28:43.2854099Z Removing includeIf entries pointing to credentials config files
+2026-09-15T09:28:43.2865846Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-15T09:28:43.3153039Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-15T09:28:43.8803248Z Cleaning up orphan processes
