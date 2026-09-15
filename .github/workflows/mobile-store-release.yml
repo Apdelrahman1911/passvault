@@ -562,8 +562,10 @@ jobs:
       RELEASE_VERSION: ${{ needs.validate.outputs.version }}
       RELEASE_BUILD_NUMBER: ${{ needs.validate.outputs.version_code }}
     # Compose Multiplatform 1.11 links UIKit symbols introduced with the
-    # Xcode 26 SDK. Keep the store archive on the matching hosted image.
-    runs-on: macos-26
+    # Xcode 26 SDK. Use the standard Intel image's additional RAM for the
+    # 4 GiB Kotlin/Native heap plus Xcode, rather than the 7 GiB Arm64 host.
+    # The application destination remains physical iOS/Arm64, not simulator.
+    runs-on: macos-26-intel
     timeout-minutes: 90
     environment: ${{ needs.validate.outputs.environment }}
     permissions:
@@ -578,6 +580,12 @@ jobs:
             echo "Production Apple signing is restricted to an ephemeral GitHub-hosted runner." >&2
             exit 1
           fi
+          memory_bytes="$(sysctl -n hw.memsize)"
+          if (( memory_bytes < 12 * 1024 * 1024 * 1024 )); then
+            echo "iOS archiving requires at least 12 GiB host RAM for the compiler and Xcode." >&2
+            exit 1
+          fi
+          echo "iOS archive host RAM bytes: $memory_bytes; Gradle heap: 4096 MiB."
 
       - name: Initialize private runtime paths
         run: |
