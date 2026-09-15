@@ -1,6 +1,6 @@
 package com.passvault.core.domain.model
 
-/** Independent passphrase policy for newly created encrypted backup files. */
+/** Format-level passphrase policy for newly created encrypted backup files. */
 object BackupPasswordPolicy {
     const val MIN_LENGTH = 12
     const val MAX_LENGTH = 1_024

@@ -16,7 +16,7 @@ credentials and physical-device release evidence remain external gates.
 | `shared` | Koin composition, Room construction, theme ownership, session-to-navigation coordination, and the only live `NavDisplay` |
 | `core:domain` | Immutable domain models, typed identifiers, validation, health logic, and repository/settings contracts |
 | `core:crypto` | libsodium-backed Argon2id, XChaCha20-Poly1305, random data, constant-time comparison, and subkey derivation |
-| `core:otp` | Strict TOTP setup parsing and RFC 6238 code generation for SHA-1, SHA-256, and SHA-512 |
+| `core:otp` | Strict TOTP setup parsing and RFC 6238 code generation; issuer-key admission retains a documented 10-byte interoperability floor below RFC 4226 R6 |
 | `core:database` | Room schema/DAOs, encrypted repositories, vault session, and versioned backup service |
 | `core:security` | Biometric, clipboard, screenshot, and Desktop window-protection boundaries |
 | `core:designsystem` | Semantic theme tokens and reusable responsive/feedback/form controls |
@@ -65,20 +65,32 @@ handoff design, not merely replacing `single` with `factory`.
 
 Native Android, iOS, and Desktop privacy surfaces coordinate with shared Compose through a monotonic
 `VaultUiSecurityCoordinator` epoch. During a lock/security episode, a platform reveals or restores content only
-after its serialized repository lock and clipboard cleanup succeed, shared singleton state and guarded navigation
-are scrubbed for that exact epoch, and an additional rendered frame has elapsed. A failed lock, cancelled job, stale
-acknowledgement, or acknowledgement timeout keeps the native surface concealed and leaves a later lifecycle/user
-retry armed.
+after its serialized repository lock and required platform clipboard policy complete, shared singleton state and
+guarded navigation are scrubbed for that exact epoch, and an additional rendered frame has elapsed. iOS background
+locks preserve an owned local-only, expiring pasteboard item so app switching can complete a paste; other iOS lock
+reasons and all Android/Desktop locks still request immediate ownership-aware cleanup. A failed lock, cancelled job,
+stale acknowledgement, or acknowledgement timeout keeps the native surface concealed. iOS retries lock failures
+and UI acknowledgement waits on separate bounded budgets with backoff; an exhausted or unavailable runtime exposes
+a localized retry action on the opaque native cover rather than entering a silent process-lifetime dead end.
+
+The SwiftUI host also owns the `NSFileProtectionComplete` lifecycle. Before protected data becomes unavailable it
+covers the window, locks and scrubs the session, removes the Compose controller, cancels the application scope,
+checkpoints and closes Room, and stops Koin. It does not mount a replacement Compose/Koin runtime until
+`UIApplication.isProtectedDataAvailable` is true. A closed `VaultDatabaseBootstrap` is terminal; the rebuilt graph
+owns a new bootstrap and Room instance.
 
 Biometric enrollment is an explicit unlocked-vault action. `DefaultBiometricUnlockService` copies the active VEK to
 the platform `BiometricKeyStore`; Android encrypts it with an auth-per-use Keystore key, while iOS stores it as a
 device-only Keychain item bound to the current biometric set. On biometric unlock, the repository authenticates its
 encrypted verification record with the released VEK before creating a session. The master password remains the
-fallback and is never stored for biometric use.
+fallback and is never stored for biometric use. On iOS, a non-interactive metadata query makes Keychain—not the
+`NSUserDefaults` marker—the enrollment authority. Startup/status reconciliation deletes all service items when no
+vault exists and retires items outside the single active vault otherwise. Preference markers change only after the
+corresponding protected add/delete succeeds.
 
 ## Persistence boundary
 
-Room schema version is 3 and schema export is enabled. Explicit non-destructive migrations cover every exported
+Room schema version is 5 and schema export is enabled. Explicit non-destructive migrations cover every exported
 version starting at version 1. Record payloads are encrypted before DAO writes; the database
 file itself is not SQLCipher. Identifiers, record types, timestamps, favorites, relationships, and selected visual or
 attachment metadata remain structural plaintext. See [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md) and

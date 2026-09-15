@@ -6,6 +6,7 @@ import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlin.time.TimeSource
 
@@ -346,6 +347,7 @@ class SecurityTest {
         // Try to unwrap with kek2
         val result = hierarchy.unwrapVEK(wrapped, kek2)
 
+        assertIs<CiphertextAuthenticationException>(result.exceptionOrNull())
         assertTrue(
             result.isFailure,
             "Wrong KEK should fail to unwrap VEK"

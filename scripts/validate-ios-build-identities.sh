@@ -83,6 +83,7 @@ validate_configuration() {
     local configuration="$1"
     local expected_bundle_id="$2"
     local expected_display_name="$3"
+    local expected_code_sign_style="$4"
     local settings_file="$temporary_root/$configuration.settings"
 
     if ! xcodebuild \
@@ -112,7 +113,7 @@ validate_configuration() {
           "$display_name" != "$expected_display_name" ||
           "$product_name" != PassVault ||
           "$effective_configuration" != "$configuration" ||
-          "$code_sign_style" != Automatic ||
+          "$code_sign_style" != "$expected_code_sign_style" ||
           "$development_team" != 7CGZ2343AA ||
           "$code_sign_entitlements" != iosApp/iosApp.entitlements ]]; then
         echo "Unexpected $configuration iOS identity settings." >&2
@@ -121,8 +122,8 @@ validate_configuration() {
     fi
 }
 
-validate_configuration Debug com.passvault.ios.debug "PassVault Dev"
-validate_configuration Release com.passvault.ios PassVault
+validate_configuration Debug com.passvault.ios.debug "PassVault Dev" Automatic
+validate_configuration Release com.passvault.ios PassVault Manual
 
 validate_shared_release_signing_mapping() {
     local settings_file="$temporary_root/Release-shared-signing.settings"

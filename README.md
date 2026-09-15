@@ -8,7 +8,7 @@ ships the shared Compose application on iPhone and iPad.
 
 - Local vault creation, password unlock, mobile and supported Desktop biometric unlock, manual lock,
   background/inactivity lock, and
-  failed-attempt throttling.
+  process-local failed-attempt throttling.
 - Authenticated XChaCha20-Poly1305 encryption with Argon2id-derived key-encryption keys and per-purpose subkeys.
 - Credential creation, editing, deletion, favorites, folders, tags, search, filters, and password history.
 - Per-login TOTP authenticators with local code generation, QR enrollment, and encrypted setup-key storage.
@@ -28,11 +28,12 @@ ships the shared Compose application on iPhone and iPad.
 - Saved TOTP authenticators protect the external accounts they belong to; they do not add a second factor to
   PassVault vault unlock.
 - CSV/plaintext import and export are not shipped.
-- Managed attachments are limited to 100 MiB per file, 20 files and 512 MiB per credential. Format-2 backups stream
-  metadata and attachment objects with a 16 GiB complete-container limit; legacy format-1 imports remain bounded and
-  do not contain attachment bytes.
-- The Room schema is version 3. Explicit, non-destructive migrations preserve versions 1 and 2; destructive fallback
-  is not configured.
+- Each credential has 20 visible attachment slots, including metadata-only rows migrated from older vaults. New
+  managed attachments are limited to 100 MiB per file and 512 MiB of plaintext per credential. Format-2 backups
+  stream metadata and attachment objects with a 16 GiB complete-container limit; legacy format-1 imports remain
+  bounded and do not contain attachment bytes.
+- The Room schema is version 5. Explicit, non-destructive migrations preserve versions 1 through 4; destructive
+  fallback is not configured.
 - Release signing, notarization, and store publication require credentials and infrastructure outside this
   repository.
 

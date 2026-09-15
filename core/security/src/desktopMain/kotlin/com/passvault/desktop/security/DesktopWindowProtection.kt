@@ -23,14 +23,11 @@ class DesktopWindowProtection {
     private var locked = false
     private var autoLockOnMinimize = false
     private var autoLockOnFocusLost = false
-    private var autoLockDelayMs = 0L
     /** True only while an app-owned OS prompt is allowed to defer focus-loss locking. */
     var focusLossAutoLockSuppressed: () -> Boolean = { false }
+    private val focusLossLockPolicy = DesktopFocusLossLockPolicy(::monotonicTimeMillis)
     private var lockTimer: Timer? = null
-        set(value) {
-            field?.stop()
-            field = value
-        }
+    private var lockTimerToken: Any? = null
     private var previousNonIconifiedState = Frame.NORMAL
     private var contentSecured = false
     private var restoreRequested = false
@@ -52,7 +49,7 @@ class DesktopWindowProtection {
 
     fun attachWindow(window: JFrame) {
         if (frame === window) return
-        lockTimer = null
+        cancelFocusLossTimer()
         windowListeners?.detach()
         frame = window
         windowListeners = DesktopWindowListeners(
@@ -81,11 +78,19 @@ class DesktopWindowProtection {
                 }
             },
             onFocusLost = { event ->
-                if (!event?.oppositeWindow.isOwnedBy(window) && autoLockOnFocusLost) {
-                    scheduleFocusLossLock()
+                if (!locked && !event?.oppositeWindow.isOwnedBy(window) && autoLockOnFocusLost) {
+                    applyFocusLossDecision(
+                        focusLossLockPolicy.onFocusLost(isFocusLossAutoLockSuppressed()),
+                    )
                 }
             },
-            onFocusGained = { lockTimer = null },
+            onFocusGained = {
+                if (!locked) {
+                    applyFocusLossDecision(
+                        focusLossLockPolicy.onFocusGained(isFocusLossAutoLockSuppressed()),
+                    )
+                }
+            },
             onClosed = ::cleanup,
         ).also(DesktopWindowListeners::attach)
     }
@@ -120,6 +125,8 @@ class DesktopWindowProtection {
     }
 
     fun unlock() {
+        cancelFocusLossTimer()
+        focusLossLockPolicy.resetEpisode()
         if (!locked) return
         removeConcealmentCurtain()
         locked = false
@@ -170,40 +177,66 @@ class DesktopWindowProtection {
         lockOnMinimize: Boolean,
         lockOnFocusLost: Boolean,
         focusLossDelayMs: Long = 0,
+        maximumSuppressedFocusLossMs: Long = focusLossDelayMs,
     ) {
         autoLockOnMinimize = lockOnMinimize
         autoLockOnFocusLost = lockOnFocusLost
-        autoLockDelayMs = focusLossDelayMs.coerceAtLeast(0L)
-        if (!lockOnFocusLost) lockTimer = null
+        applyFocusLossDecision(
+            focusLossLockPolicy.configure(
+                enabled = lockOnFocusLost,
+                focusLossDelayMillis = focusLossDelayMs,
+                maximumSuppressedFocusLossMillis = maximumSuppressedFocusLossMs,
+                suppressed = isFocusLossAutoLockSuppressed(),
+            ),
+        )
     }
 
     fun setLockListener(listener: (() -> Unit)?) {
         lockListener = listener
     }
 
-    /** Rearms focus-loss locking when the app-owned OS prompt terminates. */
+    /** Ends biometric deferral and enforces any cumulative focus-loss budget already consumed. */
     fun onFocusLossSuppressionEnded() {
-        if (autoLockOnFocusLost && frame?.isFocused == false) scheduleFocusLossLock()
+        applyFocusLossDecision(focusLossLockPolicy.onSuppressionEnded())
     }
 
-    private fun scheduleFocusLossLock() {
-        if (focusLossAutoLockSuppressed()) return
-        if (autoLockDelayMs == 0L) {
-            lock()
-        } else {
-            val delay = autoLockDelayMs.coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
-            lockTimer = Timer(delay) {
-                if (!focusLossAutoLockSuppressed()) lock()
-            }.apply {
-                isRepeats = false
-                start()
-            }
+    private fun applyFocusLossDecision(decision: DesktopFocusLossLockDecision) {
+        when (decision) {
+            DesktopFocusLossLockDecision.None -> cancelFocusLossTimer()
+            DesktopFocusLossLockDecision.Lock -> lock()
+            is DesktopFocusLossLockDecision.Schedule -> scheduleFocusLossTimer(decision.delayMillis)
         }
     }
 
+    private fun scheduleFocusLossTimer(delayMillis: Long) {
+        cancelFocusLossTimer()
+        val token = Any()
+        lockTimerToken = token
+        val delay = delayMillis.coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
+        lockTimer = Timer(delay) {
+            if (lockTimerToken !== token) return@Timer
+            cancelFocusLossTimer()
+            applyFocusLossDecision(
+                focusLossLockPolicy.onTimerFired(isFocusLossAutoLockSuppressed()),
+            )
+        }.apply {
+            isRepeats = false
+            start()
+        }
+    }
+
+    private fun cancelFocusLossTimer() {
+        lockTimer?.stop()
+        lockTimer = null
+        lockTimerToken = null
+    }
+
+    private fun isFocusLossAutoLockSuppressed(): Boolean =
+        runCatching(focusLossAutoLockSuppressed).getOrDefault(false)
+
     fun cleanup() {
         removeConcealmentCurtain()
-        lockTimer = null
+        cancelFocusLossTimer()
         windowListeners?.detach()
         windowListeners = null
         lockListener = null
@@ -211,7 +244,7 @@ class DesktopWindowProtection {
         locked = false
         autoLockOnMinimize = false
         autoLockOnFocusLost = false
-        autoLockDelayMs = 0L
+        focusLossLockPolicy.reset()
         focusLossAutoLockSuppressed = { false }
         previousNonIconifiedState = Frame.NORMAL
         contentSecured = false
@@ -221,7 +254,8 @@ class DesktopWindowProtection {
 
     private fun enterLockedState(): Boolean {
         if (locked) return false
-        lockTimer = null
+        cancelFocusLossTimer()
+        focusLossLockPolicy.resetEpisode()
         locked = true
         contentSecured = false
         restoreRequested = false
@@ -307,6 +341,10 @@ private fun Window?.isOwnedBy(owner: JFrame): Boolean {
     }
     return false
 }
+
+private fun monotonicTimeMillis(): Long = System.nanoTime() / NANOSECONDS_PER_MILLISECOND
+
+private const val NANOSECONDS_PER_MILLISECOND = 1_000_000L
 
 internal fun shouldDeferDesktopWindowRestore(
     oldState: Int,

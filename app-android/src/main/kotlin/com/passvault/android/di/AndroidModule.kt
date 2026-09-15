@@ -7,6 +7,8 @@ import com.passvault.android.security.AndroidBiometricKeyStore
 import com.passvault.android.backup.AndroidBackupFileStore
 import com.passvault.android.attachment.AndroidAttachmentFileStore
 import com.passvault.android.lifecycle.AndroidLifecycleLockCoordinator
+import com.passvault.android.lifecycle.AndroidScreenOffObserver
+import com.passvault.android.lifecycle.ScreenOffObserver
 import com.passvault.android.settings.AndroidAppSettingsStore
 import com.passvault.core.domain.repository.AppSettingsStore
 import com.passvault.feature.backup.BackupFileStore
@@ -31,11 +33,12 @@ import org.koin.dsl.module
  */
 val androidModule = module {
 
-    single { AndroidLifecycleLockCoordinator(get(), get(), get(), get()) }
+    single<ScreenOffObserver> { AndroidScreenOffObserver(androidContext()) }
+    single { AndroidLifecycleLockCoordinator(get(), get(), get(), get(), get()) }
     single<AppSettingsStore> { AndroidAppSettingsStore(androidContext()) }
     single<AndroidBackupFileStore> { AndroidBackupFileStore(androidContext(), get()) }
     single<BackupFileStore> { get<AndroidBackupFileStore>() }
-    single<AndroidAttachmentFileStore> { AndroidAttachmentFileStore(androidContext(), get()) }
+    single<AndroidAttachmentFileStore> { AndroidAttachmentFileStore(androidContext(), get(), get()) }
     single<AttachmentFileStore> { get<AndroidAttachmentFileStore>() }
 
     // ============================================================================

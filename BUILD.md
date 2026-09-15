@@ -54,3 +54,10 @@ independent security review; the repository cannot invent these.
 
 Current command evidence and unresolved external gates are recorded in
 [`docs/PRODUCTION_READINESS_AUDIT.md`](docs/PRODUCTION_READINESS_AUDIT.md).
+
+## Dependency verification
+
+`verifyDependencies` enforces the repository's reviewed checksum-only trust boundary; it is not a publisher-identity
+claim. Review [`docs/DEPENDENCY_VERIFICATION.md`](docs/DEPENDENCY_VERIFICATION.md) before adding or changing a
+checksum, repository, trusted-artifact rule, or signature policy. Never regenerate verification metadata merely to
+make an unexplained dependency-verification failure pass.

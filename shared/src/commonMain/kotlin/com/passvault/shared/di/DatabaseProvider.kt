@@ -1,8 +1,6 @@
 package com.passvault.shared.di
 
-import com.passvault.core.database.VaultDatabase
+import com.passvault.core.database.VaultDatabaseBootstrap
 
-/**
- * Platform-specific database creation.
- */
-expect fun createDatabase(context: Any): VaultDatabase
+/** Creates the platform database bootstrap and recovery boundary. */
+expect fun createDatabaseBootstrap(context: Any): VaultDatabaseBootstrap

@@ -13,7 +13,11 @@ import com.passvault.feature.backup.BackupFileStore
 import com.passvault.feature.backup.BackupFileSelectionCancelled
 import com.passvault.feature.backup.BackupOutput
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.swing.Swing
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
@@ -42,25 +46,7 @@ class DesktopBackupFileStore : BackupFileStore {
                     dialogTitle,
                 )
             } ?: return Result.failure(BackupFileSelectionCancelled())
-            withContext(Dispatchers.IO) {
-                val selectedPath = Path.of(selected).toAbsolutePath().normalize()
-                require(selectedPath.fileName.toString().isNotBlank())
-                val parent = selectedPath.parent ?: Path.of(System.getProperty("user.dir"))
-                Files.createDirectories(parent)
-                val realParent = parent.toRealPath()
-                val target = realParent.resolve(selectedPath.fileName.toString())
-                require(!Files.isSymbolicLink(target))
-                val temporary = Files.createTempFile(realParent, ".passvault-", ".tmp")
-                Result.success(
-                    BackupOutput(
-                        file = BackupFile(
-                            target.toString(),
-                            safeDesktopBackupFileName(target.fileName.toString(), DEFAULT_BACKUP_NAME),
-                        ),
-                        sink = DesktopBackupSink(temporary, target),
-                    ),
-                )
-            }
+            Result.success(createDesktopBackupOutput(selected))
         } catch (cancel: CancellationException) {
             throw cancel
         } catch (_: Exception) {
@@ -132,7 +118,6 @@ class DesktopBackupFileStore : BackupFileStore {
 
     private companion object {
         const val BACKUP_EXTENSION = ".pvault"
-        const val DEFAULT_BACKUP_NAME = "passvault-backup.pvault"
         const val DEFAULT_IMPORT_NAME = "backup"
     }
 }
@@ -157,13 +142,13 @@ private class DesktopBackupSource(
         require(Files.size(path) == declaredSizeBytes)
     }
 
-    override suspend fun close() = withContext(Dispatchers.IO) {
+    override suspend fun close() = withContext(NonCancellable + Dispatchers.IO) {
         input?.close()
         input = null
     }
 }
 
-private class DesktopBackupSink(
+internal class DesktopBackupSink(
     private val temporary: Path,
     private val target: Path,
 ) : BackupContentSink {
@@ -184,7 +169,7 @@ private class DesktopBackupSink(
         stream.write(buffer, 0, byteCount)
     }
 
-    override suspend fun commit() = withContext(Dispatchers.IO) {
+    override suspend fun commit() = withContext(NonCancellable + Dispatchers.IO) {
         check(!finished)
         output?.flush()
         output?.close()
@@ -203,12 +188,53 @@ private class DesktopBackupSink(
         Unit
     }
 
-    override suspend fun abort() = withContext(Dispatchers.IO) {
+    override suspend fun abort() = withContext(NonCancellable + Dispatchers.IO) {
         if (finished) return@withContext
-        finished = true
         runCatching { output?.close() }
         output = null
         Files.deleteIfExists(temporary)
+        finished = true
+    }
+}
+
+/**
+ * Creates the destination-directory temporary and retains ownership until the
+ * dispatcher handoff has delivered the sink to its caller.
+ */
+internal suspend fun createDesktopBackupOutput(
+    selected: String,
+    ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+): BackupOutput {
+    var unclaimedSink: DesktopBackupSink? = null
+    return try {
+        val output = withContext(ioDispatcher) {
+            val selectedPath = Path.of(selected).toAbsolutePath().normalize()
+            require(selectedPath.fileName.toString().isNotBlank())
+            val parent = selectedPath.parent ?: Path.of(System.getProperty("user.dir"))
+            Files.createDirectories(parent)
+            val realParent = parent.toRealPath()
+            val target = realParent.resolve(selectedPath.fileName.toString())
+            require(!Files.isSymbolicLink(target))
+            val sink = DesktopBackupSink(
+                temporary = Files.createTempFile(realParent, ".passvault-", ".tmp"),
+                target = target,
+            )
+            unclaimedSink = sink
+            BackupOutput(
+                file = BackupFile(
+                    target.toString(),
+                    safeDesktopBackupFileName(target.fileName.toString(), DEFAULT_BACKUP_NAME),
+                ),
+                sink = sink,
+            )
+        }
+        currentCoroutineContext().ensureActive()
+        unclaimedSink = null
+        output
+    } finally {
+        unclaimedSink?.let { sink ->
+            withContext(NonCancellable) { runCatching { sink.abort() } }
+        }
     }
 }
 
@@ -224,3 +250,4 @@ internal fun safeDesktopBackupFileName(name: String, fallback: String): String =
     } ?: fallback
 
 private const val MAX_DISPLAY_NAME_CODE_POINTS = 160
+private const val DEFAULT_BACKUP_NAME = "passvault-backup.pvault"

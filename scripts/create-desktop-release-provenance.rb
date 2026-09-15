@@ -3,6 +3,7 @@
 require "digest"
 require "json"
 require "pathname"
+require "rbconfig"
 require "time"
 
 MAX_FILE_BYTES = 16 * 1024 * 1024 * 1024
@@ -31,6 +32,43 @@ abort("Invalid candidate tag") unless candidate_tag == "v#{version}-rc.#{build_n
 abort("Invalid source commit") unless source_commit.match?(/\A[0-9a-f]{40}\z/)
 abort("Invalid source tree") unless source_tree.match?(/\A[0-9a-f]{40}\z/)
 
+desktop_receipt_path = root.join("desktop-artifact-receipt.json")
+readiness_manifest_path = root.join("readiness-manifest.json")
+unless desktop_receipt_path.file? && !desktop_receipt_path.symlink? &&
+       readiness_manifest_path.file? && !readiness_manifest_path.symlink?
+  abort("Desktop candidate provenance sidecars are missing or unsafe")
+end
+validator = Pathname.new(__dir__).join("validate-desktop-artifact-receipt.rb")
+unless system(
+  RbConfig.ruby,
+  validator.to_s,
+  desktop_receipt_path.to_s,
+  version,
+  build_number.to_s,
+  source_commit,
+  source_tree,
+  out: File::NULL,
+)
+  abort("Desktop candidate receipt failed structural validation")
+end
+candidate_validator = Pathname.new(__dir__).join("validate-candidate-manifest.rb")
+unless system(
+  RbConfig.ruby,
+  candidate_validator.to_s,
+  readiness_manifest_path.to_s,
+  source_commit,
+  source_tree,
+  out: File::NULL,
+)
+  abort("Readiness manifest failed structural validation")
+end
+desktop_receipt_sha256 = Digest::SHA256.file(desktop_receipt_path).hexdigest
+readiness_manifest = JSON.parse(readiness_manifest_path.read(encoding: "UTF-8"))
+unless readiness_manifest.fetch("desktop").fetch("artifactReceiptSha256") == desktop_receipt_sha256
+  abort("Readiness manifest does not bind the Desktop candidate receipt")
+end
+desktop_receipt = JSON.parse(desktop_receipt_path.read(encoding: "UTF-8"))
+
 files = root.children.select(&:file?).reject(&:symlink?).reject do |path|
   %w[release-provenance.json SHA256SUMS.txt].include?(path.basename.to_s)
 end.sort_by { |path| path.basename.to_s }.map do |path|
@@ -46,13 +84,18 @@ end.sort_by { |path| path.basename.to_s }.map do |path|
 end
 
 manifest = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   candidateTag: candidate_tag,
   marketingVersion: version,
   buildNumber: build_number,
   sourceCommit: source_commit,
   sourceTree: source_tree,
   createdAt: Time.now.utc.strftime("%Y-%m-%dT%H:%M:%SZ"),
+  candidateDesktop: {
+    artifactReceiptSha256: desktop_receipt_sha256,
+    sourceArtifactRun: desktop_receipt.fetch("sourceArtifactRun"),
+    promotionInputs: desktop_receipt.fetch("artifacts"),
+  },
   files: files,
 }
 

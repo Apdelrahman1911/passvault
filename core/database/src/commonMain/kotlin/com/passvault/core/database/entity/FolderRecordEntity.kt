@@ -42,8 +42,9 @@ data class FolderRecordEntity(
     @ColumnInfo(name = "payload_nonce", typeAffinity = ColumnInfo.BLOB)
     val payloadNonce: ByteArray,
 
+    /** Reviewed plaintext display metadata retained for schema and backup compatibility. */
     @ColumnInfo(name = "icon")
-    val icon: String?, // Emoji or icon name (not encrypted, for quick display)
+    val icon: String?,
 
     @ColumnInfo(name = "sort_order")
     val sortOrder: Int,

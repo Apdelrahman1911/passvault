@@ -29,6 +29,7 @@ import com.passvault.core.domain.model.CredentialSummary
 import com.passvault.core.domain.model.CredentialType
 import com.passvault.core.domain.repository.CredentialHealthInput
 import com.passvault.core.domain.repository.CredentialTotpInput
+import com.passvault.core.domain.repository.CredentialTotpInputLease
 import com.passvault.core.domain.repository.AttachmentPolicy
 import com.passvault.core.domain.model.CustomField
 import com.passvault.core.domain.model.CustomFieldId
@@ -43,6 +44,8 @@ import com.passvault.core.domain.model.TotpConfiguration
 import com.passvault.core.domain.model.UrlValue
 import com.passvault.core.domain.repository.CredentialRepository
 import com.passvault.core.domain.repository.CredentialTotpRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.serialization.Serializable
@@ -177,8 +180,12 @@ class CredentialRepositoryImpl(
                 val tagsByCredential = if (projections.isEmpty()) {
                     emptyMap()
                 } else {
-                    credentialDao
-                        .getTagCrossRefsForCredentials(projections.map { it.id })
+                    // Room expands one bind parameter per ID. Keep each query below even
+                    // SQLite's historical 999-variable limit, regardless of vault size.
+                    projections.chunked(TAG_LOOKUP_BATCH_SIZE)
+                        .flatMap { batch ->
+                            credentialDao.getTagCrossRefsForCredentials(batch.map { it.id })
+                        }
                         .groupBy(
                             keySelector = { it.credentialId },
                             valueTransform = { TagId(it.tagId) },
@@ -196,13 +203,23 @@ class CredentialRepositoryImpl(
     }
 
     override suspend fun getById(id: CredentialId): Result<Credential?> {
-        return repositoryResult {
-            sessionManager.withUnlockedSession { vek ->
-                id.value.requireRecordIdentifier("Credential ID")
-                val entity = credentialDao.getById(id.value)
-                    ?: return@withUnlockedSession null
-                decryptCredential(entity, vek)
+        var produced: Credential? = null
+        var delivered = false
+        try {
+            val result = repositoryResult {
+                sessionManager.withUnlockedSession { vek ->
+                    id.value.requireRecordIdentifier("Credential ID")
+                    val entity = credentialDao.getById(id.value)
+                        ?: return@withUnlockedSession null
+                    decryptCredential(entity, vek).also { produced = it }
+                }
             }
+            delivered = result.isSuccess
+            return result
+        } finally {
+            // The session wrapper can reject a completed result during revocation,
+            // cancellation or lease release. The consumer does not own it yet.
+            if (!delivered) produced?.clearSensitiveValues()
         }
     }
 
@@ -352,39 +369,54 @@ class CredentialRepositoryImpl(
         }
     }
 
-    @Suppress("TooGenericExceptionCaught") // Every partially decrypted health input must be cleared on failure.
     override suspend fun getCredentialsForHealthAnalysis(): Result<List<CredentialHealthInput>> {
-        return repositoryResult {
-            sessionManager.withUnlockedSession { vek ->
-                val inputs = mutableListOf<CredentialHealthInput>()
-                try {
+        val inputs = mutableListOf<CredentialHealthInput>()
+        var delivered = false
+        try {
+            val result = repositoryResult {
+                sessionManager.withUnlockedSession { vek ->
                     credentialDao.getLoginsForHealthAnalysis().forEach { entity ->
                         inputs += decryptHealthInput(entity, vek)
                     }
                     inputs
-                } catch (error: Exception) {
-                    inputs.forEach { it.clearSensitiveValues() }
-                    throw error
                 }
             }
+            delivered = result.isSuccess
+            return result
+        } finally {
+            // Own partial and complete batches until the outer session handoff succeeds.
+            if (!delivered) inputs.forEach { it.clearSensitiveValues() }
         }
     }
 
     @Suppress("TooGenericExceptionCaught") // Every copied TOTP secret is cleared if the batch fails.
-    override suspend fun getCredentialsForTotpDisplay(): Result<List<CredentialTotpInput>> {
-        return repositoryResult {
-            sessionManager.withUnlockedSession { vek ->
-                val inputs = mutableListOf<CredentialTotpInput>()
-                try {
-                    credentialDao.getLoginsForTotpDisplay().forEach { entity ->
-                        decryptTotpDisplayInput(entity, vek)?.let(inputs::add)
+    override suspend fun getCredentialsForTotpDisplay(): Result<CredentialTotpInputLease> {
+        val callerJob = currentCoroutineContext()[Job]
+            ?: return Result.failure(IllegalStateException("A TOTP input lease requires a coroutine Job"))
+        var lease: CredentialTotpInputLease? = null
+        var returnedSuccessfully = false
+        try {
+            val result = repositoryResult {
+                sessionManager.withUnlockedSession { vek ->
+                    val inputs = mutableListOf<CredentialTotpInput>()
+                    try {
+                        credentialDao.getLoginsForTotpDisplay().forEach { entity ->
+                            decryptTotpDisplayInput(entity, vek)?.let(inputs::add)
+                        }
+                        CredentialTotpInputLease.ownedByCoroutine(
+                            inputs.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.title }),
+                            callerJob,
+                        ).also { lease = it }
+                    } catch (error: Exception) {
+                        inputs.forEach(CredentialTotpInput::clear)
+                        throw error
                     }
-                    inputs.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.title })
-                } catch (error: Exception) {
-                    inputs.forEach(CredentialTotpInput::clear)
-                    throw error
                 }
             }
+            returnedSuccessfully = result.isSuccess
+            return result
+        } finally {
+            if (!returnedSuccessfully) lease?.clear()
         }
     }
 
@@ -1283,10 +1315,13 @@ class CredentialRepositoryImpl(
     }
 
     private companion object {
+        const val TAG_LOOKUP_BATCH_SIZE = 900
         const val MAX_ATTACHMENT_MIME_TYPE_LENGTH = 255
         const val MAX_ATTACHMENT_SIZE_BYTES = 4L * 1024L * 1024L * 1024L
         val UUID_HYPHEN_INDICES = setOf(8, 13, 18, 23)
         const val TOTP_VAULT_FORMAT_VERSION = 2
+        // Mirrors core:otp's deliberate Google Authenticator compatibility
+        // exception to RFC 4226 R6. Existing vaults must remain generatable.
         const val MIN_TOTP_SECRET_LENGTH = 16
         const val MAX_TOTP_SECRET_LENGTH = 205
         const val MIN_TOTP_SECRET_BYTES = 10

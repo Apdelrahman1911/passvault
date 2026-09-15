@@ -79,23 +79,35 @@ internal class JnaDesktopBiometricBridge private constructor(
         ensureVaultHash(vaultHash)
         val output = Memory(VAULT_KEY_BYTES.toLong())
         output.clear()
+        var producedKey: ByteArray? = null
         return try {
-            withOperation { operationId ->
-                withNativeBytes(vaultHash) { hash ->
-                    native.pv_bio_retrieve(
-                        context,
-                        operationId,
-                        hash,
-                        SizeT(vaultHash.size.toLong()),
-                        output,
-                        SizeT(VAULT_KEY_BYTES.toLong()),
-                    ).requireSuccess()
+            val result = try {
+                withOperation { operationId ->
+                    withNativeBytes(vaultHash) { hash ->
+                        native.pv_bio_retrieve(
+                            context,
+                            operationId,
+                            hash,
+                            SizeT(vaultHash.size.toLong()),
+                            output,
+                            SizeT(VAULT_KEY_BYTES.toLong()),
+                        ).requireSuccess()
+                    }
                 }
-                output.getByteArray(0, VAULT_KEY_BYTES)
+                // Do not create a managed secret until native lifecycle cleanup
+                // has completed. Keep discard authority through off-heap cleanup.
+                output.getByteArray(0, VAULT_KEY_BYTES).also { producedKey = it }
+            } finally {
+                try {
+                    output.clear()
+                } finally {
+                    output.close()
+                }
             }
+            producedKey = null
+            result
         } finally {
-            output.clear()
-            output.close()
+            producedKey?.fill(0)
         }
     }
 

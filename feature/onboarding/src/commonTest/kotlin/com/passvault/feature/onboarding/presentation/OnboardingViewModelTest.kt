@@ -7,6 +7,7 @@ import com.passvault.core.designsystem.generated.resources.error_master_password
 import com.passvault.core.designsystem.generated.resources.error_vault_setup_exists
 import com.passvault.core.designsystem.text.UiText
 import com.passvault.core.domain.model.MasterPasswordPolicy
+import com.passvault.core.domain.model.SensitiveText
 import com.passvault.core.domain.model.VaultSessionState
 import com.passvault.core.domain.model.codePointLength
 import com.passvault.core.testing.fakes.FakeVaultRepository
@@ -128,6 +129,8 @@ class OnboardingViewModelTest {
         viewModel.effect.test {
             viewModel.onEvent(OnboardingViewModel.OnboardingEvent.OnCreateVaultClick)
             assertIs<OnboardingViewModel.OnboardingEffect.NavigateToMasterPasswordConfirmation>(awaitItem())
+            assertEquals("", viewModel.state.value.masterPassword)
+            assertTrue(viewModel.state.value.hasPendingMasterPassword)
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -144,6 +147,9 @@ class OnboardingViewModelTest {
 
         viewModel.effect.test {
             viewModel.onEvent(OnboardingViewModel.OnboardingEvent.OnConfirmPasswordClick)
+            assertEquals("", viewModel.state.value.confirmPassword)
+            assertFalse(viewModel.state.value.hasPendingMasterPassword)
+            assertTrue(viewModel.state.value.isLoading)
             runCurrent()
 
             assertIs<OnboardingViewModel.OnboardingEffect.NavigateToSecurityExplanation>(awaitItem())
@@ -152,6 +158,8 @@ class OnboardingViewModelTest {
             assertTrue(viewModel.state.value.vaultCreated)
             assertFalse(viewModel.state.value.isLoading)
             assertIs<VaultSessionState.Unlocked>(repository.currentSessionState)
+            assertCleared(repository.lastCreatePassword)
+            assertCleared(repository.lastUnlockPassword)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -171,6 +179,9 @@ class OnboardingViewModelTest {
         )
         assertFalse(viewModel.state.value.vaultCreated)
         assertFalse(viewModel.state.value.isLoading)
+        assertEquals("", viewModel.state.value.masterPassword)
+        assertEquals("", viewModel.state.value.confirmPassword)
+        assertFalse(viewModel.state.value.hasPendingMasterPassword)
     }
 
     @Test
@@ -182,6 +193,7 @@ class OnboardingViewModelTest {
 
         assertEquals("", viewModel.state.value.masterPassword)
         assertEquals("", viewModel.state.value.confirmPassword)
+        assertFalse(viewModel.state.value.hasPendingMasterPassword)
         assertNull(viewModel.state.value.errorMessage)
         assertFalse(viewModel.state.value.passwordsMatch)
         assertFalse(viewModel.state.value.vaultCreated)
@@ -189,8 +201,20 @@ class OnboardingViewModelTest {
 
     private fun enterMatchingPassword(viewModel: OnboardingViewModel) {
         viewModel.onEvent(OnboardingViewModel.OnboardingEvent.OnPasswordChanged(STRONG_PASSWORD))
+        viewModel.onEvent(OnboardingViewModel.OnboardingEvent.OnCreateVaultClick)
+        assertEquals("", viewModel.state.value.masterPassword)
+        assertTrue(viewModel.state.value.hasPendingMasterPassword)
         viewModel.onEvent(OnboardingViewModel.OnboardingEvent.OnConfirmPasswordChanged(STRONG_PASSWORD))
         assertTrue(viewModel.state.value.canCreateVault)
+    }
+
+    private fun assertCleared(value: SensitiveText?) {
+        val characters = requireNotNull(value).expose()
+        try {
+            assertTrue(characters.all { it == '\u0000' })
+        } finally {
+            characters.fill('\u0000')
+        }
     }
 
     private companion object {

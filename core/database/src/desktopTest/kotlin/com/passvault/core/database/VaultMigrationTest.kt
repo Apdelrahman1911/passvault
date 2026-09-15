@@ -39,14 +39,14 @@ class VaultMigrationTest {
                 database.close()
             }
 
-            assertEquals(4L, queryLong(path, "PRAGMA user_version"))
+            assertEquals(5L, queryLong(path, "PRAGMA user_version"))
             assertUsesIndex(queryPlan(path, FOLDER_LOOKUP_SQL), "index_folder_records_name_hash")
             assertUsesIndex(queryPlan(path, TAG_LOOKUP_SQL), "index_tag_records_name_hash")
         }
     }
 
     @Test
-    fun `fresh version four schema contains only justified blind indexes`() = runTest {
+    fun `fresh version five schema contains only justified blind indexes`() = runTest {
         val database = Room.inMemoryDatabaseBuilder<VaultDatabase>()
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
@@ -85,7 +85,7 @@ class VaultMigrationTest {
             }
 
             val database = Room.databaseBuilder<VaultDatabase>(name = path.toString())
-                .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
+                .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                 .setDriver(BundledSQLiteDriver())
                 .setQueryCoroutineContext(Dispatchers.IO)
                 .build()
@@ -97,6 +97,8 @@ class VaultMigrationTest {
                 assertEquals(0, attachment.contentFormatVersion)
                 assertEquals("LEGACY", attachment.storageState)
                 assertEquals("attachments/legacy.enc", attachment.storagePath)
+                assertEquals(1, database.attachmentDao().getOccupiedSlotCount("credential-existing"))
+                assertEquals(0, database.attachmentDao().getManagedSizeBytes("credential-existing"))
             } finally {
                 database.close()
             }
@@ -113,7 +115,7 @@ class VaultMigrationTest {
             createVersionThreeDatabaseWithCredentialGraph(path)
 
             val database = Room.databaseBuilder<VaultDatabase>(name = path.toString())
-                .addMigrations(MIGRATION_3_4)
+                .addMigrations(MIGRATION_3_4, MIGRATION_4_5)
                 .setDriver(BundledSQLiteDriver())
                 .setQueryCoroutineContext(Dispatchers.IO)
                 .build()
@@ -133,7 +135,7 @@ class VaultMigrationTest {
                 database.close()
             }
 
-            assertEquals(4L, queryLong(path, "PRAGMA user_version"))
+            assertEquals(5L, queryLong(path, "PRAGMA user_version"))
             assertFalse(columnNames(path, "credential_records").contains("title_hash"))
             assertFalse(indexNames(path, "credential_records").contains("index_credential_records_title_hash"))
             assertEquals(0L, queryLong(path, "SELECT COUNT(*) FROM pragma_foreign_key_check"))
@@ -155,7 +157,7 @@ class VaultMigrationTest {
                 }
             }
             val database = Room.databaseBuilder<VaultDatabase>(name = path.toString())
-                .addMigrations(failingMigration)
+                .addMigrations(failingMigration, MIGRATION_4_5)
                 .setDriver(BundledSQLiteDriver())
                 .setQueryCoroutineContext(Dispatchers.IO)
                 .build()
@@ -187,7 +189,7 @@ class VaultMigrationTest {
                 }
             }
             val database = Room.databaseBuilder<VaultDatabase>(name = path.toString())
-                .addMigrations(failingMigration, MIGRATION_2_3, MIGRATION_3_4)
+                .addMigrations(failingMigration, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                 .setDriver(BundledSQLiteDriver())
                 .setQueryCoroutineContext(Dispatchers.IO)
                 .build()
@@ -205,7 +207,7 @@ class VaultMigrationTest {
 
     private fun openMigratedDatabase(path: Path): VaultDatabase =
         Room.databaseBuilder<VaultDatabase>(name = path.toString())
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
             .build()

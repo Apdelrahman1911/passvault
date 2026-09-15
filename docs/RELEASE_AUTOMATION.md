@@ -1,10 +1,11 @@
 # Release Automation
 
-PassVault promotes one tested mobile build and one tested Git commit through
-testing and production. Mobile binaries are never rebuilt after the internal
-upload. Desktop testing packages are public and intentionally unsigned;
-production Windows and macOS packages cannot publish unless signing and
-notarization succeed.
+PassVault promotes one tested mobile build and receipt-bound Desktop payloads
+through testing and production. Mobile binaries are never rebuilt after the
+internal upload. Linux packages are promoted byte-for-byte; Windows and macOS
+promote the tested app images into platform signing and packaging. Desktop
+signing and publication remain a separate, optional lifecycle, so missing
+Desktop credentials never block Android or iOS production.
 
 ## Branch and approval flow
 
@@ -13,17 +14,21 @@ main
   └─ reviewed PR → testing
        ├─ exact Android/iOS build → internal testing
        ├─ mobile-external-beta approval → closed testing / external TestFlight
-       ├─ unsigned Windows/macOS/Linux GitHub prerelease
+       ├─ smoke-tested Desktop packages and frozen app images
        └─ Candidate Readiness after Apple Beta Review approval
             └─ release-promotion approval → fast-forward exact SHA → release
-                 └─ mobile-production approval → validation only
-                      ├─ signed/timestamped Windows bundle
-                      ├─ signed/notarized/stapled macOS bundle
-                      └─ frozen attested desktop artifact (no publication)
-                           └─ explicit Production Store Release dispatch
-                                └─ mobile-production approval → protected promotion
-                                     ├─ exact Play build → production (100%)
-                                     └─ exact TestFlight build → App Review (automatic release)
+
+main
+  └─ Request Mobile Production Release (owner + typed confirmation)
+       └─ protected bot handoff
+            └─ mobile-production approval
+                 ├─ exact Play build → production (100%)
+                 └─ exact TestFlight build → App Review (automatic release)
+
+release (optional, later)
+  └─ Production Signing Validation
+       └─ desktop-production approval → frozen signed Desktop bundle
+            └─ Publish Stable Release → desktop-production approval
 ```
 
 CI runs on `main`, `testing`, and `release`. `main` and `testing` require a PR,
@@ -42,11 +47,16 @@ Run `scripts/configure-release-branches.sh --apply` once to create and protect
 the branches. Run `scripts/configure-github-mobile-release.sh --apply` when rotating
 mobile credentials or release protections; it scopes beta environments to
 `testing`, the secret-free `release-promotion` approval to `testing`, production
-to `release`, and keyless Play access-check environments to `main`. Release
+mobile promotion to `main`, Desktop production to `release`, and keyless Play
+access-check environments to `main`. To apply only these three release
+environment policies while Desktop credentials are intentionally deferred, run
+`scripts/configure-github-release-environments.sh --apply` instead. Release
 promotion requires an explicit approval by the configured reviewer and permits
 that reviewer to be the dispatching actor so a single-owner repository can
-operate the gate. Production approvals still require a reviewer other than the
-dispatching actor.
+operate the gate. `mobile-production` still prevents approval by its initiating
+actor: the protected request workflow dispatches the child as
+`github-actions[bot]`, so the configured owner can approve without a second
+human account. Administrator bypass remains disabled.
 The production access check requires the deployment approver because it
 federates the same publisher identity as a production promotion. The
 access-check environments expose only the keyless Google identity variables;
@@ -75,11 +85,14 @@ unless repository variable `LEGACY_TESTING_RELEASE_ON_PUSH` is explicitly set to
 5. Promotes the exact Android build to the Play `alpha` closed-testing track
    and distributes the exact iOS build to the configured external TestFlight
    group.
-6. Builds unsigned Windows x64 EXE/MSI, macOS arm64/x64 DMGs, and Linux x64
-   DEB/RPM packages.
-7. Publishes `vVERSION-rc.BUILD` as a GitHub prerelease with checksums,
-   `candidate-manifest.json`, safe mobile hash receipts, the project license,
-   and third-party notices.
+6. Builds and smoke-tests unsigned Windows x64 EXE/MSI, macOS arm64/x64 DMGs,
+   and Linux x64 DEB/RPM packages. It archives and restores each Windows/macOS
+   app image before the smoke test so production consumes the tested archive.
+7. Creates an attested `desktop-artifact-receipt.json` with the exact Linux
+   package and Windows/macOS app-image hashes, source tree, and workflow run.
+   Its digest is bound into schema-3 `candidate-manifest.json`.
+8. Publishes `vVERSION-rc.BUILD` with the receipts, promotion inputs, test
+   installers, checksums, licenses, and third-party notices.
 
 If internal Android or iOS upload already succeeded for the exact
 candidate tree, version, and `VERSION_CODE`, dispatch `Testing
@@ -97,7 +110,9 @@ hashes do not match the signed files, or two successful receipts whose
 artifact hashes differ. It never uploads Android or iOS again.
 
 The prerelease notes explicitly warn that Windows and macOS test installers
-are unsigned. Mobile IPA/AAB files are never attached to a public release.
+and app-image archives are unsigned. The app-image archives are production
+signing inputs, not end-user installers. Mobile IPA/AAB files are never attached
+to a public release.
 
 Apple review is asynchronous and App Store Connect has no GitHub event hook.
 After Apple emails that Beta App Review is approved, manually run `Candidate
@@ -105,28 +120,35 @@ Readiness` from the `testing` branch for the candidate tag. That workflow
 verifies both stores using their APIs and then waits at the secret-free
 `release-promotion` environment. The configured reviewer explicitly authorizes
 the immutable `readiness-manifest.json`, fast-forward of `release` to the exact
-candidate commit, and start of `Production Signing Validation`. The dispatcher
-may approve this gate; the manual approval itself remains required. Signing
-validation is explicitly unable to dispatch production.
+candidate commit. The dispatcher may approve this gate; the manual approval
+itself remains required. Candidate Readiness does not start Desktop signing or
+mobile production.
 
 ## Production release
 
-Approve the pending `mobile-production` deployment in GitHub. The first
-protected run is validation-only: it builds the exact release commit,
-Authenticode signs/timestamps Windows native code and installers, signs every
-macOS nested native component with Developer ID and Hardened Runtime, requires
-`Accepted` notarization, staples/verifies the ticket, checks Gatekeeper, and
-freezes an attested Actions artifact. It does not publish a GitHub release or
-change either store. Validation started by Candidate Readiness stops after
-freezing the bundle.
+Run `Request Mobile Production Release` from protected `main`, enter the exact
+candidate tag, choose the platform(s), and type
+`I_APPROVE_MOBILE_PRODUCTION`. The request must be made by
+`DEPLOYMENT_APPROVER`. It dispatches `Production Store Release` as
+`github-actions[bot]`; approve that child's pending `mobile-production`
+deployment. The child verifies the successful request run, exact `release`
+commit, immutable candidate tag, attested readiness manifest, mobile receipts,
+version, build number, and candidate Store assets. It then promotes the
+candidate's recorded build from Play `alpha` to production and submits the same
+processed TestFlight build to App Review. It does not compile, sign, or upload
+a mobile binary.
 
-After reviewing the validation result, deliberately run `Production Store
-Release` from `release` for the same candidate and approve its
-`mobile-production` deployment. That workflow first requires the matching
-unexpired validation artifact, then promotes the same Play build from `alpha`
-to `production` with a completed 100% rollout and submits the same TestFlight
-build to App Review with automatic release enabled. Reruns target the same
-unique version/build and never compile a new mobile binary.
+Desktop is optional. When a Desktop release is wanted later, manually run
+`Production Signing Validation` from `release` for the same candidate and
+approve `desktop-production`. Before any signing, it downloads the candidate
+receipt and promotion inputs, verifies their attestations and hashes, and stages
+them as short-lived workflow artifacts. It promotes Linux packages unchanged,
+signs the restored Windows app image before creating EXE/MSI installers, and
+signs the restored macOS app image before creating and notarizing each DMG. The
+production workflow does not invoke Gradle or rebuild application payloads. It
+revalidates the reviewed attribution metadata from the candidate tree, whose
+resolved graph was gated before candidate creation, then freezes the attested
+Desktop bundle without changing either mobile Store.
 
 Stores cannot become live atomically: Google may publish before Apple finishes
 review. After both consoles show the version live, run `Publish Stable Release`
@@ -135,16 +157,38 @@ requires that exact Android build on Play production and that exact iOS
 version/build publicly downloadable. It then locates and validates the exact
 frozen signing bundle instead of rebuilding:
 
-- Windows x64 EXE and MSI, with mandatory Authenticode signing.
-- macOS arm64 and x64 DMGs, with mandatory Developer ID signing and notarization.
-- Linux x64 DEB and RPM, covered by the release SHA-256 manifest.
+- Windows x64 EXE and MSI, packaged from the receipt-verified candidate app
+  image with mandatory Authenticode signing.
+- macOS arm64 and x64 DMGs, packaged from receipt-verified candidate app images
+  with mandatory Developer ID signing and notarization.
+- The byte-identical candidate Linux x64 DEB and RPM, covered by the release
+  SHA-256 manifest.
 - `LICENSE.txt`, `NOTICE.txt`, and `THIRD_PARTY_NOTICES.md`, copied from the
   tested source tree and covered by the same checksum manifest.
 
-It then creates immutable `vVERSION` release provenance from the exact tested
-commit. Missing/partial credentials, an expired validation artifact, a different
-SHA, or a failed signature/notarization gate fail closed; production never falls
-back to rebuilding or unsigned Windows/macOS output.
+Schema-2 `release-provenance.json` records the Desktop receipt digest, candidate
+workflow run, and every promotion-input digest alongside the final asset hashes.
+Missing/partial credentials, an expired validation artifact, a different SHA,
+or a failed signature/notarization gate fail closed; production never falls back
+to rebuilding or unsigned Windows/macOS output.
+
+## Third-party attribution gate
+
+`./gradlew checkThirdPartyAttribution` resolves the Android release runtime,
+Desktop runtime, and iOS Arm64 KLIB inputs and compares them with
+`legal/third-party-dependencies.lock`. It also validates every coordinate
+against `legal/third-party-attribution.tsv`, checks the documented versions and
+native-carrier exceptions, and rejects missing or orphaned files in
+`THIRD_PARTY_LICENSES/`. The host-selected Skiko Desktop runtime artifact is
+normalized to `skiko-awt-runtime-current-os`; its version remains exact.
+
+After an intentional production dependency change, run
+`./gradlew generateThirdPartyDependencyInventory`, review the report under
+`build/reports/legal/`, then update the lock, attribution map, notices, and
+license texts together. Do not copy the generated lock without reviewing new,
+removed, or relicensed components. CI and candidate/mobile release preparation
+run the resolved-graph check. No-build Desktop promotion revalidates the same
+reviewed metadata from the attested candidate tree.
 
 ## Automated store screenshots
 
@@ -165,7 +209,7 @@ and must be checked for localization, cropping, status-bar content, and store
 quality. Production is blocked until `validate-mobile-store-assets.rb` passes.
 
 To replace iOS screenshots after a version has been submitted, run `Mobile
-Store Release` from `release` with platform `ios`, channel `production`, and
+Store Release` from `main` with platform `ios`, channel `production`, and
 operation `store-assets`. Enter `I_APPROVE_PRODUCTION` and
 `I_APPROVE_REVIEW_WITHDRAWAL` in their confirmation fields. The protected job
 withdraws the version when Apple permits it, replaces the screenshots, uploads
@@ -190,6 +234,7 @@ Production desktop variables:
 
 - `PUBLISHER_NAME`, `COPYRIGHT_HOLDER`, `SUPPORT_EMAIL`, `SECURITY_EMAIL`
 - `PRIVACY_POLICY_URL`, `SUPPORT_URL`, `PROJECT_URL`
+- `ASC_KEY_ID`, `ASC_ISSUER_ID`
 - `WINDOWS_SIGNING_BACKEND`, `WINDOWS_EXPECTED_PUBLISHER_NAME`
 - `WINDOWS_TIMESTAMP_URL` for Azure Artifact Signing or local-PFX only
 - `WINDOWS_SIGNING_CERTIFICATE_SHA256` for local-PFX only
@@ -197,12 +242,12 @@ Production desktop variables:
 - `MACOS_NOTARIZATION_TEAM_ID`
 - `MACOS_DEVELOPER_ID_CERTIFICATE_SHA256`
 
-Production desktop secrets in the release-only `mobile-production` environment:
+Production desktop secrets in the release-only `desktop-production` environment:
 
 - `WINDOWS_SIGNPATH_API_TOKEN` for SignPath; or
 - `WINDOWS_CERTIFICATE_BASE64`, `WINDOWS_CERTIFICATE_PASSWORD` for local-PFX
 - `MACOS_CERTIFICATE_BASE64`, `MACOS_CERTIFICATE_PASSWORD`, `MACOS_PROVISIONING_PROFILE_BASE64`
-- `MACOS_NOTARIZATION_APPLE_ID`, `MACOS_NOTARIZATION_PASSWORD`
+- `ASC_PRIVATE_KEY_BASE64` for App Store Connect API-key notarization
 
 SignPath production environment variables are
 `WINDOWS_SIGNPATH_ORGANIZATION_ID`, `WINDOWS_SIGNPATH_PROJECT_SLUG`,
@@ -214,22 +259,25 @@ variables are `WINDOWS_AZURE_CLIENT_ID`, `WINDOWS_AZURE_TENANT_ID`,
 Only the selected backend's inputs may exist; the configuration script removes
 and verifies the absence of inactive and broader-scope copies.
 
-The Windows and macOS signing jobs declare `mobile-production`, so GitHub
+The Windows and macOS signing jobs declare `desktop-production`, so GitHub
 releases their inputs only for the protected `release` branch after production
-deployment approval. Self-review is disabled. SignPath Foundation may require
+deployment approval. Self-review is prevented. SignPath Foundation may require
 one additional manual approval inside SignPath; the workflow waits for the
 decision and fails closed on rejection or timeout.
 
 The `release-promotion` environment contains no secrets or variables. It allows
 only `testing` and requires the configured reviewer. Self-review is permitted
-for this environment only so the repository owner can explicitly approve a run
-they dispatched. Other protected release environments retain their existing
-self-review policy.
+there so the repository owner can explicitly approve a run they dispatched.
+`mobile-production` allows only `main` and retains self-review prevention
+because its normal caller is the bot handoff. `desktop-production` allows only
+`release` and retains its independent reviewer policy for any future Desktop
+release.
 GitHub enables administrator bypass by default and its public environment API
 must explicitly receive the non-bypassable setting. The configuration script
-disables administrator bypass for every managed environment and verifies both
-`release-promotion` and `mobile-production`; the promotion job independently
-fails closed while `release-promotion` remains bypassable.
+disables administrator bypass for every managed environment and verifies
+`release-promotion`, `mobile-production`, and `desktop-production`; the
+promotion job independently fails closed if `release-promotion` is ever made
+bypassable.
 
 See `docs/RELEASE_SIGNING.md` for certificate requirements and rotation. Use
 `docs/PRODUCTION_SIGNING_HANDOFF.md` as the single field-by-field private input

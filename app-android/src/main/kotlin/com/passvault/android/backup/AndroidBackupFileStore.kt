@@ -9,6 +9,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
 import com.passvault.android.lifecycle.AndroidLifecycleLockCoordinator
+import com.passvault.android.picker.AndroidPickerHostState
+import com.passvault.android.picker.assertAndroidMainThread
 import com.passvault.core.database.backup.BackupContentSink
 import com.passvault.core.database.backup.BackupContentSource
 import com.passvault.core.database.backup.BackupLimits
@@ -37,33 +39,29 @@ class AndroidBackupFileStore(
 ) : BackupFileStore {
     private val appContext = context.applicationContext
     private val resolver = appContext.contentResolver
-    private var attachedActivity: ComponentActivity? = null
-    private var openLauncher: ActivityResultLauncher<Array<String>>? = null
-    private var saveLauncher: ActivityResultLauncher<String>? = null
+    private val pickerHost = AndroidPickerHostState<ComponentActivity, PickerLaunchers>(
+        description = "backup file store",
+        isFinishing = ComponentActivity::isFinishing,
+        assertOwnerThread = ::assertAndroidMainThread,
+    )
     private var pending: PendingRequest? = null
 
     fun attach(activity: ComponentActivity) {
-        if (attachedActivity === activity) return
-        check(attachedActivity == null || attachedActivity?.isFinishing == true) {
-            "Another activity is already attached to the backup file store"
+        pickerHost.attach(activity) {
+            val openLauncher = activity.registerForActivityResult(
+                ActivityResultContracts.OpenDocument(),
+            ) { uri -> complete(uri, PendingRequest.Kind.OPEN) }
+            val saveLauncher = activity.registerForActivityResult(
+                ActivityResultContracts.CreateDocument("application/octet-stream"),
+            ) { uri -> complete(uri, PendingRequest.Kind.SAVE) }
+            PickerLaunchers(openLauncher, saveLauncher)
         }
-        attachedActivity = activity
-        openLauncher = activity.registerForActivityResult(
-            ActivityResultContracts.OpenDocument(),
-        ) { uri -> complete(uri, PendingRequest.Kind.OPEN) }
-        saveLauncher = activity.registerForActivityResult(
-            ActivityResultContracts.CreateDocument("application/octet-stream"),
-        ) { uri -> complete(uri, PendingRequest.Kind.SAVE) }
     }
 
     fun detach(activity: ComponentActivity, isChangingConfigurations: Boolean = false) {
-        val request = synchronized(this) {
-            if (attachedActivity !== activity) return
-            attachedActivity = null
-            openLauncher = null
-            saveLauncher = null
-            if (isChangingConfigurations) null else pending.also { pending = null }
-        }
+        val decision = pickerHost.detach(activity, isChangingConfigurations)
+        if (!decision.cancelPending) return
+        val request = synchronized(this) { pending.also { pending = null } }
         request?.systemFlowToken?.close()
         request?.continuation?.let {
             resumeSafely(it, Result.failure(BackupFileSelectionCancelled()))
@@ -75,7 +73,7 @@ class AndroidBackupFileStore(
             ?.takeIf { it.endsWith(BACKUP_EXTENSION, ignoreCase = true) }
             ?: DEFAULT_BACKUP_NAME
         val selected = withContext(Dispatchers.Main.immediate) {
-            val launcher = saveLauncher
+            val launcher = pickerHost.launchersOrNull()?.save
                 ?: return@withContext Result.failure(IllegalStateException("File picker is not ready"))
             request(PendingRequest.Kind.SAVE) { launcher.launch(safeSuggestedName) }
         }
@@ -88,7 +86,7 @@ class AndroidBackupFileStore(
     }
 
     override suspend fun open(): Result<BackupFile> = withContext(Dispatchers.Main.immediate) {
-        val launcher = openLauncher
+        val launcher = pickerHost.launchersOrNull()?.open
             ?: return@withContext Result.failure(IllegalStateException("File picker is not ready"))
         request(PendingRequest.Kind.OPEN) {
             launcher.launch(arrayOf("application/octet-stream", "application/zip", "application/json"))
@@ -116,26 +114,32 @@ class AndroidBackupFileStore(
         kind: PendingRequest.Kind,
         launchPicker: () -> Unit,
     ): Result<BackupFile> = suspendCancellableCoroutine { continuation ->
+        assertAndroidMainThread()
         val request = PendingRequest(
             kind = kind,
             continuation = continuation,
             systemFlowToken = lifecycleLockCoordinator.beginSystemFlow(),
         )
-        synchronized(this) {
-            if (pending != null) {
-                request.systemFlowToken.close()
-                continuation.resume(Result.failure(IllegalStateException("Another file operation is active")))
-                return@suspendCancellableCoroutine
+        val accepted = synchronized(this) {
+            if (pending == null) {
+                pending = request
+                true
+            } else {
+                false
             }
-            pending = request
-            continuation.invokeOnCancellation {
-                synchronized(this) {
-                    if (pending?.continuation === continuation) {
-                        pending?.systemFlowToken?.close()
-                        pending = null
-                    }
-                }
+        }
+        if (!accepted) {
+            request.systemFlowToken.close()
+            continuation.resume(Result.failure(IllegalStateException("Another file operation is active")))
+            return@suspendCancellableCoroutine
+        }
+        continuation.invokeOnCancellation {
+            val cancelledRequest = synchronized(this) {
+                pending
+                    ?.takeIf { it.continuation === continuation }
+                    ?.also { pending = null }
             }
+            cancelledRequest?.systemFlowToken?.close()
         }
 
         // invokeOnCancellation removes and wipes the pending request. Avoid
@@ -146,9 +150,10 @@ class AndroidBackupFileStore(
         try {
             launchPicker()
         } catch (_: Exception) {
-            synchronized(this) {
-                if (pending === request) pending = null
+            val ownedRequest = synchronized(this) {
+                (pending === request).also { owned -> if (owned) pending = null }
             }
+            if (!ownedRequest) return@suspendCancellableCoroutine
             request.systemFlowToken.close()
             resumeSafely(
                 continuation,
@@ -217,6 +222,11 @@ class AndroidBackupFileStore(
             SAVE,
         }
     }
+
+    private data class PickerLaunchers(
+        val open: ActivityResultLauncher<Array<String>>,
+        val save: ActivityResultLauncher<String>,
+    )
 
     private companion object {
         const val MAX_DISPLAY_NAME_CHARS = 160

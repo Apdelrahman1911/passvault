@@ -3,7 +3,7 @@
 PassVault is integrated with Mobile Release Kit in parallel-pilot mode. The
 Android preflight, internal-candidate, and external-testing callers are pinned
 to immutable Mobile Release Kit commit
-`7eebb2656d28df33e4d8e5135f1f8fb64404e2bd` (`v0.1.2`). No Production caller
+`c3a5a0fedce2695f9e5ff520bc15c48aa0af268c` (`v0.1.3`). No Production caller
 exists. The legacy release paths remain intact until the shared path completes
 an internal upload and exact-build external promotion.
 
@@ -72,16 +72,18 @@ assets. Private tester identities and account credentials remain outside Git.
 The shared configuration intentionally preserves the repository's existing
 closed-testing policy. It does not inspect, copy, or infer the private tester
 list, and it must not enable Play open testing without a separately reviewed
-product decision. Before activation, the `alpha` track must expose at least one
-assigned Google Group through the Android Publisher API. Mobile Release Kit
-records only the boolean proof that an assignment exists; it never records the
-group name or tester identities. An email-list-only closed track cannot be
-proved by the supported API and therefore remains an explicit activation
-blocker. Play Console accepted the owned tester Group for the `alpha` track on
-22 August 2026 and submitted that tester change for Google review. The shared
-pilot stays blocked until the non-publishing API check reads back at least one
-Google Group on `alpha`; `beta` is the open-testing track and is deliberately
-not used by this pilot.
+product decision. The `alpha` track must expose at least one assigned Google
+Group through the Android Publisher API. Mobile Release Kit records only the
+boolean proof that an assignment exists; it never records the group name or
+tester identities. An email-list-only closed track cannot be proved by the
+supported API and would remain an explicit activation blocker. Play Console
+accepted the owned tester Group for `alpha` on 22 August 2026. The
+non-publishing Android Publisher preflight then read back one API-visible
+Google Group, validated an empty disposable edit, and deleted that edit without
+committing it (GitHub run `32545186358`). This blocker is cleared; the shared
+promotion adapter will require the same non-PII assignment proof again before
+and after promotion. `beta` is the open-testing track and is deliberately not
+used by this pilot.
 
 Owner/legal Console work remains manual, including agreements, pricing and
 territories, privacy/content declarations, tester membership, production
@@ -103,7 +105,7 @@ evidence for comparing a shared candidate.
 ## Safe activation sequence
 
 1. Keep every caller and the schema URL pinned to immutable commit
-   `7eebb2656d28df33e4d8e5135f1f8fb64404e2bd`; never consume `main`.
+   `c3a5a0fedce2695f9e5ff520bc15c48aa0af268c`; never consume `main`.
 2. Merge the pilot through protected `main`, then promote the identical reviewed
    tree to protected `testing`. Keep the divergent `release` branch dormant
    until a later Production-readiness change; no Production caller is present.
@@ -111,8 +113,8 @@ evidence for comparing a shared candidate.
    its push trigger stays gated by `LEGACY_TESTING_RELEASE_ON_PUSH`; keep that
    variable unset during the shared pilot so one branch sync cannot upload the
    same build through both systems.
-3. Add an owned Google Group to the Play `alpha` track and rerun the read-only
-   Store preflight until it records API-visible assignment proof.
+3. Reconfirm the established API-visible Google Group proof in the candidate
+   online gate; fail before building if the Store state regresses.
 4. Run one protected Android testing candidate and verify the Play read-back
    receipt for the exact signed AAB. Do not promote it to production.
 5. Promote the exact successful internal build to `alpha` without rebuilding,

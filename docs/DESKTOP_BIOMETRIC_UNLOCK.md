@@ -181,11 +181,13 @@ Not enrolled, temporarily locked, unavailable, cancelled, invalidated, and disab
 offers the master password as the recovery path. Enabling requires an already authenticated unlocked vault session.
 Disabling deletes the platform material and its relationship metadata.
 
-An owned OS prompt can temporarily take focus from the application. During exactly that prompt lifetime, focus-loss
-auto-lock is deferred so enrollment does not cancel itself. Minimize, explicit lock, inactivity lock, and shutdown
-remain armed. When the prompt finishes, PassVault rechecks window focus on the Swing event thread; if the app remains
-unfocused, the normal bounded focus-loss delay is scheduled. This suppression must never be widened to arbitrary file
-dialogs or background activity.
+An owned OS prompt can temporarily take focus from the application. During that prompt, a due focus-loss lock may be
+deferred so enrollment does not cancel itself, but never beyond 60 seconds from the first external focus loss.
+Minimize, explicit lock, inactivity lock, and shutdown remain armed. The independent focus-loss policy allows 30
+seconds per unlocked session and accumulates only time spent outside PassVault across focus changes; briefly returning
+to the app does not replenish that budget. When the prompt finishes, PassVault immediately re-evaluates the cumulative
+budget on the Swing event thread. This suppression must never be widened to arbitrary file dialogs or background
+activity.
 
 Desktop shutdown is terminal and bounded. The first close request immediately protects the window, removes the tray
 surface, cancels an active biometric prompt, and asks Compose to exit. Vault locking/database closure, owned-clipboard
@@ -193,8 +195,10 @@ clearing, and native biometric teardown then run as independent cleanup boundari
 provider cannot prevent the others from running or keep the window open. The process gives cleanup 2.5 seconds, then
 terminates fail-closed so process teardown reclaims in-memory keys. The JNA bridge itself waits at most 1.5 seconds for
 an in-flight native call. It never frees a context still in use: a late returning call performs deferred destruction,
-while a call that never returns is reclaimed only with terminal process exit. These deadlines apply only to app
-shutdown and do not weaken the normal lock path or allow the app to continue after an unsuccessful lock.
+while a call that never returns is reclaimed only with terminal process exit. The macOS C ABI independently bounds a
+direct destroy call to 250 milliseconds and transfers final context reclamation to the in-flight operation when that
+deadline expires; callers must treat the context as invalid as soon as destruction is requested. These deadlines apply
+only to app shutdown and do not weaken the normal lock path or allow the app to continue after an unsuccessful lock.
 
 ## Build and release integration
 

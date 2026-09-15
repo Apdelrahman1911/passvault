@@ -2,9 +2,11 @@
 
 This document records the production runtime libraries resolved for PassVault's
 Android, iOS, and Desktop applications. Build plugins and test-only libraries
-are intentionally excluded. Versions below match the checked-in dependency
-configuration, the resolved Android release and Desktop runtime
-graphs, and the native archives linked into the iOS and Desktop applications.
+are intentionally excluded. `legal/third-party-dependencies.lock` records the
+resolved Android release, Desktop runtime, and iOS Arm64 link-input artifacts;
+`legal/third-party-attribution.tsv` maps them and reviewed native carriers to
+the notices and license files below. `./gradlew checkThirdPartyAttribution`
+fails when the graph, versions, mapping, notices, or reproduced files drift.
 
 The full Apache License 2.0 text is distributed as [`LICENSE.txt`](LICENSE.txt).
 Exact license and required notice texts that are not fully represented by that
@@ -23,7 +25,7 @@ publish the exact directory as `THIRD_PARTY_LICENSES.zip`.
 | Compose Material Icons | `org.jetbrains.compose.material:material-icons-extended` | 1.7.3 | Apache-2.0 | <https://github.com/JetBrains/compose-multiplatform> |
 | AndroidX Navigation 3 | `androidx.navigation3:navigation3-runtime` | 1.1.4 | Apache-2.0 | <https://developer.android.com/jetpack/androidx/releases/navigation3> |
 | JetBrains Navigation 3 UI | `org.jetbrains.androidx.navigation3:navigation3-ui` | 1.1.1 | Apache-2.0 | <https://github.com/JetBrains/compose-multiplatform> |
-| JetBrains AndroidX Lifecycle | Lifecycle ViewModel and runtime Compose artifacts | 2.11.0 | Apache-2.0 | <https://github.com/JetBrains/compose-multiplatform> |
+| AndroidX and JetBrains AndroidX Lifecycle | Lifecycle, ViewModel, runtime Compose, and SavedState integration artifacts | 2.11.0 | Apache-2.0 | <https://github.com/JetBrains/compose-multiplatform> |
 | Koin | Core, Compose, and Android runtime artifacts | 4.2.2 | Apache-2.0 | <https://insert-koin.io/> |
 | Kotlin Coroutines | Core and Swing runtime artifacts | 1.11.0 | Apache-2.0 | <https://github.com/Kotlin/kotlinx.coroutines> |
 | Kotlin Serialization | Core and JSON runtime artifacts | 1.11.0 | Apache-2.0 | <https://github.com/Kotlin/kotlinx.serialization> |
@@ -31,12 +33,12 @@ publish the exact directory as `THIRD_PARTY_LICENSES.zip`.
 | AndroidX SQLite | SQLite runtime and bundled-driver artifacts | 2.6.2 | Apache-2.0; bundled SQLite is public domain | <https://developer.android.com/jetpack/androidx/releases/sqlite> |
 | IonSpin Kotlin Multiplatform Libsodium Bindings | `com.ionspin.kotlin:multiplatform-crypto-libsodium-bindings` | 0.9.5 | Apache-2.0 | <https://github.com/ionspin/kotlin-multiplatform-libsodium> |
 | libsodium | Native libraries bundled by the IonSpin bindings | 1.0.19 | ISC | <https://github.com/jedisct1/libsodium> |
-| Okio | `com.squareup.okio:okio` | 3.17.0 | Apache-2.0 | <https://github.com/square/okio> |
+| Okio | `com.squareup.okio:okio` | 3.18.1 | Apache-2.0 | <https://github.com/square/okio> |
 | AndroidX Activity | `androidx.activity:activity-compose` | 1.13.0 | Apache-2.0 | <https://developer.android.com/jetpack/androidx/releases/activity> |
 | AndroidX Biometric | `androidx.biometric:biometric` | 1.1.0 | Apache-2.0 | <https://developer.android.com/jetpack/androidx/releases/biometric> |
 | AndroidX Core | `androidx.core:core-ktx` | 1.19.0 | Apache-2.0 | <https://developer.android.com/jetpack/androidx/releases/core> |
 | AndroidX Core Splashscreen | `androidx.core:core-splashscreen` | 1.2.0 | Apache-2.0 | <https://developer.android.com/jetpack/androidx/releases/core> |
-| AndroidX CameraX | Core, Camera2, Lifecycle, and View artifacts | 1.6.1 | Apache-2.0 | <https://developer.android.com/jetpack/androidx/releases/camera> |
+| AndroidX CameraX | Core, Camera2, Lifecycle, Video, View, feature-combination, and Viewfinder artifacts | 1.6.1; Viewfinder 1.5.1 | Apache-2.0 | <https://developer.android.com/jetpack/androidx/releases/camera> |
 | Material Components for Android | `com.google.android.material:material` | 1.14.0 | Apache-2.0 | <https://github.com/material-components/material-components-android> |
 | ZXing Core | `com.google.zxing:core` | 3.5.4 | Apache-2.0 | <https://github.com/zxing/zxing> |
 
@@ -49,17 +51,22 @@ native code is present in a production runtime graph or installed artifact.
 | --- | --- | ---: | --- | --- |
 | Skiko | Compose Multiplatform | 0.144.6 | Apache-2.0 | `skiko-0.144.6-NOTICE.txt`; Apache-2.0 in `LICENSE.txt` |
 | JetBrains Runtime API | Compose Foundation Desktop | 1.9.0 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
-| AndroidX Compose Runtime | Compose Multiplatform and JetBrains AndroidX adapters | 1.11.2 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
-| AndroidX Annotation and Collection | Room, Compose, Lifecycle, and Saved State | 1.9.1 and 1.5.0 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
-| AndroidX Saved State and JetBrains Saved State adapters | Compose and Lifecycle | 1.4.0 and 1.3.6 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
+| AndroidX Compose runtime, UI, Foundation, and Animation | Compose Multiplatform and JetBrains AndroidX adapters | 1.11.2 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
+| AndroidX Compose Material 3 | Compose Material 3 Android runtime | 1.4.0 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
+| AndroidX Compose Material and icons | Compose Material icons and ripple Android runtime | 1.7.6 and 1.9.3 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
+| Compose Multiplatform adapters | Material ripple and Back-handler adapters | 1.9.1 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
+| AndroidX Annotation and Collection | Room, Compose, Lifecycle, and Saved State | 1.5.0, 1.9.1, and 1.10.0 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
+| AndroidX Saved State and JetBrains Saved State adapters | Compose and Lifecycle | 1.4.0 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
 | AndroidX NavigationEvent and JetBrains NavigationEvent Compose | Compose UI and Navigation 3 | 1.1.2 and 1.0.1 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
+| AndroidX Android support artifacts | AppCompat, Arch Core, Autofill, CardView, Concurrent Futures, ConstraintLayout, CoordinatorLayout, Core helpers, CursorAdapter, CustomView, DrawerLayout, DynamicAnimation, Emoji2, ExifInterface, Fragment, Graphics, Interpolator, Loader, ProfileInstaller, RecyclerView, ResourceInspection, Startup, Tracing, Transition, VectorDrawable, VersionedParcelable, ViewPager, and Window | 1.0.0, 1.0.1, 1.1.0, 1.1.1, 1.2.0, 1.2.1, 1.3.0, 1.4.0, 1.4.2, 1.5.0, 1.6.0, 1.7.1, 1.8.9, 2.2.0, and 2.2.1 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
 | JetBrains Java Annotations | Kotlin Coroutines | 23.0.0 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
-| Kotlin AtomicFU | Compose Multiplatform | 0.28.0 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
+| Kotlin AtomicFU | Compose Multiplatform | 0.28.0 and 0.32.1 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
 | Kotlinx Datetime | Compose Multiplatform Material 3 | 0.7.1 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
 | JSpecify annotations | AndroidX Lifecycle | 1.0.0 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
 | AndroidX Media3 | CameraX Video transitive graph | 1.9.0 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
 | Google Guava | AndroidX Media3 and CameraX Video transitive graph | 33.3.1-android | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
 | Guava support artifacts | Guava (`failureaccess`, the empty `listenablefuture` conflict marker, Error Prone annotations, and J2ObjC annotations) | 1.0.2, 9999.0-empty-to-avoid-conflict-with-guava, 2.28.0, and 3.0.0 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
+| Google dependency injection and annotation support | AutoValue annotations, JSR-305 annotations, Dagger, Jakarta Inject, and javax.inject | 1, 1.6.3, 2.0.1, 2.59, and 3.0.2 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
 | Skia | Skiko native runtime | `m144-22f58c9fd4` | BSD-3-Clause | `skia-m144-LICENSE.txt` |
 | Google SpiderSymbol font | Skia's macOS and iOS CoreText helpers | embedded source at Skia `m144-22f58c9fd4`; copyright 2015 | SIL Open Font License 1.1 | `spider-symbol-OFL-1.1.txt` |
 | ICU and its bundled data | Skia native runtime | supplied by Skia `m144-22f58c9fd4` | Unicode-3.0 and included third-party terms | `icu-LICENSE.txt` |
@@ -74,8 +81,8 @@ native code is present in a production runtime graph or installed artifact.
 | FreeType | Skia's Linux font scanner, statically present in the shipped Skiko runtime | 2.13.3 (`1518bc83d26b434031bd12c706ac3c7dab3902fd`) | FreeType License; PassVault selects the FTL option | `freetype-2.13.3-LICENSE.txt`; `freetype-2.13.3-FTL.txt` |
 | Wuffs | Skia's GIF codec, statically present in the shipped Skiko runtime | `e3f919ccfe3ef542cfc983a82146070258fb57f8` | Apache-2.0 | `wuffs-e3f919cc-LICENSE.txt` |
 | Touchlab Stately | Koin | 2.1.0 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
-| Java Native Access (JNA) | IonSpin JVM bindings | 5.18.1 | Apache-2.0 OR LGPL-2.1-or-later; PassVault selects Apache-2.0 | `jna-5.18.1-LICENSE.txt`; Apache-2.0 in `LICENSE.txt` |
-| libffi | Statically linked into JNA's native dispatcher | 3.4.4 vendored by JNA 5.18.1 | MIT | `libffi-3.4.4-LICENSE.txt` |
+| Java Native Access (JNA) | IonSpin Android bindings and direct Desktop binding | 5.18.1; 5.19.1 | Apache-2.0 OR LGPL-2.1-or-later; PassVault selects Apache-2.0 | `jna-5.18.1-LICENSE.txt`; `jna-5.19.1-LICENSE.txt`; Apache-2.0 in `LICENSE.txt` |
+| libffi | Statically linked into JNA's native dispatcher | 3.4.4 vendored by JNA 5.18.1 and 5.19.1 | MIT | `libffi-3.4.4-LICENSE.txt` |
 | resource-loader | IonSpin JVM bindings | 2.0.2 | MIT | `resource-loader-2.0.2-LICENSE.txt` |
 | SLF4J API | resource-loader | 2.0.0-alpha1 | MIT | `slf4j-api-2.0.0-alpha1-LICENSE.txt` |
 | Checker Framework Qualifiers | resolved Android runtime graph | 3.43.0 | MIT | `checker-qual-3.43.0-LICENSE.txt` |

@@ -244,8 +244,10 @@ internal class CredentialCustomFieldEditor(
                 replacementValue.clear()
                 return
             }
+            val unchangedField = replaced.name == replacementName && replaced.value == replacementValue &&
+                replaced.isSecret == isSecret
             val updated = current.copy(
-                customFields = current.customFields.map { field ->
+                customFields = if (unchangedField) current.customFields else current.customFields.map { field ->
                     if (field.id == fieldId) {
                         field.copy(name = replacementName, value = replacementValue, isSecret = isSecret)
                     } else {
@@ -255,7 +257,8 @@ internal class CredentialCustomFieldEditor(
                 isDirty = true,
             )
             if (state.compareAndSet(current, updated)) {
-                replaced.value.clear()
+                // StateFlow CAS can succeed without publishing an equal replacement.
+                if (unchangedField) replacementValue.clear() else replaced.value.clear()
                 return
             }
         }

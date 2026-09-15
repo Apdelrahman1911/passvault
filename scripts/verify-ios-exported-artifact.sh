@@ -3,15 +3,25 @@
 set -euo pipefail
 
 repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+reviewed_entitlements="$repository_root/iosApp/iosApp/iosApp.entitlements"
 
 if [[ "$(uname -s)" != "Darwin" ]]; then
     echo "Exported iOS artifact verification requires macOS." >&2
+    exit 1
+fi
+if ! command -v python3 >/dev/null 2>&1; then
+    echo "python3 is required to verify iOS entitlements." >&2
     exit 1
 fi
 
 if [[ $# -ne 8 ]]; then
     echo "Usage: $0 <archive> <ipa> <team-id> <bundle-id> <profile-uuid> <version> <build-number> <link-map>" >&2
     exit 2
+fi
+
+if [[ ! -f "$reviewed_entitlements" || -L "$reviewed_entitlements" ]]; then
+    echo "The reviewed iOS entitlements file is missing or unsafe." >&2
+    exit 1
 fi
 
 archive_path="$1"
@@ -66,8 +76,7 @@ verify_app() {
     local embedded_profile="$app/embedded.mobileprovision"
     local profile_plist="$verification_root/$label-profile.plist"
     local entitlements="$verification_root/$label-entitlements.plist"
-    local bundle version build encryption profile_uuid team application_identifier
-    local default_data_protection keychain_access_group
+    local bundle version build encryption profile_uuid
     local get_task_allow beta_reports profile_expiration profile_expiration_epoch
 
     "$repository_root/scripts/verify-legal-notice-bundle.sh" "$app" >/dev/null
@@ -107,16 +116,12 @@ verify_app() {
     fi
 
     codesign -d --entitlements :- "$app" > "$entitlements" 2>/dev/null
-    team="$(/usr/libexec/PlistBuddy -c 'Print :com.apple.developer.team-identifier' "$entitlements")"
-    application_identifier="$(/usr/libexec/PlistBuddy -c 'Print :application-identifier' "$entitlements")"
-    default_data_protection="$(/usr/libexec/PlistBuddy -c \
-        'Print :com.apple.developer.default-data-protection' "$entitlements")"
-    keychain_access_group="$(/usr/libexec/PlistBuddy -c \
-        'Print :keychain-access-groups:0' "$entitlements")"
-    [[ "$team" == "$expected_team" ]]
-    [[ "$application_identifier" == "$expected_team.$expected_bundle" ]]
-    [[ "$default_data_protection" == NSFileProtectionComplete ]]
-    [[ "$keychain_access_group" == "$expected_team.$expected_bundle" ]]
+    python3 "$repository_root/scripts/verify-ios-entitlements.py" \
+        "$reviewed_entitlements" \
+        "$entitlements" \
+        "$expected_team" \
+        "$expected_bundle" \
+        > "$verification_root/$label-normalized-entitlements.json"
 
     codesign -d --extract-certificates="$verification_root/$label-cert" "$app" >/dev/null 2>&1
     openssl x509 -inform DER -in "$verification_root/$label-cert0" \
@@ -129,6 +134,13 @@ verify_app() {
 
 verify_app archive "$archive_app"
 verify_app ipa "$ipa_app"
+
+if ! cmp -s \
+    "$verification_root/archive-normalized-entitlements.json" \
+    "$verification_root/ipa-normalized-entitlements.json"; then
+    echo "The archive and exported IPA entitlement sets differ." >&2
+    exit 1
+fi
 
 cmp -s "$verification_root/archive-sha1" "$verification_root/ipa-sha1"
 cmp -s "$verification_root/archive-sha256" "$verification_root/ipa-sha256"

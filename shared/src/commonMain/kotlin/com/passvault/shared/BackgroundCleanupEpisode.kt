@@ -42,4 +42,10 @@ internal class BackgroundCleanupEpisode<T : Any> {
         cleanupRequested = false
         return true
     }
+
+    /** Discards tokens owned by a runtime that has already been torn down. */
+    fun reset() {
+        cleanupRequested = false
+        currentCleanup = null
+    }
 }

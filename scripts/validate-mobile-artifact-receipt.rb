@@ -4,6 +4,7 @@ require "digest"
 require "json"
 require "pathname"
 require "time"
+require_relative "lib/strict_json"
 
 MAX_RECEIPT_BYTES = 64 * 1024
 MAX_ARTIFACT_BYTES = 8 * 1024 * 1024 * 1024
@@ -38,7 +39,7 @@ unless receipt.file? && !receipt.symlink? && receipt.size.positive? && receipt.s
   abort("Artifact receipt is missing, unsafe, empty, or too large")
 end
 
-document = JSON.parse(receipt.read(encoding: "UTF-8"))
+document = PassVault::StrictJson.parse(receipt.read(encoding: "UTF-8"))
 abort("Artifact receipt root must be an object") unless document.is_a?(Hash)
 expected_keys = %w[
   schemaVersion platform marketingVersion buildNumber sourceCommit sourceTree createdAt
