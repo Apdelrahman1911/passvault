@@ -1,0 +1,132 @@
+{
+  "actual_result": {
+    "evidence_files": {
+      "LOCAL-RESULT.json": {
+        "bytes": 977,
+        "sha256": "7122fe89f0b680763614bfba69a2ff92becb331809e0025b7ecd00052909410d"
+      },
+      "local-0.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "local-0.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "local-1.stderr": {
+        "bytes": 100,
+        "sha256": "dec5673ee7ead0e86a249ea046dba60aab31a8206a43fedeb035ab8449b4e26d"
+      },
+      "local-1.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "failed": 0,
+    "passed": 2,
+    "qualification": "Two selected mocked methods only; no nested real process, Gradle or native macOS execution. Controller DATA records positive outer settlement/empty private cleanup. Result source hashes matched current source at the first actual-result read; later independent edits require separate review.",
+    "receipt": {
+      "cleanup": "PASS",
+      "hashes": {
+        "scripts/ci-python.sh": "cd8aaf43568a0e8c7330bcfb5513c8890bb19f130838a099336b536ff4801ed9",
+        "scripts/ci-run.py": "b710a6020e7f750cab6f2b85463eb2dca400b6d63bf91249ecd2d12a0e72f26a",
+        "scripts/test-ci-run.py": "1a9df88b5f6cd932cc0b6b1cfa08dd6875d053ee6b65a8d6505e93d9ac56aa1f"
+      },
+      "runs": [
+        {
+          "command": [
+            "bash",
+            "-n",
+            "scripts/ci-python.sh"
+          ],
+          "exit": 0,
+          "group_settled": true,
+          "pgid": 18870,
+          "seconds": 0.004561130001093261
+        },
+        {
+          "command": [
+            "bash",
+            "scripts/ci-python.sh",
+            "scripts/test-ci-run.py",
+            "ResourceGuardTest.test_permission_denied_probe_never_proves_settlement",
+            "ResourceGuardTest.test_termination_waits_through_permission_denied_probe"
+          ],
+          "exit": 0,
+          "group_settled": true,
+          "pgid": 18871,
+          "seconds": 0.21545192400662927
+        }
+      ],
+      "wrapper_stop": "not-started"
+    },
+    "skipped": 0,
+    "source_unchanged_at_result_review": true,
+    "syntax_exit": 0,
+    "test_cases": 2,
+    "test_seconds": 0.005
+  },
+  "archive_result_data": {
+    "path": "merge-main-01/ci04/ARCHIVE-RESULT.json",
+    "qualification": "Parent record reports aade3722ca8b7e38c89ebe61c37063beb5f10c27 remote readbackPASS and normal source/index unchanged. Expected counts reconcile:249 selected files plus manifest/review =251;441951+65814+4412=512177bytes. Reviewer did not execute Git.",
+    "sha256": "dab2c5b8e415625e701cdf384d3d4a44cfdf8f49b8aa60abace3c85af1304791"
+  },
+  "conditional_local_scope": {
+    "bound_seconds": 120,
+    "cases": 2,
+    "conditions": [
+      "Update command/plan to selected two-method scope before execution; exact narrowed afterimage binding retained",
+      "Same root sole owner; active hosted workflow may continue, but no local heavy job or competing workflow",
+      "Fresh allowlisted private HOME/TMP absent beforehand, scrubbed environment and bytecode disabled",
+      "Disk>=3GiB and RAM>=25% at launch; cleanup handlers installed before Popen",
+      "Record fresh owned outer PGID and source before/after; only that scope may be signaled",
+      "Positive group absence and empty owned private directories before rmdir; failures retainHOLD",
+      "No Git/network/Gradle/application/provider/emulator or oldHOLD recovery"
+    ],
+    "methods": [
+      "ResourceGuardTest.test_permission_denied_probe_never_proves_settlement",
+      "ResourceGuardTest.test_termination_waits_through_permission_denied_probe"
+    ],
+    "runner": "Actual scripts/ci-python.sh; Bash syntax optional as already planned",
+    "status": "SATISFIED_AND_EXECUTED; no repeat local check needed"
+  },
+  "corrected_bindings": {
+    "controller_sha256": "20a5b90eb5792f32eab92755550a6b3c0ef9206afe937bc9ecc48bfc5b91e5c4",
+    "plan_sha256": "754b140d0a6727a28d43698a95f2d5e6717095bcacf762e3ea981ee50b21f4d2",
+    "qualification": "Captured initial identities retained above. Provisional record read mutable paths after narrowing; this folded record corrects initial bindings and binds narrowed afterimages separately."
+  },
+  "decision": "ACCEPT_SOURCE_NARROWED_TWO_MOCK_METHOD_ADMISSION_AND_ACTUAL_PASS",
+  "failure_log_sha256": "8351ae8e2315fbf8d40a38b5d13d896dc3cd1975d60395028c979b557d3f096e",
+  "folded_from_provisional_review_sha256": "a5237362c9ab5be50b37d3e51e371b7f21d8d61f24368949a7d9d1f8fde73a68",
+  "initial_controller": {
+    "concrete_issue": "As written runs all ten methods, whose real ProcessScope children create independent sessions. Outer-PGID-only cancellation cannot positively settle those detached inner sessions. Success teardown is sufficient only on success, not interruption.",
+    "path": "merge-main-01/ci05/LOCAL-CHECK.py",
+    "resolution": "Applied before execution: only the two new mocked POSIX methods; original ten-method local command never ran. Reverse-delta confirms command plus explanatory-comment-only controller narrowing.",
+    "sha256": "152d87c6f7bd99a721ed80dcb7344a07ff2a47484184bcf6f838fa46e26eadfb",
+    "smallest_resolution": "Narrow local unittest arguments to only the two new mocked methods; they create/signal no real children. Keep full real suite for fresh hosted validation rather than expanding this local cleanup harness."
+  },
+  "initial_plan": {
+    "path": "merge-main-01/ci05/PLAN.md",
+    "sha256": "59c9b179bd381a044b041a7456a5fea28e11a29c7dd022057fa48014e5a08ee0"
+  },
+  "limits": [
+    "Two selected mocked regression methods passed; full/native macOS guard result remains pending, not inferred from mocks",
+    "Prior CI04 macOS failure and all HOLD records remain",
+    "Before future CI05 push, preserve current useful platform results and wait for existing run/monitor settlement; exact new source seal and reviewed hosted-only parallelism required"
+  ],
+  "method": "Named SOURCE/DATA review, stdlib hashing and reverse-delta reconstruction; no subject import/execution, network/Git or live probes",
+  "reviewed_at_utc": "2026-09-15T09:13:01.880368+00:00",
+  "reviewer": "/root/current_ledger",
+  "schema": 1,
+  "source_review": [
+    "PermissionError on POSIX signal-zero probe returnsFalse, never proves settlement. Only ProcessLookupError/ESRCH proves absent group. Windows JobObject branch and nonzero signal errors are unchanged.",
+    "Removing only new exception branch reproduces prior ci-run f046f4ee713e0bcc15cb9226a6e4721fdf1c2979d1ec59b94e739059e4381318. Removing two methods and Mock import reproduces prior tests3f45d35a9db669343c7d47e67d89ef63e9010e5c002d079e1032e4861df122d8.",
+    "New mock methods cover uncertain probe False and TERM followed by EPERM then ESRCH with one bounded polling delay and no KILL. Fake PID12345 is used only while killpg is mocked; scopes are never added to real teardown collection.",
+    "Mocked methods are POSIX-only; Windows full suite reports two intentional skips alongside its eight existing methods. These local mocks cannot establish native macOS settlement."
+  ],
+  "sources": {
+    "scripts/ci-run.py": "b710a6020e7f750cab6f2b85463eb2dca400b6d63bf91249ecd2d12a0e72f26a",
+    "scripts/test-ci-run.py": "1a9df88b5f6cd932cc0b6b1cfa08dd6875d053ee6b65a8d6505e93d9ac56aa1f"
+  },
+  "updated_at_utc": "2026-09-15T09:15:36.630962+00:00"
+}

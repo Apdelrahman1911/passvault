@@ -1,0 +1,83 @@
+{
+  "actual_local": {
+    "failed": 0,
+    "files": {
+      "LOCAL02-RESULT.json": {
+        "bytes": 694,
+        "sha256": "c768e548312d4cc8a6c050b68fdc794d0d0a4bc7d16069865fbe8a78368c507c"
+      },
+      "local02-0.stderr": {
+        "bytes": 98,
+        "sha256": "24cefc2bc38a1c71e18591075993695fc72546b32ff6b5baab3d98032ce96fb5"
+      },
+      "local02-0.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "passed_cases": 1,
+    "qualification": "Source hashes matched, controller reports outerPGID23112 settled/private cleanupPASS/wrappernotstarted. No real WindowsJob/API execution or native fixed-behavior proof.",
+    "receipt": {
+      "cleanup": "PASS",
+      "hashes": {
+        "scripts/ci-python.sh": "cd8aaf43568a0e8c7330bcfb5513c8890bb19f130838a099336b536ff4801ed9",
+        "scripts/ci-run.py": "ec4cac979baf6a0c33dd8dc933430d33f5e50cfd136d72742efd9d3f336d4c00",
+        "scripts/test-ci-run.py": "d4207456d832c3e61b2c02688ff57d10fe698758c7d62f32e9cce212da4640ba"
+      },
+      "runs": [
+        {
+          "command": [
+            "bash",
+            "scripts/ci-python.sh",
+            "scripts/test-ci-run.py",
+            "ResourceGuardTest.test_completed_windows_scope_cleanup_is_owned_and_fail_closed"
+          ],
+          "exit": 0,
+          "group_settled": true,
+          "pgid": 23112,
+          "seconds": 0.1654628070027684
+        }
+      ],
+      "wrapper_stop": "not-started"
+    },
+    "skipped": 0,
+    "unittest_seconds": 0.003
+  },
+  "decision": "ACCEPT_WINDOWS_SOURCE_SINGLE_MOCK_ACTUAL_AND_FRESH_HOSTED_CI05_RESTART",
+  "documentation": "Failure/HOLD/native-hardware limitations accepted. Detailed new CI04 XML/count reconciliation may follow while CI05 runs; no full CI04 or corrected native pass inferred by this record.",
+  "hosted_restart": "Root reports CI04 completed/cancelled and old monitor/lock released. Owner explicitly requested immediate supersession after fixes, not waiting unrelated jobs. Approve one exact corrected-source dedicated-branch PR push after fresh inactive-run/coordination check, same reviewed nonpublishing CI commands/hostedmax9/per-host worker1/JDK17/limits/cleanup. No further local checks required.",
+  "independent_challenges": [
+    "Actual Windows log7f9444b8a88314adaccc394ec884870937832b54873109048de721f8a7898192 records BUILD SUCCESSFUL,129actionable tasks and2nativeCTest passes; cleanup e95b9479ed639f876c256de640c9ccf16e44e41cfecf83e826f730c92222414c records exit0/stop0/HOLD, not completed job success. Residual identities unproven.",
+    "New helper reaches only already-owned no-breakaway JobObjects whose direct shell completed, after required original-wrapper stop succeeded (or Gradle never started). Empty or POSIX scopes are untouched.",
+    "Dispatch is recorded before invocation and does not authorize deletion. Existing positive ActiveProcesses0/settlement, reports and allowlisted cleanup remain mandatory; errors retainHOLD.",
+    "Reviewer challenged cancellation no-retry gap. Corrected code marks Windows scope before initial interruption termination; helper and failure cleanup skip attempted scopes. Same mocked method challenges repeated helper call and termination count remains one. Existing JobObject handle-close fallback does not relabel failed settlement PASS.",
+    "Single mock covers remaining/empty/POSIX/active/failing/already-attempted boundaries without real jobs or nested processes. It is one test method, not six native cases.",
+    "Removing Windows helper/plumbing exactly reproduces reviewed POSIX-only source b710a602\u2026; removing new method reproduces1a9df88b\u2026. Prior two POSIX mock results remain source-affine; no needless rerun."
+  ],
+  "local_admission": {
+    "controller": "merge-main-01/ci05/LOCAL02-CHECK.py",
+    "scope": "Only ResourceGuardTest.test_completed_windows_scope_cleanup_is_owned_and_fail_closed via actual launcher; fresh local02 paths, same reviewed isolation/120s/group cleanup; unchanged Bash syntax not rerun",
+    "sha256": "875575b26715b4e1c10cbfcee883ef7b7717c06d7d694a44b99fee6dba5d23b1"
+  },
+  "method": "SOURCE/DATA reading and stdlib reverse-delta/log/hash reconciliation; no reviewer project execution, signals, live probes, Git or network",
+  "restrictions": [
+    "Prior Windows/macOS/Android/local HOLDs not recovered or erased",
+    "No C20 expansion, old-helper execution or scope replay",
+    "Main/testing/release/tags/occupied1017001 unchanged",
+    "No beta/Store publication or production secrets",
+    "Required CI plus actual independent GitHub approval before protected merge"
+  ],
+  "reviewed_at_utc": "2026-09-15T09:21:05.667886+00:00",
+  "reviewer": "/root/current_ledger",
+  "schema": 1,
+  "seal_supplied_by_root": {
+    "commit": "c94826d1b29493404c8f67744bfca6436ecec829",
+    "qualification": "Root owns Git seal/readback. Reviewed file hashes match; reviewer did not execute Git.",
+    "tree": "b58227c0ad1458b7dd52623d63899ee7d1a19c6c"
+  },
+  "source_hashes": {
+    "docs/review/VERIFICATION.md": "453b4a5ef41160462acc299f2c76651bac07125efc30154016f9b13df1a4e673",
+    "scripts/ci-run.py": "ec4cac979baf6a0c33dd8dc933430d33f5e50cfd136d72742efd9d3f336d4c00",
+    "scripts/test-ci-run.py": "d4207456d832c3e61b2c02688ff57d10fe698758c7d62f32e9cce212da4640ba"
+  }
+}

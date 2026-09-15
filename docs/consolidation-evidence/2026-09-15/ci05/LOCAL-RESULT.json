@@ -1,0 +1,35 @@
+{
+  "cleanup": "PASS",
+  "wrapper_stop": "not-started",
+  "hashes": {
+    "scripts/ci-python.sh": "cd8aaf43568a0e8c7330bcfb5513c8890bb19f130838a099336b536ff4801ed9",
+    "scripts/ci-run.py": "b710a6020e7f750cab6f2b85463eb2dca400b6d63bf91249ecd2d12a0e72f26a",
+    "scripts/test-ci-run.py": "1a9df88b5f6cd932cc0b6b1cfa08dd6875d053ee6b65a8d6505e93d9ac56aa1f"
+  },
+  "runs": [
+    {
+      "command": [
+        "bash",
+        "-n",
+        "scripts/ci-python.sh"
+      ],
+      "pgid": 18870,
+      "exit": 0,
+      "seconds": 0.004561130001093261,
+      "group_settled": true
+    },
+    {
+      "command": [
+        "bash",
+        "scripts/ci-python.sh",
+        "scripts/test-ci-run.py",
+        "ResourceGuardTest.test_permission_denied_probe_never_proves_settlement",
+        "ResourceGuardTest.test_termination_waits_through_permission_denied_probe"
+      ],
+      "pgid": 18871,
+      "exit": 0,
+      "seconds": 0.21545192400662927,
+      "group_settled": true
+    }
+  ]
+}

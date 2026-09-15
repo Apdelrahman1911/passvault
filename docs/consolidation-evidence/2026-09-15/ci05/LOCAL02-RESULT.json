@@ -1,0 +1,23 @@
+{
+  "cleanup": "PASS",
+  "wrapper_stop": "not-started",
+  "hashes": {
+    "scripts/ci-python.sh": "cd8aaf43568a0e8c7330bcfb5513c8890bb19f130838a099336b536ff4801ed9",
+    "scripts/ci-run.py": "ec4cac979baf6a0c33dd8dc933430d33f5e50cfd136d72742efd9d3f336d4c00",
+    "scripts/test-ci-run.py": "d4207456d832c3e61b2c02688ff57d10fe698758c7d62f32e9cce212da4640ba"
+  },
+  "runs": [
+    {
+      "command": [
+        "bash",
+        "scripts/ci-python.sh",
+        "scripts/test-ci-run.py",
+        "ResourceGuardTest.test_completed_windows_scope_cleanup_is_owned_and_fail_closed"
+      ],
+      "pgid": 23112,
+      "exit": 0,
+      "seconds": 0.1654628070027684,
+      "group_settled": true
+    }
+  ]
+}
