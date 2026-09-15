@@ -2261,11 +2261,15 @@ done
 grep -Fq \
     "https://raw.githubusercontent.com/Apdelrahman1911/mobile-release-kit/${mobile_release_kit_sha}/schemas/project.schema.json" \
     release/mobile-release.json
-if rg -q 'reusable-production-submit|mobile-production' \
-    .github/workflows/mobile-release-{preflight,candidate,external-testing}.yml; then
-    echo "The PassVault pilot callers must not expose a Production path." >&2
-    exit 1
-fi
+# BEGIN PILOT PRODUCTION GUARD
+ruby - .github/workflows/mobile-release-{preflight,candidate,external-testing}.yml <<'PRODUCTION_PATH_GUARD'
+ARGV.each do |path|
+  if File.read(path).match?(/reusable-production-submit|mobile-production/)
+    abort "The PassVault pilot callers must not expose a Production path."
+  end
+end
+PRODUCTION_PATH_GUARD
+# END PILOT PRODUCTION GUARD
 test "$(grep -Fc '      id-token: write' .github/workflows/production-release.yml)" -eq 1
 grep -Fq "10#\$VERSION_CODE > 2100000000" .github/workflows/mobile-store-release.yml
 grep -Fq 'BUILD_NUMBER="$(awk -F= '\''$1 == "VERSION_CODE" { print $2 }'\'' version.properties)"' \

@@ -726,6 +726,42 @@ check("PVA-025 checklist current Room scope is explicit and unexecuted gate unch
   assert(checklist.include?("build `1017001` is already allocated and immutable"))
 end
 
+# Execute the actual shell guard with an unavailable optional search tool.
+{
+  "valid pilot without ripgrep" => nil,
+  "reject reusable production submit" => "reusable-production-submit",
+  "reject production environment" => "mobile-production",
+  "reject missing workflow" => :missing_workflow,
+  "reject missing Ruby" => :missing_ruby,
+}.each do |name, fault|
+  check("Pilot production guard: #{name}") do
+    guard = ROOT.join("scripts/test-release-automation.sh").read[
+      /^# BEGIN PILOT PRODUCTION GUARD\n.*?^# END PILOT PRODUCTION GUARD$/m
+    ]
+    assert(guard, "Missing executable pilot production guard")
+    with_fixture do |root, environment|
+      directory = root.join(".github/workflows")
+      directory.mkpath
+      paths = %w[preflight candidate external-testing].map do |kind|
+        path = directory.join("mobile-release-#{kind}.yml")
+        path.write("name: Synthetic nonpublishing pilot\n")
+        path
+      end
+      paths.last.write(fault) if fault.is_a?(String)
+      paths.last.unlink if fault == :missing_workflow
+      unavailable = ["rg"]
+      unavailable << "ruby" if fault == :missing_ruby
+      unavailable.each do |tool|
+        root.join("bin", tool).write("#!/bin/sh\nexit 127\n")
+        root.join("bin", tool).chmod(0o700)
+      end
+      _stdout, _stderr, status = run(environment, "bash", "--noprofile", "--norc", "-c",
+        "set -euo pipefail\n#{guard}\n", cwd: root)
+      assert(status.success? == fault.nil?, "Pilot production guard did not fail closed")
+    end
+  end
+end
+
 if FAILURES.any?
   abort("#{FAILURES.length} release regression cases failed; #{CASES.length} passed.\n#{FAILURES.join("\n")}")
 end

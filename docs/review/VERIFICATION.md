@@ -119,3 +119,29 @@ Actual first-run checkout was GitHub-generated merge
 `53acb726339c57eca6abe66be914374fb5de063b`, not its earlier preliminary merge SHA.
 The executed commit was read back and has the reviewed tree
 `312791149ba33ebd9d67aaf67819ab075e1f0b84` and exact main/integration parents.
+
+## CI02 integration evidence and validation-guard correction
+
+On source `4fc32944df1672dfb502b1e80671c500b1a067bd`, actual PR checkout
+`87efe8c82b7633cac6adc006063ed204acc285c2` has tree
+`d2da382909d5e2d26a36271de597ab7976c7529c`. Wrapper/dependency verification,
+security analysis, unit tests and Detekt passed. The198JUnitXML files report
+1604passed executions and5expected skips, not1609executed or unique tests.
+Four dedicated cold-provider methods and one real-Compose opt-in were skipped.
+Five partial-parser source limitations remain; hardware/beta gates are unchanged.
+
+The shell suite exited0, but independent log review caught its missing `rg` command:
+the pilot production-path guard was skipped because an `if` swallowed exit127.
+Current pilot source contains neither forbidden token, but that is source evidence,
+not an executed guard. The guard now uses already-required Ruby outside a conditional,
+with five synthetic regressions covering allowed input, both prohibited tokens,
+missing workflow input and a missing Ruby executable. No dependency was added.
+The five new cases passed in an isolated Linux run (0.57s), with Bash/Ruby syntax
+checks, unchanged source hashes and settled workers/private cleanup. This was a
+focused subset, not a rerun of the original107cases or the entire shell suite.
+
+CI02 was deliberately cancelled as superseded before downstream platform completion;
+Android cancellation retained cleanupPASS/original-wrapper-stop0, alongside the four
+completed Linux batch cleanupPASS receipts. Its CI Gate did not pass. Completed
+unit/static evidence remains qualified; no Android/Desktop/iOS completion is claimed.
+The corrected source still requires normal protected CI and independent GitHub approval.
