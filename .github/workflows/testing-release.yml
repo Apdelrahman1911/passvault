@@ -327,7 +327,8 @@ jobs:
       - name: Freeze the Windows candidate app image for production signing
         shell: bash --noprofile --norc scripts/ci-python.sh scripts/release-build.py plain {0}
         run: |
-          pwsh -NoProfile -NonInteractive -Command - <<'PASSVAULT_POWERSHELL'
+          freeze_script=$(mktemp "$TMPDIR/freeze-windows-XXXXXX.ps1")
+          cat > "$freeze_script" <<'PASSVAULT_POWERSHELL'
           $ErrorActionPreference = 'Stop'
           $appImage = Get-Item `
               -LiteralPath "$env:PASSVAULT_RELEASE_OUTPUT/app/PassVault" `
@@ -347,6 +348,7 @@ jobs:
               -ArchivePath $archive `
               -OutputRoot "$env:PASSVAULT_RELEASE_OUTPUT/app"
           PASSVAULT_POWERSHELL
+          pwsh -NoProfile -NonInteractive -File "$freeze_script"
 
       - name: Smoke test the frozen Windows candidate app image
         shell: bash --noprofile --norc {0}
