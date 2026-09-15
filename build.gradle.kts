@@ -487,7 +487,7 @@ tasks.register<VerifyDependencyMetadataTask>("verifyDependencies") {
     description = "Validates dependency integrity, attribution, and release-version policy"
     dependsOn(verifyReleaseVersion)
     dependsOn(checkThirdPartyAttribution)
-    kotlinCompilerVersion.set(libs.versions.kotlin.get())
+    kotlinCompilerVersion.set(libs.versions.kotlin.asProvider())
 
     metadataFile.set(
         layout.projectDirectory.file("gradle/verification-metadata.xml")
