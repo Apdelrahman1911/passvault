@@ -1,0 +1,72 @@
+{
+  "reviewer": "/root/current_ledger",
+  "recorded_utc": "2026-09-15T21:06:24.718782+00:00",
+  "status": "PASS_QUALIFIED",
+  "run": 35009834688,
+  "run_attempt": 1,
+  "reviewed_head": "c3038a0eae1d38f1e1e8fb820f85745ecd862f7b",
+  "executed_checkout": "e3731a5be8b931cce217a2a5825685df722a7aff",
+  "tree": "91ea74d624ecac4d7cd53756ef59bb56d0d745f2",
+  "tree_equivalent_main": "518aed84bf0f479c80c5eb1a33a7f2a7a30d1c7d",
+  "integrity": {
+    "retained_api_run": "completed/success, expected repository/PR branch/head, attempt1",
+    "jobs": "Complete12-job inventory; all completed/success on reviewed head.",
+    "artifact_files": 268,
+    "hash_or_size_mismatches": 0,
+    "missing_or_extra_files": 0,
+    "source_binding": "Retained checkout/main Git commit responses bind both to reviewed tree; native checkout log and every cleanup receipt match executed checkout."
+  },
+  "native_link": {
+    "job": 104519966787,
+    "runner": "GitHub-hosted macos-26-intel",
+    "result": "Actual simulator Arm64 compilation and unsigned optimized iOS Arm64 release framework link PASS.",
+    "command": "./gradlew :shared:compileKotlinIosSimulatorArm64 :shared:linkReleaseFrameworkIosArm64 --stacktrace",
+    "evidence": "Log reaches Intel-host Kotlin/Native2.4.10 distribution, both compile tasks and linkReleaseFrameworkIosArm64; BUILD SUCCESSFUL in19m46s,162executed Gradle tasks (not tests).",
+    "gradle_heap_mib": 4096,
+    "cleanup": "Source-matched exit0/PASS/wrapper_stop0; log reports no Gradle daemons running."
+  },
+  "test_cases": {
+    "unit": {
+      "xml_files": 198,
+      "passed": 1604,
+      "skipped": 5,
+      "failures": 0,
+      "errors": 0
+    },
+    "desktop_each_linux_macos_windows": {
+      "xml_files": 18,
+      "passed": 90,
+      "skipped": 1,
+      "failures": 0,
+      "errors": 0
+    },
+    "qualification": "Parsed actual testcase elements and reconciled suite totals; overlapping job/platform counts, not unique coverage or hardware tests. One Android lint XML is not counted as test cases."
+  },
+  "cleanup": {
+    "receipts": 15,
+    "source_matched_exit0_PASS": 15,
+    "wrapper_stop0": 10,
+    "wrapper_not_started": 5
+  },
+  "preserved_observer_failure": {
+    "path": "../CI-RESULT.json",
+    "sha256": "8ccdd8fc1cf7623ed6aff718203fb142d182118b0fcc0f6ee41275d0c6d9b3f0",
+    "scope": "Original observer ended with nonzero gh API exit; record unmodified. Later retained direct terminal API/artifacts are separate new evidence, not a rewritten observer success or rerun."
+  },
+  "evidence_sha256": {
+    "RESULT.json": "a0964cad798d64715e62f62bd0f5283a5aedd4cdd49142c5ce49f5b24a448952",
+    "RUN.json": "7c4dacdd3fd6f1c1f60e88648d12a48c247ce0dde71abce11bd0fac977169156",
+    "JOBS.json": "0cd419700999e1a52f98944eba239a4370cdbce51e718b50e592e27df765d063",
+    "CHECKOUT.json": "9c129cd87e666ee5f27f85b9e15e4958787e59b7a9ef7437551e81644dd3834a",
+    "MAIN.json": "c0978f227d2125ce70989afecb43ce753a15c0c1e8fa1df36a240cc337b15023",
+    "NATIVE-EXCERPT.txt": "b0ecf90befe76d94dfe2ea8cb3605e430a0e27a500ee6c29b88c30dc82d9084f",
+    "NATIVE-LOG-PROVENANCE.json": "7cc26e0f380e0443ee28b24082a3c4896cc67c5117f5f6219e05210bcc5aca15"
+  },
+  "limitations": [
+    "Reviewer performed bounded retained-record/hash/XML/source reconciliation only; no builds, networking, raw-log re-download or independent signature verification.",
+    "Unsigned optimized link does not prove signed archive/export, Store processing, publication, physical iPhone security or Windows Hello.",
+    "MainCI35023335669 was reported running by lead and is not assessed here; no new run or release admitted.",
+    "New Store version/build requires owner approval and fresh allocation/execution admission;1017001/1017002 occupied,1017003 occupancy unknown/non-reusable.",
+    "All earlier failed runs, HOLD, STOP, NO-RETRY, CLOSED and protected-branch restrictions persist."
+  ]
+}
