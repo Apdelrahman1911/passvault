@@ -24,6 +24,27 @@ RAM floor. This is a configuration fix, **not yet proof of a successful archive*
 The new signed archive/export and Store processing must pass before success is
 reported; do not rerun or resume the partially uploaded 1017002 release.
 
+## Apple private-key pipe import
+
+The follow-up main CI [34991312886](https://github.com/Apdelrahman1911/passvault/actions/runs/34991312886)
+failed its macOS Intel **synthetic** signing test on source
+`f25c6888db881109182ea4aebd0fe17b713a08a4`, before Desktop packaging. The private-key
+import returned invalid parameters. The same runner image passed the preceding
+PR CI; this failure must not be waived or blindly retried. Its cleanup passed,
+with no Gradle wrapper started. Testing promotion was not launched.
+
+Apple's published Security implementation sizes file input with `fstat` before
+a single read, including `/dev/stdin`. A live pipe can therefore expose an empty
+or partial key rather than the completed stream. The new bounded in-memory
+adapter waits for EOF, fills a fresh pipe before launching `security`, and
+requires its size to match exactly. No unencrypted key file, password argument,
+or relaxed extractability/trusted-tool setting is introduced. Capacity mismatch,
+empty/oversized input and timeouts fail closed. The existing native test adds a
+controlled incomplete-pipe negative case and delayed/chunked successful import
+into a fresh synthetic keychain, with identity and non-extractability checks.
+Actual macOS validation of this correction is still required; Linux parsing is
+not a substitute. The original failed invocation's exact byte count is unknown.
+
 The release build adapter reuses the current CI process-scope implementation,
 not archived audit runners. It preserves signing HOME on iOS, uses private build
 caches and DerivedData, stops the original wrapper, and requires owned settlement
