@@ -166,3 +166,46 @@ diagnostic-only correction, all eight synthetic guard cases passed onLinux (1.63
 as did Bash syntax and the existing workflow-security validator, with source hashes
 unchanged and owned groups settled/private directories removed. Real Windows path,
 JobObject and build verification still require the new hosted run.
+
+
+## CI04 macOS settlement-probe qualification
+
+The replacement parallel run34950325076 reached actual Windows Desktop tests after
+all eight synthetic guard cases passed there. Its macOS Desktop job instead failed
+one of eight guard methods before Gradle: after TERM, the signal-zero group probe
+raised EPERM. The exact kernel cause is not established. The narrow correction
+returns not-proven-empty on permission denial, allowing bounded polling; only a
+missing process group proves emptiness. Nonzero signal failures still propagate,
+and persistent uncertainty retains cleanupHOLD. Two focused POSIX regressions
+cover the conservative predicate and EPERM-to-ESRCH polling transition; both passed
+in a narrowed Linux mock-only check (0.005s), with owned groups settled and private
+directories removed. They do not
+substitute for a real macOS guard run or close any old cleanupHOLD.
+
+Compact CI04 repair/prior-failure evidence is preserved at
+[aade3722ca8b7e38c89ebe61c37063beb5f10c27](https://github.com/Apdelrahman1911/passvault/tree/aade3722ca8b7e38c89ebe61c37063beb5f10c27/docs/consolidation-evidence/2026-09-15/ci04).
+That snapshot predates final CI04 outcomes and is not a full-run pass. Its archival
+application tree must not be merged into main.
+
+
+Windows then passed its Desktop Gradle batch and both native CTest executables,
+but the job failed cleanup after original-wrapper stop0: its owned Windows job
+still contained processes. The residual process identities are unknown. Corrected
+cleanup terminates only no-breakaway jobs whose direct shell has completed, then
+still requires positive zero-active-process settlement before deletion. A failed
+termination remains HOLD without retry; old cleanupHOLD is not retrospectively
+cleared. The owner requested immediate cancellation/restart after fixing observed
+failures, rather than waiting for unrelated CI04 jobs. Neither successful compilation
+nor these native host tests prove interactive Windows Hello or mobile hardware.
+
+CI04 completed cancelled as requested. Completed evidence includes1604passing
+unit executions/5expected skips across198XML; Linux and Windows Desktop artifacts
+each contain90passing executions/1expected skip across18XML. These overlap by
+test definition and must not be summed as unique coverage. Windows reports are
+pre-settlement snapshots because cleanup failed. iOS simulator compile/identity,
+shared compile and unsigned macOS arm64 packaging passed; Android and macOS x64
+were cancelled. Eleven cleanup receipts PASS; Windows, cancelled Android and
+cancelled macOS x64 retain three HOLDs. The macOS guard failure has no cleanup
+artifact. The Windows dispatch mock passed separately (0.003s), with explicit
+outer-group settlement/private cleanup; actual corrected Windows/macOS behavior
+still requires the replacement run. No main merge or beta readiness is claimed.

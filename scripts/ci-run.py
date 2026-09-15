@@ -88,6 +88,11 @@ class ProcessScope:
             return False
         except ProcessLookupError:
             return True
+        except PermissionError:
+            # macOS can report EPERM while a terminated group is settling.
+            # Lack of permission is never proof of emptiness: keep polling
+            # within the caller's deadline, then retain outputs on uncertainty.
+            return False
 
     def terminate(self):
         if self.job:
@@ -108,6 +113,22 @@ class ProcessScope:
         if self.job:
             self.api.CloseHandle(self.job)
             self.job = None
+
+
+def terminate_completed_windows_scopes(scopes, result, attempted):
+    # Build and original-wrapper stop have returned. Their no-breakaway jobs
+    # may still contain native build workers; do not wait for worker reuse timers.
+    for index, scope in enumerate(scopes):
+        if scope in attempted:
+            continue
+        if scope.job and not scope.empty():
+            if scope.process.poll() is None:
+                raise RuntimeError("Refuse terminating an active Windows shell")
+            attempted.add(scope)
+            result.setdefault("windows_job_termination_requested", []).append(index)
+            scope.terminate()
+    # This dispatch is NOT settlement proof. The caller must still observe
+    # empty jobs before final reports or any output/private-root deletion.
 
 
 def generated_roots(repo):
@@ -204,6 +225,7 @@ def main(script):
         "org.gradle.configureondemand=false\norg.gradle.configuration-cache=false\n"
         "kotlin.compiler.execution.strategy=in-process\n")
     scopes = []
+    windows_termination_attempted = set()
     result = {"source": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
               "exit": None, "cleanup": "HOLD", "wrapper_stop": "not-started"}
     interrupted = False
@@ -248,6 +270,8 @@ def main(script):
                 result["report_snapshot_error"] = str(error)
             if interrupted or result["exit"] is None:
                 for scope in scopes:
+                    if scope.job:
+                        windows_termination_attempted.add(scope)
                     scope.terminate()
             # Do not bootstrap Gradle merely to stop a non-Gradle shell step.
             if (private / "gradle" / "daemon").exists():
@@ -264,6 +288,7 @@ def main(script):
                     raise
                 if result["wrapper_stop"] != 0:
                     raise RuntimeError("Original wrapper stop failed")
+            terminate_completed_windows_scopes(scopes, result, windows_termination_attempted)
             end = time.monotonic() + 15
             while time.monotonic() < end and not all(s.empty() for s in scopes):
                 time.sleep(0.2)
@@ -286,6 +311,8 @@ def main(script):
         except BaseException as error:
             result["cleanup_error"] = str(error)
             for scope in scopes:
+                if scope in windows_termination_attempted:
+                    continue  # Preserve failure/HOLD; do not retry termination.
                 try:
                     if not scope.empty():
                         scope.terminate()

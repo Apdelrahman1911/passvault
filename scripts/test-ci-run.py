@@ -9,7 +9,7 @@ import sys
 import tempfile
 import time
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 sys.dont_write_bytecode = True
 spec = importlib.util.spec_from_file_location("ci_run", Path(__file__).with_name("ci-run.py"))
@@ -82,6 +82,62 @@ class ResourceGuardTest(unittest.TestCase):
         time.sleep(0.2)
         scope.terminate()
         self.settled(scope)
+
+    @unittest.skipIf(os.name == "nt", "POSIX process-group probe")
+    def test_permission_denied_probe_never_proves_settlement(self):
+        scope = runner.ProcessScope()
+        scope.process = Mock(pid=12345)
+        with patch.object(runner.os, "killpg", side_effect=PermissionError):
+            self.assertFalse(scope.empty())
+        scope.process.poll.assert_called_once_with()
+
+    @unittest.skipIf(os.name == "nt", "POSIX process-group probe")
+    def test_termination_waits_through_permission_denied_probe(self):
+        scope = runner.ProcessScope()
+        scope.process = Mock(pid=12345)
+        # TERM succeeds; an uncertain probe must not abort bounded settlement.
+        with patch.object(runner.os, "killpg", side_effect=[
+            None, PermissionError(), ProcessLookupError(), ProcessLookupError(),
+        ]) as killpg, patch.object(runner.time, "sleep") as sleep:
+            scope.terminate()
+        self.assertEqual(killpg.call_args_list[0].args, (12345, runner.signal.SIGTERM))
+        self.assertTrue(all(call.args == (12345, 0) for call in killpg.call_args_list[1:]))
+        self.assertEqual(killpg.call_count, 4)
+        sleep.assert_called_once_with(0.2)
+
+    def test_completed_windows_scope_cleanup_is_owned_and_fail_closed(self):
+        remaining = Mock(job=1)
+        remaining.empty.return_value = False
+        remaining.process.poll.return_value = 0
+        empty = Mock(job=2)
+        empty.empty.return_value = True
+        posix = Mock(job=None)
+        result, attempted = {}, set()
+        runner.terminate_completed_windows_scopes([remaining, empty, posix], result, attempted)
+        remaining.terminate.assert_called_once_with()
+        empty.terminate.assert_not_called()
+        posix.terminate.assert_not_called()
+        self.assertEqual(attempted, {remaining})
+        self.assertEqual(result, {"windows_job_termination_requested": [0]})
+        # An interrupted batch may already have dispatched termination once.
+        runner.terminate_completed_windows_scopes([remaining], result, attempted)
+        remaining.terminate.assert_called_once_with()
+
+        active = Mock(job=3)
+        active.empty.return_value = False
+        active.process.poll.return_value = None
+        with self.assertRaisesRegex(RuntimeError, "active Windows shell"):
+            runner.terminate_completed_windows_scopes([active], {}, set())
+        active.terminate.assert_not_called()
+
+        failed = Mock(job=4)
+        failed.empty.return_value = False
+        failed.process.poll.return_value = 0
+        failed.terminate.side_effect = OSError("termination failed")
+        attempted = set()
+        with self.assertRaisesRegex(OSError, "termination failed"):
+            runner.terminate_completed_windows_scopes([failed], {}, attempted)
+        self.assertEqual(attempted, {failed})  # Caller must not retry failed dispatch.
 
     def tracked(self, extra=()):
         return ("\0".join(["build.gradle.kts", "core/data/build.gradle.kts", "source.kt", *extra]) + "\0").encode()
