@@ -1,0 +1,15 @@
+#!/usr/bin/python3
+"""Reject any push other than these exact, already-preserved ref deletions."""
+import sys
+expected = {
+    'refs/heads/codex/consolidate-completed-20260915': 'c94826d1b29493404c8f67744bfca6436ecec829',
+    'refs/heads/codex/remediation-handoff-20260908': '9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed',
+}
+seen = set()
+for line in sys.stdin:
+    local_ref, local_oid, remote_ref, remote_oid = line.split()
+    assert local_ref == '(delete)' and local_oid == '0' * 40, 'Only deletion authorized'
+    assert remote_ref in expected and remote_ref not in seen, 'Unexpected ref'
+    assert remote_oid == expected[remote_ref], 'Remote tip changed; refuse deletion'
+    seen.add(remote_ref)
+assert seen == set(expected), 'Expected both exact deletion refs'

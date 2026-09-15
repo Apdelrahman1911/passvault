@@ -1,0 +1,35 @@
+{
+  "reviewer": "/root/current_ledger",
+  "utc": "2026-09-15T10:25:06.813930+00:00",
+  "scope": "Independent branch disposition and source-only deletion-guard review; no Git/network/execution/cleanup performed by reviewer",
+  "decision": "APPROVED_WITH_EXECUTION_CONDITIONS",
+  "inputs": {
+    "branch-cleanup-20260915/PREFLIGHT.json": {
+      "bytes": 3802,
+      "sha256": "802a6b81093ac8d12ba6a3c5270a67a2addbc3a0439b4a96e84a24687a268f55"
+    },
+    "branch-cleanup-20260915/DELETE-GUARD.txt": {
+      "bytes": 764,
+      "sha256": "d3baa1d26947f428c20ad0e6d14c8dc34a3280594c4bca8266b0763b52b1e29a"
+    }
+  },
+  "approved_remote_deletions": {
+    "refs/heads/codex/consolidate-completed-20260915": "c94826d1b29493404c8f67744bfca6436ecec829",
+    "refs/heads/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed"
+  },
+  "retained_archive_commit": "6886ee9d23aa813d258f594d478d744d9e89bedc",
+  "source_identity_observation": "Supplied main tree b58227c0ad1458b7dd52623d63899ee7d1a19c6c equals successful independently reviewed CI05 tree. PR183 merge was externally observed, not performed or authorized by this reviewer.",
+  "conditions": [
+    "Root freshly confirms both exact tips remain preserved by the retained archive and neither branch has live PR/run references; abort on changed tips or retention/reference uncertainty.",
+    "Temporary pre-push guard must enforce expected advertised old OIDs and only both intended deletions; atomic push; no force flags, protection bypass, or bypass of an existing required hook.",
+    "Reviewed guard uses assert; convert checks to explicit rejection or explicitly exclude PYTHONOPTIMIZE so optimization cannot disable validation.",
+    "Preserve all other refs, tags, protected branches, evidence, source, historical checkpoint objects and HOLD/UNKNOWN material.",
+    "Local consolidation branch may be normally deleted only after detaching its exact retained c94826d commit. Local main may advance ff-only from unchanged 0dbc12c7f1b7770e75963c751c8c67af6e8b057a with clean worktree.",
+    "Root retains compact operation receipt, remote readback and temporary-hook cleanup evidence."
+  ],
+  "limitations": [
+    "Git and live-reference facts are root-supplied DATA, not independently executed by reviewer.",
+    "Deletion of branch pointers is not meaningful disk reclamation.",
+    "This disposition does not reopen unfinished audit scope or authorize Store/publication, protected-branch writes, tag changes, history rewrites, source or worktree deletion."
+  ]
+}
