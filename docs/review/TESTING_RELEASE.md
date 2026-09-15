@@ -5,6 +5,34 @@ Build 1017002 must not be reused: the 1.0.8 GitHub run uploaded Android, but its
 iOS archive failed before upload. The owner confirmed no uploads outside GitHub.
 Deferred findings in BACKLOG.md remain open; this is not production authorization.
 
+## Intel compiler verification correction
+
+Testing run [35003648380](https://github.com/Apdelrahman1911/passvault/actions/runs/35003648380)
+on `b0d2cd4a85fc28b593e50f088dbb599be8060f36` failed before iOS compilation:
+the pinned Kotlin 2.4.10 compiler's `macos-x86_64` archive lacked a checksum.
+The Arm64 host archive was pinned, which is why the previous simulator CI passed.
+This was **not** another observed heap failure. Signing setup succeeded, but the
+optimized device link and archive remain unverified. Wrapper stop returned zero;
+Xcode settlement remained **HOLD**, with subsequent cleanup refusals preserved.
+The overall run was subsequently cancelled during the Google Play upload step;
+its Android Store outcome is unknown. The agent did not cancel it. Do not retry
+this release or assume build 1017003 is available for another upload.
+
+The Intel archive's 259,701,296 bytes were streamed from Maven Central without
+saving or executing them. SHA-256
+`7bfda60c2a4ce859fc85011ea2c3229961b1eb40e9cc0b6b85fee885f23973cb`
+matches official JetBrains Kotlin v2.4.10 GitHub release asset `476576010`.
+Only that missing host checksum is added; compiler version and checksum-only
+verification policy remain unchanged. The existing dependency check now requires
+both Apple host archives for the catalog-pinned compiler.
+
+The existing iOS CI job now uses the release's Intel/Xcode 26 host and compiles
+simulator sources **and links the unsigned optimized iOS Arm64 framework**. Its
+opt-in 4 GiB heap requires macOS with at least 12 GiB RAM; other CI batches remain
+at 2 GiB. No signing inputs, Store upload, application launch or extra matrix is
+introduced. Actual native results and cleanup must pass before another release
+is proposed. Even a successful unsigned link is not a signed archive/Store proof.
+
 ## iOS archive memory correction
 
 [Run 34979337404](https://github.com/Apdelrahman1911/passvault/actions/runs/34979337404)
