@@ -1,0 +1,14 @@
+{
+  "reviewer": "/root/current_ledger",
+  "utc": "2026-09-15T12:03:17.204136+00:00",
+  "decision": "ADMIT_UNCHANGED_NONPUBLISHING_PR_CI_WITH_POWERSHELL_FILE_DELTA",
+  "source_commit_root_supplied": "1e66eb545a8658273d499ffb079b4cd1eb760824",
+  "source_tree_root_supplied": "9c221eaa84de5dff6d2a3bc1c737253f4fb74b05",
+  "changed_file": ".github/workflows/testing-release.yml",
+  "sha256": "9b240bd93457929946e3bb2df5489eb9c24a984820e0a118e14bf49a5638c0d2",
+  "reconstructed_pre_delta_sha256": "3f2a61dc1abd58b0ff2c0999b93fa48c242fb42d26673c77006aeb6e34512bc5",
+  "all_other_locally_tested_files_unchanged": true,
+  "review": "Exact tiny delta writes the existing freeze body to mktemp under guard-owned TMPDIR and invokes pwsh -NoProfile -NonInteractive -File; terminating script errors propagate instead of stdin command-loop continuation. Parent guard owns cleanup after process settlement.",
+  "validation": "Source/hash comparison only by reviewer; no execution or repeat tests. Existing 9-method local evidence retained. Root reports separate YAML/Bash parse passed and unavailable Python YAML was not silently substituted or installed.",
+  "conditions": "All prior nonpublishing CI coordination/source-bind/cleanup restrictions retained; actual release/native signing execution remains separately unadmitted."
+}

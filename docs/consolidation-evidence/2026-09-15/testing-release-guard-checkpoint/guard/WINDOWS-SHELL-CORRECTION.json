@@ -1,0 +1,12 @@
+{
+  "utc": "2026-09-15T12:02:35.139658+00:00",
+  "risk": "PowerShell stdin loop can mask earlier terminating failure; execute script file instead",
+  "checks": [
+    "YAML parse with existing Ruby PASS",
+    "changed Bash block parse PASS"
+  ],
+  "initial_check": "Python YAML unavailable, no dependency installed; reused original Ruby parser",
+  "runtime_test": false,
+  "sha256": "9b240bd93457929946e3bb2df5489eb9c24a984820e0a118e14bf49a5638c0d2",
+  "cleanup": "Subprocesses reaped; stdin parse only; no disposable files created"
+}

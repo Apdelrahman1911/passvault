@@ -1,0 +1,71 @@
+{
+  "reviewer": "/root/current_ledger",
+  "scope": "Bounded read-only fresh Testing Candidate PVA029 applicability and changed release runtime wiring. No subject execution, builds/tests, network, live coordination/resource probes or historical helper replay.",
+  "source_identity": {
+    "commit": "1e66eb545a8658273d499ffb079b4cd1eb760824",
+    "tree": "9c221eaa84de5dff6d2a3bc1c737253f4fb74b05",
+    "identity_basis": "Reported by lead; named file bytes independently read and hashed. Final integrated testing commit is not yet admitted.",
+    "sha256": {
+      ".github/workflows/testing-release.yml": "9b240bd93457929946e3bb2df5489eb9c24a984820e0a118e14bf49a5638c0d2",
+      ".github/workflows/mobile-store-release.yml": "d426f17e1f56ac11b36bfb70b2e6b238557bdb011f88a614c27833ee3218d73a",
+      "scripts/release-build.py": "bff5eb761ff41dd7e902dd1e77a7448b6e27ebd84ae9857e50fede6e8837e419",
+      "fastlane/Fastfile": "8aef569761d1f5753304dbbdeec217248ad85155ea397f4540f3f7e99bb2d2cc",
+      "docs/review/TESTING_RELEASE.md": "71df1712c85fbfa23a64c673978d4bda639d2d3b37380b4f6efdf213c909daa2"
+    }
+  },
+  "conclusion": "Fresh same-SHA path is eligible for separately reviewed release admission; this review is not dispatch authority or evidence of actual signing/native/Store success.",
+  "pva029": {
+    "historical_definition": "Candidate subject C/tree T is attested in a different equal-tree invocation E; a later strict source-digest C consumer rejects the E certificate. Same-SHA invocation is an explicit historical countercontrol.",
+    "named_historical_data": [
+      {
+        "commit": "33cd7e118b50117c358ed9210a3dc1a2d1f5579e",
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/PVA029-SOURCE-FOLLOWUP.md",
+        "sha256": "ba4a3d19020a2e011db4dca6154dd7f68cd75d6eb76a473c7e7075b251202a31"
+      },
+      {
+        "commit": "33cd7e118b50117c358ed9210a3dc1a2d1f5579e",
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/PVA029-ROOT-SOURCE-FOLLOWUP-REVIEW.json",
+        "sha256": "47f4ea5c9cfcafb11ff63fc9cc22ed805167e2a34e99fa212f3f459b1bc4608b"
+      }
+    ],
+    "fresh_path_source_proof": [
+      "testing-release.yml:522,539-540 uses invocation github.sha C and its tree; only resume rewrites candidate source (541-558).",
+      "mobile-store-release.yml:468-481,812-825 binds fresh Android/iOS receipts to GITHUB_SHA C and its tree; reused jobs checkout the caller source.",
+      "testing-release.yml:595-622 binds Desktop receipt, candidate manifest and artifact provenance to C/tree; actions/attest (630-633) runs in this invocation C.",
+      "testing-release.yml:640-647 targets GITHUB_SHA C for the new prerelease unless resumed receipts override it.",
+      "Candidate Readiness, stable publication and production are separately workflow_dispatch-triggered, not automatic followers of this fresh path."
+    ],
+    "required_exclusions": [
+      "resume_existing_internal_uploads=true",
+      "same-tree different-SHA reattestation",
+      "Candidate Readiness",
+      "stable or production publication",
+      "archived replacement helper/tests and G7/G8 retry"
+    ],
+    "status_preserved": "IMPLEMENTED — REGRESSION VERIFICATION FAILED in historical continuation; exclusion from selected source is not closure.",
+    "retained_failure": "49 named checks:44 PASS/5 FAIL, no skips (PVA02948:43/5 plus PVA028one PASS). Five process lifecycle failures retain underdetermined syscall/cause; no permissions, EPERM or containment workaround admitted."
+  },
+  "changed_runtime_wiring": {
+    "confirmed_source_blockers": [],
+    "positive_source_findings": [
+      "Guarded Android/iOS builds stage selected artifacts after owned settlement and append replacement GITHUB_ENV paths; provenance and Fastlane consume those staged paths without rebuilding.",
+      "Required signed artifacts and receipts are retained before Store upload; dispose requires passed batch receipts and successful durable-retention indication.",
+      "Desktop staged artifacts feed the existing native smoke in a synthetic home. Windows restore uses the actual guarded PowerShell file, preserving fail-fast semantics.",
+      "Signing HOME is preserved; failed/interrupted Xcode batches and nested CLEANUP_HOLD block build cleanup and signing-input ready gate."
+    ],
+    "evidence_limits": [
+      "This is source review, not real signing, packaged native smoke, Store processing or physical-device security proof. One admitted real release can supply its own actual evidence; no duplicate signing/native rehearsal is required.",
+      "Fastlane internal upload commands remain outside release-build.py; ready checks only previously guarded batches. A PASS batch receipt cannot establish transfer descendant settlement or remote Store outcome after a raw upload interruption. Preserve UNKNOWN/HOLD and no automatic retry rather than claiming blanket cleanup proof.",
+      "Hosted runner loss/cancellation is not certified cleanup. This review authorizes neither replay nor recovery of any old HOLD."
+    ]
+  },
+  "fresh_admission_requirements": [
+    "Complete required current CI and external protected PR review; freeze final integrated main/testing source and bind the exact release request to testing commit C/tree T.",
+    "Version1.0.8/build1017002 only under the recorded owner testing authorization; fresh request resume=false, new unoccupied candidate tag, no change to occupied1017001.",
+    "Record fresh runner/resource/coordination/cleanup controls; owner hosted parallelism remains permitted as separately scoped, not restricted by this reviewer to CI-only.",
+    "Independently reconcile actual candidate/mobile/Desktop receipts and attested artifacts to C/tree T; retain strict gh attestation source-digest C, approved repository/workflow/ref and fail-closed certificate policy.",
+    "Preserve failures and unresolved native/hardware/audit issues. Any uncertain upload requires external state reconciliation and separate retry admission, never automatic retry.",
+    "Do not dispatch resume, readiness, stable or production flows under this fresh testing admission."
+  ],
+  "execution_state": "Lead reports CI34966696185 guard jobs succeeded and product jobs still running, PR186 REVIEW_REQUIRED, legacy release switch OFF. Not independently live-queried by this reviewer."
+}
