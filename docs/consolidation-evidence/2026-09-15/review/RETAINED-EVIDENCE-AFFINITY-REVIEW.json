@@ -1,0 +1,87 @@
+{
+  "common_qualifications": [
+    "Reuse only meaningful unchanged risk coverage; no unnecessary cold-provider or GUI rerun.",
+    "No historical runtime/process/HOLD probe, helper import or execution performed by reviewer.",
+    "Historical counts19/25,27/39,2/12 and eightPVD remain unchanged; no new family or denominator."
+  ],
+  "decision": "ACCEPT_BOUNDED_HISTORICAL_EVIDENCE_REUSE_NOT_FRESH_RUNTIME_OR_FULL_GRAPH_EQUIVALENCE",
+  "pva038": {
+    "captured_source_affinity": [
+      {
+        "byte_identical": false,
+        "c4_sha256": "a18a2ee9127da9861d4310ab7588573d0596d31c317e3ff393c8e30f70888112",
+        "path": "core/crypto/build.gradle.kts",
+        "selected_sha256": "35738bf74b338c54e7ac88ca37b3ab7a3c73d9e32785052f9282893a5e2616b9"
+      },
+      {
+        "byte_identical": true,
+        "c4_sha256": "49775212b92b73197492f36f7c219dbf5d2521b6bbc197c70be50d203c58c57a",
+        "path": "gradle/libs.versions.toml",
+        "selected_sha256": "49775212b92b73197492f36f7c219dbf5d2521b6bbc197c70be50d203c58c57a"
+      },
+      {
+        "byte_identical": false,
+        "c4_sha256": "aee86a3e876da0318c750c350c3ec4eb8938aa1929123533c041c3a10ec38630",
+        "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt",
+        "selected_sha256": "ce012cc2b0ffc76783b081f31285c7247bdc6192e4301f6af637c2df5cdac8e8"
+      },
+      {
+        "byte_identical": true,
+        "c4_sha256": "2b8dd21fe476735f16f1ab35543417a70202e7923dfac328f9064e31f5923b57",
+        "path": "core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/LibsodiumCryptoEngine.kt",
+        "selected_sha256": "2b8dd21fe476735f16f1ab35543417a70202e7923dfac328f9064e31f5923b57"
+      },
+      {
+        "byte_identical": true,
+        "c4_sha256": "571ff97bf0758e788e8ad405ab0c147b52e040fcc291c28080329d44ba8516b9",
+        "path": "core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/CryptoEngine.kt",
+        "selected_sha256": "571ff97bf0758e788e8ad405ab0c147b52e040fcc291c28080329d44ba8516b9"
+      },
+      {
+        "byte_identical": true,
+        "c4_sha256": "ffd8302a8e6eb0585c515087b05eb0ed18bd7c4352e3f43df01e2eb06bede0b3",
+        "path": "core/crypto/src/desktopMain/kotlin/com/passvault/core/crypto/DesktopCryptoEngine.kt",
+        "selected_sha256": "ffd8302a8e6eb0585c515087b05eb0ed18bd7c4352e3f43df01e2eb06bede0b3"
+      }
+    ],
+    "historical_source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
+    "historical_source_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
+    "paired_tests": {
+      "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricProviderInitializationFaultIntegrationTest.kt": "25a05900371704e67c96b3940869a8529490e0e2ca2d927c1267311418e4f0d0",
+      "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricVerificationFailureIntegrationTest.kt": "79e9d892d5aa0711facce39968ce6ce8d3a1a9dcefe47853af70e62e14168b10"
+    },
+    "prior_actual_review": "docs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
+    "prior_actual_review_sha256": "f428020cf798125507c514c8b4d632dc58ab4f401494a29b0eaeb5001799df45",
+    "remaining": "PVA038_IOS_NATIVE_AEAD remains BLOCKED: iOS/Kotlin-Native dependency exception source/runtime and genuine authentication behavior need separate evidence. No biometric hardware proof.",
+    "retained_evidence": "Nine routing and three real cold-provider consumer cases PASS historically, plus one separately classified fixture producer. Current focused integration freshly reruns nine routing cases only.",
+    "semantic_delta": "Only equivalent freshness helper extraction/comment/suppression in repository and removal of Android32-only device test wiring in crypto Gradle. No Desktop AEAD provider/engine/interface/catalog change."
+  },
+  "pva039": {
+    "affinity": "Production loop and Main exact qualified bytes. Retained test9659B/422cbfd7 prefix underwent independently accepted C18 helper extraction/suppression to current9949B/0b40e53c; child probe, oracles, argv, env, wait and cleanup behavior unchanged.",
+    "historical_events": {
+      "default": [
+        "WINDOW_READY",
+        "CLOSE_REQUEST",
+        "exit0"
+      ],
+      "production": [
+        "WINDOW_READY",
+        "CLOSE_REQUEST",
+        "CALLER_CLEANUP",
+        "CONTINUATION",
+        "exit23"
+      ]
+    },
+    "limitations": [
+      "No fresh real-Compose execution in focused run.",
+      "Not full Main/Koin/provider cleanup, hard2.5second death guarantee, physical device/GL-backend proof, or PVU006 resolution."
+    ],
+    "retained_xml_sha256": "ede424dbfe5452f891875ae5f74520cd5edda5cf337032afe15692108b706a59",
+    "selected_source": {
+      "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/DesktopApplicationLoop.kt": "fc8c553ee02f6c84fc535ea0672436b9688dde6753101f9d952858a05516bfac",
+      "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/Main.kt": "9a67a8a5c2f05331e91ec5c18f6317a3562bd26e2c720105a8a21773edd8ae93",
+      "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/DesktopApplicationLifecycleIntegrationTest.kt": "0b40e53ceceaf11e6cbc5baaeb4be5f771bb17d939f2c7c2ae54fbb19ab00275"
+    }
+  },
+  "reviewer": "/root/current_ledger"
+}

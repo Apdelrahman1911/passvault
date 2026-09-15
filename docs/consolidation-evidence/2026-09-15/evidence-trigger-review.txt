@@ -1,0 +1,791 @@
+
+==audit-ios-focused-validation.yml==
+name: Audit focused iOS validation 01 (non-publishing)
+
+# SOURCE PREPARATION. No request is created by this packet. Root must separately
+# admit source, the fixed ten cases, owned guest storage and one execution slot.
+on:
+  push:
+    branches:
+      - codex/audit-continuation-linux-20260908
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/ios-focused-01.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  cancel-in-progress: false
+
+
+==audit-ios-focused-validation02.yml==
+name: Audit focused iOS validation 02 (non-publishing)
+
+# SOURCE PREPARATION. No request is created by this packet. Root must separately
+# admit source, the fixed ten cases, owned guest storage and one execution slot.
+on:
+  push:
+    branches:
+      - codex/audit-continuation-linux-20260908
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/ios-focused-02.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  cancel-in-progress: false
+
+
+==audit-macos-focused-validation.yml==
+name: Audit focused macOS native validation 02 (non-publishing)
+
+# SOURCE PREPARATION. Root separately admits/fills the new one-shot request.
+on:
+  push:
+    branches:
+      - codex/audit-continuation-linux-20260908
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/macos-focused-02.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  cancel-in-progress: false
+
+
+==audit-macos-jna-lifetime01.yml==
+name: Audit macOS real JNA lifetime 01 (non-publishing)
+on:
+  push:
+    branches: [codex/audit-continuation-linux-20260908]
+    paths: [docs/audit-continuation/2026-09-08-linux/requests/macos-jna-lifetime-01.json]
+permissions:
+  contents: read
+concurrency:
+  group: passvault-audit-validation-20260908
+  cancel-in-progress: false
+
+==audit-macos-sanitizers01.yml==
+name: Audit macOS native ASan UBSan 01 (non-publishing)
+on:
+  push:
+    branches: [codex/audit-continuation-linux-20260908]
+    paths: [docs/audit-continuation/2026-09-08-linux/requests/macos-sanitizers-01.json]
+permissions:
+  contents: read
+concurrency:
+  group: passvault-audit-validation-20260908
+  cancel-in-progress: false
+
+==audit-windows-after-flush01.yml==
+name: Audit Windows after-flush 01 (non-publishing)
+
+# INERT NEW AFTER-FLUSH SOURCE PROPOSAL. No request, instance admission or run exists here.
+# Root alone may publish source first, then add an independently admitted request.
+on:
+  push:
+    branches: [codex/audit-continuation-linux-20260908]
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/windows-after-flush-01.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  # Does not preserve older pending runs or prove global/local exclusivity.
+  # Root must freshly exclude queued/pending/running cohorts before either push.
+  # Independent other-workflow trigger review is also required before either push.
+  cancel-in-progress: false
+
+
+==audit-windows-after-flush02.yml==
+name: Audit Windows after-flush 02 (non-publishing)
+
+# INERT NEW AFTER-FLUSH SOURCE PROPOSAL. No request, instance admission or run exists here.
+# Root alone may publish source first, then add an independently admitted request.
+on:
+  push:
+    branches: [codex/audit-continuation-linux-20260908]
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/windows-after-flush-02.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  # Does not preserve older pending runs or prove global/local exclusivity.
+  # Root must freshly exclude queued/pending/running cohorts before either push.
+  # Independent other-workflow trigger review is also required before either push.
+  cancel-in-progress: false
+
+
+==audit-windows-after-flush03.yml==
+name: Audit Windows after-flush 03 (non-publishing)
+
+# INERT NEW AFTER-FLUSH SOURCE PROPOSAL. No request, instance admission or run exists here.
+# Root alone may publish source first, then add an independently admitted request.
+on:
+  push:
+    branches: [codex/audit-continuation-linux-20260908]
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/windows-after-flush-03.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  # Does not preserve older pending runs or prove global/local exclusivity.
+  # Root must freshly exclude queued/pending/running cohorts before either push.
+  # Independent other-workflow trigger review is also required before either push.
+  cancel-in-progress: false
+
+
+==audit-windows-after-flush04.yml==
+name: Audit Windows after-flush 04 (non-publishing)
+
+# INERT NEW AFTER-FLUSH SOURCE PROPOSAL. No request, instance admission or run exists here.
+# Root alone may publish source first, then add an independently admitted request.
+on:
+  push:
+    branches: [codex/audit-continuation-linux-20260908]
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/windows-after-flush-04.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  # Does not preserve older pending runs or prove global/local exclusivity.
+  # Root must freshly exclude queued/pending/running cohorts before either push.
+  # Independent other-workflow trigger review is also required before either push.
+  cancel-in-progress: false
+
+
+==audit-windows-after-flush05.yml==
+name: Audit Windows after-flush 05 (non-publishing)
+
+# INERT NEW AFTER-FLUSH SOURCE PROPOSAL. No request, instance admission or run exists here.
+# Root alone may publish source first, then add an independently admitted request.
+on:
+  push:
+    branches: [codex/audit-continuation-linux-20260908]
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/windows-after-flush-05.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  # Does not preserve older pending runs or prove global/local exclusivity.
+  # Root must freshly exclude queued/pending/running cohorts before either push.
+  # Independent other-workflow trigger review is also required before either push.
+  cancel-in-progress: false
+
+
+==audit-windows-jna-graph-02-validation.yml==
+name: Audit Windows JNA graph 02 (non-publishing)
+
+# Inert proposal. Actual full source pins and independent source/instance approval
+# are required before root alone can publish source, then a fresh A-only request.
+on:
+  push:
+    branches: [codex/audit-continuation-linux-20260908]
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/windows-jna-graph-02.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  # Not global/local exclusivity, and not protection of an older pending run.
+  cancel-in-progress: false
+
+
+==audit-windows-jna-graph-03-validation.yml==
+name: Audit Windows JNA graph 03 (non-publishing)
+
+# Inert proposal. Actual full source pins and independent source/instance approval
+# are required before root alone can publish source, then a fresh A-only request.
+on:
+  push:
+    branches: [codex/audit-continuation-linux-20260908]
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/windows-jna-graph-03.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  # Not global/local exclusivity, and not protection of an older pending run.
+  cancel-in-progress: false
+
+
+==audit-windows-jna-graph-validation.yml==
+name: Audit Windows JNA graph 01 (non-publishing)
+
+# Inert proposal. Actual full source pins and independent source/instance approval
+# are required before root alone can publish source, then a fresh A-only request.
+on:
+  push:
+    branches: [codex/audit-continuation-linux-20260908]
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/windows-jna-graph-01.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  # Not global/local exclusivity, and not protection of an older pending run.
+  cancel-in-progress: false
+
+
+==audit-windows-kdf-file-io-validation.yml==
+name: Audit Windows KDF and file I/O 01 (non-publishing)
+
+# INERT SOURCE03 AFTER-IMAGE. No request, instance admission or run exists here.
+# Root alone may publish source first, then add an independently admitted request.
+on:
+  push:
+    branches: [codex/audit-continuation-linux-20260908]
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/windows-kdf-file-io-01.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  # Does not preserve older pending runs or prove global/local exclusivity.
+  # Root must freshly exclude queued/pending/running cohorts before either push.
+  # Independent other-workflow trigger review is also required before either push.
+  cancel-in-progress: false
+
+
+==audit-windows-native-validation.yml==
+name: Audit Windows native cohort 05 (non-publishing)
+
+# Deliberately inert until root commits a separately reviewed one-shot request.
+# Changes to source, this workflow, helpers, or ordinary reports do not run it.
+on:
+  push:
+    branches: [codex/audit-continuation-linux-20260908]
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/windows-cohort-05.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  cancel-in-progress: false
+
+
+==audit-windows-real-jna-validation.yml==
+name: Audit Windows real JNA 01 (non-publishing)
+
+# Inert proposal. Actual full source pins and independent source/instance approval
+# are required before root alone can publish source, then a fresh A-only request.
+on:
+  push:
+    branches: [codex/audit-continuation-linux-20260908]
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/windows-real-jna-01.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  # Not global/local exclusivity, and not protection of an older pending run.
+  cancel-in-progress: false
+
+
+==candidate-readiness.yml==
+name: Candidate Readiness
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_tag:
+        description: Testing candidate tag to verify
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  # This reads store state and advances release, so it shares the complete
+  # release lifecycle lock with testing, production, and stable publication.
+  group: passvault-release-pipeline
+  cancel-in-progress: false
+
+env:
+  RUBY_VERSION: '3.3'
+
+
+==ci.yml==
+name: CI
+
+on:
+  push:
+    branches: [ main, testing, release ]
+  pull_request:
+    branches: [ main, testing, release ]
+
+permissions:
+  contents: read
+
+env:
+  JAVA_VERSION: '17'
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2 -Xmx2048m'
+
+
+==mobile-release-candidate.yml==
+name: Mobile internal candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform to build once and upload to internal testing
+        required: true
+        default: android
+        type: choice
+        options:
+          - android
+          - ios
+          - both
+      confirmation:
+        description: candidate:<platform>:<version>:<build>
+        required: true
+        type: string
+
+permissions: {}
+
+
+==mobile-release-external-testing.yml==
+name: Mobile external testing
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform whose exact internal build should be promoted
+        required: true
+        default: android
+        type: choice
+        options:
+          - android
+          - ios
+          - both
+      candidate_run_id:
+        description: Successful candidate workflow run ID
+        required: true
+        type: string
+      confirmation:
+        description: external-testing:<platform>:<version>:<build>
+        required: true
+        type: string
+
+permissions: {}
+
+
+==mobile-release-preflight.yml==
+name: Mobile release preflight
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform to validate
+        required: true
+        default: android
+        type: choice
+        options:
+          - android
+          - ios
+          - both
+
+permissions:
+  contents: read
+
+
+==mobile-store-release.yml==
+name: Mobile Store Release
+
+on:
+  workflow_call:
+    inputs:
+      platform:
+        required: true
+        type: string
+      channel:
+        required: true
+        type: string
+      operation:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+      build_number:
+        required: true
+        type: string
+      candidate_tag:
+        required: false
+        default: ''
+        type: string
+      candidate_commit:
+        required: false
+        default: ''
+        type: string
+      testflight_distribution:
+        required: false
+        default: email-list
+        type: string
+      production_confirmation:
+        required: false
+        default: ''
+        type: string
+      testing_confirmation:
+        required: false
+        default: ''
+        type: string
+      review_withdrawal_confirmation:
+        required: false
+        default: ''
+        type: string
+      pipeline_lock_held:
+        description: The protected caller already holds the repository-wide release-pipeline lock
+        required: false
+        default: false
+        type: boolean
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform to build and upload
+        required: true
+        default: both
+        type: choice
+        options:
+          - both
+          - android
+          - ios
+      channel:
+        description: Store destination
+        required: true
+        default: internal
+        type: choice
+        options:
+          - internal
+          - external
+          - production
+      operation:
+        description: Upload a new internal binary or promote the exact existing build
+        required: true
+        default: upload
+        type: choice
+        options:
+          - upload
+          - promote
+          - store-assets
+      version:
+        description: Exact marketing version; blank uses version.properties
+        required: false
+        type: string
+      build_number:
+        description: Exact committed Store build number from version.properties
+        required: true
+        type: string
+      candidate_tag:
+        description: Required readiness-approved candidate tag for production
+        required: false
+        type: string
+      testflight_distribution:
+        description: External iOS invitation method
+        required: true
+        default: email-list
+        type: choice
+        options:
+          - email-list
+      production_confirmation:
+        description: Type I_APPROVE_PRODUCTION only for a production upload
+        required: false
+        type: string
+      testing_confirmation:
+        description: Type I_CONFIRM_REQUIRED_TESTING_COMPLETED only after required store testing is complete
+        required: false
+        type: string
+      review_withdrawal_confirmation:
+        description: Type I_APPROVE_REVIEW_WITHDRAWAL to withdraw review and replace iOS store assets
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  # Direct retries share the repository-wide pipeline lock. Reusable calls get
+  # a run-local child lock because their protected parent already holds it.
+  group: ${{ inputs.pipeline_lock_held && format('passvault-mobile-child-{0}', github.run_id) || 'passvault-release-pipeline' }}
+  cancel-in-progress: false
+
+env:
+  JAVA_VERSION: '17'
+  RUBY_VERSION: '3.3'
+  FASTLANE_OPT_OUT_USAGE: '1'
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2 -Xmx4096m'
+  REQUEST_PLATFORM: ${{ inputs.platform }}
+  REQUEST_CHANNEL: ${{ inputs.channel }}
+  REQUEST_OPERATION: ${{ inputs.operation }}
+  REQUEST_VERSION: ${{ inputs.version }}
+  REQUEST_BUILD_NUMBER: ${{ inputs.build_number }}
+  REQUEST_CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
+  REQUEST_TESTFLIGHT_DISTRIBUTION: ${{ inputs.testflight_distribution }}
+  REQUEST_PRODUCTION_CONFIRMATION: ${{ inputs.production_confirmation }}
+  REQUEST_TESTING_CONFIRMATION: ${{ inputs.testing_confirmation }}
+  REQUEST_REVIEW_WITHDRAWAL_CONFIRMATION: ${{ inputs.review_withdrawal_confirmation }}
+
+
+==pages.yml==
+name: Public website
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/pages.yml'
+      - 'site/**'
+      - 'scripts/build-public-site.rb'
+      - 'iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+
+==play-access-check.yml==
+name: Play access check
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type VERIFY_ONLY_NO_UPLOAD to run the disposable-edit check
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: play-access-check-${{ github.ref }}
+  cancel-in-progress: false
+
+
+==production-release.yml==
+name: Production Store Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_tag:
+        description: Readiness-approved candidate tag
+        required: true
+        type: string
+      platform:
+        description: Store to submit; choose one when retrying a partial failure
+        required: true
+        default: both
+        type: choice
+        options:
+          - both
+          - android
+          - ios
+      authorization_run_id:
+        description: Successful Request Mobile Production Release run ID
+        required: true
+        type: string
+      authorization_sha:
+        description: Exact protected-main SHA that authorized this child run
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  # The release branch and both production stores are one shared lifecycle.
+  group: passvault-release-pipeline
+  cancel-in-progress: false
+
+
+==production-signing-validation.yml==
+name: Production Signing Validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_tag:
+        description: Readiness-approved candidate tag to sign without publishing
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-release-pipeline
+  cancel-in-progress: false
+
+
+==publish-stable-release.yml==
+name: Publish Stable Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_tag:
+        description: Production candidate whose stores are live
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  # Store-live verification and public GitHub release publication must remain
+  # atomic with respect to every other candidate/release operation.
+  group: passvault-release-pipeline
+  cancel-in-progress: false
+
+env:
+  RUBY_VERSION: '3.3'
+
+
+==release.yml==
+name: Production Desktop Signing
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      candidate_tag:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  JAVA_VERSION: '17'
+
+
+==request-mobile-production.yml==
+name: Request Mobile Production Release
+run-name: Request mobile production ${{ inputs.candidate_tag }} (${{ inputs.platform }})
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_tag:
+        description: Readiness-approved mobile candidate tag
+        required: true
+        type: string
+      platform:
+        description: Store to promote; choose one only when retrying a partial failure
+        required: true
+        default: both
+        type: choice
+        options:
+          - both
+          - android
+          - ios
+      confirmation:
+        description: Type I_APPROVE_MOBILE_PRODUCTION
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-release-pipeline
+  cancel-in-progress: false
+
+
+==store-screenshots.yml==
+name: Generate Store Screenshots
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: store-screenshots-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  JAVA_VERSION: '17'
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2 -Xmx4096m'
+
+
+==testing-release.yml==
+name: Testing Candidate
+
+on:
+  push:
+    branches: [ testing ]
+  workflow_dispatch:
+    inputs:
+      resume_existing_internal_uploads:
+        description: Reuse attested internal receipts instead of uploading Android/iOS again
+        required: true
+        type: boolean
+        default: false
+      resume_confirmation:
+        description: Required as resume:<version>:<build> when resuming existing internal uploads
+        required: false
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  # Testing, readiness, production, stable publication, and direct store retries
+  # all inspect or mutate one release lifecycle and must never interleave.
+  group: passvault-release-pipeline
+  cancel-in-progress: false
+
+env:
+  JAVA_VERSION: '17'
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2 -Xmx4096m'
+

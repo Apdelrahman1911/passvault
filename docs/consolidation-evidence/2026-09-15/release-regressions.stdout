@@ -1,0 +1,112 @@
+Strict JSON runtime: Ruby 3.2.3; JSON 2.6.3
+Strict JSON contract: 11 valid and 12 duplicate controls
+PASS PVA-015 strict JSON selected decoded-key contract
+Strict JSON runtime: Ruby 3.2.3; JSON 2.6.3
+Strict JSON contract: 11 valid and 12 duplicate controls
+PASS PVA-015 strict JSON bundled_default decoded-key contract
+PASS PVA-015 strict JSON fails closed if a backend ignores both duplicate controls
+PASS PVA-015 retained public schema2 receipts, immutable bytes and strict scope
+PASS PVA-015 synthetic schema2 valid receipt/source/artifact binding
+PASS PVA-015 synthetic schema3 valid receipt/source/artifact binding
+PASS PVA-015 rejects wrong_commit
+PASS PVA-015 rejects wrong_tree
+PASS PVA-015 rejects wrong_build
+PASS PVA-015 rejects pending
+PASS PVA-015 rejects malformed
+PASS PVA-015 rejects unknown_field
+PASS PVA-015 rejects receipt_digest
+PASS PVA-015 rejects receipt_tree
+PASS PVA-015 rejects receipt_version
+PASS PVA-015 rejects receipt_signer
+PASS PVA-015 rejects artifact_size
+PASS PVA-015 rejects artifact_hash
+PASS PVA-015 rejects duplicate_json
+PASS PVA-015 mobile scope never requires Desktop and protected Desktop scope remains strict
+PASS PVA-016 workflow-derived shell values stay in env, with approval and lock gates
+PASS PVA-016 real version run block "1.0.7"
+PASS PVA-016 real version run block ""
+PASS PVA-016 real version run block "01.0.7"
+PASS PVA-016 real version run block "1.0"
+PASS PVA-016 real version run block "1.0.7\nforged=value"
+PASS PVA-016 real version run block "$(printf interpreted)"
+PASS PVA-016 real version run block "1.0.7\"; false; #"
+PASS PVA-017 workflow publishes only the already verified immutable bundle
+PASS PVA-017 real publication CLI absent
+PASS PVA-017 real publication CLI matching
+PASS PVA-017 real publication CLI annotated
+PASS PVA-017 real publication CLI mismatched
+PASS PVA-017 real publication CLI annotated_mismatched
+PASS PVA-017 real publication CLI concurrent_matching
+PASS PVA-017 real publication CLI concurrent_mismatched
+PASS PVA-017 real publication CLI existing_release
+PASS PVA-017 real publication CLI api_failure
+PASS PVA-018/019 real resume CLI one_page
+PASS PVA-018/019 real resume CLI two_pages
+PASS PVA-018/019 real resume CLI changed_tree
+PASS PVA-018/019 real resume CLI wrong_build
+PASS PVA-018/019 real resume CLI unrelated
+PASS PVA-018/019 real resume CLI empty_runs
+PASS PVA-018/019 real resume CLI concatenated_pages
+PASS PVA-018/019 real resume CLI malformed_runs
+PASS PVA-018/019 real resume CLI malformed_jobs
+PASS PVA-018/019 real resume CLI malformed_artifacts
+PASS PVA-018/019 real resume CLI transport_error
+PASS PVA-018 external distribution depends on successful read-only resume
+PASS PVA-028 resumed publication has its own complete candidate history
+PASS PVA-021 standalone verifier capture, ownership and restore are production-wired
+PASS PVA-021 production cleanup/capture block with fake security capture_failed
+PASS PVA-021 production cleanup/capture block with fake security capture_empty
+PASS PVA-021 production cleanup/capture block with fake security capture_malformed
+PASS PVA-021 production cleanup/capture block with fake security success
+PASS PVA-021 production cleanup/capture block with fake security later_failure
+PASS PVA-021 production cleanup/capture block with fake security cancellation
+PASS PVA-021 production cleanup/capture block with fake security activation_failed
+PASS PVA-021 production cleanup/capture block with fake security restore_failed
+PASS PVA-021 production cleanup/capture block with fake security profile_cleanup_failed
+PASS PVA-021 production cleanup/capture block with fake security root_cleanup_failed
+PASS PVA-032 production profile install/cleanup created_success
+PASS PVA-032 production profile install/cleanup later_failure
+PASS PVA-032 production profile install/cleanup copy_failed
+PASS PVA-032 production profile install/cleanup copy_failed_after_bytes
+PASS PVA-032 production profile install/cleanup chmod_failed
+PASS PVA-032 production profile install/cleanup handled_exit_after_copy
+PASS PVA-032 production profile install/cleanup handled_exit_after_chmod
+PASS PVA-032 production profile install/cleanup handled_exit_before_publish
+PASS PVA-032 production profile install/cleanup handled_exit_after_publish
+PASS PVA-032 production profile install/cleanup existing_equal
+PASS PVA-032 production profile install/cleanup existing_different
+PASS PVA-032 production profile install/cleanup existing_symlink
+PASS PVA-032 production profile install/cleanup existing_dangling_symlink
+PASS PVA-032 production profile install/cleanup existing_directory
+PASS PVA-032 production profile install/cleanup publish_conflict
+PASS PVA-032 production profile install/cleanup publish_failed
+PASS PVA-032 production profile install/cleanup replacement_before_cleanup
+PASS PVA-032 production profile install/cleanup symlink_replacement_before_cleanup
+PASS PVA-032 production profile install/cleanup profile_cleanup_failed
+PASS PVA-032 production profile install/cleanup root_cleanup_failed
+PASS PVA-022 structural action scanner named_pinned
+PASS PVA-022 structural action scanner unnamed_pinned
+PASS PVA-022 structural action scanner inline_quoted_pinned
+PASS PVA-022 structural action scanner local
+PASS PVA-022 structural action scanner named_mutable
+PASS PVA-022 structural action scanner unnamed_mutable
+PASS PVA-022 structural action scanner inline_mutable
+PASS PVA-022 structural action scanner duplicate_hidden
+PASS PVA-022 structural action scanner local_traversal
+PASS PVA-022 structural action scanner invalid_yaml
+PASS PVA-022 exhaustive current workflow references
+PASS PVA-023 real obsolete-secret CLI delete_success
+PASS PVA-023 real obsolete-secret CLI already_missing
+PASS PVA-023 real obsolete-secret CLI delete_failed
+PASS PVA-023 real obsolete-secret CLI stale_readback
+PASS PVA-023 real obsolete-secret CLI readback_failed
+PASS PVA-023 configurator enforces conditional absence for both optional secrets
+PASS PVA-024 canonical payload validation/archive canonical
+PASS PVA-024 canonical payload validation/archive alternate_path
+PASS PVA-024 canonical payload validation/archive canonical_placeholder
+PASS PVA-024 canonical payload validation/archive canonical_wrong_language
+PASS PVA-024 canonical payload validation/archive symlink
+PASS PVA-024 readiness, renderer and actual archive snapshot use the shared contract
+PASS PVA-020 Windows checksum receives actual restored image root for every backend
+PASS PVA-025 checklist current Room scope is explicit and unexecuted gate unchecked
+107 deterministic release regression cases passed; no real providers, builds, signing or publication used.

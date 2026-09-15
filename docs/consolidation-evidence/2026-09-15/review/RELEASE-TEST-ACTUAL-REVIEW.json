@@ -1,0 +1,56 @@
+{
+  "decision": "ACCEPT_107_SYNTHETIC_REGRESSION_CASES_AND_ORIGINAL_CLEANUP",
+  "reviewer": "/root/current_ledger",
+  "files": {
+    "VERIFY_RELEASE.py": {
+      "bytes": 4503,
+      "sha256": "258af118c144aff53e4e6f2b9301f21961fe958960284290524369086a8f6d05"
+    },
+    "RELEASE-TEST-APPROVAL.json": {
+      "bytes": 113775,
+      "sha256": "7ddd99ffab430048406274e6d400fcb8b25b44820067be0e5675c8c7f8d19f97"
+    },
+    "RELEASE-TEST-RESULT.json": {
+      "bytes": 113708,
+      "sha256": "aca350e97023210429602559a4e9d7bfa443daac773353b51abc27b668c213e1"
+    },
+    "release-regressions.stdout": {
+      "bytes": 6647,
+      "sha256": "e1b9ced948a3a8547609019d51d3d613da4b630f325cd927576457113281b5a2"
+    },
+    "release-regressions.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "observations": {
+    "commands": [
+      {
+        "label": "release-regressions",
+        "argv": [
+          "/usr/bin/ruby",
+          "scripts/test-release-regressions.rb"
+        ],
+        "exit": 0,
+        "settled": true
+      }
+    ],
+    "elapsed_seconds": 23.820658683776855,
+    "unique_pass_case_labels": 107,
+    "fail_case_labels": 0,
+    "profile_cases_included_once": 20,
+    "source_files_bound": 795,
+    "source_unchanged": true,
+    "cleanup": "EMPTY_OWNED_HOME_TMP_REMOVED"
+  },
+  "qualification": [
+    "Actual retained output/result agree with source-admitted single command. Parent reports original tool session63868 completed exit0; reviewer performed only DATA/SOURCE reads and parsing.",
+    "107 is deterministic case count, not JUnit case count, assertions, task count, full application readiness, or hardware evidence.",
+    "StrictJSON selected/default processes both ran Ruby3.2.3 JSON2.6.3; each covers11 valid and12 duplicate controls inside its case, not two distinct parser-version qualifications.",
+    "CLI cases execute production logic behind exact fake-provider queues. PVA032 cases execute exact install/EXIT slices with synthetic profiles, no real Apple signing/Keychain/user state.",
+    "PVA020 is workflow source-contract evidence here, not Windows execution. PVA025 is a checklist contract here, not the migration upgrade gate.",
+    "PVA029 remains excluded/BLOCKED; no provider retry or historical recovery admitted. Protected branches/tags/build1017001 unchanged by this test.",
+    "Reviewed controller reports owned group settlement and empty-only private cleanup; no reviewer live runtime/residue probe was performed."
+  ],
+  "counts_not_recomputed": "Historical audit27/39 and original19/25 remain separate. This integration run does not manufacture new closures."
+}

@@ -1,0 +1,38 @@
+{
+  "approval_sha256": "7fd6dc0727e15169ac924ebece7f26c2d42f6e36181f77743f8fc950857f2e58",
+  "build_exit": 0,
+  "checkstyle": {
+    "findings": 0,
+    "path": "detekt-evidence/static-analysis/app-desktop/build/reports/detekt/detekt.xml",
+    "sha256": "f491e274f0d208f81c3edbc7c1097c30db590a3822fcf579468ac814d9ccc62b"
+  },
+  "cleanup": {
+    "cleanup": "OWNED_OUTPUTS_AND_PRIVATE_RUNTIME_REMOVED",
+    "owned_settled": true,
+    "source_unchanged": true,
+    "stop_ok": true
+  },
+  "controller_seconds": 137.24905490875244,
+  "decision": "ACCEPT_CORRECTED_SOURCE_DESKTOP_STATIC_PASS_AND_REPORTED_OWNED_CLEANUP",
+  "exact_scope": ":app-desktop:detekt plus reviewed static-coverage inventory dependency; no JUnit/native/GUI/provider execution",
+  "helper_sha256": "72eda30be0e3cdb8c40804738f5c847fca12fd36929e41b0fab35da59a7c013d",
+  "junit_cases": 0,
+  "log_build_duration": "2m13s",
+  "logs": {
+    "build.log": "755df5e20f97d2d0e7886f0385fed82a11614efb6fbcf0d075fd1438ef604610",
+    "stop.log": "a72c10142cf13a1b26ec5d33a0f81a325c028895d5a3679d0ea79cffd304bc19"
+  },
+  "qualifications": [
+    "Preserve prior aggregate Gradle failure and184passing cases; new check corrects only test-class organization. Three other static passes retained by unchanged source, not rerun.",
+    "Corrected dependency-cache root does not show the prior erroneous root worked. Strict dependency verification unchanged.",
+    "Observed iOS target/cinterop warnings explicitly do not prove Apple compilation or runtime.",
+    "Reported ownership settlement is not global machine/CI idleness. Parent separately observed ephemeral unrelated JVM with ownershipunknown and no signals; no safety claim about it.",
+    "No live resource/process/SDK/HOLD probe or subject helper execution by reviewer.",
+    "This actual result does not grant main merge, requiredCI, hardware claims, signing or beta readiness."
+  ],
+  "result_sha256": "2b7306ebc2c32f0efcb77d497ca2fe8fc2f7dc7d6814d945df4d12da8d5773e1",
+  "reviewer": "/root/current_ledger",
+  "source_manifest_files": 795,
+  "source_manifest_matches_approval": true,
+  "wrapper_stop_exit": 0
+}

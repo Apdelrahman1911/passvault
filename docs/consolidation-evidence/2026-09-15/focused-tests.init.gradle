@@ -1,0 +1,14 @@
+import org.gradle.api.tasks.testing.Test
+// Temporary integration-only test isolation; not imported into main.
+allprojects {
+    tasks.withType(Test).configureEach {
+        maxParallelForks = 1
+        maxHeapSize = '768m'
+        jvmArgs '-XX:ActiveProcessorCount=1', '-XX:-UsePerfData', '-XX:-CreateCoredumpOnCrash'
+        systemProperty 'user.home', System.getenv('HOME')
+        systemProperty 'java.io.tmpdir', System.getenv('TMPDIR')
+        systemProperty 'jna.tmpdir', System.getenv('TMPDIR')
+        systemProperty 'org.sqlite.tmpdir', System.getenv('TMPDIR')
+        systemProperty 'java.awt.headless', 'true'
+    }
+}

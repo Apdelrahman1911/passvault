@@ -1,0 +1,318 @@
+# INERT DRAFT: not admitted. Per-platform cleanup and execution review still required.
+name: CI
+
+on:
+  push:
+    branches: [ main, testing, release ]
+  pull_request:
+    branches: [ main, testing, release ]
+
+permissions:
+  contents: read
+
+env:
+  JAVA_VERSION: '17'
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2 -Xmx2048m'
+
+jobs:
+  validate:
+    name: Validate Gradle Wrapper
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/actions/wrapper-validation@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+
+  dependency-verification:
+    name: Dependency Verification
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+        with:
+          cache-cleanup: always
+
+      - name: Verify dependency integrity and attribution
+        run: ./gradlew verifyDependencies checkThirdPartyAttribution --stacktrace
+
+  build-android:
+    name: Build Android
+    runs-on: ubuntu-latest
+    needs: dependency-verification
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+        with:
+          cache-cleanup: always
+
+      - name: Build Android Debug
+        run: |
+          ./gradlew \
+            :app-android:assembleDebug \
+            :app-android:verifyDebugComposeResources \
+            --stacktrace
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: android-debug-apk
+          path: app-android/build/outputs/apk/debug/*.apk
+
+      - name: Build Android Release with ephemeral validation signing
+        shell: bash
+        run: |
+          set -euo pipefail
+          keystore_path="${RUNNER_TEMP:?}/passvault-ci-validation-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.p12"
+          keystore_password="$(openssl rand -hex 32)"
+          key_alias="$(tr -d '\r\n' < release/android/passvault-upload-alias.txt)"
+          cleanup() {
+            rm -f -- "$keystore_path"
+            unset KEYSTORE_PATH KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD
+            keystore_password=""
+          }
+          trap cleanup EXIT
+          export KEYSTORE_PATH="$keystore_path"
+          export KEYSTORE_PASSWORD="$keystore_password"
+          export KEY_ALIAS="$key_alias"
+          export KEY_PASSWORD="$keystore_password"
+          keytool -genkeypair \
+            -keystore "$KEYSTORE_PATH" \
+            -storetype PKCS12 \
+            -storepass:env KEYSTORE_PASSWORD \
+            -keypass:env KEY_PASSWORD \
+            -alias "$KEY_ALIAS" \
+            -keyalg RSA \
+            -keysize 3072 \
+            -sigalg SHA256withRSA \
+            -validity 2 \
+            -dname "CN=PassVault CI Validation, O=Non-Publishing Test" \
+            -noprompt
+          ./gradlew \
+            :app-android:verifyReleaseSigningConfiguration \
+            :app-android:assembleRelease \
+            :app-android:bundleRelease \
+            :app-android:lintRelease \
+            :app-android:verifyReleasePackageContents \
+            -Ppassvault.requireReleaseSigning=true \
+            --no-configuration-cache \
+            --stacktrace
+          ruby scripts/validate-google-play-readiness.rb
+
+  build-desktop:
+    name: Build Desktop
+    runs-on: ${{ matrix.os }}
+    needs: build-android
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+        with:
+          cache-cleanup: always
+
+      - name: Build Desktop
+        run: ./gradlew :core:security:desktopTest :app-desktop:desktopTest --stacktrace
+
+  package-desktop-macos:
+    name: Package Desktop macOS (${{ matrix.architecture }})
+    runs-on: ${{ matrix.runner }}
+    needs: build-desktop
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include:
+          - runner: macos-15
+            architecture: arm64
+          - runner: macos-15-intel
+            architecture: x64
+    env:
+      PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
+      COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
+      SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+
+      - name: Test Apple signing secret handling
+        run: ./scripts/test-apple-signing-secret-handling.sh
+
+      - name: Build and verify unsigned macOS package
+        run: >
+          ./gradlew :app-desktop:createReleaseDistributable
+          :app-desktop:packageReleaseDmg
+          --stacktrace
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: package-desktop-macos
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+        with:
+          cache-cleanup: always
+
+      - name: Run KMP and native security analysis
+        run: ./scripts/run-security-analysis.sh
+
+      - name: Run Unit Tests
+        run: ./gradlew test detekt verifyDependencies --continue --stacktrace
+
+      - name: Test release automation scripts
+        run: ./scripts/test-release-automation.sh
+
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: test-reports
+          path: |
+            **/build/reports/tests/**
+            **/build/test-results/**
+
+  shared-compile:
+    name: Shared Compile
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+        with:
+          cache-cleanup: always
+
+      - name: Compile the shared Desktop graph
+        run: ./gradlew :shared:compileKotlinDesktop :app-desktop:compileKotlinDesktop --stacktrace
+
+  ios-simulator-compile:
+    name: iOS Simulator Compile
+    runs-on: macos-15
+    needs: shared-compile
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+
+      - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+
+      - name: Compile iOS simulator framework sources
+        run: ./gradlew :shared:compileKotlinIosSimulatorArm64 --stacktrace
+
+      - name: Verify iOS Development and Store identities
+        run: ./scripts/validate-ios-build-identities.sh
+
+  ci-gate:
+    name: CI Gate
+    if: always()
+    runs-on: ubuntu-latest
+    needs:
+      - validate
+      - dependency-verification
+      - build-android
+      - build-desktop
+      - package-desktop-macos
+      - test
+      - shared-compile
+      - ios-simulator-compile
+    steps:
+      - name: Require every CI job to pass
+        env:
+          VALIDATE_RESULT: ${{ needs.validate.result }}
+          DEPENDENCY_RESULT: ${{ needs.dependency-verification.result }}
+          ANDROID_RESULT: ${{ needs.build-android.result }}
+          DESKTOP_RESULT: ${{ needs.build-desktop.result }}
+          MACOS_PACKAGE_RESULT: ${{ needs.package-desktop-macos.result }}
+          TEST_RESULT: ${{ needs.test.result }}
+          SHARED_RESULT: ${{ needs.shared-compile.result }}
+          IOS_RESULT: ${{ needs.ios-simulator-compile.result }}
+        run: |
+          for result in \
+            "$VALIDATE_RESULT" "$DEPENDENCY_RESULT" "$ANDROID_RESULT" \
+            "$DESKTOP_RESULT" "$MACOS_PACKAGE_RESULT" "$TEST_RESULT" \
+            "$SHARED_RESULT" "$IOS_RESULT"; do
+            if [[ "$result" != success ]]; then
+              echo "A required CI job did not pass (result: $result)." >&2
+              exit 1
+            fi
+          done

@@ -1,0 +1,110 @@
+{
+  "scope": "Read-only GitHub metadata only; no Store credentials or mutation",
+  "commands": [
+    {
+      "label": "refs",
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "protocol.allow=never",
+        "-c",
+        "protocol.https.allow=always",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "ls-remote",
+        "--refs",
+        "https://github.com/Apdelrahman1911/passvault.git"
+      ],
+      "exit": 0,
+      "original_group_settled": true
+    },
+    {
+      "label": "repo",
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/Apdelrahman1911/passvault"
+      ],
+      "exit": 0,
+      "original_group_settled": true
+    },
+    {
+      "label": "branches",
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/branches?per_page=100"
+      ],
+      "exit": 0,
+      "original_group_settled": true
+    },
+    {
+      "label": "main-protection",
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/branches/main/protection"
+      ],
+      "exit": 0,
+      "original_group_settled": true
+    },
+    {
+      "label": "testing-protection",
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/branches/testing/protection"
+      ],
+      "exit": 0,
+      "original_group_settled": true
+    },
+    {
+      "label": "main-rules",
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/rules/branches/main"
+      ],
+      "exit": 0,
+      "original_group_settled": true
+    },
+    {
+      "label": "testing-rules",
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/rules/branches/testing"
+      ],
+      "exit": 0,
+      "original_group_settled": true
+    },
+    {
+      "label": "open-prs",
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/pulls?state=open&per_page=100"
+      ],
+      "exit": 0,
+      "original_group_settled": true
+    },
+    {
+      "label": "runs",
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs?per_page=20"
+      ],
+      "exit": 0,
+      "original_group_settled": true
+    }
+  ],
+  "started_epoch": 1789450678.5169518,
+  "status": "CAPTURED_METADATA_REQUIRES_INTERPRETATION",
+  "cleanup": "ORIGINAL_EMPTY_PRIVATE_DIRS_REMOVED",
+  "completed_epoch": 1789450684.5502863
+}

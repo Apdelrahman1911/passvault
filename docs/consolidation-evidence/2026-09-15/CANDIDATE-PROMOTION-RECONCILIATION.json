@@ -1,0 +1,40 @@
+{
+  "candidate_commit": "852a765f4970a4bfe0171d3cf5c435052e742701",
+  "approved_main_commit": "5316377df67cff6b46a4b611c71465959efa9820",
+  "main_baseline": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+  "candidate_tree": "49b2ddde937e78b50cc9ede42907579e8b8e8fb9",
+  "approved_main_tree": "49b2ddde937e78b50cc9ede42907579e8b8e8fb9",
+  "approved_main_is_ancestor_of_baseline": true,
+  "observed_commands": [
+    {
+      "args": [
+        "git",
+        "-C",
+        "source",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "rev-parse",
+        "852a765^{tree}",
+        "5316377df67cff6b46a4b611c71465959efa9820^{tree}"
+      ],
+      "exit": 0,
+      "stdout": "49b2ddde937e78b50cc9ede42907579e8b8e8fb9\n49b2ddde937e78b50cc9ede42907579e8b8e8fb9\n"
+    },
+    {
+      "args": [
+        "git",
+        "-C",
+        "source",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "merge-base",
+        "--is-ancestor",
+        "5316377df67cff6b46a4b611c71465959efa9820",
+        "0dbc12c7f1b7770e75963c751c8c67af6e8b057a"
+      ],
+      "exit": 0,
+      "stdout": ""
+    }
+  ],
+  "qualification": "Transcribed from the actual fresh-store command result in this consolidation session; no repeated Git command, branch deletion, blanket hunk equivalence or beta-readiness claim."
+}

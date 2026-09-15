@@ -1,0 +1,14 @@
+{
+  "files": 73,
+  "hash_mismatches": [],
+  "mode_differences": [],
+  "sensitive_pattern_hits": [
+    "scripts/validate-private-release-config.sh",
+    "scripts/test-release-automation.sh"
+  ],
+  "pattern_dispositions": {
+    "scripts/validate-private-release-config.sh": "Line862 tests literal PEM header; no private-key payload.",
+    "scripts/test-release-automation.sh": "Line866 deliberately invalid three-line PEM fixture with literal invalid payload; no credential."
+  },
+  "qualification": "Bounded selected-file pattern screen and mode/hash comparison, not universal secret clearance."
+}

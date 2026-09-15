@@ -1,0 +1,25 @@
+{
+  "approval_sha256": "7fd6dc0727e15169ac924ebece7f26c2d42f6e36181f77743f8fc950857f2e58",
+  "decision": "ACCEPT_ONCE_CORRECTED_SOURCE_DESKTOP_STATIC_ONLY",
+  "helper_delta": [
+    "Separate fresh approval/result/runtime/evidence paths.",
+    "Only :app-desktop:detekt;900sec bound; unchanged one-worker JDK17 verifier and allowlisted cleanup/settlement controls.",
+    "Read-only dependency-cache root fixed; dependency verification unchanged."
+  ],
+  "helper_sha256": "72eda30be0e3cdb8c40804738f5c847fca12fd36929e41b0fab35da59a7c013d",
+  "plan_sha256": "9b15c2c54995b5376395c98359e3b90715aefa89360cd1d32717784335f35de5",
+  "retained": [
+    "Original184JUnit PASS,3static PASS,1staticFAIL evidence immutable.",
+    "No need to rerun unaffected crypto/storage or baseline prompt behavior.",
+    "All STOP/NO-RETRY/CLOSED/HOLD/protected release restrictions remain."
+  ],
+  "reviewer": "/root/current_ledger",
+  "selection_sha256": "31a4ce9484e4075c4fb998c21a1f7e30298c1cef9c5530afdd64c9cf4442d5aa",
+  "source_delta": {
+    "after": "26007ee47a17bd06b35c636643fbed54ae73097db8d6b3dabbacdb94f2d1022d",
+    "before": "c0900a9082cb8470427bb3d2ac70c0d6eec961156298e7570bf9bae156d38314",
+    "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricKeyStoreTest.kt",
+    "proof": "Inverse exact method relocation reconstructs original795-manifest file hash; body/assertions/fixtures/imports unchanged. New public JUnit class retains default discovery; old focused filter would no longer select the relocated method and is not rerun."
+  },
+  "source_manifest_files": 795
+}
