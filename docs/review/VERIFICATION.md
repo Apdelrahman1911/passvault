@@ -145,3 +145,24 @@ Android cancellation retained cleanupPASS/original-wrapper-stop0, alongside the 
 completed Linux batch cleanupPASS receipts. Its CI Gate did not pass. Completed
 unit/static evidence remains qualified; no Android/Desktop/iOS completion is claimed.
 The corrected source still requires normal protected CI and independent GitHub approval.
+
+## CI03 Windows launcher failure and parallel CI correction
+
+Run34946387329 on `a3132bb` passed dependency/unit/static, Android validation and
+Linux Desktop jobs. Windows failed two of six synthetic guard cases before Gradle:
+native Python resolved bare `bash` to the Windows WSL launcher rather than Git Bash.
+The owner requested cancellation and parallel hosted jobs. The cancelled macOS
+batch stopped its wrapper but retained cleanupHOLD for a remaining private-home
+process; hosted VM disposal is not a positive cleanup receipt. Six other completed
+batch cleanup receipts passed. No Windows/macOS completion is inferred.
+
+The shell now passes its actual Bash path explicitly, converted to native format
+onWindows; missing/invalid Windows configuration fails closed without PATH fallback.
+JobObject assignment-before-start, wrapper-stop and per-runner limits stay intact.
+Independent hosted jobs now fan out after dependency preflight; the all-job gate
+still requires success. The first local attempt hit a Bash diagnostic quoting error
+before Python (no tests ran); its empty private directories remain HOLD. After the
+diagnostic-only correction, all eight synthetic guard cases passed onLinux (1.639s),
+as did Bash syntax and the existing workflow-security validator, with source hashes
+unchanged and owned groups settled/private directories removed. Real Windows path,
+JobObject and build verification still require the new hosted run.

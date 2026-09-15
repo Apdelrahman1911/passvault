@@ -17,6 +17,16 @@ import tempfile
 import time
 
 
+def bash_executable(env):
+    configured = env.get("PASSVAULT_CI_BASH")
+    if not configured and sys.platform == "win32":
+        raise RuntimeError("Windows requires the caller's explicit Git Bash path")
+    executable = configured or shutil.which("bash")
+    if not executable or not Path(executable).is_absolute() or not Path(executable).is_file():
+        raise RuntimeError("Missing or invalid explicit Bash executable")
+    return executable
+
+
 class ProcessScope:
     def __init__(self):
         self.process = None
@@ -50,6 +60,7 @@ class ProcessScope:
                 raise ctypes.WinError(ctypes.get_last_error())
 
     def launch(self, script, env):
+        env = dict(env, PASSVAULT_CI_BASH=bash_executable(env))
         # The child cannot launch the shell until assigned to its Windows job.
         self.process = subprocess.Popen([sys.executable, __file__, "--child", str(script)],
                                         env=env, stdin=subprocess.PIPE,
@@ -292,7 +303,7 @@ if __name__ == "__main__":
     if len(sys.argv) == 3 and sys.argv[1] == "--child":
         if sys.stdin.readline() != "go\n":
             sys.exit(1)
-        command = ["bash", "--noprofile", "--norc", "-eo", "pipefail", sys.argv[2]]
+        command = [bash_executable(os.environ), "--noprofile", "--norc", "-eo", "pipefail", sys.argv[2]]
         if os.name != "nt":
             os.execvp(command[0], command)
         sys.exit(subprocess.call(command))

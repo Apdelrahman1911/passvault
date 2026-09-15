@@ -6,19 +6,24 @@ The selected source is prepared on `codex/consolidate-completed-20260915`, based
 on main `0dbc12c7f1b7770e75963c751c8c67af6e8b057a`. A branch push is not a main
 merge, protected-check success, or review approval.
 
-The normal CI workflow now serializes its existing coverage: wrapper validation,
-dependency/attribution verification, full tests/static checks, Android validation,
-Desktop tests (one host at a time), unsigned macOS packages (one architecture at a
-time), shared compilation, then iOS simulator compilation. Required check names and
-the fail-closed all-job CI Gate are retained. No skipped or renamed check substitutes
-for a successful check. Only CI is triggered by the proposed PR; the Pages workflow's
-path filters are not touched. Testing promotion remains blocked separately.
+The owner explicitly authorized parallel hosted-CI builds on2026-09-15. After
+wrapper and dependency preflight, independent unit/static, Android, Desktop,
+macOS package, shared-compile and iOS simulator jobs run on separate hosted VMs.
+Desktop permits three matrix jobs and macOS packaging two: at most nine heavy
+jobs across independent VMs. This replaces the earlier serial cross-job chain,
+not the one-worker limit within each job. No cross-job build output is consumed.
+Required check names, read-only permissions and the fail-closed all-job CI Gate
+remain unchanged; no failed/skipped job is accepted as a successful check.
+Testing promotion remains blocked separately.
 
 `ci-run.py` is permanent hosted-CI resource cleanup, not an archived audit runner.
 Each shell batch gets private HOME/TMP/Gradle/Konan storage, JDK17, one worker,
 in-process Kotlin, non-daemon execution and configure-on-demand disabled. Native
 CMake builds use one worker and CTest has a120-second timeout. The Windows wrapper
 is `gradlew.bat`; POSIX uses `gradlew`. Strict dependency verification is unchanged.
+The launcher passes its actual Bash executable explicitly (native Git Bash path
+onWindows), avoiding accidental selection of System32 WSL Bash. Missing/invalid
+Windows shell configuration fails closed; no WSL installation or PATH fallback.
 Windows processes enter a no-breakaway JobObject before shell launch; POSIX uses an
 owned session and checks the unique Gradle JVM marker for detached workers.
 
@@ -31,7 +36,8 @@ cleanup: hosted VM disposal is the fallback, never an invented successful stop.
 Artifacts retain compact reports/cleanup receipts for three days, not APK/DMG files.
 Batch timeout35minutes, job timeout45minutes; wrapper stop60seconds, settlement15seconds.
 RAM launch/running floors25%/20%; owner-authorized fallback disk floor3GiB is checked
-before/during work. Root coordinates one audit-owned build/test job at a time.
+before/during work. Root coordinates one audit-owned workflow run at a time; no local heavy build
+overlaps it. The independent hosted jobs within that run may execute in parallel.
 
 Android CI uses the existing `passvault.versionCode=1` override solely as a
 non-publishing validation sentinel, never occupied Store build1017001. It is not

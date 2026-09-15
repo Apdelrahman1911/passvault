@@ -55,6 +55,22 @@ class ResourceGuardTest(unittest.TestCase):
             self.assertEqual(scope.process.wait(timeout=10), code)
             self.settled(scope)
 
+    def test_windows_requires_explicit_shell_without_path_fallback(self):
+        with patch.object(runner.sys, "platform", "win32"), \
+                patch.object(runner.shutil, "which", side_effect=AssertionError("PATH lookup forbidden")):
+            with self.assertRaisesRegex(RuntimeError, "explicit Git Bash"):
+                runner.bash_executable({})
+            # A spaced native path is passed through as one argv element.
+            shell = self.root / "Git Bash" / "bash.exe"
+            shell.parent.mkdir()
+            shell.touch()
+            self.assertEqual(runner.bash_executable({"PASSVAULT_CI_BASH": str(shell)}), str(shell))
+
+    def test_invalid_configured_shell_is_not_replaced_from_path(self):
+        for path in ("bash", str(self.root / "missing.exe"), str(self.root)):
+            with self.assertRaisesRegex(RuntimeError, "invalid explicit Bash"):
+                runner.bash_executable({"PASSVAULT_CI_BASH": path})
+
     def test_owned_descendant_settles_before_cleanup(self):
         scope = self.launch('sleep 1 &\nwait\n')
         self.assertFalse(scope.empty())

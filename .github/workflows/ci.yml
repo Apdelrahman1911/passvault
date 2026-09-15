@@ -18,6 +18,8 @@ env:
   JAVA_VERSION: '17'
   GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false'
 
+# After wrapper/dependency preflight, independent jobs fan out on separate VMs.
+# Per-job Gradle/CMake worker limits and owned cleanup remain unchanged.
 jobs:
   validate:
     name: Validate Gradle Wrapper
@@ -73,7 +75,7 @@ jobs:
     name: Build Android
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    needs: test
+    needs: dependency-verification
     defaults:
       run:
         shell: bash --noprofile --norc scripts/ci-python.sh scripts/ci-run.py {0}
@@ -150,10 +152,10 @@ jobs:
     name: Build Desktop
     runs-on: ${{ matrix.os }}
     timeout-minutes: 45
-    needs: build-android
+    needs: dependency-verification
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 3
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     defaults:
@@ -201,10 +203,10 @@ jobs:
     name: Package Desktop macOS (${{ matrix.architecture }})
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 45
-    needs: build-desktop
+    needs: dependency-verification
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 2
       matrix:
         include:
           - runner: macos-15
@@ -309,7 +311,7 @@ jobs:
     name: Shared Compile
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    needs: package-desktop-macos
+    needs: dependency-verification
     defaults:
       run:
         shell: bash --noprofile --norc scripts/ci-python.sh scripts/ci-run.py {0}
@@ -346,7 +348,7 @@ jobs:
     name: iOS Simulator Compile
     runs-on: macos-15
     timeout-minutes: 45
-    needs: shared-compile
+    needs: dependency-verification
     defaults:
       run:
         shell: bash --noprofile --norc scripts/ci-python.sh scripts/ci-run.py {0}
