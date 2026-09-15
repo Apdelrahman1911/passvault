@@ -1,0 +1,46 @@
+{
+  "reviewer": "/root/current_ledger",
+  "date_utc": "2026-09-15",
+  "mode": "Independent source, retained metadata/log and hash review only; no subject helper, test, build, network or live worker probe executed by reviewer",
+  "source": {
+    "commit": "8438b055ea5aef6027bf888af3933f9902436222",
+    "tree": "9a9be0fb904fb8a4249fbe46a23060b590357e96",
+    "parent": "8912be38539dea7f5657750c13ff4995f9c23900",
+    "main": "f25c6888db881109182ea4aebd0fe17b713a08a4",
+    "branch": "codex/fix-apple-key-pipe-20260915"
+  },
+  "implementation": {
+    "verdict": "APPROVED",
+    "scope": "Stale static policy follows the real buffered helper while retaining password FD, stdin binding, non-extractability and the exact restricted trusted-tool argv. Existing workflow guards retained. Legal shell pipe-newline formatting is normalized. Actual importer/native fixture unchanged by this follow-up.",
+    "qualification": "Source-pattern regression policy, not a general Python/shell security proof. Seven cases are static validator mutations, not cryptographic or native runtime cases.",
+    "validator_sha256": "8b8010a02d410598a5619454a68b4f7baed7534b871939d925f60597aacb8284",
+    "test_sha256": "54ea9c71f3ef6dfd3d0610c149495b66714518b9ba5a9131d1b919bb50fa4388",
+    "suite_hook_sha256": "33784e488ac15252a5fa91c497ead3f8d2b71cbc842e7eb0d594ba5a9f337703"
+  },
+  "local": {
+    "first_attempt": "FAILED positive validator on unnormalized pipe newline; seven-case test not reached; original result/stdout/stderr and EXPECTED01 preserved; cleanup PASS, wrapper not started",
+    "second_controller_sha256": "aed3d3c0252b9534652485e348c3f791a60decc2008023ff56f6609db684f7ae",
+    "second_result_sha256": "ed6075ae78a0398bf1f3d3fc83e653e560d9497b28afc99d977850b239e441cf",
+    "second_result": "PASS: actual corrected validator, seven static mutation cases, two Ruby syntax checks and one Bash syntax check; empty stderr; recorded cleanup PASS, wrapper not started",
+    "qualification": "Reviewed exact owned-session/private-HOME/private-TMPDIR controller and retained results. No full release suite or native helper was admitted locally. Isolated, unoptimized Python required for assertion-based admission checks. No live process settlement claim by reviewer. Abrupt uncatchable termination remains a limitation."
+  },
+  "prior_ci": {
+    "run": 34993670798,
+    "conclusion": "FAILURE retained",
+    "head": "8912be38539dea7f5657750c13ff4995f9c23900",
+    "executed_checkout": "8633157ccc0538b7df3419ccfdff59d8e8bd46a3",
+    "tree": "63347feb043a8175859a91e7ae452d5634eef8cc",
+    "summary_sha256": "9af3c0f68dc898b0087be460d32ea30391f2414d143f4603c7b7b75948d48baf",
+    "run_metadata_sha256": "e729ae2ecc5530ba60071c42fed54dfadf621c1eb7ca2efb9310d638439b9f44",
+    "native_evidence": "macOS x64 job104465212376 and arm64 job104465212396 both completed successfully; retained checkout-bound logs contain incomplete-pipe refusal/fragmented-import and full signing-fixture PASS markers. Native fixture source includes fresh-keychain identity/non-extractability checks. Both unsigned packaging steps passed.",
+    "retained_failure": "Linux job104465212285 failed release automation line17 at the stale Apple signing boundary assertion; aggregate CI Gate also failed. Ten jobs succeeded, two failed; no full CI success claimed.",
+    "cleanup": "Independently hashed and parsed all 15 retained cleanup receipts against manifest: 15 PASS; 10 wrapper stop0, 5 not-started; 14 command exit0 and 1 exit1. Every receipt binds executed checkout. This verifies retained receipts, not a fresh hardware/process probe or a re-hash of unretained download ZIPs.",
+    "qualification": "Synthetic native keychain and unsigned packaging evidence, not a Store archive/upload, physical-device proof, or observation of the original failing invocation byte count."
+  },
+  "next_execution_admission": {
+    "controller_sha256": "2dfc8c79f40aa8733054df93eaec84abadd5510b13e4c83f8ae9785c87ed5506",
+    "verdict": "CONDITIONAL ADMISSION for one normal dedicated PR189-head push and its existing non-publishing CI observation",
+    "conditions": "Exact reviewed commit, unchanged remote parent/main and OPEN PR, fresh exclusive lock identity, complete active-workflow inventory empty, complete case-insensitive legacy flag OFF checks; exclusive PUSH-ATTEMPT; existing guarded CI, parent sole execution owner; observer90min/API90s/poll45s; no automatic retry or cancellation",
+    "not_authorized": "No protected merge, promotion, release/upload, production action, failure waiver, occupied-build replacement, or historical recovery retry. All PVU007 STOP, PVU011 NO-RETRY, PVA029 retained failure, G7/G8/WindowsGraph03 CLOSED and old HOLD restrictions remain unchanged."
+  }
+}
