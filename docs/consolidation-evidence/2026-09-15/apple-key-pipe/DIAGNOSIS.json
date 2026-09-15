@@ -1,0 +1,17 @@
+{
+  "main_run": 34991312886,
+  "failed_job": 104457313597,
+  "source": "f25c6888db881109182ea4aebd0fe17b713a08a4",
+  "platform": "macos-15-intel",
+  "image": "20260824.0482.1 (same as successful PR188 job104448904835)",
+  "error": "SecKeychainItemImport invalid parameters; Unable to import Apple signing private key",
+  "stage": "Synthetic signing-secret-handling test, before Desktop build",
+  "upstream_security_commit": "db15acbe6a7f257a859ad9a3bb86097bfe0679d9",
+  "source_files": {
+    "OSX/utilities/fileIo.c": "504ec7c06148d144bc4af9a16ef793ec19d380e9",
+    "SecurityTool/macOS/keychain_import.c": "34baf0f743d7d5380ba36d9473db512ff9f0095c"
+  },
+  "source_observation": "keychain_import calls readFileSizet, which fstats input size then does one read, not a stream EOF loop. Live stdin pipe may be empty/partial when sampled. Candidate fix must fully buffer and validate pipe bytes before launching importer, without plaintext key files or changed import restrictions. Native reproduction pending.",
+  "promotion": "NOT STARTED; fresh controller not executed; previous conditional admission withdrawn by failed main prerequisite",
+  "release": "NO new upload;1.0.9/1017003 stays reserved"
+}
