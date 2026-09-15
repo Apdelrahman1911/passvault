@@ -8,6 +8,7 @@ importer_path = File.expand_path(
   ARGV.fetch(2, "scripts/import-apple-signing-certificate.sh"),
 )
 ios_verifier_path = File.expand_path(ARGV.fetch(3, "scripts/verify-ios-release-signing.sh"))
+key_importer_path = File.expand_path(ARGV.fetch(4, "scripts/import-apple-key-from-stdin.py"))
 
 def workflow(path)
   document = YAML.safe_load(File.read(path, encoding: "UTF-8"), aliases: true)
@@ -88,10 +89,25 @@ unless ios_verifier_source.include?("scripts/import-apple-signing-certificate.sh
 end
 
 importer = File.read(importer_path, encoding: "UTF-8")
-unless importer.include?('-passin fd:3') && importer.include?('/dev/stdin') &&
-       importer.include?('-f openssl -x')
-  abort("The certificate importer must stream its password and non-extractable private key")
+import_commands = importer.gsub(/\\\r?\n[ \t]*/, " ").gsub(/\s+/, " ")
+unless importer.include?('-passin fd:3') && import_commands.include?(
+  '"$openssl_binary" pkey -traditional 2>/dev/null | bash "$repository_root/scripts/ci-python.sh" ' \
+  '"$repository_root/scripts/import-apple-key-from-stdin.py" "$keychain_path" >/dev/null',
+)
+  abort("The certificate importer must stream its password and key through the buffered helper")
 end
+
+# Follow the private-key boundary into the helper rather than requiring the old
+# live-pipe command in the shell importer. Pin the complete argument vector: no
+# password argument, extractable key, or additional trusted application allowed.
+key_importer = File.read(key_importer_path, encoding: "UTF-8")
+expected_arguments = '["/usr/bin/security","import","/dev/stdin","-k",keychain,' \
+  '"-t","priv","-f","openssl","-x","-T","/usr/bin/codesign","-T","/usr/bin/security",]'
+arguments = key_importer[/subprocess\.run\(\s*(\[.*?\])\s*,\s*stdin=reader\s*,/m, 1]
+unless arguments && arguments.gsub(/\s+/, "") == expected_arguments
+  abort("The buffered key importer must use the fixed stdin-only non-extractable import command")
+end
+
 if importer.match?(/\bsecurity\s+import\b.*(?:^|\s)-P(?:\s|=)/)
   abort("The certificate importer contains a password argument")
 end
