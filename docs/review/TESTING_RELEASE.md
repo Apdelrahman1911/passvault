@@ -42,8 +42,23 @@ or relaxed extractability/trusted-tool setting is introduced. Capacity mismatch,
 empty/oversized input and timeouts fail closed. The existing native test adds a
 controlled incomplete-pipe negative case and delayed/chunked successful import
 into a fresh synthetic keychain, with identity and non-extractability checks.
-Actual macOS validation of this correction is still required; Linux parsing is
-not a substitute. The original failed invocation's exact byte count is unknown.
+PR CI [34993670798](https://github.com/Apdelrahman1911/passvault/actions/runs/34993670798)
+validated the incomplete-pipe negative control, fragmented-input import, identity
+and non-extractability checks on both Intel and Apple Silicon. Both packaging
+jobs passed; all 15 CI cleanup receipts passed on checkout
+`8633157ccc0538b7df3419ccfdff59d8e8bd46a3` (tree
+`63347feb043a8175859a91e7ae452d5634eef8cc`). This is synthetic native evidence, not
+an actual Store archive/upload. The original failed invocation's exact byte count
+is unknown.
+
+That CI still **failed**: the Linux release-automation static policy expected the
+old private-key command in the shell importer. The policy now follows the buffered
+helper and requires its exact stdin-only, non-extractable, restricted-tool command.
+Focused mutations protect password-FD handling, helper routing, non-extractability,
+password-argument refusal, trusted-tool restrictions and stdin binding. The failed
+run is preserved; the corrected validator and all seven focused static cases passed
+on Linux, with immediate fixture cleanup and no build/signing processes started.
+An updated PR CI must pass before promotion.
 
 The release build adapter reuses the current CI process-scope implementation,
 not archived audit runners. It preserves signing HOME on iOS, uses private build
