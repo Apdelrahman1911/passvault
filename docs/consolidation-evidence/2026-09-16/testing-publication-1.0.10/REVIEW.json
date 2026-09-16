@@ -1,0 +1,118 @@
+{
+  "reviewer": "/root/current_ledger",
+  "reviewed_at_utc": "2026-09-16T18:38:34.610112+00:00",
+  "verdict": "ADMIT_ONE_FRESH_TESTING_DISPATCH_CONDITIONED_ON_ALL_RUNTIME_GUARDS",
+  "scope": "Independent source/evidence/controller review only. No helper execution/import, build/test, network, live resource/process/lock/HOLD probe, signaling, deletion, or reviewer notification performed.",
+  "source": {
+    "commit": "25880c3b1168dcd1f97876866341338f097d41fa",
+    "tree": "deab190809ff00030407703dbd3f70481de251b5",
+    "main": "eb22a67e7dee41266622168da4b3da2ce0ef328a",
+    "version": "1.0.10",
+    "build": 1017004,
+    "candidate_tag": "v1.0.10-rc.1017004",
+    "source_hashes_compared_to_git_blobs_and_named_working_files": 14,
+    "hash_mismatches": 0,
+    "full_tree_equal_to_reviewed_main": true,
+    "changes_from_old_testing": "Exactly nine reviewed paths: compiler verification pin/guard, version metadata, native CI budget/profile/receipt, associated tests/docs. Release workflows, Fastfile, signing helpers and release-build.py unchanged."
+  },
+  "bound_inputs_sha256": {
+    "RELEASE-MONITOR.py": "86c118d97f72db09be5fe860ebad2ec3eb352b6fbbc2b2152f03c1afc32aa2b4",
+    "SOURCE.json": "f90e4e33f1ed980177087d7c944611ebaf1600851fc38ff072b21f0d2a30f238",
+    "PLAN.md": "1d04ff637c80ed670f03c2b150bd7e5bdba92d1bad05731f39b79518c915b8c4",
+    "POSTRUN-VERIFICATION-PLAN.md": "74a1a97fd996153623cf1cbd780a5eef9d0f1584ae62e31e1682ca4d3d80dfff",
+    "UPLOAD-HISTORY.json": "2ddae80ad8d10659064a10465def95cd7ce53ee55b2aeedac99a7ea8f32387e5",
+    "../testing-1.0.10-20260916/OWNER-APPROVAL.json": "6e20076d25693ef2316ebdebd95d947f4428357d7793bcaf015873b06c3acd1a"
+  },
+  "ci_evidence": {
+    "run": 35130626270,
+    "attempt": 1,
+    "actual_checkout": "25880c3b1168dcd1f97876866341338f097d41fa",
+    "tree": "deab190809ff00030407703dbd3f70481de251b5",
+    "jobs_success": 12,
+    "jobs_total": 12,
+    "selected_file_hashes_checked": 268,
+    "selected_file_hash_mismatches": 0,
+    "archive_digest_records_matched_github_artifact_metadata": 10,
+    "archive_qualification": "Archived ZIP bytes were not retained/re-downloaded by reviewer. Independent reconciliation covers the 268 selected bytes and agreement of retained archive digests with the supplied GitHub artifact metadata.",
+    "cleanup_receipts_checked": 15,
+    "cleanup_pass": 15,
+    "wrapper_stop_zero": 10,
+    "wrapper_not_started": 5,
+    "profile_receipts": {
+      "4096MiB_3000s": 1,
+      "2048MiB_2100s": 14
+    },
+    "native_job": 104911537034,
+    "native_runner": "macos-26-intel",
+    "native_evidence": "Actual successful unsigned compile-plus-optimized-release-link Gradle batch: BUILD SUCCESSFUL in 27m 59s. This is batch duration, not isolated linker duration; not signed archive/export, physical-device behavior or Store proof.",
+    "test_cases": {
+      "unit_and_multiplatform_xml": {
+        "xml_files": 198,
+        "passed": 1604,
+        "skipped": 5,
+        "failed": 0,
+        "errors": 0
+      },
+      "each_desktop_linux_macos_windows": {
+        "xml_files": 18,
+        "passed": 90,
+        "skipped": 1,
+        "failed": 0,
+        "errors": 0
+      }
+    },
+    "count_qualification": "Platform/unit counts overlap; do not sum them as distinct coverage. One Android lint issues XML is not JUnit. XML suite attributes and actual testcase outcomes reconciled without disagreement.",
+    "skipped_contracts": "Compose owning-JVM lifecycle case remains skipped in each Desktop set; four real-provider fault-initialization cases remain skipped in the unit set. No hardware/native closure inferred.",
+    "attribution": "This is the actual final-testing run, not main35119472860 or promotion35125843944. Their statuses are separate; old promotion observer GraphQL failure remains retained."
+  },
+  "ci_evidence_sha256": {
+    "RESULT.json": "cc2dcd438fa122c1be64cc39f8444c71c165b6e10ce8cf019c4093d9f8652abc",
+    "RUN.json": "ec0f43e3d138bcb14ac21933c3dc0d14262cfa6d1bc05b5c3d8ff016f63ee6c1",
+    "JOBS.json": "ad56dc7e1dc03e24147a98447f2ab7065828de3efc0bf3cd980bcdac359032cd",
+    "ARTIFACTS.json": "141a7879952f7b2c4751f39decfd795ca3b35b7adeecfe5a85b47e2e7621ad63",
+    "CHECKOUT.json": "6ce81b96a665faf640fbaa802bf92d3910dcc81aea096cbd98cd9de75f0c8e05",
+    "NATIVE-PROVENANCE.json": "7d826a45b28b426b3ae44c01b75a81538f56274d14c790d47f3c09f5b8fc1f7c",
+    "NATIVE-EXCERPT.txt": "99a4058466bb31fe0e80b440b1dbee28360b827a2525c436b57186a5684cfe05"
+  },
+  "upload_history": {
+    "entries_read": 41,
+    "total_count": 41,
+    "unique_ids": 41,
+    "since": "2026-09-15T17:49:23Z",
+    "classification": {
+      "nonpublishing_ci": 27,
+      "dependabot": 12,
+      "testing_skipped": 1,
+      "known_cancelled_testing_attempt1": 1
+    },
+    "known_cancelled_run": 35003648380,
+    "qualification": "Recorded snapshot shows no unexpected upload-capable activity. Root controller must freshly repeat complete all-workflow/candidate histories, active-run inventory, variable inventory, refs and allocation/tag guards before dispatch. This is not direct Store occupancy readback."
+  },
+  "admitted_execution": {
+    "owner": "root only",
+    "controller": "RELEASE-MONITOR.py at bound SHA256; ordinary unoptimized Python so assertions remain active",
+    "one_command": "gh workflow run testing-release.yml --repo Apdelrahman1911/passvault --ref testing -f resume_existing_internal_uploads=false",
+    "targets": "Approved testing-only 1.0.10/1017004: mobile internal uploads, same-build Play closed alpha / TestFlight existing external email-list promotion, unsigned Desktop testing prerelease. No production or stable publication.",
+    "source_boundary": "Clean exact C/T, all14 source hashes, protected-ref and PR193 merge checks, successful exact testing CI, absent new tag and unchanged occupied1017001 tag, legacy automatic push flag off. Fixed workflow inputs cannot select production; protected environment approvals are not bypassed.",
+    "coordination": "Exact reviewed Linux lock identity with O_NOFOLLOW and exclusive flock; no competing audit-owned workflow/local build. Root alone freshly evaluates current resource/process admission; reviewer did not perform live probes.",
+    "bounds": "Local disk>=3GiB and available RAM>=25%; no local build. API90s, pre-CI wait<=90min, discovery<=180s, observation<=6h. Existing hosted private resource guards/cleanup and retention policy retained; native archive host>=12GiB and JDK17/wrapper/worker1/non-daemon/CoDoff/strict verification remain.",
+    "no_retry": "Exclusive attempt marker before dispatch. Any uncertain dispatch/discovery/API/interruption/partial Store transfer preserves UNKNOWN/HOLD and requires separate attribution review; no automatic rerun, resume, cancellation or replacement dispatch.",
+    "cleanup": "Current committed guards attempt owned stop/positive settlement before allowlisted deletion. Existing HOLD, unmatched native/private-home or Xcode process settlement is not repaired by this admission. Raw Fastlane transfer interruption remains outside guard settlement proof; hosted runner disappearance is not cleanup PASS."
+  },
+  "restrictions_preserved": [
+    "PVU007 STOP",
+    "PVU011 NO-RETRY",
+    "PVA029 historical44PASS/5FAIL and no automatic retry",
+    "G7/G8 CLOSED",
+    "WindowsGraph03 CLOSED",
+    "Every historical HOLD",
+    "1017001 and1017002 occupied;1017003 unknown Android upload outcome and non-reusable",
+    "35003648380 cancelled1.0.9/iOS checksum failure/unknown Android upload/Xcode HOLD",
+    "34979337404 partial1.0.8/Android occupied1017002/iOS heap failure/HOLD",
+    "35047359784 old35min native timeout/unmatched private-home process/HOLD; not an observed OOM or recovered cleanup",
+    "Promotion observer failed after FF push on gh pr edit Projects Classic GraphQL; no replay",
+    "Unresolved audit families, suspicions, design/owner and physical-platform gaps unchanged"
+  ],
+  "not_admitted": "Post-run attestation/provenance commands need their own fresh bounded read-only admission after actual producer settlement. No old controller/test harness execution, protection changes, credential/tester inspection, production/store-assets lane, or unrelated work cancellation.",
+  "final_qualification": "Admission to one scoped operation is not release success, tester availability, cleanup recovery, audit-family closure or overall project completion. Capture actual upload/processing/external approval/provenance and settlement independently afterward; preserve any failure."
+}

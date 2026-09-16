@@ -1,0 +1,153 @@
+"""Root-owned one-shot testing dispatch and bounded metadata observer. No local build."""
+import datetime, fcntl, json, os, shutil, signal, subprocess, time
+from pathlib import Path
+base = Path(__file__).resolve().parent
+source = base.parent / 'source'
+repo = 'Apdelrahman1911/passvault'
+C = '25880c3b1168dcd1f97876866341338f097d41fa'
+T = 'deab190809ff00030407703dbd3f70481de251b5'
+main = 'eb22a67e7dee41266622168da4b3da2ce0ef328a'
+run_id = None
+
+def cmd(*args):
+    return subprocess.check_output(args, cwd=source, text=True, timeout=90).strip()
+def api(path):
+    return json.loads(cmd('gh', 'api', f'repos/{repo}/{path}'))
+def save(name, value):
+    temporary = base / (name + '.tmp')
+    temporary.write_text(json.dumps(value, indent=2) + '\n')
+    temporary.replace(base / name)
+def notify(kind, message):
+    try:
+        print(cmd('/usr/local/bin/pocketterminal-notify', kind, message), flush=True)
+    except Exception as error:
+        print(f'Notification delivery unknown/rejected; no retry: {type(error).__name__}', flush=True)
+def interrupt(sig, frame):
+    raise RuntimeError(f'Observer interrupted:{sig}; remote outcome/cleanup NOT inferred')
+signal.signal(signal.SIGINT, interrupt)
+signal.signal(signal.SIGTERM, interrupt)
+fd = os.open('/root/projects/PassVault/.audit-coordination-linux-20260914-c20/build.lock', os.O_RDONLY | os.O_NOFOLLOW)
+try:
+    st = os.fstat(fd)
+    assert (st.st_dev, st.st_ino, st.st_uid, st.st_mode & 0o777) == (24, 13719326, 0, 0o600)
+    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    assert not (base / 'DISPATCH-ATTEMPT.json').exists(), 'Prior dispatch attempt: NEVER replay this controller'
+    # Observe the automatically started final testing CI before any launch.
+    # No application commands or Store actions occur during this bounded wait.
+    ci_deadline = time.monotonic() + 90 * 60
+    while time.monotonic() < ci_deadline:
+        pending_ci = api('actions/runs/35130626270')
+        assert pending_ci['head_sha'] == C
+        save('TESTING-CI-OBSERVED.json', {k: pending_ci[k] for k in ('id', 'head_sha', 'status', 'conclusion')})
+        if pending_ci['status'] == 'completed':
+            assert pending_ci['conclusion'] == 'success', 'Final testing CI failed; no release dispatch'
+            break
+        time.sleep(45)
+    else:
+        raise RuntimeError('Testing CI observation deadline; no release dispatched')
+    assert not cmd('git', 'status', '--porcelain')
+    assert cmd('git', 'rev-parse', 'HEAD') == C
+    bound=json.loads((base/'SOURCE.json').read_text())
+    import hashlib
+    assert all(hashlib.sha256((source/p).read_bytes()).hexdigest()==v for p,v in bound['sha256'].items()), 'Reviewed release source changed'
+    assert cmd('git', 'rev-parse', 'HEAD^{tree}') == T
+    assert cmd('git', 'ls-remote', 'origin', 'refs/heads/testing').split()[0] == C
+    assert cmd('git', 'ls-remote', 'origin', 'refs/heads/main').split()[0] == main
+    assert api(f'git/commits/{C}')['tree']['sha'] == T
+    assert not cmd('git', 'ls-remote', 'origin', 'refs/tags/v1.0.10-rc.1017004')
+    assert cmd('git', 'ls-remote', 'origin', 'refs/tags/v1.0.7-rc.1017001').split()[0] == '61f55216302023d9872aba17546126450e5fbad3'
+    pr = api('pulls/193')
+    assert pr['merged'] and pr['merge_commit_sha'] == C
+    ci = api('actions/runs/35130626270')
+    assert ci['head_sha'] == C and ci['status'] == 'completed' and ci['conclusion'] == 'success'
+    variables = api('actions/variables?per_page=100')
+    assert len(variables['variables']) == variables['total_count']
+    assert not any(str(v['name']).casefold() == 'legacy_testing_release_on_push' and str(v['value']).casefold() == 'true' for v in variables['variables'])
+    unrelated = []
+    for status in ('in_progress', 'queued', 'waiting', 'requested', 'pending'):
+        response = api(f'actions/runs?status={status}&per_page=100')
+        assert len(response['workflow_runs']) == response['total_count'], 'Incomplete active-run inventory'
+        assert all((r.get('head_branch') or '').startswith('dependabot/') for r in response['workflow_runs']), 'Other active workflow; coordinate first'
+        unrelated.extend({'id':r['id'], 'branch':r['head_branch'], 'status':r['status']} for r in response['workflow_runs'])
+    assert shutil.disk_usage(source).free >= 3 * 1024**3
+    memory = dict(line.split(':', 1) for line in Path('/proc/meminfo').read_text().splitlines())
+    assert int(memory['MemAvailable'].split()[0]) / int(memory['MemTotal'].split()[0]) >= 0.25
+    history = api('actions/workflows/testing-release.yml/runs?branch=testing&per_page=100')
+    assert history['total_count'] == len(history['workflow_runs']), 'Incomplete candidate history'
+    before = history['workflow_runs']
+    assert all(r['id'] <= 35003648380 or r['conclusion'] == 'skipped' for r in before), 'New candidate activity since known partial1.0.9; recheck allocation before dispatch'
+    assert not any(r['head_sha'] == C and r['conclusion'] != 'skipped' for r in before), 'Existing candidate invocation on this source; no retry'
+    # Allocation check spans every repository workflow, including direct/reusable
+    # mobile release entry points, not just Testing Candidate.
+    repository_history = api('actions/runs?created=%3E%3D2026-09-15T17%3A49%3A23Z&per_page=100')
+    assert repository_history['total_count'] == len(repository_history['workflow_runs']), 'Incomplete repository upload history'
+    assert all(
+        (r['id'] == 35003648380 and r['run_attempt'] == 1 and r['conclusion'] == 'cancelled')
+        or r['path'] in ('.github/workflows/ci.yml', 'dynamic/dependabot/dependabot-updates')
+        or (r['status'] == 'completed' and r['conclusion'] == 'skipped')
+        for r in repository_history['workflow_runs']
+    ), 'Unexpected upload-capable workflow since known partial release; review allocation'
+    save('PRELAUNCH-UPLOAD-HISTORY.json', {
+        'total_count': repository_history['total_count'],
+        'runs': [{k: r.get(k) for k in ('id', 'path', 'head_sha', 'status', 'conclusion', 'run_attempt')}
+                 for r in repository_history['workflow_runs']],
+    })
+    before_ids = {r['id'] for r in before}
+    actor = json.loads(cmd('gh', 'api', 'user'))['login']
+    assert cmd('git', 'ls-remote', 'origin', 'refs/heads/testing').split()[0] == C
+    assert cmd('git', 'ls-remote', 'origin', 'refs/heads/main').split()[0] == main
+    assert not cmd('git', 'ls-remote', 'origin', 'refs/tags/v1.0.10-rc.1017004')
+    save('PRELAUNCH.json', {'source':C, 'tree':T, 'main':main, 'prior_testing_ci':ci['id'], 'unrelated_runs':unrelated, 'pid':os.getpid(), 'lock_held':True, 'local_builds':0, 'plan':'PLAN.md'})
+    attempt = {'source':C, 'tree':T, 'version':'1.0.10', 'build':1017004, 'resume':False, 'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(), 'actor':actor, 'state':'Attempt recorded BEFORE dispatch; never automatically repeat even if API outcome is unknown'}
+    with (base / 'DISPATCH-ATTEMPT.json').open('x') as stream:
+        json.dump(attempt, stream, indent=2)
+    cmd('gh', 'workflow', 'run', 'testing-release.yml', '--repo', repo, '--ref', 'testing', '-f', 'resume_existing_internal_uploads=false')
+    save('DISPATCH-ACCEPTED.json', dict(attempt, state='CLI exit0; run identity still requires discovery'))
+    deadline = time.monotonic() + 180
+    while time.monotonic() < deadline:
+        discovery = api('actions/workflows/testing-release.yml/runs?branch=testing&per_page=100')
+        assert discovery['total_count'] == len(discovery['workflow_runs']), 'Incomplete dispatch discovery'
+        runs = discovery['workflow_runs']
+        matches = [r for r in runs if r['id'] not in before_ids and r['event'] == 'workflow_dispatch' and r['actor']['login'] == actor]
+        assert len(matches) <= 1, 'Ambiguous dispatch identity; do not automatically cancel or repeat'
+        if matches:
+            run_id = matches[0]['id']
+            if matches[0]['head_sha'] != C:
+                raise RuntimeError('Wrong-source discovery: ownership is unproven from actor/time filters; preserve UNKNOWN/HOLD and seek immediate attribution review; NEVER cancel or redispatch automatically')
+            break
+        time.sleep(10)
+    assert run_id, 'Dispatch accepted but run unknown; NEVER automatically repeat'
+    notify('progress', f'PassVault testing publication started:1.0.10/build1017004, source{C[:12]}, run{run_id}. GitHub testing only; actual uploads still pending.')
+    deadline = time.monotonic() + 6 * 3600
+    previous, notices = None, set()
+    while time.monotonic() < deadline:
+        run = api(f'actions/runs/{run_id}')
+        assert run['head_sha'] == C and run['event'] == 'workflow_dispatch' and run['run_attempt'] == 1
+        response = api(f'actions/runs/{run_id}/jobs?per_page=100')
+        assert len(response['jobs']) == response['total_count']
+        jobs = [{k:j[k] for k in ('id', 'name', 'status', 'conclusion')} for j in response['jobs']]
+        state = {'run':run_id, 'url':run['html_url'], 'source':C, 'tree':T, 'status':run['status'], 'conclusion':run['conclusion'], 'jobs':jobs, 'utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+        save('RUN-ACTIVE.json', state)
+        fingerprint = json.dumps([state['status'], state['conclusion'], jobs])
+        if fingerprint != previous:
+            print(json.dumps(state), flush=True)
+            previous = fingerprint
+        if any(j['conclusion'] in ('failure', 'cancelled', 'timed_out') for j in jobs) and 'failure' not in notices:
+            notices.add('failure')
+            notify('error', f'PassVault testing run{run_id} has a failed/cancelled job. Do not rerun: partial Store uploads must be reconciled first. Owner/lead review needed.')
+        if run['status'] == 'waiting' and 'waiting' not in notices:
+            notices.add('waiting')
+            notify('question', f'PassVault testing run{run_id} is waiting for protected environment approval. Please inspect its GitHub pending deployment; no approval bypass will be used.')
+        if run['status'] == 'completed':
+            save('RUN-FINAL.json', state)
+            notify('progress', f'PassVault testing workflow{run_id} completed:{run["conclusion"]}. Final upload/processing/attestation and cleanup reconciliation is still required; this is not a release-completion claim.')
+            break
+        time.sleep(45)
+    else:
+        raise RuntimeError('6h observation bound reached; remote release not cancelled, outcome remains unresolved; no automatic retry')
+except BaseException as error:
+    save('OBSERVATION-INTERRUPTION.json', {'run':run_id, 'error':str(error), 'local_builds':0, 'remote_state':'UNKNOWN until readback; retain HOLD/no automatic dispatch, upload, recovery or retry'})
+    notify('blocked', f'PassVault testing observer stopped for run{run_id}; inspect retained state and remote workflow before any next action. No automatic retry or cleanup success is inferred.')
+    raise
+finally:
+    os.close(fd)

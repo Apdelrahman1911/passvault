@@ -39,3 +39,5 @@ new conflict. Occupied/uncertain 1017001, 1017002 and 1017003 stay non-reusable.
    UNKNOWN/HOLD, not permission for automatic retry or reuse.
 
 This file is a draft checklist, not an executed verification, build or upload.
+
+2026-09-16 update: final testing25880c3b1168dcd1f97876866341338f097d41fa is now available; CI35130626270 passed. This historical draft is superseded by fresh SOURCE.json/PLAN.md and pending independent REVIEW.json. Its earlier unknown-source statements describe preparation time, not current state. No execution may be inferred without DISPATCH-ATTEMPT/ACCEPTED/RUN-ACTIVE records.
