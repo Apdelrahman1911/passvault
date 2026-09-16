@@ -175,21 +175,21 @@ class ResourceGuardTest(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "Only fresh GitHub-hosted"):
                 runner.main(self.root / "never-run.sh")
 
-    def test_native_release_heap_is_opt_in_and_host_bounded(self):
-        self.assertEqual(runner.gradle_heap_mib({}), 2048)
-        self.assertEqual(runner.gradle_heap_mib({"PASSVAULT_CI_IOS_RELEASE_LINK": "false"}), 2048)
+    def test_native_release_limits_are_opt_in_and_host_bounded(self):
+        self.assertEqual(runner.ci_resource_limits({}), (2048, 35 * 60))
+        self.assertEqual(runner.ci_resource_limits({"PASSVAULT_CI_IOS_RELEASE_LINK": "false"}), (2048, 35 * 60))
         with patch.object(runner.sys, "platform", "linux"):
             with self.assertRaisesRegex(RuntimeError, "explicit macOS"):
-                runner.gradle_heap_mib({"PASSVAULT_CI_IOS_RELEASE_LINK": "true"})
+                runner.ci_resource_limits({"PASSVAULT_CI_IOS_RELEASE_LINK": "true"})
         with patch.object(runner.sys, "platform", "darwin"), \
                 patch.object(runner.subprocess, "check_output", return_value=str(12 * 1024 ** 3)) as probe:
-            self.assertEqual(runner.gradle_heap_mib({"PASSVAULT_CI_IOS_RELEASE_LINK": "true"}), 4096)
+            self.assertEqual(runner.ci_resource_limits({"PASSVAULT_CI_IOS_RELEASE_LINK": "true"}), (4096, 50 * 60))
             probe.assert_called_once_with(["sysctl", "-n", "hw.memsize"], text=True, timeout=10)
             probe.return_value = str(12 * 1024 ** 3 - 1)
             with self.assertRaisesRegex(RuntimeError, "at least 12 GiB"):
-                runner.gradle_heap_mib({"PASSVAULT_CI_IOS_RELEASE_LINK": "true"})
+                runner.ci_resource_limits({"PASSVAULT_CI_IOS_RELEASE_LINK": "true"})
             with self.assertRaisesRegex(RuntimeError, "explicit macOS"):
-                runner.gradle_heap_mib({"PASSVAULT_CI_IOS_RELEASE_LINK": "TRUE"})
+                runner.ci_resource_limits({"PASSVAULT_CI_IOS_RELEASE_LINK": "TRUE"})
 
 
 if __name__ == "__main__":
