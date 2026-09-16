@@ -7,6 +7,29 @@ Build 1017002 must not be reused: the 1.0.8 GitHub run uploaded Android, but its
 iOS archive failed before upload. The owner confirmed no uploads outside GitHub.
 Deferred findings in BACKLOG.md remain open; this is not production authorization.
 
+## iOS validation time-budget correction
+
+Main CI [35045205060](https://github.com/Apdelrahman1911/passvault/actions/runs/35045205060)
+passed all 12 jobs on 1.0.10. The same-tree testing promotion CI
+[35047359784](https://github.com/Apdelrahman1911/passvault/actions/runs/35047359784)
+subsequently hit the generic 35-minute batch deadline during optimized iOS linking.
+This was not an observed compiler error or heap failure. Its receipt recorded a
+4 GiB heap, minimum available RAM fraction 0.353 and over 143 GB free disk.
+Wrapper stop returned zero, but a private-root process was still detected outside
+the tracked scope: cleanup remains **HOLD**. Its identity and eventual settlement
+are unproved; do not recover that runner, retry its cleanup, or call it passed.
+
+Only the existing, explicit iOS release-link profile now receives a bounded
+50-minute batch, matching the existing signed-release batch budget. The iOS CI
+job allows 60 minutes for setup, work and cleanup; other CI batches/jobs remain
+35/45 minutes. Heap, host admission, live RAM/disk floors, worker limits, strict
+verification and fail-closed cleanup are unchanged. The receipt records the
+selected deadline. This gives slower hosted native builds headroom; it does not
+prove why that host was slower or fix detached-worker cleanup on timeout.
+Fresh changed-source native verification and successful cleanup are required.
+The failed promotion stays draft until the correction is reviewed through main
+and the refreshed exact-main testing snapshot passes its required checks.
+
 ## Latest verified baseline and 1.0.10 preparation
 
 PR #191 merged as `518aed84bf0f479c80c5eb1a33a7f2a7a30d1c7d`.
