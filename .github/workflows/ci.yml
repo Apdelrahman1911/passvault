@@ -353,7 +353,8 @@ jobs:
     # Exercise the actual release host/compiler and optimized device framework
     # before signing or uploading. This replaces, rather than adds, a CI job.
     runs-on: macos-26-intel
-    timeout-minutes: 45
+    # 50-minute native batch plus runner setup and cleanup headroom.
+    timeout-minutes: 60
     needs: dependency-verification
     defaults:
       run:
