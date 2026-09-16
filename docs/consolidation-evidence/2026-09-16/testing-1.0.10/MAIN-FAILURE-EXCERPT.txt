@@ -1,0 +1,40 @@
+2026-09-15T21:41:40.7973130Z 
+2026-09-15T21:41:40.7976510Z * What went wrong:
+2026-09-15T21:41:40.7983820Z Plugin [id: 'org.gradle.toolchains.foojay-resolver-convention', version: '1.0.0'] was not found in any of the following sources:
+2026-09-15T21:41:40.7987590Z 
+2026-09-15T21:41:40.7988510Z - Gradle Core Plugins (plugin is not in 'org.gradle' namespace)
+2026-09-15T21:41:40.7989760Z - Included Builds (No included builds contain this plugin)
+2026-09-15T21:41:40.8007940Z - Plugin Repositories (could not resolve plugin artifact 'org.gradle.toolchains.foojay-resolver-convention:org.gradle.toolchains.foojay-resolver-convention.gradle.plugin:1.0.0')
+2026-09-15T21:41:40.8011650Z   Searched in the following repositories:
+2026-09-15T21:41:40.8013540Z     Google
+2026-09-15T21:41:40.8014150Z     MavenRepo
+2026-09-15T21:41:40.8015050Z     Gradle Central Plugin Repository
+2026-09-15T21:41:40.8046970Z 
+2026-09-15T21:41:40.8047440Z * Try:
+2026-09-15T21:41:40.8048410Z > Run with --info or --debug option to get more log output.
+2026-09-15T21:41:40.8050000Z > Run with --scan to get full insights from a Build Scan (powered by Develocity).
+2026-09-15T21:41:40.8053590Z * Exception is:
+2026-09-15T21:41:40.8058000Z org.gradle.api.plugins.UnknownPluginException: Plugin [id: 'org.gradle.toolchains.foojay-resolver-convention', version: '1.0.0'] was not found in any of the following sources:
+2026-09-15T21:41:40.8063760Z 
+2026-09-15T21:41:40.8064410Z - Gradle Core Plugins (plugin is not in 'org.gradle' namespace)
+2026-09-15T21:41:40.8065930Z - Included Builds (No included builds contain this plugin)
+2026-09-15T21:41:40.8088640Z - Plugin Repositories (could not resolve plugin artifact 'org.gradle.toolchains.foojay-resolver-convention:org.gradle.toolchains.foojay-resolver-convention.gradle.plugin:1.0.0')
+2026-09-15T21:41:40.8095210Z   Searched in the following repositories:
+2026-09-15T21:41:40.8106540Z     Google
+2026-09-15T21:41:40.8115860Z     MavenRepo
+2026-09-15T21:41:40.8163710Z     Gradle Central Plugin Repository
+2026-09-15T21:41:40.8386140Z 	at org.gradle.plugin.use.resolve.internal.PluginResolutionResult.getFound(PluginResolutionResult.java:112)
+2026-09-15T21:41:40.8455370Z 	at org.gradle.plugin.use.internal.DefaultPluginRequestApplicator.resolvePluginRequest(DefaultPluginRequestApplicator.java:198)
+2026-09-15T21:41:40.8488590Z 	at org.gradle.plugin.use.internal.DefaultPluginRequestApplicator.applyPlugins(DefaultPluginRequestApplicator.java:102)
+2026-09-15T21:41:40.9162300Z 	at org.gradle.kotlin.dsl.provider.PluginRequestsHandler.handle(PluginRequestsHandler.kt:45)
+2026-09-15T21:41:41.4975920Z 
+2026-09-15T21:41:41.4976110Z BUILD FAILED in 1m 9s
+2026-09-15T21:41:43.5744860Z Picked up JAVA_TOOL_OPTIONS: -Duser.home="/Users/runner/work/_temp/passvault-ci-bux3l9v1/home" -Djava.io.tmpdir="/Users/runner/work/_temp/passvault-ci-bux3l9v1/tmp"
+2026-09-15T21:41:44.5522350Z No Gradle daemons are running.
+2026-09-15T21:41:47.0190610Z ##[error]Process completed with exit code 1.
+2026-09-15T21:41:47.0373450Z ##[group]Run actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+2026-09-15T21:41:47.0374360Z with:
+2026-09-15T21:41:47.0374780Z   name: package-desktop-macos-x64-evidence
+2026-09-15T21:41:47.0375350Z   path: .ci-evidence/
+2026-09-15T21:41:47.0375800Z   include-hidden-files: true
+2026-09-15T21:41:47.0376290Z   retention-days: 3

@@ -1,0 +1,61 @@
+{
+  "reviewer": "/root/current_ledger",
+  "recorded_utc": "2026-09-16T01:08:36.689033+00:00",
+  "status": "ADMITTED_CONDITIONAL",
+  "source": {
+    "commit": "674eea2e71a032edf0d3c81d73d6b34bf5c6b1c7",
+    "tree": "71e36517fbf54ff1ed36546378a43a7cfea4cbe2",
+    "base": "518aed84bf0f479c80c5eb1a33a7f2a7a30d1c7d",
+    "file_sha256": {
+      "version.properties": "f96eca7255266c1a252ef3ca49d9bb980bba4858641e2d476d929388ba05a26a",
+      "iosApp/Configuration/Config.xcconfig": "797f4e1b3a0b0c82ed30a1a66c1bbacc552739e789016d3e8d0afd4d868df56b",
+      "core/domain/src/commonMain/kotlin/com/passvault/core/domain/PassVaultBuildInfo.kt": "f678544fd8f60c3addec6a702df22c3a0f394b3c8deef01249e0b9bb5455d236",
+      "docs/review/TESTING_RELEASE.md": "ec34d62bca547ed36eb9a753df956091486c87f9f703e2d07efd86b59bb481b7"
+    }
+  },
+  "source_review": "APPROVED exactly four committed files: owner-approved1.0.10/1017004, metadata counter12, shared display and Xcode settings align; unchanged minimum-supported version, identities, dependencies, workflow, compatibility and signing policy. Durable report accurately preserves testing-only scope and failed main gate.",
+  "local_result": {
+    "status": "PASS_QUALIFIED",
+    "checks": "Checked-in validate-release-metadata.sh1.0.10 plus shared/Xcode/store tuple and diff whitespace; all four recorded hashes independently match committed blobs.",
+    "tests": 0,
+    "build_or_native_execution": false,
+    "cleanup": "Receipt PASS: owned children settled, empty private HOME/TMP directories removed; wrapper not started.",
+    "admission": "Corrected allowlisted validator environment reviewed before execution; separate public-metadata gh read, private HOME/TMP, exclusive marker,60s per child(max3)+10s settlement, HOLD on uncertainty."
+  },
+  "main_failure": {
+    "run": 35023335669,
+    "head": "518aed84bf0f479c80c5eb1a33a7f2a7a30d1c7d",
+    "status": "completed/failure, attempt1",
+    "jobs": "Complete12-job inventory:10success, Intel macOS packaging failure and dependent CI Gate failure.",
+    "failed_job": 104565326420,
+    "cause": "Unchanged Foojay resolver-convention1.0.0 could not resolve in configured repositories; precise repository/transport cause unproved. No dependency fix or verification weakening admitted.",
+    "cleanup": "Retained packaging receipt exit1/PASS/wrapper_stop0; precheck exit0/PASS/wrapper not-started, both source-matched; excerpt reports no Gradle daemons.",
+    "boundary": "Old failure remains; new required version PR must pass packaging and existing CI gates, not retry old main workflow."
+  },
+  "fresh_pr_admission": {
+    "controller_sha256": "eb444e57008f273753bc2e5fdbff7ccc5abf5650f862bfc9ebfdae7303666456",
+    "branch": "codex/testing-1.0.10-20260916",
+    "scope": "One normal dedicated-branch push/new PR to main and observation of its nonpublishing CI; no merge, cancellation, retry or release dispatch.",
+    "conditions": "Exact clean commit/branch, remote branch absent, main unchanged at base, previous35023335669 terminalfailure/source-matched, authoritative lock, legacy release OFF, complete active non-Dependabot inventory empty, exclusive push and PR-create markers. Fail closed on interruption/ambiguity; owner notification is not approval/read proof."
+  },
+  "evidence_sha256": {
+    "OWNER-APPROVAL.json": "6e20076d25693ef2316ebdebd95d947f4428357d7793bcaf015873b06c3acd1a",
+    "PLAN.md": "a15f3c00a100509a7f99220f145f5275a5fd7b64f7322015e25c34becfd0deef",
+    "COMMIT.json": "413c498e2565c1d322710bb39b386189d187f88e11e8b0b3c97d8af9d24f428c",
+    "LOCAL.py": "152edb7bb59c8bf5dcbb3c58ad5645cf9fe1cd6d37601131b44606b06f1047a9",
+    "LOCAL-RESULT.json": "5b102560c6b6a0b6ed4e1c336b6fd6a4a4d1b34cfc11f72540e85b40392b2ec7",
+    "PR-CI.py": "eb444e57008f273753bc2e5fdbff7ccc5abf5650f862bfc9ebfdae7303666456",
+    "PR-BODY.md": "01608ce98bc9fabdac0144c1cb6212ea1b300128d441e13bfb42ffcd9843487c",
+    "MAIN-RUN.json": "8fbac4466962b42c78f9159b80601ce43011dfe0bb9cecca0c81970aa20918a4",
+    "MAIN-JOBS.json": "7e3b737e4b75af264371ba865308a7c647621a8a339ad1789a0f9f800a4d3456",
+    "MAIN-FAILURE-EXCERPT.txt": "e3a9bc8bda40f79a231ac0dcb1ccf1dcb8c2a2dbea2b020b79c5952ce7be4fa3",
+    "MAIN-LOG-PROVENANCE.json": "8704ef3d3f403b2984b17460553c4ece85e74d861afcba7c6ef1f81bb7fb605b",
+    "MAIN-FAILED-CLEANUP.json": "d598a0a010e31aaaf7206faf15755d8d0597420e008a1253d3f1000390aba064"
+  },
+  "limits": [
+    "Review used bounded source/evidence reads and hash/JSON reconciliation; reviewer ran no project validator, tests, builds or networking.",
+    "Metadata PASS does not prove CI packaging, signed archive/export, Store allocation/upload/processing, tester availability or hardware security.",
+    "1017001/1017002 occupied and1017003 unknown/non-reusable;1017004 final-source allocation/history and normal protected reviews remain prerequisites to separate release admission.",
+    "All prior failures, STOP, NO-RETRY, CLOSED, HOLD and deferred findings remain unchanged."
+  ]
+}
