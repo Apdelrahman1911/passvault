@@ -1,0 +1,42 @@
+{
+  "state": "PASS",
+  "cleanup": "PASS",
+  "wrapper_stop": "not-started; no Gradle or build invocation",
+  "source_sha256": {
+    "scripts/ci-run.py": "96c771599456f67a200037d01e0dced8577639770395b9680049aa6a4c36adf2",
+    "scripts/test-ci-run.py": "3a4f1fc906b9f72b9e09d36caedaf8c6a0b45ea5ce03049f31bfd8f1b4bf85fa",
+    ".github/workflows/ci.yml": "9c6ea09f5ea9df7a274d2f1937687183f36f205a01be86cfebcd93d41945e862",
+    "docs/review/TESTING_RELEASE.md": "7e3f3709c4fb5bc99104397ee33176a44f62219460ed6aebfd11e28086cc11a4"
+  },
+  "commands": [
+    [
+      "python3",
+      "-B",
+      "scripts/test-ci-run.py",
+      "ResourceGuardTest.test_native_release_limits_are_opt_in_and_host_bounded",
+      "-v"
+    ],
+    [
+      "python3",
+      "-B",
+      "-c",
+      "import ast; from pathlib import Path; [ast.parse(Path(p).read_text()) for p in (\"scripts/ci-run.py\",\"scripts/test-ci-run.py\")]; print(\"Python AST2 PASS\")"
+    ],
+    [
+      "ruby",
+      "-ryaml",
+      "-e",
+      "w=YAML.load_file(ARGV[0], aliases: true); w.fetch(\"jobs\").each { |k,v| abort \"Wrong CI deadline\" unless v.fetch(\"timeout-minutes\") == (k == \"ios-simulator-compile\" ? 60 : 45) }; puts \"Workflow YAML and bounded job deadlines PASS\"",
+      ".github/workflows/ci.yml"
+    ],
+    [
+      "ruby",
+      "scripts/validate-ci-workflow-security.rb"
+    ],
+    [
+      "git",
+      "diff",
+      "--check"
+    ]
+  ]
+}

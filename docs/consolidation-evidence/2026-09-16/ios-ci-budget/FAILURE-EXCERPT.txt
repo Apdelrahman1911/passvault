@@ -1,0 +1,33 @@
+2026-09-16T02:19:25.5929790Z Updating files: 100% (807/807), done.
+2026-09-16T02:19:25.8055280Z HEAD is now at 47ea517 Merge 741002904f1af2a80e8261a722dd763732880156 into b0d2cd4a85fc28b593e50f088dbb599be8060f36
+2026-09-16T02:19:25.8935570Z ##[endgroup]
+2026-09-16T02:19:25.8945290Z [command]/usr/local/bin/git log -1 --format=%H
+2026-09-16T02:19:25.8948780Z 47ea51776eba0a8392e6ecdfe05acf62a1b77ac2
+2026-09-16T02:19:29.7486340Z ##[endgroup]
+2026-09-16T02:19:29.7691230Z ##[group]Run ./gradlew :shared:compileKotlinIosSimulatorArm64 :shared:linkReleaseFrameworkIosArm64 --stacktrace
+2026-09-16T02:19:29.7693800Z [36;1m./gradlew :shared:compileKotlinIosSimulatorArm64 :shared:linkReleaseFrameworkIosArm64 --stacktrace[0m
+2026-09-16T02:19:29.7797990Z shell: /bin/bash --noprofile --norc scripts/ci-python.sh scripts/ci-run.py {0}
+2026-09-16T02:19:29.7799540Z env:
+2026-09-16T02:30:42.7279090Z > Task :feature:vault:exportCrossCompilationMetadataForIosSimulatorArm64ApiElements
+2026-09-16T02:30:58.4252070Z > Task :shared:compileKotlinIosSimulatorArm64
+2026-09-16T02:30:58.4408330Z > Task :shared:checkIosArm64MainComposeLibrariesCompatibility
+2026-09-16T02:30:58.4477820Z > Task :shared:convertXmlValueResourcesForIosArm64Main NO-SOURCE
+2026-09-16T02:30:58.4484090Z > Task :shared:copyNonXmlValueResourcesForIosArm64Main NO-SOURCE
+2026-09-16T02:32:09.9899410Z > Task :shared:compileKotlinIosArm64
+2026-09-16T02:32:40.0332290Z > Task :shared:linkReleaseFrameworkIosArm64
+2026-09-16T02:54:36.1411430Z Picked up JAVA_TOOL_OPTIONS: -Duser.home="/Users/runner/work/_temp/passvault-ci-votzcobx/home" -Djava.io.tmpdir="/Users/runner/work/_temp/passvault-ci-votzcobx/tmp"
+2026-09-16T02:54:40.0017380Z No Gradle daemons are running.
+2026-09-16T02:54:40.3049080Z Traceback (most recent call last):
+2026-09-16T02:54:40.3075170Z   File "/Users/runner/work/passvault/passvault/scripts/ci-run.py", line 269, in main
+2026-09-16T02:54:40.3078930Z     raise RuntimeError("CI batch time budget reached")
+2026-09-16T02:54:40.3083590Z RuntimeError: CI batch time budget reached
+2026-09-16T02:54:40.3084510Z 
+2026-09-16T02:54:40.3086980Z During handling of the above exception, another exception occurred:
+2026-09-16T02:54:40.3088390Z 
+2026-09-16T02:54:40.3098950Z   File "/Users/runner/work/passvault/passvault/scripts/ci-run.py", line 315, in main
+2026-09-16T02:54:40.3101540Z     raise RuntimeError("Private-home process remains outside scope")
+2026-09-16T02:54:40.3104130Z RuntimeError: Private-home process remains outside scope
+2026-09-16T02:54:40.3620290Z ##[error]Process completed with exit code 1.
+2026-09-16T02:54:40.4387690Z ##[group]Run actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+2026-09-16T02:54:40.4389980Z with:
+2026-09-16T02:54:40.4391230Z   name: ios-simulator-compile-evidence

@@ -1,0 +1,2 @@
+# Evidence only; not execution authority
+Source b48e706a1f21fd37b09198e55057dffa88498a24, PR201. Fresh CI35114112253 started, result pending. Native/cleanup evidence required. Prior promotion timeout/HOLD retained; do not recover/retry old runner. Local mocked test/static checks and independent review passed. Main/testing unchanged; no Store upload. PR193 draft. All historical restrictions remain. Do not merge this archival application tree or execute archived helpers.

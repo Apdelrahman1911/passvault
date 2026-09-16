@@ -1,0 +1,66 @@
+{
+  "reviewer": "/root/current_ledger",
+  "recorded_utc": "2026-09-16T15:14:50.764036+00:00",
+  "status": "ADMITTED_CONDITIONAL",
+  "source": {
+    "commit": "b48e706a1f21fd37b09198e55057dffa88498a24",
+    "tree": "deab190809ff00030407703dbd3f70481de251b5",
+    "base": "e02e2243793062974f93766ba44183480fb92f99",
+    "file_sha256": {
+      "scripts/ci-run.py": "96c771599456f67a200037d01e0dced8577639770395b9680049aa6a4c36adf2",
+      "scripts/test-ci-run.py": "3a4f1fc906b9f72b9e09d36caedaf8c6a0b45ea5ce03049f31bfd8f1b4bf85fa",
+      ".github/workflows/ci.yml": "9c6ea09f5ea9df7a274d2f1937687183f36f205a01be86cfebcd93d41945e862",
+      "docs/review/TESTING_RELEASE.md": "7e3f3709c4fb5bc99104397ee33176a44f62219460ed6aebfd11e28086cc11a4"
+    },
+    "review": "Explicit Git objects and exact four-file diff match reviewed afterimages. Default limits remain2048MiB/2100s; explicit macOS>=12GiB native profile returns4096MiB/3000s. Only native job becomes60min. Deadline plumbing and receipt field correct; no stale old-function callers in scripts/workflows. Host/resource/verification/worker/termination/HOLD guards unchanged."
+  },
+  "failure_challenge": {
+    "run": 35047359784,
+    "job": 104640463515,
+    "head": "741002904f1af2a80e8261a722dd763732880156",
+    "checkout": "47ea51776eba0a8392e6ecdfe05acf62a1b77ac2",
+    "observation": "Retained log proves35min batch budget exception while native link was active, followed by private-home outside-scope cleanup exception. Roughly13min preceded link and22min remained for linking. Not an observed compiler error or OOM.",
+    "receipt": "exitnull,heap4096,minimum RAMfraction0.35295677185058594,free143282724864bytes,wrapper_stop0,cleanupHOLD,pre-settlement snapshot.",
+    "unresolved": "Why this host was slower and unmatched process identity/count/final settlement remain unknown. No cleanup defect fixed or old runner recovery admitted.",
+    "remedy": "50min bounded profile budget matches existing release-build source allowance and preserves Intel host, optimization and4GiB heap; a justified bounded mitigation, not proof the timed-out link would finish. Nominal10min headroom also covers setup/poststeps. Repeated failure needs investigation, not endless increases."
+  },
+  "local_verification": {
+    "status": "PASS_QUALIFIED",
+    "actual_test_methods": 1,
+    "test": "ResourceGuardTest.test_native_release_limits_are_opt_in_and_host_bounded",
+    "duration_seconds": 0.003,
+    "qualification": "Mocks sysctl/platform; covers default/opt-in/host-memory bounds. AST2, YAML native60/ordinary45, current CI credential policy and diff checks passed. Not real native runtime or timeout-settlement proof.",
+    "integrity": "Recorded source hashes independently match all four committed blobs.",
+    "cleanup": "PASS receipt; owned subprocess/temp-directory settlement reported, no Gradle/wrapper/native execution. Reviewer did not perform live probes."
+  },
+  "fresh_pr_admission": {
+    "controller_sha256": "a9f0215e49f80ddc8edf9899837fa2538c76718a66fbde97a3d4f2b2bc043455",
+    "branch": "codex/ios-ci-budget-20260916",
+    "scope": "One normal dedicated-branch push/main PR and bounded observation of new nonpublishing CI. No retry/cancel/merge/release or old-HOLD recovery.",
+    "conditions": "Exact clean committed source/branch, remote branch absent, unchanged mainbase, prior35047359784 terminalfailure/head7410029, authoritative exclusive lock, legacy release OFF, complete active non-Dependabot inventory empty, exclusive push/PR markers. Fail closed on ambiguity/API failure/interruption;90min observer/API90s/poll45s.",
+    "required_evidence": "Fresh changed-source actual optimized native link AND successful cleanup; prior successful same-tree checks do not establish this changed budget execution."
+  },
+  "evidence_sha256": {
+    "COMMIT.json": "046bc5de6db85e7174fa46d29c5d7839e0d2efe5913f93af705d05d1bae0fcd9",
+    "EXPECTED.json": "39c2adf253b013284ebf8fe5639aded3d1e75b31575a148b9bbfe9d518f3777c",
+    "PLAN.md": "7b1e25836159589fe8c2924f04c36e36ca0afc895e0fa5b18d85941c6f206a49",
+    "LOCAL.py": "7ec10407add3e391c30c03123ecdf70f3f7d55ca50d8b8944c05a167b2a1df8f",
+    "RESULT.json": "3aff99599feef55b056cdccec951049d4e79a24ec5c27dfd8d11951bdbf7238d",
+    "stdout.log": "657dddeb5ddfd3d706c0c429206d13d3c27f1b52bd5b3669af59f2ce33530f61",
+    "stderr.log": "b8616a3f385c26f82bd66059ab976b2a675b971ce99b4b2adf81016b5d847cad",
+    "PR-CI.py": "a9f0215e49f80ddc8edf9899837fa2538c76718a66fbde97a3d4f2b2bc043455",
+    "PR-BODY.md": "ecb25dda314a19212f24b61f4107e8ea764f1d8f62be4fd767aee5d43f463933",
+    "FAILED-RUN.json": "40b0b738b2872e6c1032d452641e666a96c725f6838a6196b85d01b23f00a500",
+    "FAILED-JOBS.json": "f8802f22e27f183d743046f8b4f6c49effb57a62e2882ee7e84cc8b0a9f1b8e5",
+    "FAILED-CLEANUP.json": "a5b548798631cdbd4f07e9915318362a12e347932dd0a2c93a7bd1af34200f9c",
+    "FAILURE-EXCERPT.txt": "201f71e39d0f7e69bd6ad402ceb1e0d6750fa75aaeed1c99b48afc5759a57b8e",
+    "LOG-PROVENANCE.json": "df37a195da3fb7d84059b989eec442f31e327cdff1ad1633ea4eba8aa6f7175f",
+    "MAIN-PASS.json": "bb0e82847c251484924e1d7acdbf4584feabf8dc34d0512a3aa548611363515c"
+  },
+  "limits": [
+    "Independent review used retained source/log/API/JSON/hash evidence only; no reviewer builds, tests, networking or resource/process probes.",
+    "Original promotionCI failure/HOLD stays retained and PR193 remains draft pending reviewed main correction and refreshed exact-main promotion.",
+    "No dependency/compiler/version/build-number/app-identity/signing change; Store1017004 not consumed by these checks and final-source allocation still required.",
+    "All earlier STOP, NO-RETRY, CLOSED, HOLD, occupied-build and hardware/Store limitations persist."
+  ]
+}
