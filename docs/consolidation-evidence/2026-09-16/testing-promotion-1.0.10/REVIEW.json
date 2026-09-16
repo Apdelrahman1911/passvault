@@ -1,0 +1,62 @@
+{
+  "reviewer": "/root/current_ledger",
+  "recorded_utc": "2026-09-16T01:47:52.572584+00:00",
+  "status": "ADMITTED_CONDITIONAL",
+  "source": {
+    "promotion_commit": "741002904f1af2a80e8261a722dd763732880156",
+    "tree": "71e36517fbf54ff1ed36546378a43a7cfea4cbe2",
+    "main": "e02e2243793062974f93766ba44183480fb92f99",
+    "testing_parent": "b0d2cd4a85fc28b593e50f088dbb599be8060f36",
+    "review": "Explicit local Git objects prove full promotion/main tree equality and correct testing parent; nine-file delta consists solely of approved PR191/192 afterimages. No new implementation or test cycle required."
+  },
+  "pr192_ci_reconciliation": {
+    "status": "PASS_QUALIFIED",
+    "run": 35042932278,
+    "attempt": 1,
+    "head": "674eea2e71a032edf0d3c81d73d6b34bf5c6b1c7",
+    "checkout": "cef5928a9b722f58117fdddbac7f0cc190e0b24a",
+    "tree": "71e36517fbf54ff1ed36546378a43a7cfea4cbe2",
+    "jobs": "Complete12-job inventory, all source-matched completed/success.",
+    "artifact_files_hashed": 268,
+    "missing_extra_or_mismatched_files": 0,
+    "cleanup": "15source-matched exit0/PASS receipts:10wrapper_stop0,5not-started.",
+    "unit_cases": "198JUnit XML;1604passed,5skipped,0failures/errors.",
+    "desktop_each_linux_macos_windows": "18JUnit XML;90passed,1skipped,0failures/errors.",
+    "count_qualification": "Actual testcase elements and declared suite totals independently reconciled; overlapping job/platform coverage, not unique totals. Android lint XML excluded from test counts.",
+    "native": "Job104627069384, hosted macos-26-intel: actual simulator Arm64 compilation and unsigned optimized Arm64 release link PASS in19m4s;4096MiB heap,cleanupPASS/stop0.162executed tasks are not tests.",
+    "intel_packaging": "Job104627069345, hosted macos-15-intel: actual installed-runtime verification and unsigned ReleaseDmg packaging for1.0.10 PASS in10m20s;2048MiB heap,cleanupPASS/stop0.134executed tasks are not tests.",
+    "prior_failure": "MainCI35023335669 Foojay resolution failure remains recorded; this successful required changed-source CI does not retrospectively diagnose its transport cause or mark it passed."
+  },
+  "fresh_promotion_admission": {
+    "controller_sha256": "d841e97556af9d7a58fed8f5a7a52b6a9076d7ac5d763d7568c05edb2233c3e5",
+    "branch": "codex/promote-testing-1.0.10-20260916",
+    "scope": "One dedicated-branch normal push/new protected testing PR plus observation; no protected direct push, merge, retry, cancellation or Store dispatch.",
+    "conditions": "Exact clean source/tree/branch and authoritative exclusive lock; main/testing refs pinned. Wait mainCI35045205060 exact-source completed/success BEFORE scheduling anything; then freshly recheck protected refs, legacy release OFF, local source, new remote branch absent and complete active non-Dependabot inventory empty. Exclusive push/PR markers; source drift, API failure, ambiguity or deadline fails closed.",
+    "bounds": "Up to90min observing existing main CI then90min new PR CI; API90s,poll45s. Existing hosted cleanup/resource controls unchanged; no local build."
+  },
+  "admission_evidence_sha256": {
+    "SOURCE.json": "f7c53c685ce1fa29afa5ee2fd906693737f0b1788fff321df6e2d3606da5bef7",
+    "PLAN.md": "ac144a651cb1b038401b1643a31af39e5e9ab2c922baaf474572873424ea87c9",
+    "PR-CI.py": "d841e97556af9d7a58fed8f5a7a52b6a9076d7ac5d763d7568c05edb2233c3e5",
+    "PR-BODY.md": "3c94795f596c9a2cf5786e911d57661ffb1c9c655eeb22f33b17bc1bb809dfc6"
+  },
+  "pr192_evidence_directory": "../testing-1.0.10-20260916/ci-evidence",
+  "pr192_evidence_sha256": {
+    "RESULT.json": "56bd67019a8dcc008f3001495cbc11c7651c1f33beb6d96a450ca9bef08fa31e",
+    "RUN.json": "4da5611bb0519a6b97dc8bbdec45a7c590bbc357ab883e4b460eba3d78e2398b",
+    "JOBS.json": "f85d762fce405bf373216a875ddb5fb3d8b189bed52be333dffcda99ff6c3ff9",
+    "CHECKOUT.json": "5b1bac4bf3455fc585ad746b7b15eb310a876336ce9d180de5bf5ba663d10ff0",
+    "MAIN.json": "0b129aee857e4a46ac63807c8dde135335af6ae7d4eeb32a15b10ed0cf3d5ded",
+    "NATIVE-EXCERPT.txt": "a416724a9bc1671628d12d3918c4bca3d9967933d521a3d411ecc08cbba12ed0",
+    "NATIVE-PROVENANCE.json": "21c8c387ea70e19db2ead5208fadf891ab756438a911c22c5965489aabe09a16",
+    "INTEL-PACKAGING-EXCERPT.txt": "36ce1c2a6b4b7c41746dffa1c7cbf17cef0da703ab8a5053c0fc0e7ed1d63e5a",
+    "INTEL-PACKAGING-PROVENANCE.json": "35cc6f4ce3164c68bd1c5a91d085da992f817d190ee96c1b2840deb00ad9c688"
+  },
+  "limits": [
+    "Reviewer used retained Git objects/log excerpts/API/JSON/XML/hash evidence only; no project execution, network retrieval or full discarded-log rehash.",
+    "MainCI35045205060 result is not claimed here; exact success is a mandatory controller guard.",
+    "Unsigned link/packaging does not establish signed archive/export, Store upload/processing, physical-device security or tester access.",
+    "Normal protected testing approval, final testing source/CI, fresh history/allocation and separate release admission remain;1017001/1017002/1017003non-reusable.",
+    "Every existing failed run, STOP, NO-RETRY, CLOSED, HOLD and deferred finding remains preserved."
+  ]
+}

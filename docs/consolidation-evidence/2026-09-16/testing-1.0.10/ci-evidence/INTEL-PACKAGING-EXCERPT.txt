@@ -1,0 +1,36 @@
+2026-09-16T01:11:55.8847310Z Complete job name: Package Desktop macOS (x64)
+2026-09-16T01:11:56.0260510Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-09-16T01:11:56.0262520Z with:
+2026-09-16T01:11:56.0263220Z   persist-credentials: false
+2026-09-16T01:11:58.6808830Z [command]/usr/local/bin/git checkout --progress --force refs/remotes/pull/192/merge
+2026-09-16T01:11:59.3186390Z HEAD is now at cef5928 Merge 674eea2e71a032edf0d3c81d73d6b34bf5c6b1c7 into 518aed84bf0f479c80c5eb1a33a7f2a7a30d1c7d
+2026-09-16T01:11:59.3211600Z ##[endgroup]
+2026-09-16T01:11:59.3428260Z [command]/usr/local/bin/git log -1 --format=%H
+2026-09-16T01:12:00.7067180Z ##[endgroup]
+2026-09-16T01:12:00.8237000Z ##[group]Run actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
+2026-09-16T01:12:00.8238590Z with:
+2026-09-16T01:12:00.8239350Z   java-version: 17
+2026-09-16T01:12:01.4222450Z Configured MAVEN_ARGS to include -ntp to suppress Maven transfer progress logs. Set 'show-download-progress: true' to keep the download progress output.
+2026-09-16T01:12:01.4771250Z ##[group]Run gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb
+2026-09-16T01:12:01.4772530Z with:
+2026-09-16T01:12:01.4773070Z   cache-disabled: true
+2026-09-16T01:12:02.8757000Z ##[endgroup]
+2026-09-16T01:12:02.8966940Z ##[group]Run ./scripts/test-apple-signing-secret-handling.sh
+2026-09-16T01:12:02.8968180Z [36;1m./scripts/test-apple-signing-secret-handling.sh[0m
+2026-09-16T01:12:02.9057450Z shell: /bin/bash --noprofile --norc scripts/ci-python.sh scripts/ci-run.py {0}
+2026-09-16T01:12:10.2384200Z Apple signing secret-handling tests passed.
+2026-09-16T01:12:18.7392230Z ##[group]Run ./gradlew :app-desktop:createReleaseDistributable :app-desktop:packageReleaseDmg --stacktrace
+2026-09-16T01:12:18.7398870Z [36;1m./gradlew :app-desktop:createReleaseDistributable :app-desktop:packageReleaseDmg --stacktrace[0m
+2026-09-16T01:12:18.7561460Z shell: /bin/bash --noprofile --norc scripts/ci-python.sh scripts/ci-run.py {0}
+2026-09-16T01:21:58.5346690Z > Task :app-desktop:verifyDesktopInstalledRuntime
+2026-09-16T01:22:28.5211000Z > Task :app-desktop:packageReleaseDmg
+2026-09-16T01:22:46.2259400Z The distribution is written to /Users/runner/work/passvault/passvault/app-desktop/build/compose/binaries/main-release/dmg/PassVault-1.0.10.dmg
+2026-09-16T01:22:46.5105640Z 
+2026-09-16T01:22:46.5109370Z 
+2026-09-16T01:22:46.5109710Z BUILD SUCCESSFUL in 10m 20s
+2026-09-16T01:22:46.5110630Z 134 actionable tasks: 134 executed
+2026-09-16T01:22:49.2752660Z Picked up JAVA_TOOL_OPTIONS: -Duser.home="/Users/runner/work/_temp/passvault-ci-uz88qv1b/home" -Djava.io.tmpdir="/Users/runner/work/_temp/passvault-ci-uz88qv1b/tmp"
+2026-09-16T01:22:50.1434730Z No Gradle daemons are running.
+2026-09-16T01:22:57.3127970Z ##[group]Run actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+2026-09-16T01:22:57.3128900Z with:
+2026-09-16T01:22:57.3129320Z   name: package-desktop-macos-x64-evidence
