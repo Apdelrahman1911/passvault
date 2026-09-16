@@ -6,9 +6,11 @@ Owner number/destination approval already exists; do not ask again without a
 new conflict. Occupied/uncertain 1017001, 1017002 and 1017003 stay non-reusable.
 
 1. Finish exact-main testing promotion, ordinary protected review/merge and
-   final-source CI. Previous expected tree71e36517 is superseded by pending PR201
-   (b48e706a, tree deab190809ff00030407703dbd3f70481de251b5). PR193 stays
-   draft until main correction and exact-main refresh pass. Bind the actual final
+   final-source CI. Previous expected tree71e36517 is superseded by merged PR201
+   (main eb22a67e7dee41266622168da4b3da2ce0ef328a, tree
+   deab190809ff00030407703dbd3f70481de251b5). PR201 CI35114112253 all12PASS;
+   unsigned native link29m19s,15cleanupPASS. MainCI35119472860 and refreshed
+   PR193 on cad4e71abb1ac3cd9c3d4669641ac108eda4a0fa remain gates. Bind the actual final
    main/testing tree later; no preview is dispatch authority.
 2. Bind final actual testing C, current workflow/Fastfile hashes, main tree,
    version/configuration, approval and compact successful test/cleanup evidence.

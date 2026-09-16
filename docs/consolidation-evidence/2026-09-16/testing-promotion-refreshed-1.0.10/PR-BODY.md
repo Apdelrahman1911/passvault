@@ -1,0 +1,4 @@
+## Exact-main testing promotion, refreshed after PR201
+Promotes main `eb22a67e7dee41266622168da4b3da2ce0ef328a`, tree `deab190809ff00030407703dbd3f70481de251b5`, with approved version1.0.10/build1017004. Fast-forward adds the reviewed iOS CI budget correction, no release/dependency/identity change.
+PR201 CI35114112253 all12PASS including actual optimized unsigned iOS link. Main CI35119472860 must pass before refresh is pushed; new promotion CI must pass before readiness. Prior promotion CI35047359784 timeout/private-process HOLD remains preserved and is not recovered/retried. Detailed evidence on retained consolidation-evidence branch; no blanket audit closure or hardware claim.
+Legacy auto-release remainsOFF. This PR does not upload. Final testing-source gates and fresh release admission are required before approved testing-only publication. Occupied/uncertain1017001/2/3 remain nonreusable. Normal branch protection/review required; no production.

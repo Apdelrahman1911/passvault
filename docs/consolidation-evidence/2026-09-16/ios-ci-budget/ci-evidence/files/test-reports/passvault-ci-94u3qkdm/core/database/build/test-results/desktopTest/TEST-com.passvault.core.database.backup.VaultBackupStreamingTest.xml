@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="VaultBackupStreamingTest[desktop]" tests="39" skipped="0" failures="0" errors="0" timestamp="2026-09-16T15:27:10.282Z" hostname="runnervmlun5p" time="23.17">
+  <properties/>
+  <testcase name="v2 export derives entry count from its transactional manifest[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.565"/>
+  <testcase name="failed legacy Room replacement preserves attachment rows and objects[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.555"/>
+  <testcase name="backup creation accepts a distinct password with the same length[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.465"/>
+  <testcase name="legacy cleanup failure preserves restore success and surfaces a warning[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.536"/>
+  <testcase name="capacity accounting preserves variable chunk attachment compatibility[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.738"/>
+  <testcase name="stream manifest rejects one entity beyond the exact global count bound[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.239"/>
+  <testcase name="storage full during staging is actionable and cleans every staged object[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.666"/>
+  <testcase name="post commit cancellation keeps every restored attachment object[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.643"/>
+  <testcase name="backup creation fails closed when master password verification is unavailable[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.244"/>
+  <testcase name="v2 backup streams authenticates and restores an attachment to a fresh object[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.994"/>
+  <testcase name="successful legacy and v2 inspection close once and two pass restore closes each pass[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="1.027"/>
+  <testcase name="repeated legacy restores remove retired objects inside the attachment stability scope[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.885"/>
+  <testcase name="over quota legacy vault remains loadable and exportable while new imports stay blocked[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.814"/>
+  <testcase name="wrong password tampering and truncation preserve the active vault and objects[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.736"/>
+  <testcase name="output failure aborts the candidate and oversized declared input is closed[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.456"/>
+  <testcase name="cancelled attachment restore closes input and removes every staged object[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.549"/>
+  <testcase name="restore rejects insufficient capacity before staging any attachment[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.547"/>
+  <testcase name="backup creation rejects the current master password before writing[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.407"/>
+  <testcase name="cancellation after legacy commit cannot skip object cleanup[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.55"/>
+  <testcase name="metadata source change between authenticated passes rolls back and removes staged objects[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.978"/>
+  <testcase name="restore rejects an authenticated underreported object total before staging[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.789"/>
+  <testcase name="v2 backup preserves a quarantined filename and usable authenticated content[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.732"/>
+  <testcase name="export aborts if object bytes change after inner verification[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.462"/>
+  <testcase name="restore rejects an authenticated overreported object total and removes staged data[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.783"/>
+  <testcase name="shrinking capacity aborts before the next object and cleans staged data[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.561"/>
+  <testcase name="rewind failure after reopening cannot escape source cleanup[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.562"/>
+  <testcase name="read and close failures do not repeat source closure or mask invalid backup result[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.245"/>
+  <testcase name="stream validator still rejects a mismatched imported entry count[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.241"/>
+  <testcase name="export aborts if an object changes after the manifest size scan[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.461"/>
+  <testcase name="restore continues when capacity query fails or reports an invalid value[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.891"/>
+  <testcase name="restore continues when filesystem capacity is unavailable[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.629"/>
+  <testcase name="restore remains compatible with metadata schema 2 attachment backups[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.937"/>
+  <testcase name="restore accepts the exact capacity boundary[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.711"/>
+  <testcase name="cancellation after object publication removes the registered staged object[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.546"/>
+  <testcase name="v2 restore retains only objects referenced by committed rows[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.63"/>
+  <testcase name="cancellation while waiting for backup admission still closes the supplied source[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.239"/>
+  <testcase name="stream validator rejects identifier text beyond its retained byte budget[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.243"/>
+  <testcase name="stream manifest rejects a managed attachment without object bytes[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.241"/>
+  <testcase name="preview and restore cancellation close prefix legacy and v2 sources exactly once[desktop]" classname="com.passvault.core.database.backup.VaultBackupStreamingTest" time="0.671"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
