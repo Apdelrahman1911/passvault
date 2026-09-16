@@ -161,6 +161,9 @@ abstract class VerifyDependencyMetadataTask : DefaultTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val metadataFile: RegularFileProperty
 
+    @get:Input
+    abstract val kotlinCompilerVersion: Property<String>
+
     @TaskAction
     fun verifyMetadata() {
         val file = metadataFile.get().asFile
@@ -200,6 +203,7 @@ abstract class VerifyDependencyMetadataTask : DefaultTask() {
         ) {
             "Every verified dependency artifact must have exactly one lowercase SHA-256 checksum."
         }
+        verifyAppleHostCompilers(metadata)
         check(!Regex("<(?:md5|sha1|sha512) ").containsMatchIn(metadata)) {
             "Dependency verification must not contain unreviewed alternate digests."
         }
@@ -227,6 +231,22 @@ abstract class VerifyDependencyMetadataTask : DefaultTask() {
             "Validated SHA-256 dependency verification metadata " +
                 "(${file.length()} bytes).",
         )
+    }
+
+    private fun verifyAppleHostCompilers(metadata: String) {
+        // Cross-compiling iOS still downloads a compiler for the runner's host.
+        // Check both Apple host variants on Linux too, before Store jobs run.
+        val compilerVersion = kotlinCompilerVersion.get()
+        val nativeComponent = Regex(
+            """<component group="org.jetbrains.kotlin" name="kotlin-native-prebuilt" """ +
+                """version="${Regex.escape(compilerVersion)}">(.*?)</component>""",
+            RegexOption.DOT_MATCHES_ALL,
+        ).find(metadata)?.groupValues?.get(1).orEmpty()
+        for (host in listOf("macos-aarch64", "macos-x86_64")) {
+            check("""<artifact name="kotlin-native-prebuilt-$compilerVersion-$host.tar.gz">""" in nativeComponent) {
+                "Missing checksum for the catalog-pinned Kotlin/Native $host compiler ($compilerVersion)."
+            }
+        }
     }
 }
 
@@ -472,6 +492,7 @@ tasks.register<VerifyDependencyMetadataTask>("verifyDependencies") {
     description = "Validates dependency integrity, attribution, and release-version policy"
     dependsOn(verifyReleaseVersion)
     dependsOn(checkThirdPartyAttribution)
+    kotlinCompilerVersion.set(libs.versions.kotlin.asProvider())
 
     metadataFile.set(
         layout.projectDirectory.file("gradle/verification-metadata.xml")

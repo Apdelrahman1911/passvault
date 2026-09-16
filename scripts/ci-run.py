@@ -191,6 +191,19 @@ def memory_fraction():
     return int(fields["MemAvailable"].split()[0]) / int(fields["MemTotal"].split()[0])
 
 
+def ci_resource_limits(environment):
+    """Bound the native CI profile separately; ordinary jobs keep their limits."""
+    requested = environment.get("PASSVAULT_CI_IOS_RELEASE_LINK", "false")
+    if requested == "false":
+        return 2048, 35 * 60
+    if requested != "true" or sys.platform != "darwin":
+        raise RuntimeError("The iOS release-link heap requires an explicit macOS job")
+    total = int(subprocess.check_output(["sysctl", "-n", "hw.memsize"], text=True, timeout=10))
+    if total < 12 * 1024 ** 3:
+        raise RuntimeError("The iOS release-link heap requires at least 12 GiB host RAM")
+    return 4096, 50 * 60
+
+
 def main(script):
     if os.environ.get("GITHUB_ACTIONS") != "true" or os.environ.get("RUNNER_ENVIRONMENT") != "github-hosted":
         raise RuntimeError("Only fresh GitHub-hosted jobs are admitted")
@@ -201,6 +214,7 @@ def main(script):
         raise RuntimeError("Insufficient hosted RAM headroom before startup")
     if shutil.disk_usage(repo).free < 3 * 1024 ** 3:
         raise RuntimeError("Insufficient hosted disk headroom before startup")
+    heap_mib, batch_timeout_seconds = ci_resource_limits(os.environ)
     roots = generated_roots(repo)
     if any(p.exists() for p in roots):
         raise RuntimeError("Unowned pre-existing build output; refusing adoption")
@@ -220,14 +234,15 @@ def main(script):
     env["JAVA_TOOL_OPTIONS"] = f'-Duser.home="{home}" -Djava.io.tmpdir="{private / "tmp"}"'
     env["GRADLE_OPTS"] = f"-Dpassvault.ci.owner={private.name} -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false"
     (private / "gradle" / "gradle.properties").write_text(
-        f"org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8 -Dpassvault.ci.owner={private.name}\n"
+        f"org.gradle.jvmargs=-Xmx{heap_mib}m -Dfile.encoding=UTF-8 -Dpassvault.ci.owner={private.name}\n"
         "org.gradle.workers.max=1\norg.gradle.parallel=false\norg.gradle.daemon=false\n"
         "org.gradle.configureondemand=false\norg.gradle.configuration-cache=false\n"
         "kotlin.compiler.execution.strategy=in-process\n")
     scopes = []
     windows_termination_attempted = set()
     result = {"source": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
-              "exit": None, "cleanup": "HOLD", "wrapper_stop": "not-started"}
+              "exit": None, "cleanup": "HOLD", "wrapper_stop": "not-started", "gradle_heap_mib": heap_mib,
+              "batch_timeout_seconds": batch_timeout_seconds}
     interrupted = False
 
     def cancel(_signum, _frame):
@@ -241,7 +256,7 @@ def main(script):
         scope = ProcessScope()
         scopes.append(scope)
         scope.launch(script, env)
-        deadline = time.monotonic() + 35 * 60
+        deadline = time.monotonic() + batch_timeout_seconds
         while scope.process.poll() is None:
             free = shutil.disk_usage(repo).free
             result["minimum_free_bytes"] = min(result.get("minimum_free_bytes", free), free)
