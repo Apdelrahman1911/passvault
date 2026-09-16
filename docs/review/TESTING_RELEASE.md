@@ -1,9 +1,69 @@
 # Testing release resource boundary
 
-Version 1.0.9 reserves Store build 1017003 for a new testing publication.
+Version 1.0.10 reserves Store build 1017004 for a new testing publication.
+Build 1017003 must not be reused: its Google Play upload was interrupted and
+its Store outcome remains unknown; its iOS archive failed before compilation.
 Build 1017002 must not be reused: the 1.0.8 GitHub run uploaded Android, but its
 iOS archive failed before upload. The owner confirmed no uploads outside GitHub.
 Deferred findings in BACKLOG.md remain open; this is not production authorization.
+
+## Latest verified baseline and 1.0.10 preparation
+
+PR #191 merged as `518aed84bf0f479c80c5eb1a33a7f2a7a30d1c7d`.
+[PR CI 35009834688](https://github.com/Apdelrahman1911/passvault/actions/runs/35009834688)
+passed all 12 jobs on tree `91ea74d624ecac4d7cd53756ef59bb56d0d745f2`,
+including the actual Intel-host optimized unsigned iOS Arm64 framework link
+and simulator compilation (4 GiB heap, 19m 46s). All 15 cleanup receipts passed.
+Independent reconciliation confirmed 1,604 passed / 5 skipped unit cases;
+each Desktop platform reported 90 passed / 1 skipped, overlapping cases.
+The accessor compilation and Detekt follow-up failures remain preserved.
+Detailed evidence and independent review are retained at evidence-branch commit
+`dd86ede2526d9b83227f081fdb2546563281968d` under
+`docs/consolidation-evidence/2026-09-15/intel-native-verification/detekt-followup/final-ci/`.
+Do not merge or execute that historical evidence tree.
+
+The subsequent [main CI 35023335669](https://github.com/Apdelrahman1911/passvault/actions/runs/35023335669)
+passed Android, iOS linking, tests and the other platform checks, but Intel macOS
+packaging failed resolving the unchanged Foojay resolver plugin 1.0.0 from the
+configured repositories, before compilation. The precise repository/transport
+cause is unproved; do not label the run passed or weaken dependency verification.
+The new version PR must pass its existing CI, including that packaging check.
+No plugin version, repository, signing policy or runtime dependency changes are
+included in the 1.0.10 metadata update.
+
+The owner approved 1.0.10 / 1017004 for testing only. Shared display version,
+Android metadata and Xcode build/marketing settings are aligned. Signed iOS
+archive/export, actual Store upload/processing and tester availability remain
+unverified until the fresh, final-source release passes. No old upload or HOLD
+scope may be retried, and deferred audit/hardware items remain open.
+
+## Intel compiler verification correction
+
+Testing run [35003648380](https://github.com/Apdelrahman1911/passvault/actions/runs/35003648380)
+on `b0d2cd4a85fc28b593e50f088dbb599be8060f36` failed before iOS compilation:
+the pinned Kotlin 2.4.10 compiler's `macos-x86_64` archive lacked a checksum.
+The Arm64 host archive was pinned, which is why the previous simulator CI passed.
+This was **not** another observed heap failure. Signing setup succeeded, but the
+optimized device link and archive remain unverified. Wrapper stop returned zero;
+Xcode settlement remained **HOLD**, with subsequent cleanup refusals preserved.
+The overall run was subsequently cancelled during the Google Play upload step;
+its Android Store outcome is unknown. The agent did not cancel it. Do not retry
+this release or assume build 1017003 is available for another upload.
+
+The Intel archive's 259,701,296 bytes were streamed from Maven Central without
+saving or executing them. SHA-256
+`7bfda60c2a4ce859fc85011ea2c3229961b1eb40e9cc0b6b85fee885f23973cb`
+matches official JetBrains Kotlin v2.4.10 GitHub release asset `476576010`.
+Only that missing host checksum is added; compiler version and checksum-only
+verification policy remain unchanged. The existing dependency check now requires
+both Apple host archives for the catalog-pinned compiler.
+
+The existing iOS CI job now uses the release's Intel/Xcode 26 host and compiles
+simulator sources **and links the unsigned optimized iOS Arm64 framework**. Its
+opt-in 4 GiB heap requires macOS with at least 12 GiB RAM; other CI batches remain
+at 2 GiB. No signing inputs, Store upload, application launch or extra matrix is
+introduced. Actual native results and cleanup must pass before another release
+is proposed. Even a successful unsigned link is not a signed archive/Store proof.
 
 ## iOS archive memory correction
 
