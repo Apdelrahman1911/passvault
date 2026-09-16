@@ -1,9 +1,41 @@
 # Testing release resource boundary
 
-Version 1.0.9 reserves Store build 1017003 for a new testing publication.
+Version 1.0.10 reserves Store build 1017004 for a new testing publication.
+Build 1017003 must not be reused: its Google Play upload was interrupted and
+its Store outcome remains unknown; its iOS archive failed before compilation.
 Build 1017002 must not be reused: the 1.0.8 GitHub run uploaded Android, but its
 iOS archive failed before upload. The owner confirmed no uploads outside GitHub.
 Deferred findings in BACKLOG.md remain open; this is not production authorization.
+
+## Latest verified baseline and 1.0.10 preparation
+
+PR #191 merged as `518aed84bf0f479c80c5eb1a33a7f2a7a30d1c7d`.
+[PR CI 35009834688](https://github.com/Apdelrahman1911/passvault/actions/runs/35009834688)
+passed all 12 jobs on tree `91ea74d624ecac4d7cd53756ef59bb56d0d745f2`,
+including the actual Intel-host optimized unsigned iOS Arm64 framework link
+and simulator compilation (4 GiB heap, 19m 46s). All 15 cleanup receipts passed.
+Independent reconciliation confirmed 1,604 passed / 5 skipped unit cases;
+each Desktop platform reported 90 passed / 1 skipped, overlapping cases.
+The accessor compilation and Detekt follow-up failures remain preserved.
+Detailed evidence and independent review are retained at evidence-branch commit
+`dd86ede2526d9b83227f081fdb2546563281968d` under
+`docs/consolidation-evidence/2026-09-15/intel-native-verification/detekt-followup/final-ci/`.
+Do not merge or execute that historical evidence tree.
+
+The subsequent [main CI 35023335669](https://github.com/Apdelrahman1911/passvault/actions/runs/35023335669)
+passed Android, iOS linking, tests and the other platform checks, but Intel macOS
+packaging failed resolving the unchanged Foojay resolver plugin 1.0.0 from the
+configured repositories, before compilation. The precise repository/transport
+cause is unproved; do not label the run passed or weaken dependency verification.
+The new version PR must pass its existing CI, including that packaging check.
+No plugin version, repository, signing policy or runtime dependency changes are
+included in the 1.0.10 metadata update.
+
+The owner approved 1.0.10 / 1017004 for testing only. Shared display version,
+Android metadata and Xcode build/marketing settings are aligned. Signed iOS
+archive/export, actual Store upload/processing and tester availability remain
+unverified until the fresh, final-source release passes. No old upload or HOLD
+scope may be retried, and deferred audit/hardware items remain open.
 
 ## Intel compiler verification correction
 
